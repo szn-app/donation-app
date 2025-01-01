@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.1...donation-app@v0.4.2) (2025-01-01)
+
+
+### Bug Fixes
+
+* web server service as ClusterIP instead of LoadBalancer ([53bab67](https://github.com/szn-app/donation-app/commit/53bab67953fd69474a5c93362303b89782a6bdc8))
+
 ## [0.4.1](https://github.com/szn-app/donation-app/compare/donation-app-v0.4.0...donation-app@v0.4.1) (2024-12-18)
 
 
