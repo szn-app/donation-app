@@ -92,6 +92,12 @@ build_all_containers_with_load() {
     docker save auth-token-exchange:latest | (eval $(minikube docker-env) && docker load)
 }
 
+
+dns_forwarding_dnsmasq_delete() {
+    sudo sed -i '/\.test/d' /etc/dnsmasq.conf
+    sudo systemctl restart dnsmasq
+}
+
 dns_forwarding() { 
     local loadbalancer_ip="$1"
 
@@ -149,11 +155,14 @@ EOF
     dns_forwarding_dnsmasq
 }
 
+terminate_background_jobs() {
+    jobs -p | xargs kill -9
+    pkill -f "minikube tunnel"
+
+    dns_forwarding_dnsmasq_delete
+}
+
 tunnel_minikube() {
-    terminate_background_jobs() {
-        jobs -p | xargs kill -9
-        pkill -f "minikube tunnel"
-    }
     terminate_background_jobs
 
     sudo echo "" # switch to sudo explicitely
@@ -231,6 +240,8 @@ deploy_local_minikube() {
         return
     fi
 
+    terminate_background_jobs
+    
     build_all_containers_with_load
     # build_all_containers_directly_into_minikube
 

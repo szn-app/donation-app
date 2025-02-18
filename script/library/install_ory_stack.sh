@@ -30,8 +30,8 @@ install_ory_stack() {
             kubectl delete secret ory-hydra-client--oathkeeper-introspection -n auth
 
             if [ "$environment" == "development" ]; then
-                kubectl delete pv --all
-                kubectl delete pvc --all
+                kubectl delete pv --all --force --ignore-not-found
+                kubectl delete pvc --all --force
             fi
             return 
         fi

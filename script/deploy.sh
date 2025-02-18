@@ -177,6 +177,11 @@ deploy_application() {
 
     pushd ./manifest 
         kubectl apply -k ./entrypoint/$environment
+
+        if [ "$environment" == "development" ]; then
+            kubectl rollout restart -k ./entrypoint/$environment
+        fi
+
         {
             pushd ./entrypoint/$environment 
             t="$(mktemp).yml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
