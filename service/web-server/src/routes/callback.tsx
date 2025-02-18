@@ -17,5 +17,5 @@ export function component() {
     }
   }, [auth.isLoading, auth.error, navigate]);
 
-  return <div>Loading...</div>;
+  return <div>Loading... 2</div>;
 }

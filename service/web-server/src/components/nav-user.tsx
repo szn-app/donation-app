@@ -88,7 +88,7 @@ export function NavUser({ user }: { user: User }) {
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <a
-                  href="https://auth.wosoom.com/settings"
+                  href={`${import.meta.env.VITE_AUTH_BASE_URL}/settings`}
                   target="_blank"
                   rel="noopener"
                   className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-100"
@@ -109,7 +109,7 @@ export function NavUser({ user }: { user: User }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a
-                href="https://auth.wosoom.com/logout"
+                href={`${import.meta.env.VITE_AUTH_BASE_URL}/logout`}
                 target="_blank"
                 rel="noopener"
                 className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-100"

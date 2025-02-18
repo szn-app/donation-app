@@ -47,7 +47,7 @@ export function AppSidebar({
           <SidebarMenu>
             <SidebarMenuItem>
               <a
-                href="https://auth.wosoom.com/login"
+                href={`${import.meta.env.VITE_AUTH_BASE_URL}/login`}
                 target="_blank"
                 rel="noopener"
               >

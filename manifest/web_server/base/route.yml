@@ -1,3 +1,20 @@
+# permit httproute to access backend service from another namespace
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-auth-from-donation-app
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: donation-app
+  to:
+    - group: ""
+      kind: Service
+
+---
+
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 
@@ -25,7 +42,7 @@ spec:
     # handle token exchange in same domain to avoid CORS
     - backendRefs:
         - name: auth-token-exchange
-          # namespace: donation-app
+          namespace: auth
           port: 80
       matches:
         - path:
@@ -39,6 +56,7 @@ spec:
               replacePrefixMatch: /oauth2_token
 
 ---
+
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 

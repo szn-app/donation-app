@@ -207,7 +207,7 @@ export default function component() {
                   empowering everyone to give back to their local community.
                 </p>
                 <p className="mt-6 text-base leading-7 text-gray-600">
-                  Wosoom.com provides a centralized space where donors can list
+                  {import.meta.env.VITE_DOMAIN_NAME} provides a centralized space where donors can list
                   items they wish to donate, and recipients can browse and
                   request items they need. We handle the entire process, from
                   listing creation to secure matching and, where applicable,
@@ -341,7 +341,7 @@ export default function component() {
               ))}
             </div>
             <p className="mt-8 text-xs leading-5 text-gray-500 md:order-1 md:mt-0">
-              &copy; 2025 Wosoom.com - All rights reserved.
+              &copy; {new Date().getFullYear()} {import.meta.env.VITE_DOMAIN_NAME} - All rights reserved.
             </p>
           </div>
         </div>

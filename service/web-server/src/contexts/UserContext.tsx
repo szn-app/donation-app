@@ -1,6 +1,7 @@
-import React, { createContext, useState, PropsWithChildren } from "react";
+import React, { createContext, useState, PropsWithChildren, useEffect } from "react";
 import { User } from "@/components/app-sidebar";
 import { AuthProviderProps, AuthProvider } from "react-oidc-context";
+import { Log } from "oidc-client-ts";
 
 export type { User };
 
@@ -24,8 +25,8 @@ export function UserProvider({ children }: PropsWithChildren<{}>) {
   );
 }
 
-// NOTE: implicit OIDC config added: https://auth.wosoom.com/authorize/.well-known/openid-configuration
-// https://auth.wosoom.com/authorize/.well-known/jwks.json
+// NOTE: implicit OIDC config added: https://auth.donation-app.test/authorize/.well-known/openid-configuration
+// https://auth.donation-app.test/authorize/.well-known/jwks.json
 // https://github.com/authts/oidc-client-ts/blob/main/docs/protocols/authorization-code-grant-with-pkce.md
 export const oidcConfig: AuthProviderProps = {
   authority: import.meta.env.VITE_AUTHORIZATION_URL, // Ory Hydra server URL
@@ -35,13 +36,14 @@ export const oidcConfig: AuthProviderProps = {
   scope: "offline_access openid",
   loadUserInfo: true,
   automaticSilentRenew: true,
-  //   silent_redirect_uri: "https://wosoom.com/silent-renew",
+  // TODO: 
+  //   silent_redirect_uri: "${import.meta.env.VITE_APP_URL}/silent-renew",
   post_logout_redirect_uri: `${import.meta.env.VITE_APP_URL}/callback`,
   disablePKCE: false,
   // customize token endpoint to pass code for app backend exchange
   metadata: {
     authorization_endpoint: `${import.meta.env.VITE_AUTHORIZATION_URL}/oauth2/auth`, // Authorization endpoint
-    // token_endpoint: "https://auth.wosoom.com/authorize/oauth2/token", // Token endpoint
+    // token_endpoint: "${import.meta.env.VITE_AUTH_BASE_URL}/authorize/oauth2/token", // Token endpoint
     token_endpoint: `${import.meta.env.VITE_APP_URL}/api/oauth2_token`, // custom Token endpoint
     userinfo_endpoint: `${import.meta.env.VITE_AUTHORIZATION_URL}/userinfo`, // UserInfo endpoint
     end_session_endpoint: `${import.meta.env.VITE_AUTHORIZATION_URL}/oauth2/sessions/logout`, // End session endpoint
@@ -52,5 +54,12 @@ export const oidcConfig: AuthProviderProps = {
 };
 
 export function AuthContextProvider({ children }: PropsWithChildren<{}>) {
+
+  useEffect(() => {
+    // TODO:
+    Log.setLogger(console);
+    Log.setLevel(Log.DEBUG);
+  }, []);
+
   return <AuthProvider {...oidcConfig}>{children}</AuthProvider>;
 }
