@@ -31,7 +31,7 @@ metricsScraper:
   nodeSelector: 
     role: worker
 EOF
-  helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard --values $t
+  helm upgrade --debug --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard --values $t
 
   # https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
   t=$(mktemp) && cat <<EOF > "$t" 

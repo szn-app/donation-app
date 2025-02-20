@@ -54,15 +54,24 @@ EOF
     check_kratos_secret_env
     generate_kratos_env_file
 
-    printf "install Postgresql for Ory Kratos \n"
+    if helm list -n auth | grep -q 'postgres-kratos' && [ "$environment" = "development" ]; then
+        upgrade_db=false
+    else
+        upgrade_db=true
+    fi
+
     set -a
         source ory-kratos/db_kratos_secret.env
     set +a
-    helm upgrade --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ory-kratos/postgresql-values.yml \
-        --set auth.username=${DB_USER} \
-        --set auth.password=${DB_PASSWORD} \
-        --set auth.database=kratos_db
-    # this will generate 'postgres-kratos-postgresql' service
+    if [ "$upgrade_db" = true ]; then
+        printf "install Postgresql for Ory Kratos \n"
+        
+        helm upgrade --debug --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ory-kratos/postgresql-values.yml \
+            --set auth.username=${DB_USER} \
+            --set auth.password=${DB_PASSWORD} \
+            --set auth.database=kratos_db
+        # this will generate 'postgres-kratos-postgresql' service
+    fi
 
     printf "install Ory Kratos \n"
     set -a
@@ -86,13 +95,13 @@ EOF
     default_secret="$(openssl rand -hex 16)"
     cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
     cipher_secret="$(openssl rand -hex 16)"
-    helm upgrade --install kratos ory/kratos -n auth --create-namespace -f ory-kratos/helm-values.yml -f $t \
+    helm upgrade --debug --install --atomic kratos ory/kratos -n auth --create-namespace -f ory-kratos/helm-values.yml -f $t \
         --set-file kratos.identitySchemas.identity-schema\\.json=./ory-kratos/identity-schema.json \
         --set kratos.config.secrets.default[0]="$default_secret" \
         --set kratos.config.secrets.cookie[0]="$cookie_secret" \
         --set kratos.config.secrets.cipher[0]="$cipher_secret" \
         --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-        --set env[0].name=DB_PASSWORD --set env[0].value=${DB_PASSWORD}
+        --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
     
     verify_jsonnet() {
         kratos help jsonnet lint
@@ -108,7 +117,7 @@ EOF
                 --set kratos.config.secrets.cookie[0]="$cookie_secret" \
                 --set kratos.config.secrets.cipher[0]="$cipher_secret" \
                 --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-                --set env[0].name=DB_PASSWORD --set env[0].value=${DB_PASSWORD} > $y && printf "generated manifest with replaced env variables: file://$y\n"
+                --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $y && printf "generated manifest with replaced env variables: file://$y\n"
         }
         # https://www.ory.sh/docs/kratos/self-service
         check_authentication_flow() {

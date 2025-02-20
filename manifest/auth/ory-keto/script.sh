@@ -14,22 +14,31 @@ EOF
 install_keto() {
     pushd ./manifest/auth
     
-    printf "install Postgresql for Ory Keto \n"
+    if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
+        upgrade_db=false
+    else
+        upgrade_db=true
+    fi
+
     set -a
     source ory-keto/db_keto_secret.env # DB_USER, DB_PASSWORD
     set +a
-    helm upgrade --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ory-keto/postgresql-values.yml \
-        --set auth.username=${DB_USER} \
-        --set auth.password=${DB_PASSWORD} \
-        --set auth.database=keto_db
-    # this will generate 'postgres-keto-postgresql' service
+    if [ "$upgrade_db" = true ]; then
+        printf "install Postgresql for Ory Keto \n"
+
+        helm upgrade --debug --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ory-keto/postgresql-values.yml \
+            --set auth.username=${DB_USER} \
+            --set auth.password=${DB_PASSWORD} \
+            --set auth.database=keto_db
+        # this will generate 'postgres-keto-postgresql' service
+    fi
 
     printf "install Ory Keto \n"
     # preprocess file through substituting env values
     t="$(mktemp).yml" && envsubst < ory-keto/keto-config.yml > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-    helm upgrade --install keto ory/keto -n auth --create-namespace -f ory-keto/helm-values.yml -f $t \
+    helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ory-keto/helm-values.yml -f $t \
         --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-        --set env[0].name=DB_PASSWORD --set env[0].value=${DB_PASSWORD}
+        --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
 
     {
         printf "Keto: create relations rules \n"
@@ -74,6 +83,9 @@ EOF
         # {
         #     "allowed": true
         # }
+
+        # check ongoing installs 
+        helm history keto -n auth
     }
     popd
 }

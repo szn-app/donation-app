@@ -54,7 +54,7 @@ EOF
         # echo "jwt file created file://$y"
 
         t="$(mktemp).yml" && envsubst < ory-oathkeeper/oathkeeper-config.yml > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        helm upgrade --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ory-oathkeeper/helm-values.yml -f $t \
+        helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ory-oathkeeper/helm-values.yml -f $t \
                 --set-file oathkeeper.accessRules=./ory-oathkeeper/access-rules.json
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 
         popd

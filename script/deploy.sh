@@ -179,7 +179,10 @@ deploy_application() {
         kubectl apply -k ./entrypoint/$environment
 
         if [ "$environment" == "development" ]; then
-            kubectl rollout restart -k ./entrypoint/$environment
+            # restart all deployments in any namespace
+            kubectl get deployments --all-namespaces -o custom-columns=:.metadata.name,:.metadata.namespace | tail -n +2 | while read -r deployment namespace; do
+                kubectl rollout restart deployment "$deployment" --namespace "$namespace"
+            done
         fi
 
         {
@@ -259,6 +262,11 @@ deploy() {
             fi
         fi
     }
+
+    if [ "$environment" == "development" ]; then
+        deploy_application --environment "$environment" --action delete # required to delete postgresql claims of ory stack
+        install_ory_stack --environment "$environment" --action delete
+    fi
 
     install_ory_stack --action $environment --action install
     deploy_application --environment "$environment" --action install

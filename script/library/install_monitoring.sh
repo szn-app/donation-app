@@ -26,7 +26,7 @@ resources:
       memory: 256Mi
 EOF
 
-    helm upgrade prometheus --install prometheus-community/prometheus --namespace monitoring --create-namespace -f $t
+    helm upgrade prometheus --debug --install prometheus-community/prometheus --namespace monitoring --create-namespace -f $t
 
     # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml
     t="$(mktemp)-monitoring-configuration.yml" && cat <<EOF > "$t"
@@ -84,7 +84,7 @@ resources:
 
 EOF
 
-    helm upgrade grafana --install grafana/grafana --namespace monitoring --create-namespace -f $t
+    helm upgrade grafana --debug --install grafana/grafana --namespace monitoring --create-namespace -f $t
 
   }
 

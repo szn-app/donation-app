@@ -92,102 +92,11 @@ build_all_containers_with_load() {
     docker save auth-token-exchange:latest | (eval $(minikube docker-env) && docker load)
 }
 
-
-dns_forwarding_dnsmasq_delete() {
-    sudo sed -i '/\.test/d' /etc/dnsmasq.conf
-    sudo systemctl restart dnsmasq
-}
-
-dns_forwarding() { 
-    local loadbalancer_ip="$1"
-
-    dns_forwarding_hosts() {
-        # remove previous entries
-        sudo sed -i '/\.test/d' /etc/hosts
-        # add new entries
-        echo "$loadbalancer_ip donation-app.test auth.donation-app.test api.donation-app.test test.donation-app.test *.donation-app.test" | sudo tee -a /etc/hosts
-    }
-
-    dns_forwarding_dnsmasq() {
-        sudo systemctl enable dnsmasq
-        sudo systemctl start dnsmasq
-        verify() {
-            systemctl status dnsmasq
-        }
-
-        {
-            sudo sed -i '/\.test/d' /etc/dnsmasq.conf
-            # echo "address=/.donation-app.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
-            echo "address=/.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
-            if ! grep -q "strict-order" /etc/dnsmasq.conf; then
-                echo "strict-order" | sudo tee -a /etc/dnsmasq.conf
-            fi
-            sudo systemctl restart dnsmasq
-        }
-
-        {
-            CONFIG_FILE="/etc/systemd/resolved.conf"
-            sudo tee "$CONFIG_FILE" > /dev/null <<EOF
-[Resolve]
-DNS=127.0.0.1
-Domains=~test
-DNSSEC=no
-Cache=false
-DNSStubListener=no
-EOF
-            sudo systemctl restart systemd-resolved
-        }
-
-        # {
-        #     CONFIG_FILE="/etc/NetworkManager/conf.d/dnsmasq.conf"
-        #     echo -e "[main]\ndns=dnsmasq" | sudo tee "$CONFIG_FILE" > /dev/null
-        #     echo "address=/test/127.0.0.1" | sudo tee /etc/NetworkManager/dnsmasq.d/test-domains.conf
-        #     sudo systemctl restart NetworkManager
-        # }
-
-        sleep 2
-        nslookup donation-app.test 127.0.0.1
-        time nslookup donation-app.test 127.0.0.1
-        dig donation-app.test @127.0.0.1
-    }
-
-    # dns_forwarding_hosts
-    dns_forwarding_dnsmasq
-}
-
-terminate_background_jobs() {
-    jobs -p | xargs kill -9
-    pkill -f "minikube tunnel"
-
-    dns_forwarding_dnsmasq_delete
-}
-
-tunnel_minikube() {
-    terminate_background_jobs
-
-    sudo echo "" # switch to sudo explicitely
-    minikube tunnel & 
-    sleep 5 
-    
-    while ! kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' &> /dev/null; do
-        echo "Waiting for load balancer IP..."
-        sleep 5
-    done
-    loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    curl -k -i --header "Host: donation-app.test" $loadbalancer_ip
-    
-    dns_forwarding $loadbalancer_ip
-
-    curl -k -i --resolve donation-app.test:443:$loadbalancer_ip https://donation-app.test
-    curl -k -i https://donation-app.test
-}
-
 {
     deploy_local_minikube_only_app() {
         build_all_containers_with_load
         
-        source ./script/deploy.sh
-        deploy --environment development --action app
+        ./script.sh deploy --environment development --action app
     }
 }
 deploy_local_minikube() {
@@ -240,17 +149,25 @@ deploy_local_minikube() {
         return
     fi
 
+    if ! minikube status &> /dev/null; then
+        echo "Minikube is not running. Starting Minikube..."
+        minikube start
+    else
+        echo "Minikube is already running."
+    fi
+
+    build_all_containers_with_load
+
+    source ./script/library/minikube_tunnel.sh
+
     terminate_background_jobs
     
-    build_all_containers_with_load
-    # build_all_containers_directly_into_minikube
-
     source ./script/deploy.sh
     deploy --environment development --action install
 
     kubectl config set-context --current --namespace=all
 
-    read -t 5 -p "Do you want to execute tunnel_minikube? (y/n, default is y after 5 seconds): " choice
+    read -t 15 -p "Do you want to execute tunnel_minikube? (y/n, default is y after 15 seconds): " choice
     choice=${choice:-y}
     if [[ "$choice" == "y" ]]; then
         tunnel_minikube

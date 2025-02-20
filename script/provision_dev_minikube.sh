@@ -36,7 +36,7 @@ bootstrap_minikube() {
         # fix issue with docker cli plugins where symlinks are corrupted and invalid
         rm ~/.docker/cli-plugins/*
     }
-    minikube start --cpus=max --memory=max --disk-size=100g --driver=docker
+    minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker
     # minikube start --driver=docker
     kubectl label node minikube role=worker # used for some affinity/selector configurations in the app manifest/helm files
     kubectl ctx minikube
@@ -78,6 +78,8 @@ bootstrap_minikube() {
         source "./script/library/install_gateway_api_crds.sh"
         install_gateway_api_crds
     }
+
+    minikube status
 
     # TODO: use hotst solution instead to avoid issues
     # install_domain_dns_systemd_resolved_for_test_domains

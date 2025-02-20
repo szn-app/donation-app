@@ -18,7 +18,7 @@ install_envoy_gateway_class() {
     install_gateway_class() {
         # install CRDs (NOTE: Helm doesn't update CRDs already installed - manual upgrade would be required)
         # https://gateway.envoyproxy.io/docs/tasks/traffic/gatewayapi-support/
-        helm upgrade --install envoy-gateway oci://docker.io/envoyproxy/gateway-helm --version v1.2.6 -n envoy-gateway-system --create-namespace -f ./helm-values.yml
+        helm upgrade --debug --install envoy-gateway oci://docker.io/envoyproxy/gateway-helm --version v1.2.6 -n envoy-gateway-system --create-namespace -f ./helm-values.yml
         kubectl wait --timeout=5m -n envoy-gateway-system deployment/envoy-gateway --for=condition=Available    
 
         t="$(mktemp).yml" && cat << 'EOF' > $t

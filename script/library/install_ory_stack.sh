@@ -17,22 +17,31 @@ install_ory_stack() {
     {
         if [ "$action" == "delete" ]; then
             helm uninstall kratos -n auth
-            helm uninstall postgres-kratos -n auth
             helm uninstall hydra -n auth
-            helm uninstall postgres-hydra -n auth
             helm uninstall keto -n auth
-            helm uninstall postgres-keto -n auth
             helm uninstall oathkeeper -n auth
 
-            kubectl delete secret ory-hydra-client--frontend-client-oauth -n auth
-            kubectl delete secret ory-hydra-client--frontend-client -n auth
-            kubectl delete secret ory-hydra-client--internal-communication -n auth
-            kubectl delete secret ory-hydra-client--oathkeeper-introspection -n auth
+            helm uninstall postgres-kratos -n auth
+            helm uninstall postgres-hydra -n auth
+            helm uninstall postgres-keto -n auth
+
 
             if [ "$environment" == "development" ]; then
-                kubectl delete pv --all --force --ignore-not-found
+                minikube ssh -- "sudo rm -rf /tmp/hostpath-provisioner/auth/"
+
+                kubectl delete secret ory-hydra-client--frontend-client-oauth -n auth
+                kubectl delete secret ory-hydra-client--frontend-client -n auth
+                kubectl delete secret ory-hydra-client--internal-communication -n auth
+                kubectl delete secret ory-hydra-client--oathkeeper-introspection -n auth
+
+                # delete protection finalizers
+                kubectl get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.finalizers}{"\n"}{end}' | awk '{print $1}' | xargs -I {} kubectl patch pv {} -p '{"metadata":{"finalizers":null}}'
+
                 kubectl delete pvc --all --force
+                kubectl delete pv --all --force --ignore-not-found --v=9
+                kubectl get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.finalizers}{"\n"}{end}' | awk '{print $1}' | xargs -I {} kubectl delete pv {}
             fi
+
             return 
         fi
     }
@@ -49,8 +58,7 @@ install_ory_stack() {
     create_oauth2_client_for_trusted_app $environment
     install_oathkeeper # depends on `create_oauth2_client_for_trusted_app`
 
-
-    manual_verify() { 
+    manual_verify() {
         # use --debug with `helm` for verbose output
         
         # tunnel to remote service 
