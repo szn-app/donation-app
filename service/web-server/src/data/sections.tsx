@@ -4,7 +4,6 @@ import { SidebarContent as LuxurySidebarContent } from "@/routes/_app/luxury.laz
 import { SidebarContent as DonationSidebarContent } from "@/routes/_app/donation.lazy";
 import { HeartHandshake, Store, Gem, ShoppingBag } from "lucide-react";
 import { Section } from "@/components/section-switcher";
-import { User } from "@/components/nav-user";
 
 export const sections: Section[] = [
   {
@@ -37,9 +36,3 @@ export const sections: Section[] = [
   },
 ];
 
-// example user
-export const user_example: User = {
-  name: "Mr./Mrs.",
-  email: "me@gmail.com",
-  avatar: "/avatar.svg",
-};

@@ -25,15 +25,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-export interface User {
-  name: string;
-  email: string;
-  avatar: string;
-}
+import { User } from "@/types/user";
+import { useAuth } from "react-oidc-context";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
+  const auth = useAuth();
 
   return (
     <SidebarMenu>
@@ -108,8 +105,9 @@ export function NavUser({ user }: { user: User }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
+              
               <a
-                href={`${import.meta.env.VITE_AUTH_BASE_URL}/logout`}
+                onClick={() => auth.signoutRedirect()}
                 target="_blank"
                 rel="noopener"
                 className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-100"

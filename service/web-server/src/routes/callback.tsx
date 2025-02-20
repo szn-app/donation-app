@@ -12,10 +12,10 @@ export function component() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!auth.isLoading && !auth.error) {
+    if ((!auth.isLoading && !auth.error)) {
       navigate({ to: "/" });
     }
   }, [auth.isLoading, auth.error, navigate]);
 
-  return <div>Loading... 2</div>;
+  return <div>Loading...</div>;
 }

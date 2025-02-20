@@ -51,6 +51,13 @@ hydra:
         publicUrl: http://kratos-public
       error: ${AUTH_BASE_URL}/error
 
+    ttl:
+      login_consent_request: 1h
+      access_token: 1h
+      refresh_token: 1h
+      id_token: 1h
+      auth_code: 1h
+
     strategies:
       access_token: jwt
       jwt:

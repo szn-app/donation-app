@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useContext, useEffect } from "react";
 
-import { NavUser, type User } from "@/components/nav-user";
+import { NavUser } from "@/components/nav-user";
 import { SectionSwitcher, type Section } from "@/components/section-switcher";
 import {
   Sidebar,
@@ -16,12 +16,13 @@ import {
 import { SectionContext } from "@/contexts/SectionContext";
 import { UserContext } from "@/contexts/UserContext";
 import { sections } from "@/data/sections";
+import { useAuth } from "react-oidc-context";
 
 import { Button } from "@/components/ui/button";
 import { LogIn, User2 } from "lucide-react";
+import { type User } from "@/types/user";
 
 export type { Section };
-export type { User };
 
 export interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 
@@ -30,7 +31,20 @@ export function AppSidebar({
   ...props
 }: React.PropsWithChildren<AppSidebarProps>) {
   const { activeSection } = useContext(SectionContext);
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.isAuthenticated && auth.user) {
+      console.log(user);
+      console.log("OIDC user details:", auth.user.profile);
+      setUser({
+        name: auth.user.profile.name ?? "",
+        email: auth.user.profile.email ?? "",
+        avatar: auth.user.profile.picture ?? "",
+      });
+    }
+  }, [auth.user, auth.isAuthenticated]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -41,22 +55,16 @@ export function AppSidebar({
         {activeSection && <activeSection.sidebarContent />}
       </SidebarContent>
       <SidebarFooter>
-        {!!user ? (
+        {auth.isAuthenticated ? (
           <NavUser user={user} />
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-              <a
-                href={`${import.meta.env.VITE_AUTH_BASE_URL}/login`}
-                target="_blank"
-                rel="noopener"
-              >
-                <SidebarMenuButton tooltip="Log in" variant="outline_colored">
-                  <LogIn />
-                  <span className="whitespace-nowrap">Log in</span>
-                  <User2 className="ml-auto" />
-                </SidebarMenuButton>
-              </a>
+                  <SidebarMenuButton onClick={() => auth.signinRedirect()} tooltip="Log in" variant="outline_colored">
+                    <LogIn />
+                    <span className="whitespace-nowrap">Log in</span>
+                    <User2 className="ml-auto" />
+                  </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         )}
