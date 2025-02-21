@@ -70,13 +70,21 @@ export const oidcConfig: AuthProviderProps = {
    * see https://github.com/authts/react-oidc-context/blob/f175dcba6ab09871b027d6a2f2224a17712b67c5/src/AuthProvider.tsx#L20-L30
    */
   onSigninCallback: () => {
+    if (import.meta.env.DEV) {
+      console.log("onSigninCallback");
+    }
+
     window.history.replaceState({}, document.title, window.location.pathname);
   },
 
+  matchSignoutCallback: (args) => {
+    return window && window.location.href === args.post_logout_redirect_uri;
+  },
   onSignoutCallback: () => {
-    console.log("onSignoutCallback");
+    if (import.meta.env.DEV) {
+      console.log("onSignoutCallback");
+    }
 
-    const navigate = useNavigate();
     const auth = useAuth();
 
     Object.keys(window.localStorage).forEach((key) => {
@@ -86,22 +94,15 @@ export const oidcConfig: AuthProviderProps = {
     });
 
     auth.removeUser();
-
-    const redirectUrl = localStorage.getItem("redirectUrl");
-    if (redirectUrl) {
-      localStorage.removeItem("redirectUrl");
-      navigate({ to: redirectUrl });
-    } else {
-      navigate({ to: "/" });
-    }
   },
 };
 
 export function AuthContextProvider({ children }: PropsWithChildren<{}>) {
   useEffect(() => {
-    // TODO:
-    Log.setLogger(console);
-    Log.setLevel(Log.DEBUG);
+    if (import.meta.env.DEV) {
+      Log.setLogger(console);
+      Log.setLevel(Log.DEBUG);
+    }
   }, []);
 
   return <AuthProvider {...oidcConfig}>{children}</AuthProvider>;

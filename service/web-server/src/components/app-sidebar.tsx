@@ -41,7 +41,10 @@ export function AppSidebar({
         email: auth.user.profile.email ?? "",
         avatar: auth.user.profile.picture ?? "",
       });
-      console.log("OIDC user details:", auth.user.profile);
+
+      if (import.meta.env.DEV) {
+        console.log("OIDC user details:", auth.user.profile);
+      }
     } else if (!auth.isAuthenticated) {
       setUser(defaultUser); // reset user info
     }

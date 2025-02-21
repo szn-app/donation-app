@@ -13,10 +13,15 @@ export function component() {
 
   switch (auth.activeNavigator) {
     case "signinSilent":
-      console.log("Silent signin...");
+      if (import.meta.env.DEV) {
+        console.log("Silent signin...");
+      }
+
       return <div>Signing you in...</div>;
     case "signoutRedirect":
-      console.log("Redirecting to signout...");
+      if (import.meta.env.DEV) {
+        console.log("Redirecting to signout...");
+      }
 
       // auth.removeUser();
 
