@@ -5,6 +5,7 @@ use axum::{
     routing::{get, post},
     Extension, Json, Router,
 };
+use log;
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::net::SocketAddr;
@@ -123,10 +124,8 @@ pub async fn oauth2_revoke(
     Extension(secret_value): Extension<String>,
     form: Form<TokenRevokeRequest>,
 ) -> impl IntoResponse {
-    println!(
-        "--> oauth2_revoke endpoint/handler called with payload: {:?}",
-        form
-    );
+    log::info!("--> oauth2_revoke endpoint/handler called");
+    log::debug!("payload: {:?}", form);
 
     let hydra_client = reqwest::Client::builder().build().unwrap();
 
@@ -152,17 +151,17 @@ pub async fn oauth2_revoke(
     match response {
         Ok(res) => {
             // Debugging
-            println!("[debug] {:?}", &res);
+            log::debug!("{:?}", &res);
 
             let res_body = res.text().await.unwrap_or_default();
             if let Ok(json) = serde_json::from_str::<serde_json::Value>(&res_body) {
-                println!("Response JSON: {:?}", json);
+                log::debug!("Response JSON: {:?}", json);
             }
 
             res_body.into_response()
         }
         Err(e) => {
-            println!("--> Request to hydra token endpoint failed: {:?}", e);
+            log::error!("--> Request to hydra token endpoint failed: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
@@ -175,16 +174,14 @@ pub async fn oauth2_token(
     Extension(secret_value): Extension<String>,
     form: Form<TokenRequest>,
 ) -> impl IntoResponse {
-    println!(
-        "--> oauth2_token endpoint/handler called with payload: {:?}",
-        form
-    );
+    log::info!("--> oauth2_token endpoint/handler called");
+    log::debug!("Payload: {:?}", form);
 
     let hydra_client = reqwest::Client::builder().build().unwrap();
 
     let response: Result<reqwest::Response, reqwest::Error> = match form.grant_type.as_str() {
         "authorization_code" => {
-            println!("--> authorization code flow detected");
+            log::info!("--> authorization code flow detected");
 
             let hydra_form = HydraTokenForm {
                 grant_type: "authorization_code".to_string(),
@@ -204,7 +201,7 @@ pub async fn oauth2_token(
 
         // https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens
         "refresh_token" => {
-            println!("--> Refresh token flow detected");
+            log::info!("--> Refresh token flow detected");
 
             /*
             curl -k -i --request POST --url https://auth.donation-app.test/authorize/oauth2/token --header "accept: application/x-www-form-urlencoded" \
@@ -222,7 +219,7 @@ pub async fn oauth2_token(
                 scope: form.scope.as_ref().unwrap().to_string(),
             };
 
-            println!("--> Refresh token form: {:?}", &hydra_form);
+            log::debug!("Refresh token form: {:?}", &hydra_form);
 
             hydra_client
                 .post(HYDRA_TOKEN_URL)
@@ -232,7 +229,7 @@ pub async fn oauth2_token(
         }
 
         _ => {
-            println!("--> Unsupported grant type: {}", form.grant_type);
+            log::warn!("--> Unsupported grant type: {}", form.grant_type);
             return StatusCode::BAD_REQUEST.into_response();
         }
     };
@@ -240,30 +237,30 @@ pub async fn oauth2_token(
     match response {
         Ok(res) => {
             // Debugging
-            println!("[debug] {:?}", &res);
+            log::debug!("{:?}", &res);
 
             let res_body = res.text().await.unwrap_or_default();
             if let Ok(json) = serde_json::from_str::<serde_json::Value>(&res_body) {
-                println!("Response JSON: {:?}", json);
+                log::debug!("Response JSON: {:?}", json);
             }
 
             match serde_json::from_str::<TokenResponse>(&res_body) {
                 Ok(token) => Json(token).into_response(),
                 Err(e) => {
-                    println!("--> Failed to parse token response: {:?}", e);
+                    log::error!("--> Failed to parse token response: {:?}", e);
                     StatusCode::INTERNAL_SERVER_ERROR.into_response()
                 }
             }
         }
         Err(e) => {
-            println!("--> Request to hydra token endpoint failed: {:?}", e);
+            log::error!("--> Request to hydra token endpoint failed: {:?}", e);
             StatusCode::INTERNAL_SERVER_ERROR.into_response()
         }
     }
 }
 
 pub async fn handler_404() -> impl IntoResponse {
-    println!("--> fallback 404 handler called");
+    log::info!("--> fallback 404 handler called");
 
     (
         StatusCode::NOT_FOUND,
@@ -272,7 +269,7 @@ pub async fn handler_404() -> impl IntoResponse {
 }
 
 pub async fn health_status() -> impl IntoResponse {
-    println!("--> Health status endpoint called");
+    log::info!("--> Health status endpoint called");
 
     Html(format!("ok")).into_response()
 }
