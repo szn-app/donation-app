@@ -14,7 +14,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { SectionContext } from "@/contexts/SectionContext";
-import { UserContext } from "@/contexts/UserContext";
+import { defaultUser, UserContext } from "@/contexts/UserContext";
 import { sections } from "@/data/sections";
 import { useAuth } from "react-oidc-context";
 
@@ -43,8 +43,10 @@ export function AppSidebar({
         email: auth.user.profile.email ?? "",
         avatar: auth.user.profile.picture ?? "",
       });
+    } else if (!auth.isAuthenticated) {
+      setUser(defaultUser); // reset user info
     }
-  }, [auth.user, auth.isAuthenticated]);
+  }, [auth]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -60,11 +62,18 @@ export function AppSidebar({
         ) : (
           <SidebarMenu>
             <SidebarMenuItem>
-                  <SidebarMenuButton onClick={() => auth.signinRedirect()} tooltip="Log in" variant="outline_colored">
-                    <LogIn />
-                    <span className="whitespace-nowrap">Log in</span>
-                    <User2 className="ml-auto" />
-                  </SidebarMenuButton>
+              <SidebarMenuButton
+                onClick={() => {
+                  localStorage.setItem("redirectUrl", window.location.pathname);
+                  auth.signinRedirect();
+                }}
+                tooltip="Log in"
+                variant="outline_colored"
+              >
+                <LogIn />
+                <span className="whitespace-nowrap">Log in</span>
+                <User2 className="ml-auto" />
+              </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         )}

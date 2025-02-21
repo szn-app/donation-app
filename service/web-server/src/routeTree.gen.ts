@@ -21,6 +21,7 @@ const AboutLazyImport = createFileRoute('/about')()
 const AppLazyImport = createFileRoute('/_app')()
 const AppIndexLazyImport = createFileRoute('/_app/')()
 const AppRetailerLazyImport = createFileRoute('/_app/retailer')()
+const AppProtectedLazyImport = createFileRoute('/_app/protected')()
 const AppMarketLazyImport = createFileRoute('/_app/market')()
 const AppLuxuryLazyImport = createFileRoute('/_app/luxury')()
 const AppDonationLazyImport = createFileRoute('/_app/donation')()
@@ -55,6 +56,14 @@ const AppRetailerLazyRoute = AppRetailerLazyImport.update({
   path: '/retailer',
   getParentRoute: () => AppLazyRoute,
 } as any).lazy(() => import('./routes/_app/retailer.lazy').then((d) => d.Route))
+
+const AppProtectedLazyRoute = AppProtectedLazyImport.update({
+  id: '/protected',
+  path: '/protected',
+  getParentRoute: () => AppLazyRoute,
+} as any).lazy(() =>
+  import('./routes/_app/protected.lazy').then((d) => d.Route),
+)
 
 const AppMarketLazyRoute = AppMarketLazyImport.update({
   id: '/market',
@@ -120,6 +129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMarketLazyImport
       parentRoute: typeof AppLazyImport
     }
+    '/_app/protected': {
+      id: '/_app/protected'
+      path: '/protected'
+      fullPath: '/protected'
+      preLoaderRoute: typeof AppProtectedLazyImport
+      parentRoute: typeof AppLazyImport
+    }
     '/_app/retailer': {
       id: '/_app/retailer'
       path: '/retailer'
@@ -143,6 +159,7 @@ interface AppLazyRouteChildren {
   AppDonationLazyRoute: typeof AppDonationLazyRoute
   AppLuxuryLazyRoute: typeof AppLuxuryLazyRoute
   AppMarketLazyRoute: typeof AppMarketLazyRoute
+  AppProtectedLazyRoute: typeof AppProtectedLazyRoute
   AppRetailerLazyRoute: typeof AppRetailerLazyRoute
   AppIndexLazyRoute: typeof AppIndexLazyRoute
 }
@@ -151,6 +168,7 @@ const AppLazyRouteChildren: AppLazyRouteChildren = {
   AppDonationLazyRoute: AppDonationLazyRoute,
   AppLuxuryLazyRoute: AppLuxuryLazyRoute,
   AppMarketLazyRoute: AppMarketLazyRoute,
+  AppProtectedLazyRoute: AppProtectedLazyRoute,
   AppRetailerLazyRoute: AppRetailerLazyRoute,
   AppIndexLazyRoute: AppIndexLazyRoute,
 }
@@ -165,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
+  '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
   '/': typeof AppIndexLazyRoute
 }
@@ -175,6 +194,7 @@ export interface FileRoutesByTo {
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
+  '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
   '/': typeof AppIndexLazyRoute
 }
@@ -187,6 +207,7 @@ export interface FileRoutesById {
   '/_app/donation': typeof AppDonationLazyRoute
   '/_app/luxury': typeof AppLuxuryLazyRoute
   '/_app/market': typeof AppMarketLazyRoute
+  '/_app/protected': typeof AppProtectedLazyRoute
   '/_app/retailer': typeof AppRetailerLazyRoute
   '/_app/': typeof AppIndexLazyRoute
 }
@@ -200,6 +221,7 @@ export interface FileRouteTypes {
     | '/donation'
     | '/luxury'
     | '/market'
+    | '/protected'
     | '/retailer'
     | '/'
   fileRoutesByTo: FileRoutesByTo
@@ -209,6 +231,7 @@ export interface FileRouteTypes {
     | '/donation'
     | '/luxury'
     | '/market'
+    | '/protected'
     | '/retailer'
     | '/'
   id:
@@ -219,6 +242,7 @@ export interface FileRouteTypes {
     | '/_app/donation'
     | '/_app/luxury'
     | '/_app/market'
+    | '/_app/protected'
     | '/_app/retailer'
     | '/_app/'
   fileRoutesById: FileRoutesById
@@ -260,6 +284,7 @@ export const routeTree = rootRoute
         "/_app/donation",
         "/_app/luxury",
         "/_app/market",
+        "/_app/protected",
         "/_app/retailer",
         "/_app/"
       ]
@@ -277,6 +302,10 @@ export const routeTree = rootRoute
     },
     "/_app/market": {
       "filePath": "_app/market.lazy.tsx",
+      "parent": "/_app"
+    },
+    "/_app/protected": {
+      "filePath": "_app/protected.lazy.tsx",
       "parent": "/_app"
     },
     "/_app/retailer": {

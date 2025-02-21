@@ -1,4 +1,9 @@
-import React, { createContext, useState, PropsWithChildren, useEffect } from "react";
+import React, {
+  createContext,
+  useState,
+  PropsWithChildren,
+  useEffect,
+} from "react";
 import { AuthProviderProps, AuthProvider } from "react-oidc-context";
 import { Log } from "oidc-client-ts";
 import { User } from "@/types/user";
@@ -8,7 +13,7 @@ interface UserContextType {
   setUser: React.Dispatch<React.SetStateAction<User>>;
 }
 
-const defaultUser: User = {
+export const defaultUser: User = {
   name: "",
   email: "",
   avatar: "",
@@ -53,11 +58,10 @@ export const oidcConfig: AuthProviderProps = {
     jwks_uri: `${import.meta.env.VITE_AUTHORIZATION_URL}/.well-known/jwks.json`, // JWKS endpoint
     issuer: `${import.meta.env.VITE_AUTHORIZATION_URL}/`, // Issuer URL
   },
-  extraQueryParams: {}
+  extraQueryParams: {},
 };
 
 export function AuthContextProvider({ children }: PropsWithChildren<{}>) {
-
   useEffect(() => {
     // TODO:
     Log.setLogger(console);

@@ -105,9 +105,11 @@ export function NavUser({ user }: { user: User }) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              
               <a
-                onClick={() => auth.signoutRedirect()}
+                onClick={() => {
+                  localStorage.setItem("redirectUrl", window.location.pathname);
+                  auth.signoutRedirect();
+                }}
                 target="_blank"
                 rel="noopener"
                 className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-100"
