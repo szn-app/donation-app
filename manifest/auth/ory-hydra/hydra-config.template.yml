@@ -17,8 +17,11 @@ hydra:
         # TODO: remove for production 
         cors:
           enabled: true
+          allow_credentials: true
           allowed_origins:
-            - https://donation-app.test
+          - https://donation-app.test
+          - ${AUTH_BASE_URL}
+        
       admin:
         port: 4445
         request_log:

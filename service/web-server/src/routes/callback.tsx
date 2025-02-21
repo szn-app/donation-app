@@ -27,6 +27,12 @@ export function component() {
       //   return <div>Redirecting...</div>;
       // }
 
+      Object.keys(window.localStorage).forEach((key) => {
+        if (key.startsWith("oidc.user:")) {
+          window.localStorage.removeItem(key);
+        }
+      });
+
       return <div>Signing you out...</div>;
   }
 

@@ -6,6 +6,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SectionProvider } from "@/contexts/SectionContext";
 import { BreadcrumbListComponent } from "@/components/breadcrumb-list";
 import { sections } from "@/data/sections";
+import { useAuth, hasAuthParams } from "react-oidc-context";
+import { useEffect, useState } from "react";
 
 export const Route = createLazyFileRoute("/_app")({
   component,
@@ -15,6 +17,23 @@ export const Route = createLazyFileRoute("/_app")({
 });
 
 function component() {
+  const auth = useAuth();
+  const [hasTriedSignin, setHasTriedSignin] = useState(false);
+
+  useEffect(() => {
+    // automatic sign-in
+    // if (
+    //   !hasAuthParams() &&
+    //   !auth.isAuthenticated &&
+    //   !auth.activeNavigator &&
+    //   !auth.isLoading &&
+    //   !hasTriedSignin
+    // ) {
+    //   auth.signinRedirect();
+    //   setHasTriedSignin(true);
+    // }
+  }, [auth, hasTriedSignin]);
+
   return (
     <SectionProvider sections={sections}>
       <SidebarProvider>

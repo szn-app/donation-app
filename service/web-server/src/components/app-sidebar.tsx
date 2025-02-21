@@ -36,13 +36,12 @@ export function AppSidebar({
 
   useEffect(() => {
     if (auth.isAuthenticated && auth.user) {
-      console.log(user);
-      console.log("OIDC user details:", auth.user.profile);
       setUser({
         name: auth.user.profile.name ?? "",
         email: auth.user.profile.email ?? "",
         avatar: auth.user.profile.picture ?? "",
       });
+      console.log("OIDC user details:", auth.user.profile);
     } else if (!auth.isAuthenticated) {
       setUser(defaultUser); // reset user info
     }
