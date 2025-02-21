@@ -55,6 +55,21 @@ spec:
               type: ReplacePrefixMatch
               replacePrefixMatch: /oauth2_token
 
+    - backendRefs:
+        - name: auth-token-exchange
+          namespace: auth
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/oauth2_revoke
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /oauth2_revoke
+
 ---
 
 apiVersion: gateway.networking.k8s.io/v1

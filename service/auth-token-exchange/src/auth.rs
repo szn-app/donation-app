@@ -10,6 +10,7 @@ use std::env;
 use std::net::SocketAddr;
 
 pub const HYDRA_TOKEN_URL: &str = "http://hydra-public.auth.svc/oauth2/token";
+pub const HYDRA_TOKEN_REVOKE_URL: &str = "http://hydra-public.auth.svc/oauth2/revoke";
 
 // params from frontend request
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -35,7 +36,9 @@ pub struct TokenResponse {
 
 pub fn routes() -> Router {
     fn ouath2_routes() -> Router {
-        Router::new().route("/oauth2_token", post(oauth2_token))
+        Router::new()
+            .route("/oauth2_token", post(oauth2_token))
+            .route("/oauth2_revoke", post(oauth2_revoke))
     }
 
     Router::new()
@@ -89,8 +92,85 @@ impl<'a> HydraRefreshTokenForm<'a> {
     }
 }
 
+// request from react-odic-context token, token_type_hint, client_id
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct TokenRevokeRequest {
+    pub token: String,
+    pub token_type_hint: Option<String>,
+}
+
+#[derive(Debug)]
+struct HydraRevokeTokenForm<'a> {
+    token: String,
+    token_type_hint: String,
+    client_id: String,
+    client_secret: &'a String,
+}
+
+impl<'a> HydraRevokeTokenForm<'a> {
+    fn as_tuples(&self) -> [(&str, &str); 4] {
+        [
+            ("token", &self.token),
+            ("token_type_hint", &self.token_type_hint),
+            ("client_id", &self.client_id),
+            ("client_secret", &self.client_secret),
+        ]
+    }
+}
+
+// revocation endpoint forwarded to HYDRA_TOKEN_REVOKE_URL
+pub async fn oauth2_revoke(
+    Extension(secret_value): Extension<String>,
+    form: Form<TokenRevokeRequest>,
+) -> impl IntoResponse {
+    println!(
+        "--> oauth2_revoke endpoint/handler called with payload: {:?}",
+        form
+    );
+
+    let hydra_client = reqwest::Client::builder().build().unwrap();
+
+    let response: Result<reqwest::Response, reqwest::Error> = {
+        let hydra_form = HydraRevokeTokenForm {
+            token: form.token.to_string(),
+            token_type_hint: form
+                .token_type_hint
+                .as_ref()
+                .unwrap_or(&"access_token".to_string())
+                .to_string(),
+            client_id: "frontend-client".to_string(),
+            client_secret: &secret_value,
+        };
+
+        hydra_client
+            .post(HYDRA_TOKEN_REVOKE_URL)
+            .form(&hydra_form.as_tuples())
+            .send()
+            .await
+    };
+
+    match response {
+        Ok(res) => {
+            // Debugging
+            println!("[debug] {:?}", &res);
+
+            let res_body = res.text().await.unwrap_or_default();
+            if let Ok(json) = serde_json::from_str::<serde_json::Value>(&res_body) {
+                println!("Response JSON: {:?}", json);
+            }
+
+            res_body.into_response()
+        }
+        Err(e) => {
+            println!("--> Request to hydra token endpoint failed: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
+    }
+}
+
 // OIDC Relying Party (RP) logic
 // TODO: use proper tracing library for production
+// TODO: use the Ory Hydra client library instead. https://crates.io/crates/ory-hydra-client
 pub async fn oauth2_token(
     Extension(secret_value): Extension<String>,
     form: Form<TokenRequest>,
@@ -150,6 +230,7 @@ pub async fn oauth2_token(
                 .send()
                 .await
         }
+
         _ => {
             println!("--> Unsupported grant type: {}", form.grant_type);
             return StatusCode::BAD_REQUEST.into_response();
