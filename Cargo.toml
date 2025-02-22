@@ -6,4 +6,11 @@ edition = "2021"
 
 [workspace]
 members = []
-exclude = ["service/auth-token-exchange", "service/web-server/src-tauri"]
+exclude = [
+    "manifest/auth/ory-hydra",
+    "manifest/auth/ory-keto",
+    "manifest/auth/ory-kratos",
+    "manifest/auth/ory-oathkeeper",
+    "service/auth-token-exchange",
+    "service/web-server/src-tauri",
+]

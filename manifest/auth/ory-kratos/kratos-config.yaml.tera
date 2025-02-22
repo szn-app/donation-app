@@ -2,20 +2,31 @@
 # https://www.ory.sh/docs/kratos/reference/configuration
 
 kratos:
-  # TODO:
+
+  {% if environment == 'development' %}
   development: true
+  {% endif %}
+
   config:
+
+    {% if environment == 'development' %}
     dev: true
 
     log:
       level: debug
+      leak_sensitive_values: true
+      redaction_text: ""
+      format: json
+    {% elif environment == 'production' %}
+    log:
       leak_sensitive_values: false
       redaction_text: ""
       format: json
+    {% endif %}
 
     # dsn: memory # NOTE: use for development only
     # NOTE: username and password are replaced using regex
-    dsn: "postgresql://${DB_USER}:${DB_PASSWORD}@postgres-kratos-postgresql:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4"
+    dsn: "postgresql://{{ DB_USER }}:{{ DB_PASSWORD }}@postgres-kratos-postgresql:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4"
 
     identity:
       default_schema_id: default
@@ -30,16 +41,16 @@ kratos:
     serve:
       # links to generete for kratos-public internal server
       public:
-        base_url: ${AUTHENTICATION_URL}
+        base_url: {{ AUTHENTICATION_URL }}
         port: 4433
         cors:
           enabled: true
           allowed_origins:
             # - "*" # NOTE: use for debug only
-            - ${APP_URL}
-            - ${APP_URL}/callback
-            - ${AUTH_BASE_URL}
-            - ${WILDCARD_SUBDOMAIN_APP_URL}
+            - {{ APP_URL }}
+            - {{ APP_URL }}/callback
+            - {{ AUTH_BASE_URL }}
+            - {{ WILDCARD_SUBDOMAIN_APP_URL }}
           allowed_methods:
             - GET
             - OPTIONS
@@ -52,12 +63,12 @@ kratos:
 
     selfservice:
       # links to generate for kratos ui pages
-      default_browser_return_url: ${APP_URL}/callback # default callback checks for access tokens, if non-exist redirect to Oauth2 to complete the authorization step (in case initiated authentication directly with SSO "/login" interface)
+      default_browser_return_url: {{ APP_URL }}/callback # default callback checks for access tokens, if non-exist redirect to Oauth2 to complete the authorization step (in case initiated authentication directly with SSO "/login" interface)
       allowed_return_urls: # redirect uri
-        - ${APP_URL}
-        - ${AUTH_BASE_URL}
-        - ${WILDCARD_SUBDOMAIN_APP_URL}
-        - ${APP_URL}/callback
+        - {{ APP_URL }}
+        - {{ AUTH_BASE_URL }}
+        - {{ WILDCARD_SUBDOMAIN_APP_URL }}
+        - {{ APP_URL }}/callback
 
       methods:
         password: # email/password authentication (SSO)
@@ -79,10 +90,10 @@ kratos:
             providers:
               - id: google
                 provider: google
-                client_id: "${GOOGLE_OIDC_CLIENT_ID}"
-                client_secret: "${GOOGLE_OIDC_CLIENT_PASSWORD}"
+                client_id: "{{ GOOGLE_OIDC_CLIENT_ID }}"
+                client_secret: "{{ GOOGLE_OIDC_CLIENT_PASSWORD }}"
                 # [manually updated] base64 of google-oidc-mapper.json
-                mapper_url: "base64://${GOOGLE_JSONNET_MAPPER_BASE64}"
+                mapper_url: "base64://{{ GOOGLE_JSONNET_MAPPER_BASE64 }}"
                 scope:
                   - openid
                   - profile
@@ -116,16 +127,16 @@ kratos:
       flows:
         # default return url if no uri parameter set or no service-level default_browser_return_url config set
         login:
-          ui_url: ${AUTH_BASE_URL}/login
+          ui_url: {{ AUTH_BASE_URL }}/login
           lifespan: 10m
         logout:
           after:
-            default_browser_return_url: ${APP_URL}
+            default_browser_return_url: {{ APP_URL }}
         registration:
-          ui_url: ${AUTH_BASE_URL}/registration
+          ui_url: {{ AUTH_BASE_URL }}/registration
           lifespan: 10m
           after:
-            default_browser_return_url: ${APP_URL}
+            default_browser_return_url: {{ APP_URL }}
             oidc:
               hooks:
                 - hook: session
@@ -135,20 +146,20 @@ kratos:
                 # - hook: show_verification_ui
         verification:
           enabled: true
-          ui_url: ${AUTH_BASE_URL}/verification
+          ui_url: {{ AUTH_BASE_URL }}/verification
           # use: code
           after:
-            default_browser_return_url: ${APP_URL}
+            default_browser_return_url: {{ APP_URL }}
         settings:
-          ui_url: ${AUTH_BASE_URL}/settings
+          ui_url: {{ AUTH_BASE_URL }}/settings
           privileged_session_max_age: 15m
           # required_aal: highest_available
         recovery:
           enabled: true
-          ui_url: ${AUTH_BASE_URL}/recovery
+          ui_url: {{ AUTH_BASE_URL }}/recovery
           # use: code
         error:
-          ui_url: ${AUTH_BASE_URL}/error
+          ui_url: {{ AUTH_BASE_URL }}/error
 
     secrets:
       default:
@@ -167,7 +178,7 @@ kratos:
         cost: 8
 
     cookies:
-      domain: ".${DOMAIN_NAME}" # allow cookie for root and subdomains
+      domain: ".{{ DOMAIN_NAME }}" # allow cookie for root and subdomains
       path: "/"
       same_site: Strict
 

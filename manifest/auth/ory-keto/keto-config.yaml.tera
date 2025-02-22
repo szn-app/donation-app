@@ -3,13 +3,16 @@
 
 keto:
   config:
+    {% if environment == "development" %}
     log:
       level: debug
       format: json
       leak_sensitive_values: true
+    {% endif %}
+
 
     # dsn: memory # NOTE: use for development only
-    dsn: "postgresql://${DB_USER}:${DB_PASSWORD}@postgres-keto-postgresql:5432/keto_db?sslmode=disable&max_conns=20&max_idle_conns=4"
+    dsn: "postgresql://{{ DB_USER }}:{{ DB_PASSWORD }}@postgres-keto-postgresql:5432/keto_db?sslmode=disable&max_conns=20&max_idle_conns=4"
 
     serve:
       read:

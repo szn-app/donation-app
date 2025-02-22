@@ -1,5 +1,5 @@
 generate_database_keto_credentials() {
-    db_secret_file="./manifest/auth/ory-keto/db_keto_secret.env"
+    db_secret_file="./manifest/auth/./db_keto_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -12,7 +12,7 @@ EOF
 }
 
 install_keto() {
-    pushd ./manifest/auth
+    pushd ./manifest/auth/ory-keto
     
     if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -20,13 +20,13 @@ install_keto() {
         upgrade_db=true
     fi
 
-    set -a
-    source ory-keto/db_keto_secret.env # DB_USER, DB_PASSWORD
-    set +a
     if [ "$upgrade_db" = true ]; then
         printf "install Postgresql for Ory Keto \n"
 
-        helm upgrade --debug --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ory-keto/postgresql-values.yml \
+        set -a
+            source ./db_keto_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        helm upgrade --debug --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
             --set auth.database=keto_db
@@ -34,13 +34,19 @@ install_keto() {
     fi
 
     printf "install Ory Keto \n"
-    # preprocess file through substituting env values
-    t="$(mktemp).yml" && envsubst < ory-keto/keto-config.yml > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-    helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ory-keto/helm-values.yml -f $t \
-        --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-        --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+    {
+        # preprocess file through substituting env values
+        t="$(mktemp).yml" && cargo run --release --bin render-template -- --environment $environment < ./keto-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        set -a
+            source ./db_keto_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yml -f $t \
+            --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+    }
 
     {
+        # TODO: 
         printf "Keto: create relations rules \n"
         
         kubectl run --image=debian:latest setup-pod-keto --namespace auth -- /bin/sh -c "while true; do sleep 60; done"

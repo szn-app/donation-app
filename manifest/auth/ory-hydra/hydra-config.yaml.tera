@@ -3,24 +3,28 @@
 
 hydra:
   config:
-    # TODO: remove for production
+    
+    {% if environment == "development" %}
     log:
       level: debug
       leak_sensitive_values: true
-
+    {% endif %}
+    
     # dsn: memory # NOTE: use for development only
-    dsn: "postgresql://${DB_USER}:${DB_PASSWORD}@postgres-hydra-postgresql:5432/hydra_db?sslmode=disable&max_conns=20&max_idle_conns=4"
+    dsn: "postgresql://{{ DB_USER }}:{{ DB_PASSWORD }}@postgres-hydra-postgresql:5432/hydra_db?sslmode=disable&max_conns=20&max_idle_conns=4"
 
     serve:
       public:
         port: 4444
-        # TODO: remove for production 
+
+        {% if environment == "development" %}
         cors:
           enabled: true
           allow_credentials: true
           allowed_origins:
           - https://donation-app.test
-          - ${AUTH_BASE_URL}
+          - {{ AUTH_BASE_URL }}
+        {% endif %}
         
       admin:
         port: 4445
@@ -44,15 +48,15 @@ hydra:
 
     urls:
       self:
-        issuer: ${AUTHORIZATION_URL}
-        public: ${AUTHORIZATION_URL}
-      login: ${AUTH_BASE_URL}/login
-      logout: ${AUTH_BASE_URL}/logout
-      consent: ${AUTH_BASE_URL}/consent # Must matche auth_ui consent endpoint
+        issuer: {{ AUTHORIZATION_URL }}
+        public: {{ AUTHORIZATION_URL }}
+      login: {{ AUTH_BASE_URL }}/login
+      logout: {{ AUTH_BASE_URL }}/logout
+      consent: {{ AUTH_BASE_URL }}/consent # Must matche auth_ui consent endpoint
       identity_provider:
         url: http://kratos-admin
         publicUrl: http://kratos-public
-      error: ${AUTH_BASE_URL}/error
+      error: {{ AUTH_BASE_URL }}/error
 
     ttl:
       login_consent_request: 1h
@@ -68,7 +72,12 @@ hydra:
 
     # for token customization or debugging
     oauth2:
-      expose_internal_errors: true # TODO:remove for production
+      {% if environment == "development" %}
+      expose_internal_errors: true 
+      {% elif environment == 'production' %}
+      expose_internal_errors: false
+      {% endif %}
+      
     #   token_hook: http://kratos-custom-webhook-charts.auth/add_claims
 
     oidc:

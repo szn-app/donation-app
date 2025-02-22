@@ -21,7 +21,6 @@ images:
     # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
     newTag: v1.2.0 # x-release-please-version
 
-
 configMapGenerator:
   - name: properties-map-auth-ui
     namespace: auth
@@ -46,3 +45,19 @@ patches:
             containers:
             - name: auth-ui
               imagePullPolicy: Always
+
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: auth-ui
+      spec:
+        template:
+          spec:
+            containers:
+              - name: auth-ui
+                env:
+                - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
+                  value: "false"
+                - name: NODE_ENV
+                  value: "production"

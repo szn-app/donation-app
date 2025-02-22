@@ -1,9 +1,12 @@
 # https://www.ory.sh/docs/oathkeeper/reference/configuration
 oathkeeper:
   config:
+
+    {% if environment == "development" %}
     log:
       level: debug
       format: json
+    {% endif %}
 
     serve:
       proxy:
@@ -45,7 +48,7 @@ oathkeeper:
         config:
           introspection_url: http://hydra-admin/admin/oauth2/introspect
           introspection_request_headers:
-            Authorization: Basic ${OATHKEEPER_CLIENT_CREDENTIALS} # credentials used internally for introspection between Oathkeeper and Hydra endpoint
+            Authorization: Basic {{ OATHKEEPER_CLIENT_CREDENTIALS }} # credentials used internally for introspection between Oathkeeper and Hydra endpoint
 
           # NOTE: this approach is not required with Keto
           # can be configured to match check the roles/scopes of tokens
@@ -66,11 +69,12 @@ oathkeeper:
       keto_engine_acp_ory:
         enabled: true
         config:
-          base_url: http://keto-read:80 # TODO: verify name of service
+          base_url: http://keto-read:80
           required_action: "read"
           required_resource: "resources:xyz"
-          subject: "{{ .AuthenticationSession.Subject }}"
+          subject: {% raw %}"{{ .AuthenticationSession.Subject }}"{% endraw %}
           flavor: "keto" # use Keto's policy implementation to authorize decisions
+
 
     # https://www.ory.sh/docs/oathkeeper/pipeline/mutator
     mutators:
@@ -78,7 +82,7 @@ oathkeeper:
         enabled: true
         config:
           headers:
-            X-User: "{{ print .Subject }}"
+            X-User: {% raw %}"{{ print .Subject }}"{% endraw %}
       noop:
         enabled: true
       # id_token:

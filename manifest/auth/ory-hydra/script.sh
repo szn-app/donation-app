@@ -1,21 +1,21 @@
 install_hydra() {
     environment=$1
 
-    pushd ./manifest/auth
+    pushd ./manifest/auth/ory-hydra
     
     if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
         upgrade_db=false
     else
         upgrade_db=true
     fi
-    
-    set -a
-        source ory-hydra/db_hydra_secret.env # DB_USER, DB_PASSWORD
-    set +a
+
     if [ "$upgrade_db" = true ]; then
         printf "install Postgresql for Ory Hydra \n"
-        
-        helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ory-hydra/postgresql-values.yml \
+
+        set -a
+            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
             --set auth.database=hydra_db
@@ -23,27 +23,21 @@ install_hydra() {
     fi
 
     printf "install Ory Hydra \n"
-    set -a 
-        pushd ./ory-hydra
-        if [ -f ./.env.$environment ]; then
-            source ./.env.$environment
-        elif [ -f ./.env.$environment.local ]; then
-            source ./.env.$environment.local
-        else
-            echo "Error: .env.$environment file not found."
-            exit 1
-        fi
-        popd
-    set +a
-    # preprocess file through substituting env values
-    t="$(mktemp).yml" && envsubst < ory-hydra/hydra-config.template.yml > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-    system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
-    cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
-    helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f ory-hydra/helm-values.yml -f $t \
-        --set kratos.config.secrets.system[0]="$system_secret" \
-        --set kratos.config.secrets.cookie[0]="$cookie_secret" \
-        --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-        --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+    {
+        # preprocess file through substituting env values
+        t="$(mktemp).yml" && cargo run --release --bin render-template-config -- --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        q="$(mktemp).yml" && cargo run --release --bin render-template-helm -- --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
+        set -a
+            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
+        cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
+        helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f $q -f $t \
+            --set kratos.config.secrets.system[0]="$system_secret" \
+            --set kratos.config.secrets.cookie[0]="$cookie_secret" \
+            --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+    }
 
     verify() { 
         print_info() {
@@ -130,10 +124,9 @@ install_hydra() {
 
 create_oauth2_client_for_trusted_app() {
     environment=${1:-development}
-    pushd ./manifest/auth
+    pushd ./manifest/auth/ory-hydra
 
     set -a 
-        pushd ./ory-hydra
         if [ -f ./.env.$environment ]; then
             source ./.env.$environment
         elif [ -f ./.env.$environment.local ]; then
@@ -142,7 +135,6 @@ create_oauth2_client_for_trusted_app() {
             echo "Error: .env.$environment file not found."
             exit 1
         fi
-        popd
     set +a
 
     echo "APP_URL: $APP_URL" # debug print

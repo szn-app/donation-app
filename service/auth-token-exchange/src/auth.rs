@@ -168,7 +168,6 @@ pub async fn oauth2_revoke(
 }
 
 // OIDC Relying Party (RP) logic
-// TODO: use proper tracing library for production
 // TODO: use the Ory Hydra client library instead. https://crates.io/crates/ory-hydra-client
 pub async fn oauth2_token(
     Extension(secret_value): Extension<String>,

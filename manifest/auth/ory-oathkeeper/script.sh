@@ -17,9 +17,9 @@ EOF
 #   b. Kratos session token
 #   c. Hydra OAuth2 access token in a cookie
 install_oathkeeper() {
+    pushd ./manifest/auth/ory-oathkeeper
 
     generate_oathkeeper_oauth2_client_credentials_env_file() {
-        pushd ./manifest/auth
         CLIENT_NAME="oathkeeper-introspection"
         SECRET_NAME="ory-hydra-client--oathkeeper-introspection"
         CLIENT_SECRET=$(kubectl get secret "$SECRET_NAME" -n "auth" -o jsonpath='{.data.client_secret}')
@@ -31,47 +31,43 @@ install_oathkeeper() {
         # create authorization header value
         OATHKEEPER_CLIENT_CREDENTIALS=$(printf "${CLIENT_NAME}:${CLIENT_SECRET}" | base64 -w 0)
 
-        secret="./ory-oathkeeper/secret.env"
+        secret="./secret.env"
 
         t=$(mktemp) && cat <<EOF > "$t"
 OATHKEEPER_CLIENT_CREDENTIALS="${OATHKEEPER_CLIENT_CREDENTIALS}"
 EOF
         mv $t $secret
         echo "generated secrets file: file://$secret" 
-        popd
     }
 
     # used also to update access rules
     helm_install_oathkeeper() {
-        pushd ./manifest/auth
-        set -a
-        source ory-oathkeeper/secret.env 
-        set +a
 
         # t="$(mktemp).pem" && openssl genrsa -out "$t" 2048 # create private key
         # # Generate a JWKs file (if needed) - basic example using OpenSSL:
         # y="$(mktemp).json" && openssl rsa -in "$t" -pubout -outform PEM > $y 
         # echo "jwt file created file://$y"
 
-        t="$(mktemp).yml" && envsubst < ory-oathkeeper/oathkeeper-config.yml > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ory-oathkeeper/helm-values.yml -f $t \
-                --set-file oathkeeper.accessRules=./ory-oathkeeper/access-rules.json
+        t="$(mktemp).yml" && cargo run --release --bin render-template -- --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f $t \
+                --set-file oathkeeper.accessRules=./access-rules.json
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 
-        popd
     }
 
     printf "install Ory Aothkeeper \n"
     generate_oathkeeper_oauth2_client_credentials_env_file
     helm_install_oathkeeper
 
+    popd
+
     verify() { 
-        pushd ./manifest/auth
+        pushd ./manifest/auth/ory-oathkeeper
         {
             # manually validate rendered deployment manifest files
-            t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ory-oathkeeper/helm-values.yml -f ory-oathkeeper/oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./ory-oathkeeper/access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
+            t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
         }
 
-        oathkeeper rules validate --file ory-oathkeeper/access-rules.json
+        oathkeeper rules validate --file ./access-rules.json
 
         curl -i https://auth.donation-app.test/authorize/health/alive
         curl -i https://auth.donation-app.test/authorize/health/ready

@@ -133,9 +133,8 @@ ingress:
 
 ## -- Application specific config
 kratos:
-  # TODO:
-  development: true
-  # -- Enable the initialization job. Required to work with a DB
+  development: {% if environment == "development" %}true{% else %}false{% endif %}
+ # -- Enable the initialization job. Required to work with a DB
 
   # -- Enables database migration
   automigration: # initContainer running kratos migrate sql will be created.
@@ -222,10 +221,11 @@ kratos:
   #      // ...
   #    }
   #  "identity.phone.schema.json": |
-  #    {{ .Values.phone_schema }}
+  # {% raw %}{{ .Values.phone_schema }}{% endraw %}
 
   # -- You can customize the emails Kratos is sending (also uncomment config.courier.template_override_path below)
   emailTemplates: {}
+  # {% raw %}
   # emailTemplates:
   #   recovery:
   #     valid:
@@ -254,7 +254,8 @@ kratos:
   #       subject:
   #       body:
   #       plainBody:
-
+  # {% endraw %}
+  
   # NOTE: configuration overriden by ory-kratos/kratos-config.yml
   config:
     courier:
@@ -536,8 +537,8 @@ statefulSet:
   #       value: "1"
 
   log:
-    format: json
-    level: debug
+    format: {% if environment == "production" %}"json"{% else %}"text"{% endif %}
+    level: {% if environment == "production" %}"info"{% else %}"debug"{% endif %}
 
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
   podMetadata:
