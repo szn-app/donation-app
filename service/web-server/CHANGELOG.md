@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.73](https://github.com/szn-app/donation-app/compare/web-server@v0.0.72...web-server@v0.0.73) (2025-02-21)
+
+
+### Features
+
+* implement backend token exchange with react-oidc-context and hydra response ([bbc4884](https://github.com/szn-app/donation-app/commit/bbc488429ad7a6b53b367313b40e7c26e4ed5ccc))
+* persist sessions between reloads and update react-oidc-context configs ([fb89d35](https://github.com/szn-app/donation-app/commit/fb89d35bc7911eae48449af92f72d886d86db156))
+* redirection to user original url and protected route example ([6d3bdb1](https://github.com/szn-app/donation-app/commit/6d3bdb158ee0e3b794ebf305c198753fc4b20015))
+* support oidc and referesh tokens with silent refresh ([c6d127b](https://github.com/szn-app/donation-app/commit/c6d127b94aecc63f214e3a55100c41948e5e6015))
+
 ## [0.0.72](https://github.com/szn-app/donation-app/compare/web-server@v0.0.71...web-server@v0.0.72) (2025-02-11)
 
 

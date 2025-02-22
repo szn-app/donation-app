@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.0.13](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.12...auth-token-exchange@v0.0.13) (2025-02-21)
+
+
+### Features
+
+* implement backend token exchange with react-oidc-context and hydra response ([bbc4884](https://github.com/szn-app/donation-app/commit/bbc488429ad7a6b53b367313b40e7c26e4ed5ccc))
+* implement revoke endpoint ([fe17d5f](https://github.com/szn-app/donation-app/commit/fe17d5fb0d041eb71ef08a8361e39e48e43f340a))
+* support oidc and referesh tokens with silent refresh ([c6d127b](https://github.com/szn-app/donation-app/commit/c6d127b94aecc63f214e3a55100c41948e5e6015))
+
+
+### Bug Fixes
+
+* accept http/2 post with form urlencoded ([52b3278](https://github.com/szn-app/donation-app/commit/52b3278c8c0d0ff3d46a6de084237a8c1a4f1e17))
+
 ## [0.0.12](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.11...auth-token-exchange@v0.0.12) (2025-02-11)
 
 
