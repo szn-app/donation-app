@@ -1,0 +1,16 @@
+// TODO: 
+{
+    "scopeName": "source.yaml.tera",
+    "fileTypes": ["yaml.tera"],
+    "patterns": [
+        {
+            "include": "source.yaml" 
+        },
+        {
+            "name": "meta.ignored.template",
+            "begin": "(\\{\\{|\\{%)(?!%)",
+            "end": "(\\}\\}|%\\})",
+            "contentName": "meta.ignored.template.content"
+        }
+    ]
+}
