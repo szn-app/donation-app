@@ -100,6 +100,8 @@ build_all_containers_with_load() {
     }
 }
 deploy_local_minikube() {
+    sudo echo "elevated permission"
+
     action=${1:-"install"}
 
     example_scripts() {

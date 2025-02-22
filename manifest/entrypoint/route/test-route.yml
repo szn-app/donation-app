@@ -12,6 +12,7 @@
 #       kind: HTTPRoute
 #       name: internal-test
 ---
+# httproute security policy overwrites the gateway security policy
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:

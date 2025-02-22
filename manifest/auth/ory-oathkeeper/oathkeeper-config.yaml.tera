@@ -6,6 +6,7 @@ oathkeeper:
     log:
       level: debug
       format: json
+      leak_sensitive_values: true
     {% endif %}
 
     serve:
@@ -28,7 +29,21 @@ oathkeeper:
     # https://www.ory.sh/docs/oauth2-oidc/authorization-code-flow
     # https://www.ory.sh/docs/oathkeeper/pipeline/authn
     authenticators:
-      # checks authenticity of JWT tokens that they were actually signed by Hydra issuer
+      anonymous:
+        enabled: true
+        config:
+          subject: guest
+
+      # authenticate user with a cookie session that Kratos has issued and the browser sends with each request
+      # it looks for a cookie named `ory_kratos_session` and sends a request to Kratos to validate the session
+      cookie_session:
+        enabled: true
+        config:
+          check_session_url: "http://kratos-public/sessions/whoami"
+          preserve_path: true
+          only: ["ory_kratos_session"]
+      
+      # checks authenticity of JWT tokens that they were actually signed by Hydra issuer (does not check the validity of the token, only signature)
       jwt:
         enabled: true
         config:
@@ -37,12 +52,7 @@ oathkeeper:
           jwks_max_wait: 5s
           # jwks_ttl: 120s
 
-      anonymous:
-        enabled: true
-        config:
-          subject: guest
-
-      # externally using Hydra validating the authenticity, validity, and authorization (simple scope based RBAC) attributes of the access token issued (does extra validation than jwt handler)
+      # externally using Hydra validating the authenticity, validity, and authorization (simple scope based RBAC) attributes of the access token issued (does extra validation than jwt handler, including revocation checks)
       oauth2_introspection:
         enabled: true
         config:
@@ -66,6 +76,7 @@ oathkeeper:
       deny:
         enabled: true
 
+      # enforces access control policies (keto relationships and roles) based on the result of the authenticators
       keto_engine_acp_ory:
         enabled: true
         config:
