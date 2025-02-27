@@ -147,6 +147,7 @@ env_files() {
     }
 
     generate_database_kratos_credentials
+    generate_default_username_kratos
     generate_database_hydra_credentials
     generate_database_keto_credentials
     generate_secret_auth_ui $environment

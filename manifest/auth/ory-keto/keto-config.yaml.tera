@@ -17,11 +17,23 @@ keto:
     serve:
       read:
         port: 4466
+        host: 0.0.0.0
       write:
         port: 4467
+        host: 0.0.0.0
       metrics:
         port: 4468
+        host: 0.0.0.0
 
+    # NOTE: additional namespaces may be defined through the initialization script using Keto API
     namespaces:
       - id: 0
-        name: resources
+        name: Resource
+      - id: 1
+        name: User
+      - id: 2
+        name: Group
+      - id: 3
+        name: Endpoint # objects identified by UUIDs
+      - id: 4
+        name: Post

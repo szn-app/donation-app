@@ -83,3 +83,13 @@ patches:
       - op: replace
         path: /spec/listeners/16/hostname
         value: "ory-admin.k8s.wosoom.com"
+
+  # remove test listeners from production
+  - target:
+      kind: Gateway
+      name: gateway
+    patch: |-
+      - op: remove
+        path: /spec/listeners/3
+      - op: remove
+        path: /spec/listeners/4

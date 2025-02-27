@@ -11,6 +11,10 @@ export function component() {
   const auth = useAuth();
   const navigate = useNavigate();
 
+  if (import.meta.env.DEV) {
+    console.log(auth);
+  }
+
   switch (auth.activeNavigator) {
     case "signinSilent":
       if (import.meta.env.DEV) {
@@ -48,6 +52,13 @@ export function component() {
   if (auth.isAuthenticated) {
     const redirectUrl = localStorage.getItem("redirectUrl");
 
+    if (import.meta.env.DEV) {
+      console.log("Setting user tokens in cookie for debugging purposes...");
+      document.cookie = `dev_access_token=${auth.user?.access_token}; domain=.${window.location.hostname}; path=/; max-age=3600`;
+      document.cookie = `dev_id_token=${auth.user?.id_token}; domain=.${window.location.hostname}; path=/; max-age=3600`;
+      document.cookie = `dev_refresh_token=${auth.user?.refresh_token}; domain=.${window.location.hostname}; path=/; max-age=3600`;
+    }
+
     if (redirectUrl) {
       localStorage.removeItem("redirectUrl");
       navigate({ to: redirectUrl });
@@ -58,5 +69,15 @@ export function component() {
     return <div>Hello {auth.user?.profile.sub}</div>;
   }
 
-  return <div>Loading...</div>;
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      auth.signinRedirect();
+    }, 3000);
+  }, [navigate]);
+
+  return <div>Redirecting...</div>;
 }

@@ -1,4 +1,5 @@
 # https://www.ory.sh/docs/oathkeeper/reference/configuration
+# https://www.ory.sh/docs/oathkeeper#decision-engine
 oathkeeper:
   config:
 
@@ -21,6 +22,7 @@ oathkeeper:
     # https://www.ory.sh/docs/oathkeeper/api-access-rules
     # https://www.ory.sh/docs/oathkeeper/pipeline/authn
     # https://gateway.envoyproxy.io/docs/api/extension_types/#extauth
+    # https://github.com/ory/oathkeeper/blob/master/.schema/config.schema.json
     access_rules:
       matching_strategy: regexp # `regexp` or `glob` Regular expressions (or glob patterns) are encapsulated in brackets < and >; verify regex at https://regex101.com/
       repositories:
@@ -77,15 +79,34 @@ oathkeeper:
         enabled: true
 
       # enforces access control policies (keto relationships and roles) based on the result of the authenticators
-      keto_engine_acp_ory:
+      # https://www.ory.sh/docs/keto
+      # https://www.ory.sh/docs/oathkeeper/pipeline#session
+      # https://www.ory.sh/docs/oathkeeper/pipeline/authz#remote_json
+      # https://github.com/ory/oathkeeper/blob/5a385d45bb84bace3fe9f8143ddf55b90c4cc1d5/.schemas/authorizers.remote_json.schema.json
+      remote_json:
         enabled: true
         config:
-          base_url: http://keto-read:80
-          required_action: "read"
-          required_resource: "resources:xyz"
-          subject: {% raw %}"{{ .AuthenticationSession.Subject }}"{% endraw %}
-          flavor: "keto" # use Keto's policy implementation to authorize decisions
-
+          remote: http://keto-read:80/relation-tuples/check
+          # headers:
+          #   Y-Api-Key: '{% raw %}{{ .MatchContext.Header.Get "X-Api-Key" }}'{% endraw %}
+          # headers: 
+          #   x-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
+          #   x-user-email: "{% raw %}{{ print .Extra.identity.traits.email }}{% endraw %}"
+          #   x-user-name: "{% raw %}{{ print .Extra.identity.traits.name }}{% endraw %}"
+          #   x-user-id-a: "{% raw %}{{ index .Extra 'id' }}{% endraw %}"
+          #   x-user-id-b: "{% raw %}{{ index .Extra \"id\" }}{% endraw %}"
+          # https://www.ory.sh/docs/keto/reference/rest-api#tag/permission/operation/postCheckPermissionOrError 
+          # https://github.com/ory/oathkeeper/blob/master/pipeline/authn/authenticator.go#L40
+          # example:           
+          payload: |
+            {
+              "subject": "{% raw %}{{ print .Subject }}{% endraw %}",
+              "resource": "{% raw %}{{ printIndex .MatchContext.RegexpCaptureGroups 0 }}{% endraw %}"
+            }
+      
+      # NOTE: This is for pre-zanzibar keto implementation, not useful - use 'remote_json' instead
+      keto_engine_acp_ory:
+        enabled: false 
 
     # https://www.ory.sh/docs/oathkeeper/pipeline/mutator
     mutators:
@@ -93,7 +114,7 @@ oathkeeper:
         enabled: true
         config:
           headers:
-            X-User: {% raw %}"{{ print .Subject }}"{% endraw %}
+            x-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
       noop:
         enabled: true
       # id_token:

@@ -54,7 +54,7 @@ install_ory_stack() {
 
     install_kratos $environment
     install_hydra $environment
-    install_keto
+    install_keto # depends on `install_kratos`
     create_oauth2_client_for_trusted_app $environment
     install_oathkeeper # depends on `create_oauth2_client_for_trusted_app`
 

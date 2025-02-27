@@ -3,6 +3,8 @@
 # `chmod +x ./script.sh`
 # `./script.sh <function-name> [args...]`
 
+# set -e
+
 load_scripts_recursive() {
     SCRIPT_DIR="$1"  # Get directory from argument
 

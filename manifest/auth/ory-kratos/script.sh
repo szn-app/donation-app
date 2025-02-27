@@ -1,4 +1,4 @@
-generate_database_kratos_credentials() {
+generate_database_kratos_credentials() {( # use subshell to avoid change variables
     db_secret_file="./manifest/auth/ory-kratos/db_kratos_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
@@ -9,9 +9,130 @@ EOF
         mv $t $db_secret_file
         echo "generated secrets file: file://$db_secret_file" 
     fi
+)}
+
+generate_default_username_kratos() {( # use subshell to avoid change variables
+    pushd ./manifest/auth/ory-kratos/
+    
+    local environment=production
+    if [ -f ./.env.$environment ]; then
+        source ./.env.$environment
+    elif [ -f ./.env.$environment.local ]; then
+        source ./.env.$environment.local
+    else
+        echo "Error: .env.$environment file not found."
+        exit 1
+    fi
+
+    if [ -z "$DOMAIN_NAME" ]; then
+        echo "Error: DOMAIN_NAME environment variable is not set"
+        return 
+    fi
+
+    local username="admin-$(openssl rand -hex 8)@$DOMAIN_NAME"
+    local password="$(openssl rand -base64 64 | tr -dc 'A-Za-z0-9!@#$%^&*()_+-=[]{}|;:,.<>?~`' | head -c 32)"
+
+    file="./admin_user_secret.env"
+    if [ ! -f "$file" ]; then
+        t=$(mktemp) && cat <<EOF > "$t"
+ADMIN_USERNAME="$username"
+ADMIN_PASSWORD="$password"
+EOF
+
+        mv $t $file
+        echo "generated secrets file: file://$file" 
+    fi
+
+    popd   
+)}
+
+create_kratos_identities() {
+        environment=$1
+
+        printf "Kratos: create default users \n"
+        
+        if [ "$environment" = "production" ]; then
+            local sleep_time=60
+        else 
+            local sleep_time=600000
+        fi
+        kubectl run --image=debian:latest setup-pod-kratos --namespace auth -- /bin/sh -c "while true; do sleep $sleep_time; done"
+        kubectl wait --for=condition=ready pod/setup-pod-kratos --namespace=auth --timeout=300s
+
+        {
+            t="$(mktemp).sh" && cat << 'EOF' > $t
+#!/bin/bash
+
+# install kratos cli
+apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
+bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . kratos v1.3.1 >/dev/null 2>&1 && chmod +x ./kratos && mv ./kratos /usr/bin/
+
+verify() {
+    kratos version
+}
+EOF
+            kubectl cp $t setup-pod-kratos:$t --namespace auth
+            kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
+        }
+        {
+            
+            if [ "$environment" = "production" ]; then
+                set -a
+                    source admin_user_secret.env
+                set +a
+
+                username=$ADMIN_USERNAME
+                password=$ADMIN_PASSWORD
+            else
+                username=admin@app.com
+                password=admin123456
+            fi
+
+            q="$(mktemp).json" && cat << EOF > $q
+{
+    "schema_id": "default",
+    "traits": {
+        "email": "$username"
+    },
+    "credentials": {
+        "password": {
+            "config": {
+                "password": "$password"
+            }
+        }
+    }
+}
+EOF
+
+            kubectl cp $q setup-pod-kratos:default_user_kratos.json --namespace auth
+            t="$(mktemp).sh" && cat << 'EOF' > $t
+#!/bin/bash
+# https://www.ory.sh/docs/kratos/cli/kratos
+
+# create default users
+
+kratos import identities ./default_user_kratos.json \
+    --endpoint http://kratos-admin:80
+
+EOF
+            kubectl cp $t setup-pod-kratos:$t --namespace auth
+            kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t"
+
+            # NOTE: this is error prone hackish way to get the uuid of the user from debug output of kratos cli
+            uuid=$(kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "kratos list identities --format json --endpoint http://kratos-admin:80 2> /dev/null | jq -r --arg email \"$username\" '.identities[] | select(.traits.email == \$email) | .id'")
+
+            # create a secret to store the values
+            kubectl create secret generic default-admin-user-credentials -n auth --from-literal=username="$username" --from-literal=uuid="$uuid" --from-literal=password="$password" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
+
+        }
+
+        if [ "$environment" = "production" ]; then
+            kubectl delete --force pod setup-pod-kratos -n auth > /dev/null 2>&1 || true
+        fi
 }
 
 install_kratos() {
+    set -e
     environment=$1
 
     pushd ./manifest/auth/ory-kratos
@@ -59,10 +180,10 @@ EOF
             source db_kratos_secret.env
         set +a
         
-        helm upgrade --debug --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
+        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
-            --set auth.database=kratos_db
+            --set auth.database=kratos_db > $l && printf "Kratos database logs: file://$l\n"
         # this will generate 'postgres-kratos-postgresql' service
     fi
 
@@ -77,15 +198,17 @@ EOF
         default_secret="$(openssl rand -hex 16)"
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
         cipher_secret="$(openssl rand -hex 16)"
-        helm upgrade --debug --install --atomic kratos ory/kratos -n auth --create-namespace -f $q -f $t \
+        l="$(mktemp).log" && helm upgrade --debug --install --atomic kratos ory/kratos -n auth --create-namespace -f $q -f $t \
             --set-file kratos.identitySchemas.identity-schema\\.json=./identity-schema.json \
             --set kratos.config.secrets.default[0]="$default_secret" \
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
             --set kratos.config.secrets.cipher[0]="$cipher_secret" \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "kratos logs: file://$l\n"
     }
     
+    create_kratos_identities $environment
+
     verify_jsonnet() {
         kratos help jsonnet lint
         kratos jsonnet lint ./google-oidc-mapper.template.json
@@ -128,6 +251,12 @@ EOF
                 cookieJar=$(mktemp) && flowId=$(curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" https://auth.donation-app.test/authenticate/self-service/login/browser | jq -r '.id')
                 # The endpoint uses Ory Identities' REST API to fetch information about the request (requires the CSRF cookie created for the login flow)
                 curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" "https://auth.donation-app.test/authenticate/self-service/login/flows?id=$flowId" | jq
+
+                # TODO: check session kratos info
+                # otherwise can check https://auth.donation-app.test/sessions
+                {
+                    curl -k -i http://kratos-read:80/sessions/whoami
+                }
             }
         }
 
@@ -140,4 +269,5 @@ EOF
     }
 
     popd
+    set +e
 }

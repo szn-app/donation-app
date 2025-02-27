@@ -44,16 +44,17 @@ spec:
               value: http://hydra-public:80
             - name: OATHKEEPER_API_URL
               value: http://oathkeeper-api:80
+            # TODO: check how to disable tls verification for keto connection in the client of ory admin ui
             - name: KETO_READ_URL
-              value: http://keto-read:80
+              value: keto-read:80
             - name: KETO_WRITE_URL
-              value: http://keto-write:80
+              value: keto-write:80
             - name: ENABLED_SERVICES
               value: kratos,hydra,oathkeeper,keto
-          resources:
-            requests:
-              cpu: "10m"
-              memory: "20Mi"
-            limits:
-              cpu: "50m"
-              memory: "100Mi"
+          # resources:
+          #   requests:
+          #     cpu: "10m"
+          #     memory: "20Mi"
+          #   limits:
+          #     cpu: "50m"
+          #     memory: "100Mi"

@@ -18,6 +18,10 @@ const TanStackRouterDevtools =
         })),
       );
 
+if (import.meta.env.DEV) {
+  console.log("--> development mode");
+}
+
 export const Route = createRootRoute({
   component: () => (
     <>

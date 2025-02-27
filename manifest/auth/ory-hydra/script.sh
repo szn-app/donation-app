@@ -15,10 +15,10 @@ install_hydra() {
         set -a
             source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
         set +a
-        helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
+        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
-            --set auth.database=hydra_db
+            --set auth.database=hydra_db > $l && printf "Hydra database logs: file://$l\n"
         # this will generate 'postgres-hydra-postgresql' service
     fi
 
@@ -32,11 +32,11 @@ install_hydra() {
         set +a
         system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
-        helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f $q -f $t \
+        l="$(mktemp).log" && helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f $q -f $t \
             --set kratos.config.secrets.system[0]="$system_secret" \
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Hydra logs: file://$l\n"
     }
 
     verify() { 
@@ -59,8 +59,8 @@ install_hydra() {
         {
             # install dependencies including Hydra
             {
-                apt update && apt install curl jq -y
-                bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 && mv hydra /usr/bin/
+                apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
+                bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 >/dev/null 2>&1 && mv hydra /usr/bin/
             }
 
 
@@ -143,8 +143,8 @@ create_oauth2_client_for_trusted_app() {
         kubectl run -it --rm --image=debian:latest debug-pod --namespace auth -- /bin/bash
         {
             # install hydra
-            apt update && apt install curl jq -y
-            bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 && mv hydra /usr/bin/
+            apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
+            bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 >/dev/null 2>&1 && mv hydra /usr/bin/
 
             curl http://hydra-admin/admin/clients | jq
 
@@ -170,12 +170,12 @@ create_oauth2_client_for_trusted_app() {
     {
                     t="$(mktemp).sh" && cat << 'EOF' > $t
 #!/bin/bash
-apt update && apt install curl jq -y
-bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 && mv hydra /usr/bin/
+apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
+bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 >/dev/null 2>&1 && mv hydra /usr/bin/
 curl -s http://hydra-admin/admin/clients | jq
 EOF
         kubectl cp $t setup-pod:$t --namespace auth
-        kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+        kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t" >/dev/null 2>&1
     }
     
     example_using_hydra() { 
@@ -239,7 +239,7 @@ EOF
             kubectl cp $t setup-pod:$t --namespace auth
             kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
-            kubectl create secret generic ory-hydra-client--frontend-client -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null
+            kubectl create secret generic ory-hydra-client--frontend-client -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
 
     }
@@ -274,7 +274,7 @@ EOF
             kubectl cp $t setup-pod:$t --namespace auth
             kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
-            kubectl create secret generic ory-hydra-client--frontend-client-oauth -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null
+            kubectl create secret generic ory-hydra-client--frontend-client-oauth -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
 
     }
@@ -309,7 +309,7 @@ EOF
             kubectl cp $t setup-pod:$t --namespace auth
             kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
-            kubectl create secret generic ory-hydra-client--frontend-client-oauth-consent -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null
+            kubectl create secret generic ory-hydra-client--frontend-client-oauth-consent -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
     }
 
@@ -340,7 +340,7 @@ EOF
             kubectl cp $t setup-pod:$t --namespace auth
             kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
-            kubectl create secret generic ory-hydra-client--internal-communication -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null
+            kubectl create secret generic ory-hydra-client--internal-communication -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi 
 
     }
@@ -374,7 +374,7 @@ EOF
             kubectl cp $t setup-pod:$t --namespace auth
             kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
-            kubectl create secret generic ory-hydra-client--oathkeeper-introspection -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - 2>/dev/null
+            kubectl create secret generic ory-hydra-client--oathkeeper-introspection -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi 
 
     }

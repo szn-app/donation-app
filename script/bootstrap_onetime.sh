@@ -76,6 +76,20 @@ install_k8s_tools() {
     kubectl krew install ns
     brew install fzf
 
+    {
+        # NOTE: this works on specific images such as alpine linux
+        # [install] apt-get update && apt-get install -y tcpdump
+        # apt update && apt install tcpdump -y && \
+        #   rm /tmp/static-tcpdump && \
+        #   ln /bin/tcpdump /tmp/static-tcpdump
+        kubectl krew install sniff # view all connection of a pod 
+        kubectl sniff setup-pod-keto -n auth -f "port 80" -o - | tshark -r -
+
+        manual_alternative() {
+            tcpdump -i any -U -w - 
+        }
+    }
+
 }
 
 # https://www.ory.sh/docs/kratos/install#linux

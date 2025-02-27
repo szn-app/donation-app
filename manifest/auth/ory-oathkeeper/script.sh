@@ -1,3 +1,5 @@
+#!/bin/bash
+
 generate_database_hydra_credentials() {
     db_secret_file="./manifest/auth/ory-hydra/db_hydra_secret.env"
     if [ ! -f "$db_secret_file" ]; then
@@ -17,6 +19,7 @@ EOF
 #   b. Kratos session token
 #   c. Hydra OAuth2 access token in a cookie
 install_oathkeeper() {
+    set -e
     pushd ./manifest/auth/ory-oathkeeper
 
     generate_oathkeeper_oauth2_client_credentials_env_file() {
@@ -49,8 +52,9 @@ EOF
         # echo "jwt file created file://$y"
 
         t="$(mktemp).yml" && cargo run --release --bin render-template -- --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f $t \
-                --set-file oathkeeper.accessRules=./access-rules.json
+        j="$(mktemp)-combined-access-rules.json" && jq -s '.[0] + .[1]' ./access-rules.json ./test-access-rules.json > $j && printf "combined json access-rules: file://$j\n" 
+        l="$(mktemp).log" && helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f $t \
+                --set-file oathkeeper.accessRules=$j > $l && printf "Oathkeeper database logs: file://$l\n"
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 
     }
 
@@ -82,6 +86,24 @@ EOF
 
         curl -k -i https://test.donation-app.test/allow/ 
         curl -k -i -H "Accept: text/html" -X GET https://test.donation-app.test/allow/ 
+        
+        curl -k -i https://test.donation-app.test/deny
+        
+        curl -k -i https://test.donation-app.test/anonymous
+        
+        ACCESS_TOKEN=""
+        curl -k -i -H "Authorization: Bearer $ACCESS_TOKEN" https://test.donation-app.test/jwt 
+        curl -k -i -H "Authorization Bearer $ACCESS_TOKEN" https://test.donation-app.test/oauth-header
+        
+        # session cookie is tested by visiting the frontend application (can be done in cli with proper cookie handling)
+        # + check also returned headers from mutators in oathkeeper service logs
+        # https://test.donation-app.test/session-cookie
+        # https://test.donation-app.test/keto-session
+        # https://test.donation-app.test/keto-token
+
+        # test authorizer handler
+        curl -k -i https://test.donation-app.test/keto-static
+
 
         # NOTE: gaining authorization code process requires a browser or tool that handles consent; SDK libraries for Oauth and OIDC compose requests better
         oauth2_flow() {
@@ -205,5 +227,6 @@ EOF
         popd
     }
 
+    set +e
 }
 
