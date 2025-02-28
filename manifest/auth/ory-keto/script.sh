@@ -81,7 +81,7 @@ EOF
 # alias keto-managed='keto --read-remote keto-read:80 --write-remote keto-write:80'
 # alias keto-insecure='keto-managed --insecure-disable-transport-security --insecure-skip-hostname-verification'
 
-# important to solve issue of policies added false-positively
+# TODO: important to solve issue of policies added false-positively (prints that relations created but not actually created)
 sleep 15
 
 # apply relation-tuple policies
@@ -116,9 +116,9 @@ EOF
             kubectl exec -it setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t"
         }
 
-        if [ "$environment" = "production" ]; then
-            kubectl delete --force pod setup-pod-keto -n auth > /dev/null 2>&1 || true
-        fi
+        # if [ "$environment" = "production" ]; then
+        kubectl delete --force pod setup-pod-keto -n auth > /dev/null 2>&1 || true
+        # fi
 }
 
 install_keto() {

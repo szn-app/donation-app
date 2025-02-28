@@ -1,23 +1,29 @@
 [
   {
-    "id": "api-private-TODO",
+    "id": "api-private",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/private</?><[.*]></?>[.*]",
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/private</?><.*>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
       {
-        "handler": "oauth2_introspection",
+        "handler": "cookie_session",
         "config": {
-          "scope_strategy": "none",
-          "token_from": {
-            "cookie": "ory_kratos_session"
-          }
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
         }
       }
     ],
     "authorizer": {
-        "handler": "deny"
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
     },
     "mutators": [
       {
@@ -57,5 +63,162 @@
         "handler": "json"
       }
     ]
+  },
+
+  {
+    "id": "k8s-hubble",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://hubble.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
+  },
+
+  {
+    "id": "k8s-dashboard",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://dashboard.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
+  },
+
+  {
+    "id": "k8s-longhorn",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://longhorn.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
+  },
+
+  {
+    "id": "k8s-ory-admin",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://ory-admin.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
   }
+
 ]

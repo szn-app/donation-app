@@ -15,6 +15,14 @@ patches:
 
   - target:
       kind: HTTPRoute
+      name: internal-k8s-ory-admin
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "ory-admin.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
       name: http-k8s-ory-admin-redirect
     patch: |-
       - op: replace

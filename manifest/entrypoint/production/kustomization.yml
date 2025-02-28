@@ -87,6 +87,14 @@ patches:
 
   - target:
       kind: HTTPRoute
+      name: internal-k8s-longhorn
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "longhorn.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
       name: http-k8s-longhorn-redirect
     patch: |-
       - op: replace
@@ -103,6 +111,14 @@ patches:
 
   - target:
       kind: HTTPRoute
+      name: internal-k8s-dashboard
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "dashboard.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
       name: http-k8s-dashboard-redirect
     patch: |-
       - op: replace
@@ -112,6 +128,14 @@ patches:
   - target:
       kind: HTTPRoute
       name: https-k8s-hubble
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "hubble.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-k8s-hubble
     patch: |-
       - op: replace
         path: /spec/hostnames/0

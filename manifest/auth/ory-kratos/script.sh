@@ -126,9 +126,9 @@ EOF
 
         }
 
-        if [ "$environment" = "production" ]; then
-            kubectl delete --force pod setup-pod-kratos -n auth > /dev/null 2>&1 || true
-        fi
+        # if [ "$environment" = "production" ]; then
+        kubectl delete --force pod setup-pod-kratos -n auth > /dev/null 2>&1 || true
+        # fi
 }
 
 install_kratos() {
