@@ -13,4 +13,5 @@ exclude = [
     "manifest/auth/ory-oathkeeper",
     "service/auth-token-exchange",
     "service/web-server/src-tauri",
+    "service/api-data",
 ]
