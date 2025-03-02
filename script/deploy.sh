@@ -1,7 +1,4 @@
-#!/bin/bash
-
-load_scripts_recursive "./service/auth-ui/script" # for generate_secret_auth_ui
-load_scripts_recursive "./service/auth-ory-stack" # for generate_secret_auth_ui
+#!/bin/bash 
 
 # [obsolete]
 manual_service_tag_version() { 
@@ -154,8 +151,6 @@ env_files() {
     generate_secret_auth_ui $environment
     create_env_files
 }
-
-source ./script/library/install_ory_stack.sh
 
 deploy_application() {
     local environment="development" # environment = development, production

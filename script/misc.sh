@@ -10,6 +10,7 @@ record_version() {
     KUSTOMIZE_VERSION=$(kustomize version)
     KOPS_VERSION=$(kops version --short)
     CILIUM_VERSION=$(cilium version --client)
+    SKAFFOLD_VERSION=$(skaffold version)
 
     echo "Node.js version: ${NODE_VERSION}" > version.txt
     echo "pnpm version: ${PNPM_VERSION}" >> version.txt
@@ -21,6 +22,7 @@ record_version() {
     echo "Kustomize version: ${KUSTOMIZE_VERSION}" >> version.txt
     echo "kOps version: ${KOPS_VERSION}" >> version.txt
     echo "---\nCilium version: ${CILIUM_VERSION}\n" >> version.txt
+    echo "Skaffold version: ${SKAFFOLD_VERSION}" >> version.txt
 
     cat ./version.txt
 }

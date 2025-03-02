@@ -1,13 +1,5 @@
 #!/bin/bash
 
-source "./script/library/hetzner/install_gateway_api_cilium.sh"
-source "./script/library/installation_gateway_controller_nginx.sh"
-source "./script/library/hetzner/install_storage_class.sh"
-source "./script/library/install_kubernetes_dashboard.sh"
-source "./script/library/install_cert_manager.sh"
-source "./script/library/install_monitoring.sh"
-source "./script/library/install_envoy_gateway_class.sh"
-
 # remove warnings and logs from coredns
 remove_warnings_logs() { 
   kubectl apply -f - <<'EOF'

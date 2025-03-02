@@ -97,3 +97,9 @@ install_ory_cli() {
     bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . kratos v1.3.1 && chmod +x ./kratos && sudo mv kratos /usr/bin
     kratos help
 }
+
+install_skaffold() { 
+    # https://skaffold.dev/docs/install/
+    curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/ && rm skaffold
+
+}

@@ -160,10 +160,8 @@ deploy_local_minikube() {
 
     build_all_containers_with_load
 
-    source ./script/library/minikube_tunnel.sh
     terminate_background_jobs
     
-    source ./script/deploy.sh
     deploy --environment development --action install
 
     kubectl config set-context --current --namespace=all
@@ -171,7 +169,6 @@ deploy_local_minikube() {
     read -t 20 -p "Do you want to execute tunnel_minikube? (y/n, default is y after 20 seconds): " choice
     choice=${choice:-y}
     if [[ "$choice" == "y" ]]; then
-        source ./script/library/minikube_tunnel.sh &> /dev/null
         tunnel_minikube
     else
         echo "Skipping tunnel_minikube execution."

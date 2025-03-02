@@ -25,6 +25,9 @@ load_scripts_recursive() {
 }
 
 # load functions
+load_scripts_recursive "./service/auth-ui/script" # for generate_secret_auth_ui
+load_scripts_recursive "./service/auth-ory-stack"
+load_scripts_recursive "./infrastructure/script/"
 load_scripts_recursive "./script/" 
 
 # call function in this script file from commandline argument
