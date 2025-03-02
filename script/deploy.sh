@@ -1,6 +1,7 @@
 #!/bin/bash
 
-load_scripts_recursive "./manifest/" 
+load_scripts_recursive "./service/auth-ui/script" # for generate_secret_auth_ui
+load_scripts_recursive "./service/auth-ory-stack" # for generate_secret_auth_ui
 
 # [obsolete]
 manual_service_tag_version() { 
@@ -171,13 +172,13 @@ deploy_application() {
 
     {
         if [ "$action" == "delete" ]; then
-            kubectl delete -k ./manifest/entrypoint/$environment
+            kubectl delete -k ./kubernetes/$environment
             return 
         fi
     }
 
-    pushd ./manifest 
-        kubectl apply -k ./entrypoint/$environment
+    pushd ./kubernetes 
+        kubectl apply -k ./$environment
 
         if [ "$environment" == "development" ]; then
             # restart all deployments in any namespace
@@ -187,7 +188,7 @@ deploy_application() {
         fi
 
         {
-            pushd ./entrypoint/$environment 
+            pushd ./$environment 
             t="$(mktemp).yml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
             popd
         }
@@ -245,7 +246,7 @@ deploy() {
             deploy_application --environment "$environment" --action delete
             return 
          elif [ "$action" == "kustomize" ]; then
-            pushd manifest/entrypoint/"$environment"
+            pushd kubernetes/"$environment"
             t="$(mktemp).yml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
             popd
             return
@@ -280,7 +281,7 @@ deploy() {
     # verify cluster certificate issued successfully 
     _verify() {
         ### generate combined configuration
-        kubectl kustomize ./manifest/gateway/development > ./tmp/combined_manifest.yml
+        kubectl kustomize ./service/cilium-gateway/k8s/development > ./tmp/combined_manifest.yml
         cat ./tmp/combined_manifest.yml | kubectl apply -f -
 
         kubectl kustomize ./

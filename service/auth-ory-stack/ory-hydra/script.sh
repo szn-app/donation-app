@@ -1,7 +1,7 @@
 install_hydra() {
     environment=$1
 
-    pushd ./manifest/auth/ory-hydra
+    pushd ./service/auth-ory-stack/ory-hydra
     
     if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -124,7 +124,7 @@ install_hydra() {
 
 create_oauth2_client_for_trusted_app() {
     environment=${1:-development}
-    pushd ./manifest/auth/ory-hydra
+    pushd ./service/auth-ory-stack/ory-hydra
 
     set -a 
         if [ -f ./.env.$environment ]; then

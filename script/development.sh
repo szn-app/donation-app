@@ -107,7 +107,7 @@ deploy_local_minikube() {
     example_scripts() {
         kubectl config view && kubectl get namespace && kubectl config get-contexts
 
-        (cd manifest/development && kubectl apply -k .)
+        (cd k8s/development && kubectl apply -k .)
         kubectl get all
     
         minikube ip 
@@ -127,7 +127,7 @@ deploy_local_minikube() {
         # using gateway 
         {
             export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-            kubectl apply -k ./manifest/gateway/development
+            kubectl apply -k ./service/cilium-gateway/k8s/development
             minikube tunnel # otherwise, with ingress-dns and ingress.yml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
             minikube dashboard
             kubectl describe gateway -n donation-app
@@ -136,7 +136,7 @@ deploy_local_minikube() {
             curl --resolve donation-app.test:80:$GW donation-app.test
         }
 
-        kubectl apply -k ./manifest/entrypoint/development
+        kubectl apply -k ./kubernetes/development
 
         curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
     }

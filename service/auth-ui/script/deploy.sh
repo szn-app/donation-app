@@ -1,6 +1,6 @@
 generate_secret_auth_ui() {
     local environment=$1
-    local auth_ui_secret_file="./manifest/auth_ui/${environment}/secret.env"
+    local auth_ui_secret_file="./service/auth-ui/k8s/${environment}/secret.env"
     
     # generate secrets 
     if [ ! -f "$auth_ui_secret_file" ]; then

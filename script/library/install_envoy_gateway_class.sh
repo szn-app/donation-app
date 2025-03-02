@@ -1,7 +1,7 @@
 # installs an Envoy gateway class internal to the cluster (not exposed externally)
 # https://gateway.envoyproxy.io/docs/install/install-helm/
 install_envoy_gateway_class() {
-    pushd ./manifest/envoy_proxy
+    pushd ./service/envoy-proxy/k8s/
     
     action=${1:-"install"}
     {

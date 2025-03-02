@@ -1,5 +1,5 @@
 generate_database_kratos_credentials() {( # use subshell to avoid change variables
-    db_secret_file="./manifest/auth/ory-kratos/db_kratos_secret.env"
+    db_secret_file="./service/auth-ory-stack/ory-kratos/db_kratos_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -12,7 +12,7 @@ EOF
 )}
 
 generate_default_username_kratos() {( # use subshell to avoid change variables
-    pushd ./manifest/auth/ory-kratos/
+    pushd ./service/auth-ory-stack/ory-kratos/
     
     local environment=production
     if [ -f ./.env.$environment ]; then
@@ -135,7 +135,7 @@ install_kratos() {
     set -e
     environment=$1
 
-    pushd ./manifest/auth/ory-kratos
+    pushd ./service/auth-ory-stack/ory-kratos
 
     check_kratos_secret_env() {
         # generate secrets for production

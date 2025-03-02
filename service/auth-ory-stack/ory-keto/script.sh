@@ -1,5 +1,5 @@
 generate_database_keto_credentials() {
-    db_secret_file="./manifest/auth/./db_keto_secret.env"
+    db_secret_file="./service/auth-ory-stack/ory-keto/db_keto_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -122,7 +122,7 @@ EOF
 }
 
 install_keto() {
-    pushd ./manifest/auth/ory-keto
+    pushd ./service/auth-ory-stack/ory-keto
     
     if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
         upgrade_db=false

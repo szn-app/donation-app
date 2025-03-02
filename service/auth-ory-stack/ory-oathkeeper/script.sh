@@ -1,7 +1,7 @@
 #!/bin/bash
 
 generate_database_hydra_credentials() {
-    db_secret_file="./manifest/auth/ory-hydra/db_hydra_secret.env"
+    db_secret_file="./service/auth-ory-stack/ory-hydra/db_hydra_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -20,7 +20,7 @@ EOF
 #   c. Hydra OAuth2 access token in a cookie
 install_oathkeeper() {
     set -e
-    pushd ./manifest/auth/ory-oathkeeper
+    pushd ./service/auth-ory-stack/ory-oathkeeper
 
     generate_oathkeeper_oauth2_client_credentials_env_file() {
         CLIENT_NAME="oathkeeper-introspection"
@@ -65,7 +65,7 @@ EOF
     popd
 
     verify() { 
-        pushd ./manifest/auth/ory-oathkeeper
+        pushd ./service/auth-ory-stack/ory-oathkeeper
         {
             # manually validate rendered deployment manifest files
             t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
