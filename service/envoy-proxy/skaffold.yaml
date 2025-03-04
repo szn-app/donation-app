@@ -1,0 +1,17 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: envoy-proxy
+
+manifests:
+  kustomize:
+    paths:
+    - k8s/base
+
+deploy:
+  kubectl: {}
+
+profiles:
+
+- name: development
+- name: production

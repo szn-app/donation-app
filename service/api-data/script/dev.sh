@@ -19,3 +19,14 @@ bootstrap() {
     # cargo binstall cargo-watch
     cargo install cargo-watch --locked
 }
+
+# NOTE: used for docker command
+hot_reload_api_data() {
+    cargo watch -q -c -w src/ -x run
+}
+
+dev_api_data_skaffold() {     
+    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    
+    skaffold run --profile production --port-forward
+}

@@ -1,0 +1,21 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: cilium-gateway
+
+deploy:
+  kubectl: {}
+
+profiles:
+
+- name: development
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+
+- name: production
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod

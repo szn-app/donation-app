@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "service/api-data"
-		},
-		{
 			"path": "service/auth-token-exchange"
 		},
 		{
@@ -11,6 +8,9 @@
 		},
 		{
 			"path": "service/web-server"
+		},
+		{
+			"path": "service/api-data"
 		}
 	],
 	"settings": {

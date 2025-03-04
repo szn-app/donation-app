@@ -1,0 +1,62 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: https-api-data
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+      sectionName: https
+
+  hostnames:
+    - api.donation-app.test
+
+  rules:
+    - backendRefs:
+        - kind: Service
+          name: api-data
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+---
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: http-redirect-api-data
+  namespace: cert-manager # HTTPRoute must be placed in same namespace as the target backend service
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+      sectionName: http
+
+  hostnames:
+    - "api.donation-app.test"
+
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/.well-known/"
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: "/livez"
+      backendRefs:
+        - name: cert-manager-health-endpoint
+          namespace: cert-manager
+          port: 80

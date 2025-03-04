@@ -1,0 +1,67 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: auth-ui
+build:
+  local: 
+    push: false
+  tagPolicy:
+    sha256: {} 
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+  
+portForward:
+  - resourceType: service
+    resourceName: auth-ui
+    port: service-auth-ui
+    localPort: 9090
+
+profiles:
+
+- name: development
+  activation:
+    - kubeContext: minikube
+      
+  build: 
+    artifacts:
+    - image: auth-ui
+      context: ./kratos-selfservice-ui-node
+      docker:
+        target: development
+        dockerfile: Dockerfile
+        buildArgs: {}
+      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
+      sync:
+        manual:
+        - src: "kratos-selfservice-ui-node/views/**/*.hbs"
+          dest: .
+          strip: 'kratos-selfservice-ui-node'
+        - src: "kratos-selfservice-ui-node/src/**/*.ts"
+          dest: .
+          strip: 'kratos-selfservice-ui-node'
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  deploy:
+    kubeContext: minikube
+
+
+- name: production
+
+  build: 
+    artifacts:
+    - image: auth-ui
+      context: ./kratos-selfservice-ui-node
+      docker:
+        target: production
+        dockerfile: Dockerfile
+        buildArgs: {}
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+  deploy:
+    kubeContext: minikube

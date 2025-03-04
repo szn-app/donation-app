@@ -5,9 +5,10 @@ resources:
   - deployment.yml
   - service.yml
   - route.yml
+  # - hpa.yml
 
-namePrefix: prod-
-nameSuffix: -v1
+# namePrefix: prod-
+# nameSuffix: -v1
 
 # [BUG in Kustomize https://github.com/kubernetes-sigs/kustomize/issues/5047] specifiying namespace ruins configMapGenerator name resolution
 # namespace: donation-app # using customization transformers instead (which provides more options)
@@ -25,6 +26,9 @@ labels:
   - pairs:
       app: web-server
     includeSelectors: true
+
+# commonLabels:
+#   tier: app-backend
 
 patches:
   # TODO: add proper limits if needed without slowing down web-server
@@ -68,3 +72,4 @@ patches:
                 operator: "Equal"
                 value: "peak-workloads"
                 effect: "NoExecute"
+

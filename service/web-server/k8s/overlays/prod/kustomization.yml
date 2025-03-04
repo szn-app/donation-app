@@ -1,0 +1,103 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+images:
+  - name: web-server
+    newName: ghcr.io/szn-app/donation-app/web-server
+    ### automatically updated
+    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
+    newTag: v0.0.72 # x-release-please-version
+
+# configMapGenerator:
+#   - name: properties-map-web-server
+#     env: config.properties
+
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web-server
+        
+      spec:
+        template:
+          spec:
+            containers:
+            - name: nginx
+              imagePullPolicy: Always
+
+  - target:
+      kind: HTTPRoute
+      name: http-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: https-web-server
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: wosoom.com
+
+# set readiness probe
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web-server
+
+      spec:
+        template:
+          spec:
+            containers:
+            - name: nginx
+              readinessProbe:
+                httpGet:
+                  path: /readyz  # Endpoint to check readiness
+                  port: web-server
+                initialDelaySeconds: 5  # Wait 5 seconds before checking
+                periodSeconds: 5        # Check every 5 seconds
+
+# set security context
+  # - patch: |-
+  #     apiVersion: apps/v1
+  #     kind: Deployment
+  #     metadata:
+  #       name: web-server
+
+  #     spec:
+  #       template:
+  #         spec:
+  #           containers:
+  #           - name: nginx
+  #             securityContext:
+  #               runAsUser: 101 # nginx
+  #               runAsNonRoot: true
+  #               readOnlyRootFilesystem: true
+  #               allowPrivilegeEscalation: false
+
+# set resource limits
+  # - patch: |-
+  #     apiVersion: apps/v1
+  #     kind: Deployment
+  #     metadata:
+  #       name: web-server
+
+  #     spec:
+  #       template:
+  #         spec:
+  #           containers:
+  #           - name: nginx
+  #             resources:
+  #               limits:
+  #                 cpu: 50m
+  #                 memory: 128Mi
+  #               requests:
+  #                 cpu: 10m
+  #                 memory: 64Mi

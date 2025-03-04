@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev-service-port": "vite dev --port 80 --host 0.0.0.0",
     "build": "tsc && vite build",
     "build-dev": "NODE_ENV=development tsc && NODE_ENV=development VITE_DEV_MODE=true vite build --mode development",
     "preview": "tsc && vite build && vite preview",

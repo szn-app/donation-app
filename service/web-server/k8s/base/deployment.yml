@@ -18,7 +18,8 @@ spec:
           image: web-server:latest
           ports:
             - containerPort: 80
-              name: http-web-server
+              name: web-server
           # envFrom:
           #   - configMapRef:
           #       name: properties-map-web-server
+          

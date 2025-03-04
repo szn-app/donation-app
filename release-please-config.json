@@ -27,6 +27,7 @@
       "release-type": "rust",
       "exclude-paths": [
         "service/web-server",
+        "service/api-data",
         "service/auth-ui",
         "service/auth-token-exchange",
         ".release-please-config.json",
@@ -42,7 +43,19 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/web-server/k8s/production/kustomization.yml",
+          "path": "service/web-server/k8s/overlays/prod/kustomization.yml",
+          "jsonpath": "$.images[0].newTag"
+        }
+      ]
+    },
+
+    "service/api-data": {
+      "component": "api-data",
+      "release-type": "rust",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "service/api-data/k8s/overlays/prod/kustomization.yml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -54,7 +67,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-ui/k8s/production/kustomization.yml",
+          "path": "service/auth-ui/k8s/overlays/prod/kustomization.yml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -66,7 +79,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-token-exchange/k8s/production/kustomization.yml",
+          "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yml",
           "jsonpath": "$.images[0].newTag"
         }
       ]

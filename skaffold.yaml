@@ -1,0 +1,18 @@
+# https://skaffold.dev/docs/references/yaml/
+apiVersion: skaffold/v4beta12
+kind: Config
+
+requires:
+  - path: service/cilium-gateway
+  - path: service/envoy-proxy
+
+  - path: service/auth-ory-admin-ui
+  - path: service/auth-ui
+  - path: service/auth-token-exchange
+
+  - path: service/web-server
+  - path: service/api-data
+
+profiles:
+  - name: development
+  - name: production

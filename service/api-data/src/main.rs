@@ -20,7 +20,7 @@ async fn main() {
 
     let app = axum::Router::new().merge(model::routes());
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    log::info!("Server running on http://0.0.0.0:3000");
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:80").await.unwrap();
+    log::info!("Server running on http://0.0.0.0:80");
     axum::serve(listener, app).await.unwrap();
 }

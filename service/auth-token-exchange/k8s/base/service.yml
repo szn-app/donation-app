@@ -6,5 +6,6 @@ metadata:
 spec:
   type: ClusterIP
   ports: 
-    - port: 80
-      targetPort: http-token-ex
+    - name: service-auth-token-ex
+      port: 80
+      targetPort: auth-token-ex

@@ -29,7 +29,7 @@ spec:
 
           ports:
             - containerPort: 4455
-              name: http-auth-ui
+              name: auth-ui
           # https://github.com/ory/kratos-selfservice-ui-node/tree/master?tab=readme-ov-file#configuration
           env:
             - name: PORT

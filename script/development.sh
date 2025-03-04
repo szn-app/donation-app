@@ -3,46 +3,6 @@
 misc_() {
     # modify permission
     find ./ -maxdepth 4 -name "script.sh" -exec chmod +x {} \;
-
-    cargo create-tauri-app
-}
-
-## IMPORTANT! used in .github/workflows/*
-build_react_spa() {
-    pushd ./service/web-server
-
-    pnpm install --frozen-lockfile
-    pnpm run build
-    
-    popd
-}
-
-develop_tauri_desktop_with_workaround_black_screen() { 
-    cd ./service/web-server
-    WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
-}
-
-develop_tauri_android() { 
-    ./script.sh setup_android_sdk_variables
-
-    cargo tauri android init
-    cargo tauri android dev
-}
-
-develop_pnpm_react() { 
-    cd web-server
-    pnpm install
-    # run application development
-    WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
-    # or 
-    pnpm run dev
-}
-
-build_app() {
-    pnpm install
-    NO_STRIP=true cargo tauri build 
-    # run application
-    WEBKIT_DISABLE_COMPOSITING_MODE=1 ./src-tauri/target/release/bundle/appimage/*.AppImage
 }
 
 # for feature branches and hotfixes.
@@ -65,44 +25,42 @@ feature_pull_request() {
     # NOTE: automerge is applied only on PRs from branches that are prefix with "feature/*" or "hotfix/*".
 }
 
-{
-    # alternative approach to build all containers directly into minikube
-    build_all_containers_directly_into_minikube() {
-        # bind docker images directly inside minikube
-        eval $(minikube docker-env) # bind docker command to minikube docker
-        (cd service/web-server && ./script.sh build_container_web_server development)
-        (cd service/auth-ui && ./script.sh bulid_container_auth_ui)
-        (cd service/auth-token-exchange && ./script.sh build_container_auth_token_exchange)
-
-        { # reverse minikube eval
-            unset DOCKER_TLS_VERIFY
-            unset DOCKER_HOST
-            unset DOCKER_CERT_PATH
-        }
-    }
-}
-build_all_containers_with_load() {
-    (cd service/web-server && ./script.sh build_container_web_server development)
-    docker save web-server:latest | (eval $(minikube docker-env) && docker load)
-
-    (cd service/auth-ui && ./script.sh bulid_container_auth_ui)
-    docker save auth-ui:latest | (eval $(minikube docker-env) && docker load)
-    
-    (cd service/auth-token-exchange && ./script.sh build_container_auth_token_exchange)
-    docker save auth-token-exchange:latest | (eval $(minikube docker-env) && docker load)
-}
-
-{
-    deploy_local_minikube_only_app() {
-        build_all_containers_with_load
-        
-        ./script.sh deploy --environment development --action app
-    }
-}
 deploy_local_minikube() {
     sudo echo "elevated permission"
-
     action=${1:-"install"}
+
+    if [ "$action" == "delete" ]; then
+        source ./script/deploy.sh
+        deploy --environment development --action delete
+        return 
+    elif [ "$action" == "kustomize" ]; then
+        source ./script/deploy.sh
+        deploy --environment development --action kustomize
+        return
+    fi
+
+    if ! minikube status &> /dev/null; then
+        echo "Minikube is not running. Starting Minikube..."
+        minikube start
+    else
+        echo "Minikube is already running."
+    fi
+
+    # manual_build_all_containers_with_load
+    
+    terminate_background_jobs
+    
+    deploy --environment development --action install
+    # deploy only app: 
+    # deploy --environment development --action app
+
+    read -t 20 -p "Do you want to execute tunnel_minikube? (y/n, default is y after 20 seconds): " choice
+    choice=${choice:-y}
+    if [[ "$choice" == "y" ]]; then
+        tunnel_minikube
+    else
+        echo "Skipping tunnel_minikube execution."
+    fi
 
     example_scripts() {
         kubectl config view && kubectl get namespace && kubectl config get-contexts
@@ -136,41 +94,62 @@ deploy_local_minikube() {
             curl --resolve donation-app.test:80:$GW donation-app.test
         }
 
-        kubectl apply -k ./kubernetes/development
+        kubectl apply -k ./kubernetes/overlays/dev
 
         curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
     }
+}
 
-    if [ "$action" == "delete" ]; then
-        source ./script/deploy.sh
-        deploy --environment development --action delete
-        return 
-    elif [ "$action" == "kustomize" ]; then
-        source ./script/deploy.sh
-        deploy --environment development --action kustomize
-        return
-    fi
+# TODO: alternative to above script
+deploy_skaffold() {
+    {
+        minikube start --profile minikube --namespace donation-app # set default namespace for minikube
+        skaffold config set --global local-cluster true
+        eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
+    }
 
-    if ! minikube status &> /dev/null; then
-        echo "Minikube is not running. Starting Minikube..."
-        minikube start
-    else
-        echo "Minikube is already running."
-    fi
+    fix_sync_issue() {
+        # fixes issue with namespaces affecting skaffold sync - https://github.com/GoogleContainerTools/skaffold/issues/1668#issuecomment-595752550
+        # namespace config when set to undefined prevents sync errors
+        # local current_ns; 
+        current_ns="$(kubectl config view --minify --output 'jsonpath={..namespace}')"
+        kubectl config set-context --current --namespace=
+        (sleep 3 && kubectl config set-context --current --namespace="${current_ns}" ) &
+    }
 
-    build_all_containers_with_load
+    fix_sync_issue
+    skaffold dev --profile development --port-forward --cleanup=false
 
-    terminate_background_jobs
-    
-    deploy --environment development --action install
+    root_kustomize_skaffold() {
+        skaffold run --filename skaffold-root-kustomize.yml --port-forward --cleanup=false
+    }
 
-    kubectl config set-context --current --namespace=all
+    # TODO:
+    deploy_all() {
+        services=("service-1" "service-2")
 
-    read -t 20 -p "Do you want to execute tunnel_minikube? (y/n, default is y after 20 seconds): " choice
-    choice=${choice:-y}
-    if [[ "$choice" == "y" ]]; then
-        tunnel_minikube
-    else
-        echo "Skipping tunnel_minikube execution."
-    fi
+        for service in "${services[@]}"; do
+            echo "Deploying $service..."
+            cd "$service" && skaffold dev && cd ..
+        done
+    }
+
+    freeup_minikube_space() { 
+        minikube ssh df
+        minikube ssh 'docker image prune -a -f'
+        docker system prune --all --force
+    }
+
+    verify() { 
+        kubectl config view
+        skaffold config list
+        skaffold render
+        
+        skaffold delete --profile development
+        skaffold build -v debug 
+        skaffold dev --port-forward -v debug
+        skaffold debug
+        skaffold run
+        skaffold run --profile production --port-forward
+    }
 }

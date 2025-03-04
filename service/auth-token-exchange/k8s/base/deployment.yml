@@ -18,7 +18,7 @@ spec:
           image: auth-token-exchange:latest
           ports:
             - containerPort: 3000
-              name: http-token-ex
+              name: auth-token-ex
 
           env:
           - name: HYDRA_CLIENT_SECRET

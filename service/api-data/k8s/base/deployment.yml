@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-data
+spec:
+  replicas: 2
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    spec:
+      containers:
+        - name: api-data
+          image: api-data:latest
+          ports:
+            - containerPort: 80
+              name: api-data
+
+          # env:

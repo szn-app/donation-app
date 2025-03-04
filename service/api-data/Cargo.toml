@@ -1,6 +1,6 @@
 [package]
-name = "api_data"
-version = "0.0.13"
+name = "api-data"
+version = "0.0.1"
 edition = "2021"
 
 [dependencies]

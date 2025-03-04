@@ -2,9 +2,9 @@
 build_container_web_server() {
     # NOTE: uses buildx (instead of the legacy build)
     if [ "$1" == "development" ]; then
-        docker build . -t web-server:latest --build-arg ENV=development
+        docker build . --target development -t web-server:latest # --build-arg ENV=development
     else
-        docker build . -t web-server:latest --build-arg ENV=production
+        docker build . --target production -t web-server:latest # --build-arg ENV=production
     fi
 }
 

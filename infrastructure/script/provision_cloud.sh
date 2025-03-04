@@ -76,7 +76,6 @@ hetzner_cloud_provision() {
     {
       pushd infrastructure
 
-      
       generate_kubeconfig() {
         find . -name "*.tfvars"
         set -a && source ".env" && set +a # export TF_TOKEN_app_terraform_io="" 
@@ -179,8 +178,10 @@ hetzner_cloud_provision() {
       install_storage_class 
       # TODO: check resource limits and prevent contention when using monitoring tools
       # install_monitoring
-      install_envoy_gateway_class
 
+      popd 
+
+      install_envoy_gateway_class
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/
@@ -235,6 +236,5 @@ hetzner_cloud_provision() {
         ssh -p 2220 root@$ip_address 
       }
 
-      popd
     }
 }
