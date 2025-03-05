@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.74](https://github.com/szn-app/donation-app/compare/web-server@v0.0.73...web-server@v0.0.74) (2025-03-05)
+
+
+### Features
+
+* configure Keto policies and retlations with oathkeeper. ([df0d9f9](https://github.com/szn-app/donation-app/commit/df0d9f912cc2dace4d11771e8b7aeacee1fc5e0b))
+* **service:** add api-data service ([7ac82d6](https://github.com/szn-app/donation-app/commit/7ac82d6fd94ead4fd7231ae0142b5f7c6c57f3f4))
+
 ## [0.0.73](https://github.com/szn-app/donation-app/compare/web-server@v0.0.72...web-server@v0.0.73) (2025-02-21)
 
 

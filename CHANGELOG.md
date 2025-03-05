@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.17](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.16...donation-app@v0.4.17) (2025-03-05)
+
+
+### Features
+
+* access rules to protect admin dashboards ([048e2b6](https://github.com/szn-app/donation-app/commit/048e2b61251f2bafe4008a8b09508a19649d49e6))
+* **auth:** permit cookie session authenticator for protected api registered through internal gateway ([08d6ded](https://github.com/szn-app/donation-app/commit/08d6dedbed8babd4e43aa425acf95bc6c4923bdc))
+* configure Keto policies and retlations with oathkeeper. ([df0d9f9](https://github.com/szn-app/donation-app/commit/df0d9f912cc2dace4d11771e8b7aeacee1fc5e0b))
+* **service:** add api-data service ([7ac82d6](https://github.com/szn-app/donation-app/commit/7ac82d6fd94ead4fd7231ae0142b5f7c6c57f3f4))
+
 ## [0.4.16](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.15...donation-app@v0.4.16) (2025-02-21)
 
 
