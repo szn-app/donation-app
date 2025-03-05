@@ -1,3 +1,7 @@
+misc_() {
+    # modify permission
+    find ./ -maxdepth 4 -name "script.sh" -exec chmod +x {} \;
+}
 
 record_version() { 
     NODE_VERSION=$(node -v | cut -d 'v' -f2)

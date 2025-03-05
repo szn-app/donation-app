@@ -46,12 +46,62 @@ install_ory_stack() {
         fi
     }
 
-    # ory stack charts
-    helm repo add ory https://k8s.ory.sh/helm/charts
-    # postgreSQL
-    helm repo add bitnami https://charts.bitnami.com/bitnami 
-    helm repo update
+    load_scripts_recursive() {
+        SCRIPT_DIR="$1"  # Get directory from argument
 
+        # Validate input
+        if [[ -z "$SCRIPT_DIR" ]]; then
+            echo "Usage: $0 <script_directory>"
+            return 1
+        elif [[ ! -d "$SCRIPT_DIR" ]]; then
+            echo "Error: '$SCRIPT_DIR' is not a valid directory."
+            return 1
+        fi
+
+        # Find and source all .sh scripts recursively
+        for script in $(find "$SCRIPT_DIR" -type f -name "*.sh"); do
+            echo "Sourcing $script..."
+            source "$script"
+        done
+    }
+
+    load_scripts_recursive .
+
+    env_files() {
+        local environment="$1"
+
+
+        # create .env files from default template if doesn't exist
+        create_env_files() {
+                # Find all *.env.template files
+                find . -name "*.env.template" | while IFS= read -r template_file; do
+                        # Extract filename without extension
+                        filename=$(basename "$template_file" | cut -d '.' -f 1)
+                        env_file="$(dirname "$template_file")/$filename.env"
+
+                        # Check if .env file already exists
+                        if [ ! -f "$env_file" ]; then
+                            # Create a new .env file from the template in the same directory
+                            cp "$template_file" "$env_file" 
+                            echo "created env file file://$env_file from $template_file"
+                        fi
+                done
+        }
+
+        generate_database_kratos_credentials
+        generate_default_username_kratos
+        generate_database_hydra_credentials
+        generate_database_keto_credentials
+        create_env_files
+    }
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    # postgreSQL
+    helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
+    helm repo update > /dev/null 2>&1 
+
+    env_files $environment
     install_kratos $environment
     install_hydra $environment
     install_keto # depends on `install_kratos`
@@ -107,4 +157,3 @@ install_ory_stack() {
         }
     }
 }
-

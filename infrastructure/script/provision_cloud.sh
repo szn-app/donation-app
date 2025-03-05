@@ -151,10 +151,28 @@ hetzner_cloud_provision() {
         echo "Patch applied successfully. A backup of the original file is saved as ${INIT_TF_PATH}.bak."
       }
 
+      # create .env files from default template if doesn't exist
+      create_env_files() {
+              # Find all *.env.template files
+              find . -name "*.env.template" | while IFS= read -r template_file; do
+                      # Extract filename without extension
+                      filename=$(basename "$template_file" | cut -d '.' -f 1)
+                      env_file="$(dirname "$template_file")/$filename.env"
+
+                      # Check if .env file already exists
+                      if [ ! -f "$env_file" ]; then
+                          # Create a new .env file from the template in the same directory
+                          cp "$template_file" "$env_file" 
+                          echo "created env file file://$env_file from $template_file"
+                      fi
+              done
+      }
+
       hcloud context create "k8s-project"
 
       ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
       find . -name "*.tfvars"
+      create_env_files
       set -a && source ".env" && set +a # export TF_TOKEN_app_terraform_io="" 
 
       export TF_LOG=DEBUG

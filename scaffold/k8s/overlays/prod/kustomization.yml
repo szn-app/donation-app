@@ -3,17 +3,17 @@ kind: Kustomization
 
 resources:
   - ../../base
-  - ../../../service/auth-ory-stack/k8s/production
 
-  - ../../../service/cilium-gateway/k8s/overlays/prod
-  - ../../../service/envoy-proxy/k8s/base
+  - ../../../../service/cilium-gateway/k8s/overlays/prod
+  - ../../../../service/envoy-proxy/k8s/base
   
-  - ../../../service/auth-ory-admin-ui/k8s/overlays/prod
-  - ../../../service/auth-token-exchange/k8s/overlays/prod
-  - ../../../service/auth-ui/k8s/overlays/prod
+  # - ../../../../service/auth-ory-stack/k8s/overlays/prod
+  - ../../../../service/auth-ory-admin-ui/k8s/overlays/prod
+  # - ../../../../service/auth-token-exchange/k8s/overlays/prod
+  # - ../../../../service/auth-ui/k8s/overlays/prod
   
-  - ../../../service/web-server/k8s/overlays/prod
-  - ../../../service/api-data/k8s/overlays/prod
+  # - ../../../../service/web-server/k8s/overlays/prod
+  # - ../../../../service/api-data/k8s/overlays/prod
 
   - ../../route
   

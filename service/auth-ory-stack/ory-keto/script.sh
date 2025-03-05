@@ -1,5 +1,5 @@
 generate_database_keto_credentials() {
-    db_secret_file="./service/auth-ory-stack/ory-keto/db_keto_secret.env"
+    db_secret_file="./db_keto_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -7,11 +7,15 @@ DB_PASSWORD="$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')"
 EOF
 
         mv $t $db_secret_file
-        echo "generated secrets file: file://$db_secret_file" 
-    fi
+        echo "generated secrets file: file://$(readlink -f $db_secret_file)" 
+        else
+        echo "using existing credentials file: file://$(readlink -f $db_secret_file)"
+        fi
 }
 
-create_keto_policies() { 
+create_keto_policies() {
+        local environment=$1
+
         # https://www.ory.sh/docs/keto#ory-permission-language
         printf "Keto: create relations rules \n"
         
@@ -122,8 +126,37 @@ EOF
 }
 
 install_keto() {
-    pushd ./service/auth-ory-stack/ory-keto
+    set -e
+    local environment="$1"
     
+    # create .env files from default template if doesn't exist
+    create_env_files() {
+        # Find all *.env.template files
+        find . -name "*.env.template" | while IFS= read -r template_file; do
+                # Extract filename without extension
+                filename=$(basename "$template_file" | cut -d '.' -f 1)
+                env_file="$(dirname "$template_file")/$filename.env"
+
+                # Check if .env file already exists
+                if [ ! -f "$env_file" ]; then
+                    # Create a new .env file from the template in the same directory
+                    cp "$template_file" "$env_file" 
+                    echo "created env file file://$(readlink -f $env_file) from $template_file"
+                else
+                    echo "env file already exists: file://$(readlink -f $env_file)"
+                fi
+        done
+    }
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    # postgreSQL
+    helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
+    helm repo update > /dev/null 2>&1 
+
+    generate_database_keto_credentials
+    create_env_files
+
     if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
         upgrade_db=false
     else
@@ -152,12 +185,15 @@ install_keto() {
         set +a
         l="$(mktemp).log" && helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yml -f $t \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD}> $l && printf "Keto logs: file://$l\n"
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Keto logs: file://$l\n"
     }
 
-    sleep 15
+    # Wait for Keto deployments to be ready
+    printf "Waiting for Keto deployment to be ready...\n"
+    kubectl wait --for=condition=available deployment/keto --namespace=auth --timeout=300s
 
-    create_keto_policies
+
+    create_keto_policies $environment
 
     verify() {
         alias keto="docker run -it --network cat-videos-example_default -e KETO_READ_REMOTE=\"keto:4466\" oryd/keto:v0.7.0-alpha.1"
@@ -175,5 +211,6 @@ install_keto() {
         # check ongoing installs 
         helm history keto -n auth
     }
-    popd
+
+    set +e
 }

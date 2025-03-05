@@ -1,21 +1,48 @@
+# NOTE: security policy defined on gateway level
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 
 metadata:
   name: https-api-data
+  namespace: envoy-gateway-system
 spec:
   parentRefs:
     - name: gateway
       namespace: gateway
-      sectionName: https
+      sectionName: https-api
 
   hostnames:
     - api.donation-app.test
 
   rules:
     - backendRefs:
-        - kind: Service
-          name: api-data
+        # kubernetees service
+        - name: envoy-gateway-internal
+          namespace: envoy-gateway-system
+          port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: internal-api-data
+  namespace: donation-app
+spec:
+  parentRefs:
+    - name: envoy-gateway-internal
+      namespace: envoy-gateway-system
+      sectionName: http
+
+  hostnames:
+    - api.donation-app.test
+
+  rules:
+    - backendRefs:
+        # kubernetees service
+        - name: api-data
+          namespace: donation-app
           port: 80
       matches:
         - path:
@@ -23,18 +50,17 @@ spec:
             value: /
 
 ---
-
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 
 metadata:
-  name: http-redirect-api-data
+  name: http-api-data-redirect
   namespace: cert-manager # HTTPRoute must be placed in same namespace as the target backend service
 spec:
   parentRefs:
     - name: gateway
       namespace: gateway
-      sectionName: http
+      sectionName: http-api
 
   hostnames:
     - "api.donation-app.test"

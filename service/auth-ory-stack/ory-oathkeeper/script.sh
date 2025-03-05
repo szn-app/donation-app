@@ -1,18 +1,5 @@
 #!/bin/bash
 
-generate_database_hydra_credentials() {
-    db_secret_file="./service/auth-ory-stack/ory-hydra/db_hydra_secret.env"
-    if [ ! -f "$db_secret_file" ]; then
-        t=$(mktemp) && cat <<EOF > "$t"
-DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
-DB_PASSWORD="$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')"
-EOF
-
-        mv $t $db_secret_file
-        echo "generated secrets file: file://$db_secret_file" 
-    fi
-}
-
 ### usecases: 
 # Examples of Oathkeeper validation setups possible: 
 #   a. JWT stored in a cookie
@@ -20,7 +7,13 @@ EOF
 #   c. Hydra OAuth2 access token in a cookie
 install_oathkeeper() {
     set -e
-    pushd ./service/auth-ory-stack/ory-oathkeeper
+    local environment="$1"
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    # postgreSQL
+    helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
+    helm repo update > /dev/null 2>&1 
 
     generate_oathkeeper_oauth2_client_credentials_env_file() {
         CLIENT_NAME="oathkeeper-introspection"
@@ -40,11 +33,12 @@ install_oathkeeper() {
 OATHKEEPER_CLIENT_CREDENTIALS="${OATHKEEPER_CLIENT_CREDENTIALS}"
 EOF
         mv $t $secret
-        echo "generated secrets file: file://$secret" 
+        echo "generated secrets file: file://$(readlink -f $secret)"
     }
 
     # used also to update access rules
     helm_install_oathkeeper() {
+        local environment="$1"
 
         # t="$(mktemp).pem" && openssl genrsa -out "$t" 2048 # create private key
         # # Generate a JWKs file (if needed) - basic example using OpenSSL:
@@ -60,12 +54,13 @@ EOF
 
     printf "install Ory Aothkeeper \n"
     generate_oathkeeper_oauth2_client_credentials_env_file
-    helm_install_oathkeeper
+    helm_install_oathkeeper $environment
 
-    popd
+    # Wait for Oathkeeper deployment to be ready
+    printf "Waiting for Oathkeeper deployment to be ready...\n"
+    kubectl wait --for=condition=available deployment/oathkeeper --namespace=auth --timeout=300s
 
     verify() { 
-        pushd ./service/auth-ory-stack/ory-oathkeeper
         {
             # manually validate rendered deployment manifest files
             t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
@@ -224,7 +219,6 @@ EOF
             }
         }
         
-        popd
     }
 
     set +e

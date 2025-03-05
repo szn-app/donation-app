@@ -2,6 +2,10 @@ apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
   name: web-server
+
+requires:
+  - path: ../../scaffold
+
 build:
   local: 
     push: false
@@ -46,7 +50,6 @@ profiles:
   deploy:
     kubeContext: minikube
 
-
 - name: production
 
   build: 
@@ -61,5 +64,3 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/prod
-  deploy:
-    kubeContext: minikube

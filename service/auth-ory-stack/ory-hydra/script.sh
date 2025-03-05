@@ -1,130 +1,5 @@
-install_hydra() {
-    environment=$1
-
-    pushd ./service/auth-ory-stack/ory-hydra
-    
-    if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
-        upgrade_db=false
-    else
-        upgrade_db=true
-    fi
-
-    if [ "$upgrade_db" = true ]; then
-        printf "install Postgresql for Ory Hydra \n"
-
-        set -a
-            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
-        set +a
-        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
-            --set auth.username=${DB_USER} \
-            --set auth.password=${DB_PASSWORD} \
-            --set auth.database=hydra_db > $l && printf "Hydra database logs: file://$l\n"
-        # this will generate 'postgres-hydra-postgresql' service
-    fi
-
-    printf "install Ory Hydra \n"
-    {
-        # preprocess file through substituting env values
-        t="$(mktemp).yml" && cargo run --release --bin render-template-config -- --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        q="$(mktemp).yml" && cargo run --release --bin render-template-helm -- --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
-        set -a
-            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
-        set +a
-        system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
-        cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
-        l="$(mktemp).log" && helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f $q -f $t \
-            --set kratos.config.secrets.system[0]="$system_secret" \
-            --set kratos.config.secrets.cookie[0]="$cookie_secret" \
-            --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Hydra logs: file://$l\n"
-    }
-
-    verify() { 
-        print_info() {
-            curl -k -s https://auth.donation-app.test/authorize/.well-known/openid-configuration | jq
-            curl -k -s https://auth.donation-app.test/authorize/.well-known/jwks.json | jq
-        }
-
-        # /.well-known/jwks.json
-        # /.well-known/openid-configuration
-        # /oauth2/auth
-        # /oauth2/token
-        # /oauth2/revoke
-        # /oauth2/fallbacks/consent
-        # /oauth2/fallbacks/error
-        # /oauth2/sessions/logout
-        # /userinfo
-
-        kubectl run -it --rm --image=debian:latest debug-pod-client --namespace auth -- /bin/bash
-        {
-            # install dependencies including Hydra
-            {
-                apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
-                bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 >/dev/null 2>&1 && mv hydra /usr/bin/
-            }
-
-
-            curl -s http://hydra-admin/admin/clients | jq
-
-            # https://www.ory.sh/docs/hydra/self-hosted/quickstart
-            # [OAuth 2.0] create client and perform "clients credentials" grant
-            {
-                client=$(hydra create client --endpoint http://hydra-admin--format json --grant-type client_credentials)
-                # parse the JSON response using jq to get the client ID and client secret:
-                client_id=$(echo $client | jq -r '.client_id')
-                client_secret=$(echo $client | jq -r '.client_secret')
-
-                # perform client credentials grant
-                CREDENTIALS_GRANT=$(hydra perform client-credentials --endpoint http://hydra-public/ --client-id "$client_id" --client-secret "$client_secret")
-                printf "%s\n" "$CREDENTIALS_GRANT"
-                TOKEN=$(printf "%s\n" "$CREDENTIALS_GRANT" | grep "ACCESS TOKEN" | awk '{if($1 == "ACCESS" && $2 == "TOKEN") {print $3}}')
-
-                # token introspection 
-                hydra introspect token --format json-pretty --endpoint http://hydra-admin$TOKEN
-                { # test envoy gateway + oathkeeper as external authorization  
-                    # introspects http://oathkeeper-api:80/decisions
-                    curl -i -k -H "Authorization: Bearer $TOKEN" ${TEST_SUBDOMAIN_URL}/oauth-header 
-                }
-            }
-
-            # [OAuth 2.0] user "Code" grant 
-            {
-                # example of public client which cannot provide client secrets (authentication flow only using client id )
-                code_client=$(hydra create client --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code,id_token --format json --scope openid --scope offline --redirect-uri http://hydra-public/callback --token-endpoint-auth-method none)
-                code_client=$(hydra create client --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code,id_token --format json --scope openid --scope offline --redirect-uri http://hydra-public/callback)
-                code_client_id=$(echo $code_client | jq -r '.client_id')
-                code_client_secret=$(echo $code_client | jq -r '.client_secret')
-                # perform Authorization Code flow to grant Code 
-                hydra perform authorization-code --port 5555 --client-id $code_client_id --endpoint http://hydra-admin--scope openid --scope offline
-                # [execute on local mahcine] access hydra's Authorization Code flow endpoint
-                # NOTE: requires exposing all relied on services because the examplery authorization page on 5555 redirects to the endpoint hydra-admin which is not exposed in localhost 
-                {
-                    # TODO: APPROACH NOT WORKING - browser doesn't resolve kubernetes services
-                    kubectl run --image=overclockedllama/docker-chromium debug-auth-browser --namespace auth
-                    kubectl port-forward pod/debug-auth-browser 5800:5800 --namespace auth
-                    # access browser at localhost:5800 (on local machine) and navigate to localhost:5555 (which is inside kubernetes)
-                    kubectl delete pod debug-auth-browser --grace-period=0 --force -n auth
-                }
-                # [another approach]  requires a reverse proxy or solution to map /etc/hosts domains to specific localhost port, in order to fix redirections
-                {
-                    # TODO: APPROACH NOT WOKRING INCOMPLETE
-                    kubectl port-forward pod/debug-pod-client 5555:5555 --namespace auth
-                    kubectl port-forward service/hydra-admin 5556:80 --namespace auth
-                    kubectl port-forward service/hydra-public 5557:80 --namespace auth
-                    # echo "127.0.0.1 localhost:5556" | tee -a /etc/hosts
-                    # sed -i '/127.0.0.1 example1.com/d' /etc/hosts
-                }
-            }
-        }
-    }
-
-    popd
-}
-
-
 create_oauth2_client_for_trusted_app() {
     environment=${1:-development}
-    pushd ./service/auth-ory-stack/ory-hydra
 
     set -a 
         if [ -f ./.env.$environment ]; then
@@ -406,5 +281,178 @@ EOF
         
     }
 
-    popd
 }
+
+install_hydra() {
+    set -e
+    local environment=$1
+
+    # create .env files from default template if doesn't exist
+    create_env_files() {
+        # Find all *.env.template files
+        find . -name "*.env.template" | while IFS= read -r template_file; do
+                # Extract filename without extension
+                filename=$(basename "$template_file" | cut -d '.' -f 1)
+                env_file="$(dirname "$template_file")/$filename.env"
+
+                # Check if .env file already exists
+                if [ ! -f "$env_file" ]; then
+                    # Create a new .env file from the template in the same directory
+                    cp "$template_file" "$env_file" 
+                    echo "created env file file://$(readlink -f $env_file) from $template_file"
+                else
+                    echo "env file already exists: file://$(readlink -f $env_file)"
+                fi
+        done
+    }
+
+    generate_database_hydra_credentials() {
+        db_secret_file="./db_hydra_secret.env"
+        if [ ! -f "$db_secret_file" ]; then
+            t=$(mktemp) && cat <<EOF > "$t"
+DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
+DB_PASSWORD="$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')"
+EOF
+
+            mv $t $db_secret_file
+            echo "generated secrets file: file://$(readlink -f $db_secret_file)" 
+        else
+            echo "db secret file already exists: file://$(readlink -f $db_secret_file)"
+        fi
+    }
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    # postgreSQL
+    helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
+    helm repo update > /dev/null 2>&1 
+
+    generate_database_hydra_credentials
+    create_env_files
+
+    if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
+        upgrade_db=false
+    else
+        upgrade_db=true
+    fi
+
+    if [ "$upgrade_db" = true ]; then
+        printf "install Postgresql for Ory Hydra \n"
+
+        set -a
+            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
+            --set auth.username=${DB_USER} \
+            --set auth.password=${DB_PASSWORD} \
+            --set auth.database=hydra_db > $l && printf "Hydra database logs: file://$l\n"
+        # this will generate 'postgres-hydra-postgresql' service
+    fi
+
+    printf "install Ory Hydra \n"
+    {
+        # preprocess file through substituting env values
+        t="$(mktemp).yml" && cargo run --release --bin render-template-config -- --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        q="$(mktemp).yml" && cargo run --release --bin render-template-helm -- --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
+        set -a
+            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+        set +a
+        system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
+        cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
+        l="$(mktemp).log" && helm upgrade --debug --install hydra ory/hydra -n auth --create-namespace -f $q -f $t \
+            --set kratos.config.secrets.system[0]="$system_secret" \
+            --set kratos.config.secrets.cookie[0]="$cookie_secret" \
+            --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Hydra logs: file://$l\n"
+    }
+
+
+    create_oauth2_client_for_trusted_app $environment
+
+    # Wait for Hydra deployment to be ready
+    printf "Waiting for Hydra deployment to be ready...\n"
+    kubectl wait --for=condition=available deployment/hydra --namespace=auth --timeout=300s
+
+    verify() { 
+        print_info() {
+            curl -k -s https://auth.donation-app.test/authorize/.well-known/openid-configuration | jq
+            curl -k -s https://auth.donation-app.test/authorize/.well-known/jwks.json | jq
+        }
+
+        # /.well-known/jwks.json
+        # /.well-known/openid-configuration
+        # /oauth2/auth
+        # /oauth2/token
+        # /oauth2/revoke
+        # /oauth2/fallbacks/consent
+        # /oauth2/fallbacks/error
+        # /oauth2/sessions/logout
+        # /userinfo
+
+        kubectl run -it --rm --image=debian:latest debug-pod-client --namespace auth -- /bin/bash
+        {
+            # install dependencies including Hydra
+            {
+                apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
+                bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . hydra v2.2.0 >/dev/null 2>&1 && mv hydra /usr/bin/
+            }
+
+
+            curl -s http://hydra-admin/admin/clients | jq
+
+            # https://www.ory.sh/docs/hydra/self-hosted/quickstart
+            # [OAuth 2.0] create client and perform "clients credentials" grant
+            {
+                client=$(hydra create client --endpoint http://hydra-admin--format json --grant-type client_credentials)
+                # parse the JSON response using jq to get the client ID and client secret:
+                client_id=$(echo $client | jq -r '.client_id')
+                client_secret=$(echo $client | jq -r '.client_secret')
+
+                # perform client credentials grant
+                CREDENTIALS_GRANT=$(hydra perform client-credentials --endpoint http://hydra-public/ --client-id "$client_id" --client-secret "$client_secret")
+                printf "%s\n" "$CREDENTIALS_GRANT"
+                TOKEN=$(printf "%s\n" "$CREDENTIALS_GRANT" | grep "ACCESS TOKEN" | awk '{if($1 == "ACCESS" && $2 == "TOKEN") {print $3}}')
+
+                # token introspection 
+                hydra introspect token --format json-pretty --endpoint http://hydra-admin$TOKEN
+                { # test envoy gateway + oathkeeper as external authorization  
+                    # introspects http://oathkeeper-api:80/decisions
+                    curl -i -k -H "Authorization: Bearer $TOKEN" ${TEST_SUBDOMAIN_URL}/oauth-header 
+                }
+            }
+
+            # [OAuth 2.0] user "Code" grant 
+            {
+                # example of public client which cannot provide client secrets (authentication flow only using client id )
+                code_client=$(hydra create client --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code,id_token --format json --scope openid --scope offline --redirect-uri http://hydra-public/callback --token-endpoint-auth-method none)
+                code_client=$(hydra create client --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code,id_token --format json --scope openid --scope offline --redirect-uri http://hydra-public/callback)
+                code_client_id=$(echo $code_client | jq -r '.client_id')
+                code_client_secret=$(echo $code_client | jq -r '.client_secret')
+                # perform Authorization Code flow to grant Code 
+                hydra perform authorization-code --port 5555 --client-id $code_client_id --endpoint http://hydra-admin--scope openid --scope offline
+                # [execute on local mahcine] access hydra's Authorization Code flow endpoint
+                # NOTE: requires exposing all relied on services because the examplery authorization page on 5555 redirects to the endpoint hydra-admin which is not exposed in localhost 
+                {
+                    # TODO: APPROACH NOT WORKING - browser doesn't resolve kubernetes services
+                    kubectl run --image=overclockedllama/docker-chromium debug-auth-browser --namespace auth
+                    kubectl port-forward pod/debug-auth-browser 5800:5800 --namespace auth
+                    # access browser at localhost:5800 (on local machine) and navigate to localhost:5555 (which is inside kubernetes)
+                    kubectl delete pod debug-auth-browser --grace-period=0 --force -n auth
+                }
+                # [another approach]  requires a reverse proxy or solution to map /etc/hosts domains to specific localhost port, in order to fix redirections
+                {
+                    # TODO: APPROACH NOT WOKRING INCOMPLETE
+                    kubectl port-forward pod/debug-pod-client 5555:5555 --namespace auth
+                    kubectl port-forward service/hydra-admin 5556:80 --namespace auth
+                    kubectl port-forward service/hydra-public 5557:80 --namespace auth
+                    # echo "127.0.0.1 localhost:5556" | tee -a /etc/hosts
+                    # sed -i '/127.0.0.1 example1.com/d' /etc/hosts
+                }
+            }
+        }
+    }
+
+    set +e
+}
+
+

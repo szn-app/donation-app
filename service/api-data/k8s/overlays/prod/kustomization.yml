@@ -28,3 +28,27 @@ patches:
             containers:
             - name: api-data
               imagePullPolicy: Always
+
+  - target:
+      kind: HTTPRoute
+      name: https-api-data
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-api-data
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-api-data-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"

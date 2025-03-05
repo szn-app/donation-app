@@ -2,6 +2,10 @@ apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
   name: api-data
+
+requires:
+  - path: ../../scaffold
+
 build:
   local: 
     push: false
@@ -58,5 +62,3 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/prod
-  deploy:
-    kubeContext: minikube

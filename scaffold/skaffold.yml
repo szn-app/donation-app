@@ -1,0 +1,30 @@
+# project root kustomization file that includes all other kustomizations
+apiVersion: skaffold/v4beta12
+kind: Config
+
+build:
+  artifacts: []
+deploy: {}
+
+requires:
+#   - path: ../service/cilium-gateway # handled as reference in kustomize
+#   - path: ../service/envoy-proxy # handled as reference in kustomize
+
+  - path: ../service/auth-ory-stack
+#   - path: ../service/auth-ory-admin-ui # handled as reference in kustomize
+  - path: ../service/auth-ui
+  - path: ../service/auth-token-exchange
+
+
+profiles:
+  - name: development
+    manifests:
+      kustomize:
+        paths:
+        - ./k8s/overlays/dev # rely on local containers built by skaffold
+
+  - name: production
+    manifests:
+      kustomize:
+        paths:
+        - ./k8s/overlays/prod

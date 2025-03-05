@@ -45,9 +45,17 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/dev
-  deploy:
-    kubeContext: minikube
-
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ui development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ui development"]
+              dir: .
 
 - name: production
 
@@ -63,5 +71,14 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/prod
-  deploy:
-    kubeContext: minikube
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ui production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ui production"]
+              dir: .

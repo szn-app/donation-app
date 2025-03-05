@@ -1,0 +1,40 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: auth-ory-stack
+
+profiles:
+
+- name: development
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ory_stack development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ory_stack development"]
+              dir: .
+
+- name: production
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ory_stack production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ory_stack production"]
+              dir: .
