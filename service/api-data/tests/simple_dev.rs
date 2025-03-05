@@ -4,6 +4,7 @@ use anyhow::Result;
 use api_data::model::PostData;
 
 #[tokio::test]
+#[ignore = "This test requires a local server to be running"]
 async fn test_main() -> Result<()> {
     use httpc_test;
 
