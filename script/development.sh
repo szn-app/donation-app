@@ -117,12 +117,24 @@ deploy_skaffold() {
         (sleep 3 && kubectl config set-context --current --namespace="${current_ns}" ) &
     }
 
+    set_user_inotify_limit() {
+        # increase inotify limit for user if not already set
+        if ! grep -q "fs.inotify.max_user_instances" /etc/sysctl.conf; then
+            echo fs.inotify.max_user_instances=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+            echo "Increased inotify limit for user"
+        else
+            echo "inotify limit already configured"
+        fi
+    }
+
+    set_user_inotify_limit
     fix_sync_issue
     skaffold dev --profile development --port-forward --cleanup=false
 
     root_kustomize_skaffold() {
         skaffold run --filename skaffold-root-kustomize.yml --profile development --port-forward --cleanup=false
-        skaffold run --filename skaffold-root-kustomize.yml --profile production --port-forward --cleanup=false
+        
+        skaffold run --filename skaffold-root-kustomize.yml --profile production --tail
     }
 
     # TODO:
