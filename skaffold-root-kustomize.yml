@@ -2,39 +2,49 @@
 apiVersion: skaffold/v4beta12
 kind: Config
 
-build:
-  artifacts:
-  - image: web-server
-    context: ./service/web-server
-    docker:
-      target: production
-      dockerfile: Dockerfile
-      buildArgs: {}
-      
-  - image: api-data
-    context: ./service/api-data
-    docker:
-      target: production
-      dockerfile: Dockerfile
-      buildArgs: {}
-      
-  - image: auth-ui
-    context: ./service/auth-ui/kratos-selfservice-ui-node
-    docker:
-      target: production
-      dockerfile: Dockerfile
-      buildArgs: {}
-      
-  - image: auth-token-exchange
-    context: ./service/auth-token-exchange
-    docker:
-      target: production
-      dockerfile: Dockerfile
-      buildArgs: {}
+profiles:
+  - name: development
+    build:
+      artifacts:
+      - image: web-server
+        context: ./service/web-server
+        docker:
+          target: production
+          dockerfile: Dockerfile
+          buildArgs: {}
+          
+      - image: api-data
+        context: ./service/api-data
+        docker:
+          target: production
+          dockerfile: Dockerfile
+          buildArgs: {}
+          
+      - image: auth-ui
+        context: ./service/auth-ui/kratos-selfservice-ui-node
+        docker:
+          target: production
+          dockerfile: Dockerfile
+          buildArgs: {}
+          
+      - image: auth-token-exchange
+        context: ./service/auth-token-exchange
+        docker:
+          target: production
+          dockerfile: Dockerfile
+          buildArgs: {}
 
-deploy: {}
+    deploy: {}
 
-manifests:
-  kustomize:
-    paths:
-    - kubernetes/overlays/dev # rely on local containers built by skaffold
+    manifests:
+      kustomize:
+        paths:
+        - kubernetes/overlays/dev # rely on local containers built by skaffold
+
+  - name: production
+    deploy: {}
+
+    manifests:
+      kustomize:
+        paths:
+        - kubernetes/overlays/prod

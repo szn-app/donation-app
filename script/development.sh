@@ -121,7 +121,8 @@ deploy_skaffold() {
     skaffold dev --profile development --port-forward --cleanup=false
 
     root_kustomize_skaffold() {
-        skaffold run --filename skaffold-root-kustomize.yml --port-forward --cleanup=false
+        skaffold run --filename skaffold-root-kustomize.yml --profile development --port-forward --cleanup=false
+        skaffold run --filename skaffold-root-kustomize.yml --profile production --port-forward --cleanup=false
     }
 
     # TODO:
