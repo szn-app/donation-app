@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.14](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.13...auth-token-exchange@v0.0.14) (2025-03-05)
+
+
+### Features
+
+* **service:** add api-data service ([7ac82d6](https://github.com/szn-app/donation-app/commit/7ac82d6fd94ead4fd7231ae0142b5f7c6c57f3f4))
+
 ## [0.0.13](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.12...auth-token-exchange@v0.0.13) (2025-02-21)
 
 
