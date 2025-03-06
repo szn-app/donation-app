@@ -172,7 +172,7 @@ install_keto() {
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
-            --set auth.database=keto_db > $l && printf "Keto database logs: file://$l\n"
+            --set auth.database=keto_db > $l 2>&1 && printf "Keto database logs: file://$l\n"
         # this will generate 'postgres-keto-postgresql' service
     fi
 
@@ -185,7 +185,7 @@ install_keto() {
         set +a
         l="$(mktemp).log" && helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yml -f $t \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Keto logs: file://$l\n"
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l 2>&1 && printf "Keto logs: file://$l\n"
     }
 
     # Wait for Keto deployments to be ready

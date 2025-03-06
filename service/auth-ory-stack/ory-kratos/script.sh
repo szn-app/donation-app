@@ -201,7 +201,7 @@ EOF
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
-            --set auth.database=kratos_db > $l && printf "Kratos database logs: file://$l\n"
+            --set auth.database=kratos_db > $l 2>&1 && printf "Kratos database logs: file://$l\n"
         # this will generate 'postgres-kratos-postgresql' service
     fi
 
@@ -222,7 +222,7 @@ EOF
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
             --set kratos.config.secrets.cipher[0]="$cipher_secret" \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "kratos logs: file://$l\n"
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l 2>&1 && printf "kratos logs: file://$l\n"
     }
 
     # Wait for Kratos deployment to be ready

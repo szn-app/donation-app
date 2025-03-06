@@ -1,17 +1,5 @@
 # syntax=docker/dockerfile:1
 
-FROM node:lts AS development
-RUN npm install -g pnpm
-
-COPY . /app
-WORKDIR /app
-
-RUN pnpm install
-
-CMD ["pnpm", "run", "dev-service-port"]
-
-# --- 
-
 # building/compiling stage
 FROM node:lts AS build
 RUN npm install -g pnpm
@@ -46,3 +34,15 @@ COPY --from=build /app/dist .
 
 # Containers run nginx with global directives and daemon off
 ENTRYPOINT ["/bin/nginx.sh"]
+
+# --- 
+
+FROM node:lts AS development
+RUN npm install -g pnpm
+
+COPY . /app
+WORKDIR /app
+
+RUN pnpm install
+
+CMD ["pnpm", "run", "dev-service-port"]

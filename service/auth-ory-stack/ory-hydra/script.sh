@@ -345,7 +345,7 @@ EOF
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
-            --set auth.database=hydra_db > $l && printf "Hydra database logs: file://$l\n"
+            --set auth.database=hydra_db > $l 2>&1 && printf "Hydra database logs: file://$l\n"
         # this will generate 'postgres-hydra-postgresql' service
     fi
 
@@ -363,7 +363,7 @@ EOF
             --set kratos.config.secrets.system[0]="$system_secret" \
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
-            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l && printf "Hydra logs: file://$l\n"
+            --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l 2>&1 && printf "Hydra logs: file://$l\n"
     }
 
 

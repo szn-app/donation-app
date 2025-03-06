@@ -24,10 +24,10 @@ deploy:
   statusCheck: true
   
 portForward:
-  - resourceType: service
+  - resourceType: Service
     resourceName: auth-ui
-    port: service-auth-ui
-    localPort: 9090
+    namespace: auth
+    port: 80
 
 profiles:
 
@@ -36,6 +36,7 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
+    local: {}
     artifacts:
     - image: auth-ui
       context: ./kratos-selfservice-ui-node
@@ -71,6 +72,7 @@ profiles:
 - name: production
 
   build: 
+    local: {}
     artifacts:
     - image: auth-ui
       context: ./kratos-selfservice-ui-node
@@ -81,7 +83,7 @@ profiles:
   manifests:
     kustomize:
       paths:
-      - k8s/overlays/prod
+      - k8s/overlays/dev
   deploy: 
     kubectl: 
       hooks:

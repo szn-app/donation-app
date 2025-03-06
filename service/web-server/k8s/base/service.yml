@@ -6,5 +6,6 @@ metadata:
 spec:
   type: ClusterIP
   ports: 
-    - port: 80
+    - name: service-web-server
+      port: 80
       targetPort: web-server

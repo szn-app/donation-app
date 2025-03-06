@@ -3,14 +3,14 @@ kind: Config
 metadata:
   name: api-data
 
-requires:
-  - path: ../../scaffold
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development]
-     - name: production                               
-       activatedBy: [production] 
+# requires:
+#   - path: ../../scaffold
+#     configs: []                 
+#     activeProfiles:                                     
+#      - name: development                               
+#        activatedBy: [development]
+#      - name: production                               
+#        activatedBy: [production] 
 
 build:
   local: 
@@ -23,10 +23,10 @@ deploy:
   statusCheck: true
   
 portForward:
-  - resourceType: service
+  - resourceType: Service
+    namespace: donation-app
     resourceName: api-data
-    port: service-api-data
-    localPort: 8084
+    port: 80
 
 profiles:
 
@@ -35,6 +35,7 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
+    local: {}
     artifacts:
     - image: api-data
       context: .
@@ -54,9 +55,16 @@ profiles:
   deploy:
     kubeContext: minikube
 
+# build production mode and run with local dev settings
 - name: production
 
   build: 
+    local: 
+      push: false 
+      tryImportMissing: false
+    tagPolicy:
+      customTemplate:
+        template: "api-data:latest"
     artifacts:
     - image: api-data
       context: .
@@ -67,4 +75,31 @@ profiles:
   manifests:
     kustomize:
       paths:
+      - k8s/overlays/dev
+
+- name: deploy-production
+
+  manifests:
+    kustomize:
+      paths:
       - k8s/overlays/prod
+
+# NOTE: used in CI/CD github workflow
+# TODO: implement in workflow and apply to other services. Use skaffold.env to set and read version number
+- name: hook-build-push 
+  build: 
+    local: 
+      push: true
+      tryImportMissing: false
+    tagPolicy:
+      envTemplate:
+        template: "api-data:{{.VERSION_NUMBER}}"
+      # customTemplate:
+      #   template: "api-data:latest"
+    artifacts:
+    - image: ghcr.io/szn-app/donation-app/api-data
+      context: .
+      docker:
+        target: production
+        dockerfile: Dockerfile
+        buildArgs: {}

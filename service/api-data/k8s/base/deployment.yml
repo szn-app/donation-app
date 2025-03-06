@@ -19,5 +19,10 @@ spec:
           ports:
             - containerPort: 80
               name: api-data
-
-          # env:
+            # env:
+      #     volumeMounts:
+      #       - name: source-code
+      #         mountPath: /app/target 
+      # volumes:
+      #   - name: source-code
+      #     emptyDir: {}  # Use an emptyDir volume for development

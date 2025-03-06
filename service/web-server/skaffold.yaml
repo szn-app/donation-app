@@ -3,18 +3,19 @@ kind: Config
 metadata:
   name: web-server
 
-requires:
-  - path: ../../scaffold
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development]
-     - name: production                               
-       activatedBy: [production] 
+# requires:
+#   - path: ../../scaffold
+#     configs: []                 
+#     activeProfiles:                                     
+#      - name: development                               
+#        activatedBy: [development]
+#      - name: production                               
+#        activatedBy: [production] 
 
 build:
   local: 
     push: false
+    useDockerCLI: true
   tagPolicy:
     sha256: {} 
 
@@ -23,10 +24,10 @@ deploy:
   statusCheck: true
   
 portForward:
-  - resourceType: deployment
+  - resourceType: Service
     resourceName: web-server
+    namespace: donation-app
     port: 80
-    localPort: 8080
 
 profiles:
 
@@ -35,6 +36,7 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
+    local: {}
     artifacts:
     - image: web-server
       context: .
@@ -56,9 +58,13 @@ profiles:
   deploy:
     kubeContext: minikube
 
+# build production mode and run with local dev settings
 - name: production
 
   build: 
+    local: 
+      push: false 
+      tryImportMissing: false
     artifacts:
     - image: web-server
       context: .
@@ -66,6 +72,13 @@ profiles:
         target: production
         dockerfile: Dockerfile
         buildArgs: {}
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+
+- name: deploy-production
+
   manifests:
     kustomize:
       paths:

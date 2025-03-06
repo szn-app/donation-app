@@ -4,14 +4,14 @@ metadata:
   name: auth-token-exchange
 
 requires:
-  - path: ../../scaffold
+  - path: ../auth-ory-stack
     configs: []                 
     activeProfiles:                                     
      - name: development                               
        activatedBy: [development]
      - name: production                               
        activatedBy: [production]
-  
+
 build:
   local: 
     push: false
@@ -23,10 +23,9 @@ deploy:
   statusCheck: true
   
 portForward:
-  - resourceType: service
+  - resourceType: Service
     resourceName: auth-token-exchange
-    port: service-auth-token-ex
-    localPort: 8082
+    port: 80
 
 profiles:
 
@@ -35,6 +34,7 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
+    local: {}
     artifacts:
     - image: auth-token-exchange
       context: .
@@ -66,6 +66,7 @@ profiles:
 - name: production
 
   build: 
+    local: {}
     artifacts:
     - image: auth-token-exchange
       context: .
@@ -73,6 +74,24 @@ profiles:
         target: production
         dockerfile: Dockerfile
         buildArgs: {}
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_token_exchange development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange development"]
+              dir: .
+
+- name: deploy-production
+
   manifests:
     kustomize:
       paths:

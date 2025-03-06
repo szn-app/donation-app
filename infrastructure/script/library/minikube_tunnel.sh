@@ -1,3 +1,34 @@
+# Wait until index.docker.io is resolvable
+wait_until_internet_resolvable() {
+    local verbose=false
+
+    while getopts "v" opt; do
+        case $opt in
+            v) verbose=true ;;
+            *) ;;
+        esac
+    done
+
+    log() {
+        if [ "$verbose" = true ]; then
+            echo "$@"
+        fi
+    }
+
+    local max_attempts=30
+    local attempt=0
+    while ! nslookup index.docker.io > /dev/null 2>&1; do
+        attempt=$((attempt+1))
+        if [ $attempt -ge $max_attempts ]; then
+            log "Error: connectivity check - Docker registry not resolvable after $max_attempts attempts"
+            return 1
+        fi
+        log "Attempt $attempt - internet connectivity: Docker registry not resolvable yet, retrying in 5s..."
+        sleep 5
+    done
+    log "Internet is now resolvable"
+}
+
 dns_forwarding_dnsmasq_delete() {
     check_issue() {
         dnsmasq_restart() { 
@@ -94,6 +125,20 @@ networkmanager_config() {
 
 dns_forwarding() {
     local loadbalancer_ip="$1"
+    local verbose=false
+
+    while getopts "v" opt; do
+        case $opt in
+            v) verbose=true ;;
+            *) ;;
+        esac
+    done
+
+    log() {
+        if [ "$verbose" = true ]; then
+            echo "$@"
+        fi
+    }
 
     dns_forwarding_hosts() {
         # remove previous entries
@@ -131,8 +176,19 @@ dns_forwarding() {
         networkmanager_config install # makes dnsmasq be controlled by NetworkManager
 
         {
-            sleep 2
-            nslookup donation-app.test 127.0.0.1
+            log "Waiting for donation-app.test to be resolvable..."
+            local max_attempts=30
+            local attempt=0
+            while ! nslookup donation-app.test 127.0.0.1 &>/dev/null; do
+                attempt=$((attempt+1))
+                if [ $attempt -ge $max_attempts ]; then
+                    log "Error: donation-app.test not resolvable after $max_attempts attempts"
+                    return 1
+                fi
+                log "Attempt $attempt - DNS resolution: waiting for donation-app.test to be resolvable, retrying in 2s..."
+                sleep 2
+            done
+            log "Success: donation-app.test is now resolvable"
             time nslookup donation-app.test 127.0.0.1
         }
 
@@ -144,6 +200,7 @@ dns_forwarding() {
 
     # dns_forwarding_hosts
     dns_forwarding_dnsmasq install
+    wait_until_internet_resolvable
 }
 
 tunnel_minikube_delete() {
@@ -153,9 +210,26 @@ tunnel_minikube_delete() {
     dns_forwarding_dnsmasq_delete
     networkmanager_config delete
     systemd_resolved_conf delete
+
+    wait_until_internet_resolvable
 }
 
 tunnel_minikube() {
+    local verbose=false
+
+    while getopts "v" opt; do
+        case $opt in
+            v) verbose=true ;;
+            *) ;;
+        esac
+    done
+
+    log() {
+        if [ "$verbose" = true ]; then
+            echo "$@"
+        fi
+    }
+
     tunnel_minikube_delete
 
     sudo echo "" # switch to sudo explicitely
@@ -163,14 +237,36 @@ tunnel_minikube() {
     sleep 5 
     
     while ! kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' &> /dev/null; do
-        echo "Waiting for load balancer IP..."
+        log "Waiting for load balancer IP..."
         sleep 5
     done
     loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-    curl -k -i --header "Host: donation-app.test" $loadbalancer_ip
+
+    wait_until_internet_resolvable
+    
+    # curl -k -i --header "Host: donation-app.test" $loadbalancer_ip
+    if nslookup test.donation-app.test > /dev/null 2>&1; then
+        log "test.donation-app.test resolvable"
+    fi
     
     dns_forwarding $loadbalancer_ip
 
-    curl -k -i --resolve donation-app.test:443:$loadbalancer_ip https://donation-app.test
-    curl -k -i https://donation-app.test
+    # Try curl commands until domain is resolvable
+    local max_attempts=30
+    local attempt=0
+    while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
+        attempt=$((attempt+1))
+        if [ $attempt -ge $max_attempts ]; then
+            log "Error: test.donation-app.test not accessible after $max_attempts attempts"
+            break
+        fi
+        log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+        sleep 2
+    done
+    
+    if [ $attempt -lt $max_attempts ]; then
+        log "Success: test.donation-app.test is now accessible"
+        curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
+        curl -k -i https://test.donation-app.test/allow
+    fi
 }

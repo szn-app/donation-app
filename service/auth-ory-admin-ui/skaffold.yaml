@@ -14,7 +14,7 @@ requires:
 
 deploy:
   kubectl: {}
-  statusCheck: true
+  statusCheck: false
 
 profiles:
 

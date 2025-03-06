@@ -26,7 +26,7 @@ hot_reload_api_data() {
 }
 
 dev_api_data_skaffold() {     
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     
     skaffold run --profile production --port-forward
 }

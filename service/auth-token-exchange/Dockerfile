@@ -1,21 +1,5 @@
 # syntax=docker/dockerfile:1
 
-FROM rust AS development
-RUN cargo install cargo-watch --locked
-
-COPY . /app
-WORKDIR /app
-
-ENV RUST_LOG=debug
-
-COPY ./script/dev.sh /bin/dev.sh
-RUN chmod +x /bin/dev.sh
-
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["source /bin/dev.sh && hot_reload_auth_token_exchange"]
-
-# ---
-
 # building/compiling stage
 FROM rust AS build
 
@@ -40,3 +24,19 @@ LABEL org.opencontainers.image.licenses="GPL-3.0"
 
 COPY --from=build /bin/auth-token-exchange /bin/
 ENTRYPOINT ["/bin/auth-token-exchange"]
+
+# ---
+
+FROM rust AS development
+RUN cargo install cargo-watch --locked
+
+COPY . /app
+WORKDIR /app
+
+ENV RUST_LOG=debug
+
+COPY ./script/dev.sh /bin/dev.sh
+RUN chmod +x /bin/dev.sh
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["source /bin/dev.sh && hot_reload_auth_token_exchange"]
