@@ -248,7 +248,7 @@ deploy_local_minikube() {
 
     docker_build_to_minikube
     
-    terminate_background_jobs
+    tunnel_minikube_delete
     
     deploy --environment development --action install
     # deploy only app: 

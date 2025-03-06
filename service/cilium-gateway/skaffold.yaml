@@ -5,6 +5,7 @@ metadata:
 
 deploy:
   kubectl: {}
+  statusCheck: true
 
 profiles:
 

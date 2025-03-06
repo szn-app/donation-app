@@ -28,7 +28,17 @@ deploy_skaffold() {
 
     set_user_inotify_limit
     fix_sync_issue
-    skaffold dev --profile development --port-forward --cleanup=false
+    
+    # expose gateway with minimum scaffold services
+    {
+        source ./script.sh 
+        pushd scaffold 
+        skaffold run --profile development
+        tunnel_minikube
+        popd
+    }
+
+    skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 
     other() {
         skaffold run --profile production --tail
@@ -44,9 +54,11 @@ deploy_skaffold() {
         kubectl config view
         skaffold config list
         skaffold render
+        skaffold diagnose
         
         skaffold delete --profile development
         skaffold build -v debug 
+        skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
         skaffold dev --port-forward -v debug
         skaffold debug
         skaffold run

@@ -3,6 +3,10 @@ kind: Config
 metadata:
   name: auth-ory-stack
 
+deploy:
+  kubectl: {}
+  statusCheck: true
+
 profiles:
 
 - name: development

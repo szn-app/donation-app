@@ -2,6 +2,16 @@ apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
   name: auth-token-exchange
+
+requires:
+  - path: ../../scaffold
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
+  
 build:
   local: 
     push: false
@@ -21,8 +31,8 @@ portForward:
 profiles:
 
 - name: development
-  activation:
-    - kubeContext: minikube
+  # activation:
+  #   - kubeContext: minikube
       
   build: 
     artifacts:

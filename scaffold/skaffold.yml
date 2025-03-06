@@ -4,16 +4,51 @@ kind: Config
 
 build:
   artifacts: []
-deploy: {}
+deploy:
+  kubectl: {}
+  statusCheck: true
 
 requires:
 #   - path: ../service/cilium-gateway # handled as reference in kustomize
-#   - path: ../service/envoy-proxy # handled as reference in kustomize
+    # configs: []                 
+    # activeProfiles:                                     
+    #  - name: development                               
+    #    activatedBy: [development]
+    #  - name: production                               
+    #    activatedBy: [production]
+
+
+  # - path: ../service/envoy-proxy # handled as reference in kustomize
+  #   configs: []                 
+  #   activeProfiles:                                     
+  #    - name: development                               
+  #      activatedBy: [development]
+  #    - name: production                               
+  #      activatedBy: [production]
 
   - path: ../service/auth-ory-stack
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
+
 #   - path: ../service/auth-ory-admin-ui # handled as reference in kustomize
+    # configs: []                 
+    # activeProfiles:                                     
+    #  - name: development                               
+    #    activatedBy: [development]
+    #  - name: production                               
+    #    activatedBy: [production]
+
   - path: ../service/auth-ui
-  - path: ../service/auth-token-exchange
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
 
 
 profiles:

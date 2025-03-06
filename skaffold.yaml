@@ -4,9 +4,28 @@ kind: Config
 
 requires:
   - path: scaffold
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
 
   - path: service/web-server
+    configs: []            
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
+
   - path: service/api-data
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production]
 
 profiles:
   - name: development

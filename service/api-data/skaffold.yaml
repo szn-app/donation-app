@@ -5,6 +5,12 @@ metadata:
 
 requires:
   - path: ../../scaffold
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production] 
 
 build:
   local: 
@@ -25,8 +31,8 @@ portForward:
 profiles:
 
 - name: development
-  activation:
-    - kubeContext: minikube
+  # activation:
+  #   - kubeContext: minikube
       
   build: 
     artifacts:

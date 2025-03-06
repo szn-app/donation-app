@@ -146,7 +146,7 @@ dns_forwarding() {
     dns_forwarding_dnsmasq install
 }
 
-terminate_background_jobs() {
+tunnel_minikube_delete() {
     jobs -p | xargs -r kill -9
     pkill -f "minikube tunnel"
 
@@ -156,7 +156,7 @@ terminate_background_jobs() {
 }
 
 tunnel_minikube() {
-    terminate_background_jobs
+    tunnel_minikube_delete
 
     sudo echo "" # switch to sudo explicitely
     minikube tunnel & 

@@ -3,8 +3,18 @@ kind: Config
 metadata:
   name: auth-ory-admin-ui
 
+requires:
+  - path: ../auth-ory-stack
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production                               
+       activatedBy: [production] 
+
 deploy:
   kubectl: {}
+  statusCheck: true
 
 profiles:
 
