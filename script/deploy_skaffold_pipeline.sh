@@ -56,8 +56,9 @@ dev_skaffold() {
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
+        source ./script.sh
         tunnel_minikube_delete
-        tunnel_minikube
+        tunnel_minikube -v
     }
 
     delete() {

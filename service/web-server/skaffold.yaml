@@ -59,7 +59,7 @@ profiles:
     kubeContext: minikube
 
 # build production mode and run with local dev settings
-- name: production
+- name: local-production
 
   build: 
     local: 
@@ -77,7 +77,7 @@ profiles:
       paths:
       - k8s/overlays/dev
 
-- name: deploy-production
+- name: production
 
   manifests:
     kustomize:

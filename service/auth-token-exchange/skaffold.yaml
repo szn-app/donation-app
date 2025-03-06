@@ -8,7 +8,7 @@ requires:
     configs: []                 
     activeProfiles:                                     
      - name: development                               
-       activatedBy: [development]
+       activatedBy: [development, local-production]
      - name: production                               
        activatedBy: [production]
 
@@ -25,6 +25,7 @@ deploy:
 portForward:
   - resourceType: Service
     resourceName: auth-token-exchange
+    namespace: auth
     port: 80
 
 profiles:
@@ -63,7 +64,7 @@ profiles:
               command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange development"]
               dir: .
 
-- name: production
+- name: local-production
 
   build: 
     local: {}
@@ -90,7 +91,7 @@ profiles:
               command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange development"]
               dir: .
 
-- name: deploy-production
+- name: production
 
   manifests:
     kustomize:

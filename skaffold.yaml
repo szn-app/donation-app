@@ -7,7 +7,7 @@ requires:
     configs: []                 
     activeProfiles:                                     
      - name: development                               
-       activatedBy: [development]
+       activatedBy: [development, local-production]
      - name: production                               
        activatedBy: [production]
 
@@ -18,6 +18,8 @@ requires:
        activatedBy: [development]
      - name: production                               
        activatedBy: [production]
+     - name: local-production
+       activatedBy: [local-production]
 
   - path: service/api-data
     configs: []                 
@@ -26,7 +28,20 @@ requires:
        activatedBy: [development]
      - name: production                               
        activatedBy: [production]
+     - name: local-production
+       activatedBy: [local-production]    
+
+  - path: service/auth-token-exchange
+    configs: []                 
+    activeProfiles:                                     
+    - name: development                               
+      activatedBy: [development]
+    - name: production                               
+      activatedBy: [production]
+    - name: local-production
+      activatedBy: [local-production]    
 
 profiles:
   - name: development
+  - name: local-production
   - name: production
