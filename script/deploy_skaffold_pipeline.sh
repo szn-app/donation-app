@@ -1,14 +1,4 @@
 #!/bin/bash
-
-dev_production_mode() { 
-    skaffold run --profile production --port-forward
-
-    verify() { 
-        skaffold run --profile production --tail
-
-    }
-}
-
 # run & expose gateway with minimum scaffold services
 start_local_session_scaffold() {
     sudo echo "" # prompt for sudo password
@@ -126,6 +116,19 @@ dev_skaffold() {
         kubectl apply -k ./kubernetes/overlays/dev
 
         curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
+    }
+}
+
+dev_production_mode() {
+    start_local_session_scaffold
+
+    sleep 5
+
+    skaffold run --profile local-production --port-forward --tail
+
+    verify() { 
+        skaffold run --profile production --tail
+
     }
 }
 

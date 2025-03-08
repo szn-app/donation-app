@@ -14,7 +14,7 @@ spec:
   template:
     spec:
       containers:
-        - name: nginx
+        - name: web-server
           image: web-server:latest
           ports:
             - containerPort: 80

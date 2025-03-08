@@ -26,7 +26,7 @@ patches:
         template:
           spec:
             containers:
-            - name: nginx
+            - name: web-server
               imagePullPolicy: Always
 
   - target:
@@ -56,7 +56,7 @@ patches:
         template:
           spec:
             containers:
-            - name: nginx
+            - name: web-server
               readinessProbe:
                 httpGet:
                   path: /readyz  # Endpoint to check readiness
@@ -75,7 +75,7 @@ patches:
   #       template:
   #         spec:
   #           containers:
-  #           - name: nginx
+  #           - name: web-server
   #             securityContext:
   #               runAsUser: 101 # nginx
   #               runAsNonRoot: true
@@ -93,7 +93,7 @@ patches:
   #       template:
   #         spec:
   #           containers:
-  #           - name: nginx
+  #           - name: web-server
   #             resources:
   #               limits:
   #                 cpu: 50m

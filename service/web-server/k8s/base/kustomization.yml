@@ -46,7 +46,7 @@ patches:
   #       template:
   #         spec:
   #           containers:
-  #             - name: nginx
+  #             - name: web-server
   #               resources:
   #                 requests:
   #                   cpu: "10m"

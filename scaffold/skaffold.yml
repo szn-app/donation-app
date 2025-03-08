@@ -50,7 +50,18 @@ requires:
        activatedBy: [development]
      - name: production                               
        activatedBy: [production]
+     - name: local-production
+       activatedBy: [local-production]
 
+  - path: ../service/auth-token-exchange
+    configs: []                 
+    activeProfiles:                                     
+    - name: development                               
+      activatedBy: [development]
+    - name: production                               
+      activatedBy: [production]
+    - name: local-production
+      activatedBy: [local-production]    
 
 profiles:
   - name: development

@@ -23,7 +23,7 @@ patches:
         template:
           spec:
             containers:
-            - name: nginx
+            - name: web-server
               imagePullPolicy: Never
 
   - patch: |-
