@@ -216,10 +216,12 @@ tunnel_minikube_delete() {
 
 tunnel_minikube() {
     local verbose=false
+    local background=false
 
     while getopts "v" opt; do
         case $opt in
             v) verbose=true ;;
+            b) background=true ;;
             *) ;;
         esac
     done
@@ -230,12 +232,12 @@ tunnel_minikube() {
         fi
     }
 
-    tunnel_minikube_delete
+    sudo echo "" # switch to sudo explicitely      
 
-    sudo echo "" # switch to sudo explicitely
-    minikube tunnel & 
-    sleep 5 
-    
+    minikube tunnel &
+
+    read -p "Configure DNS resolver for .test domains? (y/n): \n must run 'minikube tunnel' on separate shell" -r dns_config && [[ "${dns_config,,}" =~ ^y ]] && log "Will configure DNS resolver for .test domains" || return; 
+
     while ! kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' &> /dev/null; do
         log "Waiting for load balancer IP..."
         sleep 5
@@ -269,4 +271,17 @@ tunnel_minikube() {
         curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
         curl -k -i https://test.donation-app.test/allow
     fi
+
+    # Ask user if they want to end the minikube tunnel
+    echo "Minikube tunnel is running. Press Ctrl+C to stop the tunnel."
+    # Set up trap to catch Ctrl+C
+    trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
+    
+    # Keep script running until Ctrl+C is pressed
+    while true; do
+        sleep 100000
+    done
+
+    echo "Stopping minikube tunnel and cleaning up DNS configuration..."
+    tunnel_minikube_delete
 }

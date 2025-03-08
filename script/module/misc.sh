@@ -15,6 +15,7 @@ record_version() {
     KOPS_VERSION=$(kops version --short)
     CILIUM_VERSION=$(cilium version --client)
     SKAFFOLD_VERSION=$(skaffold version)
+    CONNTRACK_VERSION=$(conntrack -V | awk '{print $2}')
 
     echo "Node.js version: ${NODE_VERSION}" > version.txt
     echo "pnpm version: ${PNPM_VERSION}" >> version.txt
@@ -27,6 +28,7 @@ record_version() {
     echo "kOps version: ${KOPS_VERSION}" >> version.txt
     echo "---\nCilium version: ${CILIUM_VERSION}\n" >> version.txt
     echo "Skaffold version: ${SKAFFOLD_VERSION}" >> version.txt
+    ECHO "Conntrack version: ${CONNTRACK_VERSION}" >> version.txt
 
     cat ./version.txt
 }

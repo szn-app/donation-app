@@ -5,12 +5,12 @@ export function Component() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // navigate({ to: "/donation" });
+    navigate({ to: "/donation" });
   }, []);
 
   return (
-    <div>
-      <h1>WELCOME</h1>
+    <div className="flex min-h-screen flex-col items-center justify-start pt-10">
+      <h1 className="text-center text-3xl font-bold">Welcome</h1>
       <br />
     </div>
   );

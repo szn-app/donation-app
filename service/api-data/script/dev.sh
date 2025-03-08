@@ -22,7 +22,14 @@ bootstrap() {
 
 # NOTE: used for docker command
 hot_reload_api_data() {
-    cargo watch -q -c -w src/ -x run
+    cargo +nightly watch -q -c -w src/ -x run
+
+    verify() {
+        {
+            # check nightly version
+            rustup show
+        }
+    }
 }
 
 dev_api_data_skaffold() {     

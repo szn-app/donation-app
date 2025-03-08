@@ -27,8 +27,19 @@ ENTRYPOINT ["/bin/api-data"]
 
 # ---
 
-FROM rust AS development
+FROM rust:latest AS development
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
+# fixes cargo build error on volume mounted code - https://github.com/rust-lang/rustup/issues/2949
+# ENV RUSTUP_PERMIT_COPY_RENAME=true
+# ENV CARGO_TARGET_DIR=/tmp/target
+
+RUN rustup toolchain install nightly && \
+    rustup toolchain install stable && \
+    rustup default nightly && \
+    rustup component add rustfmt clippy
 RUN cargo install cargo-watch --locked
+RUN rustup default nightly && rustc --version && cargo --version
 
 COPY . /app
 WORKDIR /app

@@ -15,8 +15,10 @@ metadata:
 build:
   local: 
     push: false
+    useBuildkit: true
   tagPolicy:
-    sha256: {} 
+    # sha256: {} 
+    gitCommit: {}
 
 deploy:
   kubectl: {}
@@ -52,6 +54,27 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/dev
+  deploy:
+    kubeContext: minikube
+
+# TODO:
+- name: volume-development
+  # activation:
+  #   - kubeContext: minikube
+      
+  build: 
+    local: {}
+    artifacts:
+    - image: api-data
+      context: .
+      docker:
+        target: development
+        dockerfile: Dockerfile
+        buildArgs: {}
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev-volume
   deploy:
     kubeContext: minikube
 

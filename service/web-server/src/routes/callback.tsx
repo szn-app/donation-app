@@ -73,11 +73,7 @@ export function component() {
     return <div>Loading...</div>;
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      auth.signinRedirect();
-    }, 3000);
-  }, [navigate]);
+  auth.signinRedirect();
 
   return <div>Redirecting...</div>;
 }
