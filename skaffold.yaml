@@ -16,7 +16,7 @@ requires:
     activeProfiles:                                     
      - name: development                               
        activatedBy: [development]
-     - name: production                               
+     - name: production         
        activatedBy: [production]
      - name: local-production
        activatedBy: [local-production]

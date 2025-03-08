@@ -34,7 +34,7 @@ start_local_session_scaffold() {
     set_user_inotify_limit
     fix_sync_issue
     
-    pushd scaffold && skaffold run --profile development && popd        
+    # pushd scaffold && skaffold run --profile development && popd        
 
     # tunnel_minikube -b
 }
@@ -49,9 +49,9 @@ dev_skaffold() {
         tunnel_minikube -v
     }
     
-    start_local_session_scaffold
+    # start_local_session_scaffold
 
-    sleep 5
+    # sleep 5
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -124,11 +124,15 @@ dev_production_mode() {
         skaffold delete --profile local-production
     }
 
-    start_local_session_scaffold
+    expose_domain() {
+        tunnel_minikube -v
+    }
 
-    sleep 5
+    # start_local_session_scaffold
 
-    skaffold run --profile local-production --port-forward --tail
+    # sleep 5
+
+    skaffold dev --profile local-production --port-forward --tail
 
     verify() { 
         skaffold run --profile production --tail

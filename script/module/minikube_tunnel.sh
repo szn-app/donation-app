@@ -29,7 +29,152 @@ wait_until_internet_resolvable() {
     log "Internet is now resolvable"
 }
 
-dns_forwarding_dnsmasq_delete() {
+check_donation_app_connectivity() {
+    log "Waiting for donation-app.test to be resolvable..."
+    local max_attempts=30
+    local attempt=0
+    while ! nslookup donation-app.test 127.0.0.1 &>/dev/null; do
+        attempt=$((attempt+1))
+        if [ $attempt -ge $max_attempts ]; then
+            log "Error: donation-app.test not resolvable after $max_attempts attempts"
+            return 1
+        fi
+        log "Attempt $attempt - DNS resolution: waiting for donation-app.test to be resolvable, retrying in 2s..."
+        sleep 2
+    done
+    log "Success: donation-app.test is now resolvable"
+    time nslookup donation-app.test 127.0.0.1
+}
+
+
+# add_config_section "custom_dns" "server=8.8.8.8" "server=1.1.1.1" "address=/.test/10.96.135.68"
+# remove_config_section "custom_dns"
+add_config_section() {
+    local conf_file="$1"  # First argument is the config file
+    local section_name="$2"
+    shift 2  # Shift arguments to process the remaining as content
+
+    # Define section markers
+    local section_start="# BEGIN $section_name"
+    local section_end="# END $section_name"
+
+    # Remove existing section if it exists
+    remove_config_section "$conf_file" "$section_name"
+
+    # Append the new section at the end of the file
+    sudo bash -c "{
+        echo -e '\n$section_start'
+        cat
+        echo -e '$section_end'
+    } >> '$conf_file'"
+    
+    echo "Added section '$section_name' to $conf_file"
+}
+
+remove_config_section() {
+    local conf_file="$1"
+    local section_name="$2"
+    local section_start="# BEGIN $section_name"
+    local section_end="# END $section_name"
+
+    # Use sed to remove the section
+    sudo sed -i "/$section_start/,/$section_end/d" "$conf_file"
+
+    echo "Removed section '$section_name' from $conf_file"
+}
+
+DNSMASQ_CONF="/etc/dnsmasq.conf"
+SYSTEMD_RESOLVED_CONFIG="/etc/systemd/resolved.conf"
+NETWORK_MANAGER_CONFIG_1="/etc/NetworkManager/conf.d/dnsmasq.conf"
+NETWORK_MANAGER_CONFIG_2="/etc/NetworkManager/dnsmasq.d/test-domains.conf"
+
+##################################################
+
+hosts() {
+    # remove previous entries
+    sudo sed -i '/\.test/d' /etc/hosts
+    # add new entries
+    echo "$loadbalancer_ip donation-app.test auth.donation-app.test api.donation-app.test test.donation-app.test *.donation-app.test" | sudo tee -a /etc/hosts
+}
+
+dns_forwarding() {
+    {
+        local loadbalancer_ip="$1"
+        local verbose=false
+
+        while getopts "v" opt; do
+            case $opt in
+                v) verbose=true ;;
+                *) ;;
+            esac
+        done
+
+        log() {
+            if [ "$verbose" = true ]; then
+                echo "$@"
+            fi
+        }
+    }
+
+    {
+        add_config_section $DNSMASQ_CONF "custom_dns" <<EOF
+# echo "address=/.donation-app.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
+# all-servers
+# resolv-file=/etc/resolv.conf
+
+# Listen on localhost
+listen-address=127.0.0.1
+
+# Do not listen on external interfaces
+bind-interfaces
+
+# Do not read /etc/resolv.conf for upstream servers
+no-resolv
+
+# Use specific upstream DNS servers (e.g., Google DNS)
+server=8.8.8.8
+server=8.8.4.4
+# server=1.1.1.1
+
+# Enable DNS caching
+cache-size=1000
+
+address=/.test/$loadbalancer_ip
+
+EOF
+    }
+    sudo systemctl enable dnsmasq
+    sudo systemctl start dnsmasq
+    sudo systemctl restart dnsmasq
+
+    {
+        sudo tee "$SYSTEMD_RESOLVED_CONFIG" > /dev/null <<EOF
+[Resolve]
+DNS=127.0.0.1
+Domains=~test
+DNSSEC=no
+EOF
+    }
+    echo "modified $SYSTEMD_RESOLVED_CONFIG" 
+    sudo systemctl restart systemd-resolved
+
+    # {
+    #     # makes dnsmasq be controlled by NetworkManager
+    #     echo -e "[main]\ndns=dnsmasq" | sudo tee "$NETWORK_MANAGER_CONFIG_1" > /dev/null
+    #     echo "address=/test/127.0.0.1" | sudo tee "$NETWORK_MANAGER_CONFIG_2"
+    #     echo "modified $NETWORK_MANAGER_CONFIG_1"
+    #     echo "modified $NETWORK_MANAGER_CONFIG_2"
+    # }
+    # sudo systemctl restart NetworkManager
+
+    check_donation_app_connectivity
+
+    verify() {
+        systemctl status dnsmasq
+        dig donation-app.test @127.0.0.1
+        code /etc/dnsmasq.conf
+        code /etc/resolv.conf
+    }
     check_issue() {
         dnsmasq_restart() { 
             sudo dnf update
@@ -80,138 +225,6 @@ dns_forwarding_dnsmasq_delete() {
         journalctl -u dnsmasq -n 100 --no-hostname --no-pager
         sudo ss -lp "sport = :domain"
     }
-
-    sudo sed -i '/\.test/d' /etc/dnsmasq.conf
-    sudo systemctl restart dnsmasq
-}
-
-systemd_resolved_conf() {
-    action=${1:-"install"}
-
-    if [ "$action" == "delete" ]; then
-        sudo rm -f /etc/systemd/resolved.conf
-        sudo systemctl restart systemd-resolved
-        return
-    fi
-
-    CONFIG_FILE="/etc/systemd/resolved.conf"
-    sudo tee "$CONFIG_FILE" > /dev/null <<EOF
-[Resolve]
-DNS=127.0.0.1
-Domains=~test
-DNSSEC=no
-Cache=false
-DNSStubListener=no
-EOF
-
-    sudo systemctl restart systemd-resolved
-}
-
-networkmanager_config() {
-    action=${1:-"install"}
-
-    if [ "$action" == "delete" ]; then
-        sudo rm -f /etc/NetworkManager/conf.d/dnsmasq.conf
-        sudo rm -f /etc/NetworkManager/dnsmasq.d/test-domains.conf
-        sudo systemctl restart NetworkManager
-        return
-    fi
-
-    CONFIG_FILE="/etc/NetworkManager/conf.d/dnsmasq.conf"
-    echo -e "[main]\ndns=dnsmasq" | sudo tee "$CONFIG_FILE" > /dev/null
-    echo "address=/test/127.0.0.1" | sudo tee /etc/NetworkManager/dnsmasq.d/test-domains.conf
-    sudo systemctl restart NetworkManager
-}
-
-dns_forwarding() {
-    local loadbalancer_ip="$1"
-    local verbose=false
-
-    while getopts "v" opt; do
-        case $opt in
-            v) verbose=true ;;
-            *) ;;
-        esac
-    done
-
-    log() {
-        if [ "$verbose" = true ]; then
-            echo "$@"
-        fi
-    }
-
-    dns_forwarding_hosts() {
-        # remove previous entries
-        sudo sed -i '/\.test/d' /etc/hosts
-        # add new entries
-        echo "$loadbalancer_ip donation-app.test auth.donation-app.test api.donation-app.test test.donation-app.test *.donation-app.test" | sudo tee -a /etc/hosts
-    }
-
-    dnsmasq_conf() {
-        sudo sed -i '/\.test/d' /etc/dnsmasq.conf
-        # echo "address=/.donation-app.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
-        echo "address=/.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
-        if ! grep -q "strict-order" /etc/dnsmasq.conf; then
-            echo "strict-order" | sudo tee -a /etc/dnsmasq.conf
-        fi
-        
-        sudo systemctl restart dnsmasq
-    }
-
-    dns_forwarding_dnsmasq() {
-        action=${1:-"install"}
-
-        if [ "$action" == "delete" ]; then
-            networkmanager_config delete
-            systemd_resolved_conf delete
-            return
-        fi
-
-        sudo systemctl enable dnsmasq
-        sudo systemctl start dnsmasq
-
-        networkmanager_config delete
-        dnsmasq_conf
-        systemd_resolved_conf install
-        networkmanager_config install # makes dnsmasq be controlled by NetworkManager
-
-        {
-            log "Waiting for donation-app.test to be resolvable..."
-            local max_attempts=30
-            local attempt=0
-            while ! nslookup donation-app.test 127.0.0.1 &>/dev/null; do
-                attempt=$((attempt+1))
-                if [ $attempt -ge $max_attempts ]; then
-                    log "Error: donation-app.test not resolvable after $max_attempts attempts"
-                    return 1
-                fi
-                log "Attempt $attempt - DNS resolution: waiting for donation-app.test to be resolvable, retrying in 2s..."
-                sleep 2
-            done
-            log "Success: donation-app.test is now resolvable"
-            time nslookup donation-app.test 127.0.0.1
-        }
-
-        verify() { 
-            systemctl status dnsmasq
-            dig donation-app.test @127.0.0.1
-        }
-    }
-
-    # dns_forwarding_hosts
-    dns_forwarding_dnsmasq install
-    wait_until_internet_resolvable
-}
-
-tunnel_minikube_delete() {
-    jobs -p | xargs -r kill -9
-    pkill -f "minikube tunnel"
-
-    dns_forwarding_dnsmasq_delete
-    networkmanager_config delete
-    systemd_resolved_conf delete
-
-    wait_until_internet_resolvable
 }
 
 tunnel_minikube() {
@@ -227,6 +240,26 @@ tunnel_minikube() {
     done
 
     # Register exit handler for proper cleanup
+    tunnel_minikube_delete() {
+        jobs -p | xargs -r kill -9
+        pkill -f "minikube tunnel"
+
+        {
+            remove_config_section $DNSMASQ_CONF "custom_dns"
+            sudo systemctl restart systemd-resolved
+        }
+        {
+            sudo rm -f /etc/NetworkManager/conf.d/dnsmasq.conf
+            sudo rm -f /etc/NetworkManager/dnsmasq.d/test-domains.conf
+            sudo systemctl restart NetworkManager    
+        }
+        {
+            sudo rm -f /etc/systemd/resolved.conf
+            sudo systemctl restart systemd-resolved
+        }
+
+        wait_until_internet_resolvable
+    }
     cleanup_on_exit() {
         echo "Caught exit signal. Cleaning up... Stopping minikube tunnel and cleaning up DNS configuration..."
         tunnel_minikube_delete
@@ -268,6 +301,7 @@ tunnel_minikube() {
     fi
     
     dns_forwarding $loadbalancer_ip
+    wait_until_internet_resolvable
 
     # Try curl commands until domain is resolvable
     local max_attempts=30
@@ -292,9 +326,7 @@ tunnel_minikube() {
     echo "Minikube tunnel is running. Press Ctrl+C to stop the tunnel."
     # Set up trap to catch Ctrl+C
     trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
-    
-    # Keep script running until Ctrl+C is pressed
-    while true; do
-        sleep 100000
-    done
+
+    echo "ctrl+C to cleanup"
+    sleep 10000000
 }

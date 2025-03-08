@@ -4,6 +4,7 @@
 FROM node:lts AS build
 RUN npm install -g pnpm
 
+ARG CONFIG=prod
 # ARG ENV=development
 # ENV NODE_ENV=$ENV
 
@@ -11,7 +12,6 @@ WORKDIR /app
 COPY . /app
 
 RUN pnpm install
-ARG CONFIG=prod
 RUN if [ "$CONFIG" = "dev" ]; then pnpm run build-dev; else pnpm run build; fi
 
 # --- 
