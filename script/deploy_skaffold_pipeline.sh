@@ -40,6 +40,10 @@ start_local_session_scaffold() {
 }
 
 dev_skaffold() {
+    delete() {
+        skaffold delete --profile development 
+    }
+
     # run on separate shell
     expose_domain() {
         tunnel_minikube -v
@@ -55,10 +59,6 @@ dev_skaffold() {
         source ./script.sh
         tunnel_minikube_delete # if already running will case connection issues, thus requires deletion
         tunnel_minikube -v
-    }
-
-    delete() {
-        skaffold delete --profile development 
     }
 
     freeup_minikube_space() {
@@ -120,6 +120,10 @@ dev_skaffold() {
 }
 
 dev_production_mode() {
+    delete() {
+        skaffold delete --profile local-production
+    }
+
     start_local_session_scaffold
 
     sleep 5

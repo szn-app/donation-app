@@ -8,7 +8,7 @@ resources:
   - ../../../../service/envoy-proxy/k8s/base
   
   # - ../../../../service/auth-ory-stack/k8s/overlays/dev
-  - ../../../../service/auth-ory-admin-ui/k8s/overlays/dev
+  # - ../../../../service/auth-ory-admin-ui/k8s/overlays/dev
   # - ../../../../service/auth-token-exchange/k8s/overlays/dev
   # - ../../../../service/auth-ui/k8s/overlays/dev
   

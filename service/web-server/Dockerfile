@@ -10,7 +10,9 @@ RUN npm install -g pnpm
 WORKDIR /app
 COPY . /app
 
-RUN pnpm install && pnpm run build
+RUN pnpm install
+ARG CONFIG=prod
+RUN if [ "$CONFIG" = "dev" ]; then pnpm run build-dev; else pnpm run build; fi
 
 # --- 
 

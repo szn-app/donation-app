@@ -45,7 +45,7 @@ patches:
         path: /spec/hostnames/0
         value: wosoom.com
 
-# set readiness probe
+# set readiness probe that is supported with nginx
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment

@@ -31,17 +31,17 @@ requires:
     configs: []                 
     activeProfiles:                                     
      - name: development                               
-       activatedBy: [development]
+       activatedBy: [development, local-production]
      - name: production                               
        activatedBy: [production]
 
-#   - path: ../service/auth-ory-admin-ui # handled as reference in kustomize
-    # configs: []                 
-    # activeProfiles:                                     
-    #  - name: development                               
-    #    activatedBy: [development]
-    #  - name: production                               
-    #    activatedBy: [production]
+  - path: ../service/auth-ory-admin-ui
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
   - path: ../service/auth-ui
     configs: []                 

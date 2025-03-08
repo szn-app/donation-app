@@ -71,7 +71,8 @@ profiles:
       docker:
         target: production
         dockerfile: Dockerfile
-        buildArgs: {}
+        buildArgs: 
+          CONFIG: dev
   manifests:
     kustomize:
       paths:

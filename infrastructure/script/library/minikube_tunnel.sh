@@ -226,6 +226,16 @@ tunnel_minikube() {
         esac
     done
 
+    # Register exit handler for proper cleanup
+    cleanup_on_exit() {
+        echo "Caught exit signal. Cleaning up... Stopping minikube tunnel and cleaning up DNS configuration..."
+        tunnel_minikube_delete
+        exit 0
+    }
+
+    # Trap various exit signals
+    trap cleanup_on_exit EXIT SIGTERM SIGINT SIGQUIT
+
     log() {
         if [ "$verbose" = true ]; then
             echo "$@"
@@ -236,7 +246,13 @@ tunnel_minikube() {
 
     minikube tunnel &
 
-    read -p "Configure DNS resolver for .test domains? (y/n): \n must run 'minikube tunnel' on separate shell" -r dns_config && [[ "${dns_config,,}" =~ ^y ]] && log "Will configure DNS resolver for .test domains" || return; 
+    read -t 5 -p "Configure DNS resolver for .test domains? (y/n): [Auto 'y' in 5s] " dns_config || dns_config="y"
+    if [[ "${dns_config,,}" =~ ^y ]]; then
+        log "Configuring DNS resolver for .test domains"
+    else
+        log "DNS resolver configuration skipped"
+        return
+    fi
 
     while ! kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' &> /dev/null; do
         log "Waiting for load balancer IP..."
@@ -281,7 +297,4 @@ tunnel_minikube() {
     while true; do
         sleep 100000
     done
-
-    echo "Stopping minikube tunnel and cleaning up DNS configuration..."
-    tunnel_minikube_delete
 }
