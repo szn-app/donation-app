@@ -15,6 +15,7 @@ requires:
 build:
   local: 
     push: false
+    useBuildkit: true
   tagPolicy:
     sha256: {} 
 
@@ -35,7 +36,6 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
-    local: {}
     artifacts:
     - image: auth-token-exchange
       context: .
@@ -67,7 +67,6 @@ profiles:
 - name: local-production
 
   build: 
-    local: {}
     artifacts:
     - image: auth-token-exchange
       context: .

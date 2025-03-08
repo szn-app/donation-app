@@ -37,9 +37,6 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
-    local: 
-      useDockerCLI: true
-      push: false
     artifacts:
     - image: api-data
       context: .
@@ -65,7 +62,9 @@ profiles:
   #   - kubeContext: minikube
       
   build: 
-    local: {}
+    local: 
+      push: false 
+      tryImportMissing: false
     artifacts:
     - image: api-data
       context: .
