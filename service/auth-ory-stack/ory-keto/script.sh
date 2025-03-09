@@ -56,7 +56,7 @@ verify() {
 }
 EOF
             kubectl cp $t setup-pod-keto:$t --namespace auth
-            kubectl exec -it setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
+            kubectl exec setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
         }
         {
             kubectl cp ./policies.rts setup-pod-keto:policies.rts --namespace auth
@@ -117,7 +117,7 @@ example() {
 }
 EOF
             kubectl cp $t setup-pod-keto:$t --namespace auth
-            kubectl exec -it setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t"
+            kubectl exec setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t"
         }
 
         # if [ "$environment" = "production" ]; then

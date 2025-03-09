@@ -1,12 +1,30 @@
 #!/bin/bash
+
+# Wait for terminating resources to complete
+wait_for_terminating_resources() {
+    echo "Checking for terminating resources..."
+    while kubectl get pods --all-namespaces | grep -q Terminating || \
+                kubectl get services --all-namespaces | grep -q Terminating || \
+                kubectl get deployments --all-namespaces | grep -q Terminating || \
+                kubectl get statefulsets --all-namespaces | grep -q Terminating; do
+        echo "Waiting for resources to finish terminating..."
+        sleep 2
+    done
+    echo "All terminating resources have been cleaned up"
+}
+
 # run & expose gateway with minimum scaffold services
 start_local_session_scaffold() {
     sudo echo "" # prompt for sudo password
 
-    # tunnel_minikube_delete
-
     {
-        minikube start --profile minikube --namespace donation-app # set default namespace for minikube
+        # Check if minikube is already running
+        if ! minikube status --profile minikube &>/dev/null; then
+            echo "Starting minikube..."
+            minikube start --profile minikube --namespace donation-app
+        else
+            echo "Minikube is already running"
+        fi
 
         skaffold config set --global local-cluster true
         eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
@@ -35,8 +53,7 @@ start_local_session_scaffold() {
     fix_sync_issue
     
     # pushd scaffold && skaffold run --profile development && popd        
-
-    # tunnel_minikube -b
+    tunnel_minikube -v
 }
 
 dev_skaffold() {
@@ -49,9 +66,8 @@ dev_skaffold() {
         tunnel_minikube -v
     }
     
-    # start_local_session_scaffold
-
-    # sleep 5
+    wait_for_terminating_resources
+    start_local_session_scaffold
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -128,9 +144,8 @@ dev_production_mode() {
         tunnel_minikube -v
     }
 
-    # start_local_session_scaffold
-
-    # sleep 5
+    wait_for_terminating_resources
+    start_local_session_scaffold
 
     skaffold dev --profile local-production --port-forward --tail
 

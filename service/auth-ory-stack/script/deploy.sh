@@ -1,3 +1,8 @@
+#!/bin/bash
+# Script for deploying Ory security stack (Kratos, Hydra, Keto, Oathkeeper)
+# This script manages installation, verification, and deletion of the Ory security stack in Kubernetes
+
+set -e  # Exit immediately if a command exits with a non-zero status
 
 prehook_auth_ory_stack() {
     local environment=${1:-development}

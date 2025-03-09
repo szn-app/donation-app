@@ -29,6 +29,21 @@ wait_until_internet_resolvable() {
     log "Internet is now resolvable"
 }
 
+# Function to check if donation-app.test is resolvable
+check_gateway_external_ip() {   
+    # Return status based on whether we found an IP
+    local external_ip
+    external_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+    
+    if [[ -z "$external_ip" ]]; then
+        echo "1"
+        return 1
+    else
+        echo "0"
+        return 0
+    fi
+}
+
 check_donation_app_connectivity() {
     log "Waiting for donation-app.test to be resolvable..."
     local max_attempts=30
@@ -46,6 +61,25 @@ check_donation_app_connectivity() {
     time nslookup donation-app.test 127.0.0.1
 }
 
+
+# Function to gracefully terminate all background jobs
+cleanup_jobs() {
+    echo "Cleaning up background jobs..."
+    local job_list=$(jobs -p)
+    if [[ -n "$job_list" ]]; then
+        echo "Terminating jobs: $job_list"
+        jobs -p | xargs -r kill -15  # SIGTERM first for graceful shutdown
+        sleep 1
+        # Force kill any remaining jobs
+        job_list=$(jobs -p)
+        if [[ -n "$job_list" ]]; then
+            echo "Force killing remaining jobs: $job_list"
+            jobs -p | xargs -r kill -9  # SIGKILL for stubborn processes
+        fi
+    else
+        echo "No background jobs to clean up"
+    fi
+}
 
 # add_config_section "custom_dns" "server=8.8.8.8" "server=1.1.1.1" "address=/.test/10.96.135.68"
 # remove_config_section "custom_dns"
@@ -79,6 +113,8 @@ remove_config_section() {
 
     # Use sed to remove the section
     sudo sed -i "/$section_start/,/$section_end/d" "$conf_file"
+    # Remove empty lines at the end of the file
+    sudo sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' $conf_file
 
     echo "Removed section '$section_name' from $conf_file"
 }
@@ -90,7 +126,7 @@ NETWORK_MANAGER_CONFIG_2="/etc/NetworkManager/dnsmasq.d/test-domains.conf"
 
 ##################################################
 
-hosts() {
+hosts_example() {
     # remove previous entries
     sudo sed -i '/\.test/d' /etc/hosts
     # add new entries
@@ -227,6 +263,32 @@ EOF
     }
 }
 
+remove_dns_forwarding() {
+    {
+        remove_config_section $DNSMASQ_CONF "custom_dns"
+        sudo systemctl restart systemd-resolved
+    }
+    {
+        sudo rm -f /etc/NetworkManager/conf.d/dnsmasq.conf
+        sudo rm -f /etc/NetworkManager/dnsmasq.d/test-domains.conf
+        sudo systemctl restart NetworkManager    
+    }
+    {
+        sudo rm -f /etc/systemd/resolved.conf
+        sudo systemctl restart systemd-resolved
+    }
+
+    wait_until_internet_resolvable
+}
+
+tunnel_minikube_delete() {
+    # Gracefully terminate minikube tunnel processes
+    echo "Gracefully stopping minikube tunnel processes..."
+    ps aux | grep "minikube tunnel" && kill -2 $(pgrep -f "minikube tunnel")
+
+    remove_dns_forwarding
+}
+
 tunnel_minikube() {
     local verbose=false
     local background=false
@@ -239,27 +301,15 @@ tunnel_minikube() {
         esac
     done
 
+    # Check domain accessibility before proceeding
+    if [ "$(check_gateway_external_ip)" = "0" ]; then
+        echo "minikube tunnel already running"
+        return
+    # else
+    #     tunnel_minikube_delete
+    fi
+
     # Register exit handler for proper cleanup
-    tunnel_minikube_delete() {
-        jobs -p | xargs -r kill -9
-        pkill -f "minikube tunnel"
-
-        {
-            remove_config_section $DNSMASQ_CONF "custom_dns"
-            sudo systemctl restart systemd-resolved
-        }
-        {
-            sudo rm -f /etc/NetworkManager/conf.d/dnsmasq.conf
-            sudo rm -f /etc/NetworkManager/dnsmasq.d/test-domains.conf
-            sudo systemctl restart NetworkManager    
-        }
-        {
-            sudo rm -f /etc/systemd/resolved.conf
-            sudo systemctl restart systemd-resolved
-        }
-
-        wait_until_internet_resolvable
-    }
     cleanup_on_exit() {
         echo "Caught exit signal. Cleaning up... Stopping minikube tunnel and cleaning up DNS configuration..."
         tunnel_minikube_delete
@@ -267,7 +317,7 @@ tunnel_minikube() {
     }
 
     # Trap various exit signals
-    trap cleanup_on_exit EXIT SIGTERM SIGINT SIGQUIT
+    # trap cleanup_on_exit EXIT SIGTERM SIGINT SIGQUIT
 
     log() {
         if [ "$verbose" = true ]; then
@@ -278,21 +328,17 @@ tunnel_minikube() {
     sudo echo "" # switch to sudo explicitely      
 
     minikube tunnel &
+    sleep 2
 
-    read -t 5 -p "Configure DNS resolver for .test domains? (y/n): [Auto 'y' in 5s] " dns_config || dns_config="y"
-    if [[ "${dns_config,,}" =~ ^y ]]; then
-        log "Configuring DNS resolver for .test domains"
-    else
-        log "DNS resolver configuration skipped"
-        return
-    fi
-
-    while ! kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}' &> /dev/null; do
+    loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    while [ -z "$loadbalancer_ip" ]; do
         log "Waiting for load balancer IP..."
         sleep 5
+        loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     done
-    loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
+    echo "$loadbalancer_ip"
+    dns_forwarding $loadbalancer_ip
     wait_until_internet_resolvable
     
     # curl -k -i --header "Host: donation-app.test" $loadbalancer_ip
@@ -300,33 +346,31 @@ tunnel_minikube() {
         log "test.donation-app.test resolvable"
     fi
     
-    dns_forwarding $loadbalancer_ip
-    wait_until_internet_resolvable
-
     # Try curl commands until domain is resolvable
-    local max_attempts=30
-    local attempt=0
-    while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
-        attempt=$((attempt+1))
-        if [ $attempt -ge $max_attempts ]; then
-            log "Error: test.donation-app.test not accessible after $max_attempts attempts"
-            break
-        fi
-        log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
-        sleep 2
-    done
+    # local max_attempts=30
+    # local attempt=0
+    # log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+    # while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
+    #     attempt=$((attempt+1))
+    #     if [ $attempt -ge $max_attempts ]; then
+    #         log "Error: test.donation-app.test not accessible after $max_attempts attempts"
+    #         break
+    #     fi
+    #     log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+    #     sleep 2
+    # done
     
-    if [ $attempt -lt $max_attempts ]; then
-        log "Success: test.donation-app.test is now accessible"
-        curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
-        curl -k -i https://test.donation-app.test/allow
-    fi
+    # if [ $attempt -lt $max_attempts ]; then
+    #     log "Success: test.donation-app.test is now accessible"
+    #     curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
+    #     curl -k -i https://test.donation-app.test/allow
+    # fi
 
     # Ask user if they want to end the minikube tunnel
     echo "Minikube tunnel is running. Press Ctrl+C to stop the tunnel."
     # Set up trap to catch Ctrl+C
-    trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
+    # trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
 
-    echo "ctrl+C to cleanup"
-    sleep 10000000
+    # echo "ctrl+C to cleanup"
+    # sleep 10000000
 }

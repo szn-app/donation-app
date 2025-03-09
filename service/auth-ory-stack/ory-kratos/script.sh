@@ -24,7 +24,7 @@ kratos version
 }
 EOF
         kubectl cp $t setup-pod-kratos:$t --namespace auth
-        kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
+        kubectl exec setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
     }
     {
         
@@ -68,10 +68,10 @@ kratos import identities ./default_user_kratos.json \
 
 EOF
         kubectl cp $t setup-pod-kratos:$t --namespace auth
-        kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t"
+        kubectl exec setup-pod-kratos --namespace auth -- /bin/bash -c "chmod +x $t && $t"
 
         # NOTE: this is error prone hackish way to get the uuid of the user from debug output of kratos cli
-        uuid=$(kubectl exec -it setup-pod-kratos --namespace auth -- /bin/bash -c "kratos list identities --format json --endpoint http://kratos-admin:80 2> /dev/null | jq -r --arg email \"$username\" '.identities[] | select(.traits.email == \$email) | .id'")
+        uuid=$(kubectl exec setup-pod-kratos --namespace auth -- /bin/bash -c "kratos list identities --format json --endpoint http://kratos-admin:80 2> /dev/null | jq -r --arg email \"$username\" '.identities[] | select(.traits.email == \$email) | .id'")
 
         # create a secret to store the values
         kubectl create secret generic default-admin-user-credentials -n auth --from-literal=username="$username" --from-literal=uuid="$uuid" --from-literal=password="$password" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1

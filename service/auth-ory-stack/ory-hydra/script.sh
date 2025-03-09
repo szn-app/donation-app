@@ -50,7 +50,7 @@ bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b 
 curl -s http://hydra-admin/admin/clients | jq
 EOF
         kubectl cp $t setup-pod:$t --namespace auth
-        kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t" >/dev/null 2>&1
+        kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t" >/dev/null 2>&1
     }
     
     example_using_hydra() { 
@@ -59,7 +59,7 @@ EOF
 hydra create oauth2-client --name frontend-client-2 --audience backend-service --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code --redirect-uri ${APP_URL} --scope offline_access,openid --skip-consent --skip-logout-consent --token-endpoint-auth-method client_secret_post
 EOF
         kubectl cp $t setup-pod:$t --namespace auth
-        kubectl exec -it setup-pod --namespace auth -- /bin/bash -c "chmod +x $t && $t"
+        kubectl exec setup-pod --namespace auth -- /bin/bash -c "chmod +x $t && $t"
     }
 
     example_alternative_option() {
@@ -85,7 +85,7 @@ EOF
         # NOTE: using the `authorization code` the client gets both `accesst token` and `id token` when `scope` includes `openid`.
         client_name="frontend-client"
         client_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)"
-        client_exist=$(kubectl exec -it setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
+        client_exist=$(kubectl exec setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
 
         if [[ -z "$client_exist" ]]; then
             echo 'Adding oauth2 client'
@@ -112,7 +112,7 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
 
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
-            kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+            kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
@@ -122,7 +122,7 @@ EOF
 
         client_name="frontend-client-oauth"
         client_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)"
-        client_exist=$(kubectl exec -it setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
+        client_exist=$(kubectl exec setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
 
         if [[ -z "$client_exist" ]]; then
             echo 'Adding oauth2 client'
@@ -147,7 +147,7 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
 }'
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
-            kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+            kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client-oauth -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
@@ -157,7 +157,7 @@ EOF
     {
         client_name="frontend-client-oauth-consent"
         client_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)"
-        client_exist=$(kubectl exec -it setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
+        client_exist=$(kubectl exec setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
         
         if [[ -z "$client_exist" ]]; then
             echo 'Adding oauth2 client'
@@ -182,7 +182,7 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
 }'
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
-            kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+            kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client-oauth-consent -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi
@@ -192,7 +192,7 @@ EOF
         # internal service communication
         client_name="internal-communication"
         client_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)"
-        client_exist=$(kubectl exec -it setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
+        client_exist=$(kubectl exec setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
 
         if [[ -z "$client_exist" ]]; then
             echo 'Adding oauth2 client'
@@ -213,7 +213,7 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
 }'
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
-            kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+            kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--internal-communication -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi 
@@ -226,7 +226,7 @@ EOF
         # Oathkeeper introspection
         client_name="oathkeeper-introspection"
         client_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)"
-        client_exist=$(kubectl exec -it setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
+        client_exist=$(kubectl exec setup-pod --namespace auth -- curl -s 'http://hydra-admin/admin/clients' | jq -r ".[] | select(.client_id==\"$client_name\") | .client_id")
         
         if [[ -z "$client_exist" ]]; then
             echo 'Adding oauth2 client'
@@ -247,7 +247,7 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
 }'                     
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
-            kubectl exec -it setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
+            kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--oathkeeper-introspection -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
         fi 
