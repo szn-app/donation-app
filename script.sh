@@ -27,6 +27,7 @@ load_scripts_recursive() {
 # load functions
 load_scripts_recursive "./infrastructure/script/"
 load_scripts_recursive "./script/" 
+source ./service/api-data/api-data-db/script.sh # TODO: 
 
 # call function in this script file from commandline argument
 {

@@ -16,6 +16,7 @@ record_version() {
     CILIUM_VERSION=$(cilium version --client)
     SKAFFOLD_VERSION=$(skaffold version)
     CONNTRACK_VERSION=$(conntrack -V | awk '{print $2}')
+    POSTGRESQL_VERSION=$(psql --version | awk '{print $3}')
 
     echo "Node.js version: ${NODE_VERSION}" > version.txt
     echo "pnpm version: ${PNPM_VERSION}" >> version.txt
@@ -29,6 +30,20 @@ record_version() {
     echo "---\nCilium version: ${CILIUM_VERSION}\n" >> version.txt
     echo "Skaffold version: ${SKAFFOLD_VERSION}" >> version.txt
     ECHO "Conntrack version: ${CONNTRACK_VERSION}" >> version.txt
+    echo "PostgreSQL version: ${POSTGRESQL_VERSION}" >> version.txt
 
     cat ./version.txt
+}
+
+# Wait for terminating resources to complete
+wait_for_terminating_resources() {
+    echo "Checking for terminating resources..."
+    while kubectl get pods --all-namespaces | grep -q Terminating || \
+                kubectl get services --all-namespaces | grep -q Terminating || \
+                kubectl get deployments --all-namespaces | grep -q Terminating || \
+                kubectl get statefulsets --all-namespaces | grep -q Terminating; do
+        echo "Waiting for resources to finish terminating..."
+        sleep 2
+    done
+    echo "All terminating resources have been cleaned up"
 }

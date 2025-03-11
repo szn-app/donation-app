@@ -124,5 +124,9 @@ bootstrap_local_dev_machine() {
 
         sudo npm install -g pnpm
     }
+
+    verify() { 
+        sudo systemctl status docker
+    }
 }
 

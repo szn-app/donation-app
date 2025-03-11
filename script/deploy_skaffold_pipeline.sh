@@ -1,17 +1,9 @@
 #!/bin/bash
 
-# Wait for terminating resources to complete
-wait_for_terminating_resources() {
-    echo "Checking for terminating resources..."
-    while kubectl get pods --all-namespaces | grep -q Terminating || \
-                kubectl get services --all-namespaces | grep -q Terminating || \
-                kubectl get deployments --all-namespaces | grep -q Terminating || \
-                kubectl get statefulsets --all-namespaces | grep -q Terminating; do
-        echo "Waiting for resources to finish terminating..."
-        sleep 2
-    done
-    echo "All terminating resources have been cleaned up"
-}
+# usage: 
+# $1` ./script.sh start_local_session_scaffold`
+# $2` ./script.sh dev_skaffold`
+
 
 # run & expose gateway with minimum scaffold services
 start_local_session_scaffold() {
@@ -67,7 +59,7 @@ dev_skaffold() {
     }
     
     wait_for_terminating_resources
-    start_local_session_scaffold
+    # start_local_session_scaffold
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -145,7 +137,7 @@ dev_production_mode() {
     }
 
     wait_for_terminating_resources
-    start_local_session_scaffold
+    # start_local_session_scaffold
 
     skaffold dev --profile local-production --port-forward --tail
 

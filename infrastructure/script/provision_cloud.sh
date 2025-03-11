@@ -194,12 +194,14 @@ hetzner_cloud_provision() {
       cert_manager_related  # must be restarted after installation of Gateway Api
       sleep 30
       install_storage_class 
-      # TODO: check resource limits and prevent contention when using monitoring tools
+      # TODO: check resource limits and prevent contention when using monitoring tools - check notes in install_monitoring.sh
       # install_monitoring
 
       popd 
 
       install_envoy_gateway_class
+      # install_stackgres_operator
+      install_cloudnativepg_operator
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/

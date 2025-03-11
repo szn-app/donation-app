@@ -19,4 +19,11 @@ spec:
           ports:
             - containerPort: 80
               name: api-data
-            # env:
+          # env:
+          #   - name: DATABASE_URL
+          #     value: "postgres://$(DB_USER):$(DB_PASSWORD)@postgres:5432/mydatabase"
+          # envFrom:
+          #   - secretRef:
+          #       name: db-secret
+            # - configMapRef:
+            #   name: microservice-config

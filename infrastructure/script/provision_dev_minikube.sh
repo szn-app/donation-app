@@ -51,6 +51,10 @@ minikube_install_resources() {
     {
         install_gateway_api_crds
     }
+    {
+        # install_stackgres_operator
+        install_cloudnativepg_operator
+    }
 }
 
 bootstrap_minikube_docker() {

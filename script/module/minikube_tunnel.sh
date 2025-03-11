@@ -304,9 +304,13 @@ tunnel_minikube() {
     # Check domain accessibility before proceeding
     if [ "$(check_gateway_external_ip)" = "0" ]; then
         echo "minikube tunnel already running"
-        return
-    # else
-    #     tunnel_minikube_delete
+        read -t 5 -p "Do you want to refresh minikube tunnel? [y/n] " answer
+        answer=${answer:-n}
+        if [[ "$answer" =~ ^[Yy]$ ]]; then
+            tunnel_minikube_delete
+        else
+            return
+        fi
     fi
 
     # Register exit handler for proper cleanup
@@ -367,7 +371,7 @@ tunnel_minikube() {
     # fi
 
     # Ask user if they want to end the minikube tunnel
-    echo "Minikube tunnel is running. Press Ctrl+C to stop the tunnel."
+    echo "Minikube tunnel is running."
     # Set up trap to catch Ctrl+C
     # trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
 

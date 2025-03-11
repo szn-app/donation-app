@@ -104,3 +104,28 @@ install_skaffold() {
 
 }
 
+install_psql() {
+    sudo dnf install psql -y
+}
+
+kubectl_cnpg_installation() { 
+    brew install kubectl-cnpg && brew upgrade kubectl-cnpg
+
+    {
+        cat > kubectl_complete-cnpg <<EOF
+#!/usr/bin/env sh
+
+# Call the __complete command passing it all arguments
+kubectl cnpg __complete "\$@"
+EOF
+
+        chmod +x kubectl_complete-cnpg
+
+        # Important: the following command may require superuser permission
+        sudo mv kubectl_complete-cnpg /usr/local/bin
+    }
+
+    verify() {
+        kubectl cnpg install generate --help
+    }
+}

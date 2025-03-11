@@ -1,4 +1,5 @@
 # TODO: solve issue of high resource utilization by Prometheus
+# TODO: switch to stack deployemtn such as https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack  & https://stackgres.io/doc/latest/administration/monitoring/
 install_monitoring() {
   # https://artifacthub.io/packages/helm/prometheus-community/prometheus
   install_prometheus() { 

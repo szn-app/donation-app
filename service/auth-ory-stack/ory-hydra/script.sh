@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 create_oauth2_client_for_trusted_app() {
     environment=${1:-development}
 
@@ -12,7 +15,10 @@ create_oauth2_client_for_trusted_app() {
         fi
     set +a
 
-    echo "APP_URL: $APP_URL" # debug print
+    echo "Creating oauth2 clients for trusted apps in Ory Hydra" 
+    if [ "$environment" = "development" ]; then
+        echo "APP_URL: $APP_URL" # debug print
+    fi
 
     example_hydra_admin() { 
         kubectl run -it --rm --image=debian:latest debug-pod --namespace auth -- /bin/bash
@@ -115,6 +121,8 @@ EOF
             kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
+        else
+            echo "Oauth2 client 'frontend-client' already exist"
         fi
 
     }
@@ -150,8 +158,9 @@ EOF
             kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client-oauth -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
+        else
+            echo "Oauth2 client 'frontend-client-oauth' already exist"
         fi
-
     }
 
     {
@@ -185,6 +194,8 @@ EOF
             kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--frontend-client-oauth-consent -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
+        else
+            echo "Oauth2 client 'frontend-client-oauth-consent' already exist"
         fi
     }
 
@@ -216,7 +227,9 @@ EOF
             kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--internal-communication -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
-        fi 
+        else
+            echo "Oauth2 client 'internal-communication' already exist"
+        fi
 
     }
 
@@ -250,7 +263,9 @@ EOF
             kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t"
             # create/update secret 
             kubectl create secret generic ory-hydra-client--oathkeeper-introspection -n auth --from-literal=client_secret="$client_secret" --dry-run=client -o yaml | kubectl apply -f - >/dev/null 2>&1
-        fi 
+        else
+            echo "Oauth2 client 'oathkeeper-introspection' already exist"
+        fi
 
     }
     
