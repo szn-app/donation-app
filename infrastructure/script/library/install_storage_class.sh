@@ -175,6 +175,7 @@ parameters:
   dataLocality: "best-effort"
   diskSelector: "local-storage-disk"
 ---
+# comparable to direct local storage (but may exhibit slower performance)
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:

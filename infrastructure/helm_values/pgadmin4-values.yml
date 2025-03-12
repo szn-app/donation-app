@@ -1,0 +1,54 @@
+# TODO: modify and integrate with script
+pgadmin4:
+  env:
+## Define user and password to access pgadmin4
+    email: "backend-db@mail.com"
+    password: ""
+
+## Server definitions will be loaded at launch time. This allows connection
+## information to be pre-loaded into the instance of pgAdmin4 in the container.
+## Ref: https://www.pgadmin.org/docs/pgadmin4/latest/import_export_servers.html
+  serverDefinitions:
+    ## If true, server definitions will be created
+    enabled: true
+    servers:
+     DevServer:
+       Name: "Backend Dev DB Server"
+       Group: "Servers"
+       Port: 5432 # Backend Dev DB Service Port
+       Username: "backend-dev" # Backend Dev DB username
+       Host: "backend-postgresql.dev.svc.cluster.local" # Dev DB Service
+       SSLMode: "prefer"
+       MaintenanceDB: "backend-dev-db" # Backend Dev DB name
+     ProdServer:
+       Name: "Backend Prod DB Server"
+       Group: "Servers"
+       Port: 5432  # backend-prod-db Service Port
+       Username: "backend-prod" # Backend Prod DB username
+       Host: "backend-postgresql.prod.svc.cluster.local" # Prod DB Service 
+       SSLMode: "prefer"
+       MaintenanceDB: "backend-prod-db"  # Backend Prod DB name
+  persistentVolume:
+    size: 1Gi
+  nodeSelector:
+      env: production
+  ingress:
+    enabled: true
+    annotations: 
+## Nginx Ingress annotations
+      kubernetes.io/ingress.class: "ingress-prod"
+## Cert-manager annotations
+      kubernetes.io/tls-acme: "true"
+      kubernetes.io/ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod" 
+## external-dns annotations
+      external-dns.alpha.kubernetes.io/hostname: pgadmin.backend.com
+    hosts:
+      - host: pgadmin.backend.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+     - secretName: backend-db-tls
+       hosts:
+         - pgadmin.backend.com

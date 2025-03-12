@@ -202,6 +202,7 @@ hetzner_cloud_provision() {
       install_envoy_gateway_class
       # install_stackgres_operator
       install_cloudnativepg_operator
+      install_minio_operator
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/

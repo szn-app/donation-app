@@ -54,6 +54,7 @@ minikube_install_resources() {
     {
         # install_stackgres_operator
         install_cloudnativepg_operator
+        install_minio_operator
     }
 }
 
