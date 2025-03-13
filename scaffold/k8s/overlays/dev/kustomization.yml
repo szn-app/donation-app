@@ -13,7 +13,7 @@ resources:
   # - ../../../../service/auth-ui/k8s/overlays/dev
   
   # - ../../../../service/web-server/k8s/overlays/dev
-  # - ../../../../service/api-data/k8s/overlays/dev
+  # - ../../../../service/api-data/server/k8s/overlays/dev
 
   - ../../route
   

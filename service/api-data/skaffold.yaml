@@ -1,129 +1,35 @@
+# https://skaffold.dev/docs/references/yaml/
 apiVersion: skaffold/v4beta12
 kind: Config
-metadata:
-  name: api-data
 
-# requires:
-#   - path: ../../scaffold
-#     configs: []                 
-#     activeProfiles:                                     
-#      - name: development                               
-#        activatedBy: [development]
-#      - name: production                               
-#        activatedBy: [production] 
+requires:
+  - path: database
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
-build:
-  local: 
-    push: false
-    useBuildkit: true
-  tagPolicy:
-    # sha256: {} 
-    gitCommit: {}
+  - path: object-store
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
-deploy:
-  kubectl: {}
-  statusCheck: true
-  
-portForward:
-  - resourceType: Service
-    namespace: donation-app
-    resourceName: api-data
-    port: 80
+  - path: server
+    configs: []            
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development]
+     - name: production         
+       activatedBy: [production]
+     - name: local-production
+       activatedBy: [local-production]
 
 profiles:
-
-- name: development
-  # activation:
-  #   - kubeContext: minikube
-      
-  build: 
-    artifacts:
-    - image: api-data
-      context: .
-      docker:
-        target: development
-        dockerfile: Dockerfile
-        buildArgs: {}
-      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
-      sync:
-        manual:
-        - src: "src/**/*.rs"
-          dest: .
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy:
-    kubeContext: minikube
-
-# TODO:
-- name: volume-development
-  # activation:
-  #   - kubeContext: minikube
-      
-  build: 
-    local: 
-      push: false 
-      tryImportMissing: false
-    artifacts:
-    - image: api-data
-      context: .
-      docker:
-        target: development
-        dockerfile: Dockerfile
-        buildArgs: {}
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev-volume
-  deploy:
-    kubeContext: minikube
-
-# build production mode and run with local dev settings
-- name: local-production
-
-  build: 
-    local: 
-      push: false 
-      tryImportMissing: false
-    tagPolicy:
-      customTemplate:
-        template: "api-data:latest"
-    artifacts:
-    - image: api-data
-      context: .
-      docker:
-        target: production
-        dockerfile: Dockerfile
-        buildArgs: {}
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-
-- name: production
-
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
-
-# NOTE: used in CI/CD github workflow
-# TODO: implement in workflow and apply to other services. Use skaffold.env to set and read version number
-- name: hook-build-push 
-  build: 
-    local: 
-      push: true
-      tryImportMissing: false
-    tagPolicy:
-      envTemplate:
-        template: "api-data:{{.VERSION_NUMBER}}"
-      # customTemplate:
-      #   template: "api-data:latest"
-    artifacts:
-    - image: ghcr.io/szn-app/donation-app/api-data
-      context: .
-      docker:
-        target: production
-        dockerfile: Dockerfile
-        buildArgs: {}
+  - name: development
+  - name: local-production
+  - name: production

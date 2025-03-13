@@ -165,7 +165,7 @@ ABANDANONED_dev_skaffold_inotify_volume() {
 
     minikube_mount_root &
 
-    pushd service/api-data
+    pushd service/api-data/server
     skaffold dev --profile volume-development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     popd
 

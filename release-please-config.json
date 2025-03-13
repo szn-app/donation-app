@@ -27,7 +27,7 @@
       "release-type": "rust",
       "exclude-paths": [
         "service/web-server",
-        "service/api-data",
+        "service/api-data/server",
         "service/auth-ui",
         "service/auth-token-exchange",
         ".release-please-config.json",
@@ -49,13 +49,13 @@
       ]
     },
 
-    "service/api-data": {
+    "service/api-data/server": {
       "component": "api-data",
       "release-type": "rust",
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/api-data/k8s/overlays/prod/kustomization.yml",
+          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yml",
           "jsonpath": "$.images[0].newTag"
         }
       ]

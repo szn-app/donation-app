@@ -3,8 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yml
-  - cluster.yml
-  - service.yml
+  - postgresql-cluster.yml
 
 # [BUG in Kustomize https://github.com/kubernetes-sigs/kustomize/issues/5047] specifiying namespace ruins configMapGenerator name resolution
 # namespace: database # using customization transformers instead (which provides more options)

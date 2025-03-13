@@ -5,7 +5,7 @@ name: test--api-data
 on:
   pull_request:
     branches: [main]
-    paths: ['service/api-data/**']
+    paths: ['service/api-data/server/**']
   workflow_dispatch: 
       
 jobs:
@@ -27,7 +27,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./service/api-data
+        working-directory: ./service/api-data/server
 
     runs-on: ${{ matrix.platform }}
     steps:

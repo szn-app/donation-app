@@ -96,6 +96,75 @@
       "dependsOrder": "parallel",
       "dependsOn": [],
       "problemMatcher": []
+    },
+    {
+      "label": "dev.minikube#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && dev.minikube#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) dev.minikube#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "hetzner-cloud#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && hetzner-cloud#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) hetzner-cloud#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@api-data-object-store",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-object-store"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@api-data-object-store"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
     }
   ]
 }

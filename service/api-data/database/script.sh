@@ -35,14 +35,29 @@ deploy_api_data_db() {
 
     backups() { 
         # https://cloudnative-pg.io/documentation/1.22/backup_barmanobjectstore/
+        echo ''
     }
 
-    pushd service/api-data/api-data-db
-    
+    pushd service/api-data/database
+
+    # create superuser credentials  
+    kubectl create ns database &>/dev/null
+
+    if ! kubectl get secret postgresql-superuser-credentials -n database &>/dev/null; then
+        kubectl create secret generic postgresql-superuser-credentials -n database \
+            --from-literal=username=user-postgres \
+            --from-literal=password=pass-postgres
+    fi
+
+    # TODO: get minio credentilas 
+
     kubectl apply -k ./k8s/overlays/dev
 
     popd
+    
     verify() {
+        kubectl describe clusters.postgresql.cnpg.io -n database
+        kubectl logs -l cnpg.io/cluster=cluster-example -n database
         kubectl get pods -n database -o wide
         kubectl get service -n database -o wide
         kubectl get pvc -n database -o wide
@@ -50,19 +65,27 @@ deploy_api_data_db() {
         kubectl cnpg status cluster-example -n database --verbose
         kubectl get pdb -n database
 
-        {
+        connect_to_db_from_pod(){
             # Get the first pod from the cluster and run psql on it
             CLUSTER_POD=$(kubectl get pods -A -l cnpg.io/cluster=cluster-example -o jsonpath='{.items[0].metadata.name}' -n database)
             kubectl exec -it $CLUSTER_POD -n database -- psql -U postgres
             # then run commands: \l, \c app, \dt
         }
 
-        {
+        connect_to_db() {
             # username and password info
-            kubectl get secret cluster-example-app -n database -o yaml
-            local PASSWORD=$(kubectl get secret cluster-example-app -n database -o jsonpath='{.data.password}' | base64 --decode)
+            kubectl get secret postgresql-superuser-credentials -n database -o json | jq -r '.data | to_entries[] | "\(.key): \(.value|@base64d)"'
+            local PASSWORD=$(kubectl get secret postgresql-superuser-credentials -n database -o jsonpath='{.data.password}' | base64 --decode)
+            local USERNAME=$(kubectl get secret postgresql-superuser-credentials -n database -o jsonpath='{.data.username}' | base64 --decode)
+            local SERVICE_IP=$(kubectl get svc dev-cluster-example -n database -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+            # [manual] port-forward database
+            {
+                echo 'minikube tunnel'
+            }
+
+            psql postgresql://$USERNAME:$PASSWORD@$SERVICE_IP:5432/app-db
         }
-        
-        psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
     }
 }
+

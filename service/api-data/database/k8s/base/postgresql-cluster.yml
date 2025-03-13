@@ -1,0 +1,157 @@
+# https://cloudnative-pg.io/documentation/current/bootstrap/
+# refrence docs: https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/
+# https://cloudnative-pg.io/documentation/current/samples/
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster-example
+  labels:
+    cnpg.io/cluster: cluster-example
+
+spec:
+  # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: postgresql-extension-images
+    major: 17
+
+  instances: 3
+  primaryUpdateStrategy: unsupervised # promote automatically a standby to primary before the primary pod is updated
+  enablePDB: true # pod distruction budget
+
+  # Storage configuration
+  # use local machine storage (performant, durability achieved by replication) & not network distributed storage (reschedualable); cnpg automates to schedule lost pods, thus performance is the main concern
+  storage:
+    size: 5Gi
+    storageClass: longhorn-local-ext4-strict-locality
+    resizeInUseVolumes: true
+  walStorage:
+    size: 1Gi # typically 10-20% of the data storage size
+    storageClass: longhorn-local-ext4-strict-locality
+    resizeInUseVolumes: true
+
+  bootstrap:
+    initdb:
+      database: app-db
+      owner: user-postgres
+      secret:
+        name: postgresql-superuser-credentials
+  superuserSecret:
+    name: postgresql-superuser-credentials
+  
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://my-bucket/backups/
+      s3Credentials:
+        accessKeyId:
+          name: my-s3-creds
+          key: accessKey
+        secretAccessKey:
+          name: my-s3-creds
+          key: secretKey
+
+  monitoring:
+    enablePodMonitor: true
+
+---
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres-cluster-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      cnpg.io/cluster: cluster-example
+
+--- 
+
+# apiVersion: postgresql.cnpg.io/v1
+# kind: Cluster
+# metadata:
+#   name: postgres-cluster
+#   namespace: database-prod
+# spec:
+#   # Cluster topology
+#   instances: 3
+  
+#   # Storage configuration
+#   storage:
+#     size: 20Gi
+#     storageClass: "premium-ssd"  # Update with your storage class
+#     resizeInUseVolumes: true
+
+#   # Backup configuration
+#   backup:
+#     retentionPolicy: "90d"
+#     target:
+#       s3:
+#         bucket: "postgres-backups"
+#         path: "/backups"
+#         endpoint: "s3.amazonaws.com"
+#         region: "us-west-2"
+#         credentials:
+#           secret:
+#             name: backup-s3-credentials
+
+#   # Monitoring configuration
+#   monitoring:
+#     enablePodMonitor: true  # For Prometheus operator integration
+#     customQueriesConfigMap: "postgres-custom-metrics"
+
+#   # Resource allocation
+#   resources:
+#     requests:
+#       cpu: "2"
+#       memory: "4Gi"
+#     limits:
+#       cpu: "4"
+#       memory: "8Gi"
+
+#   # PostgreSQL configuration
+#   postgresql:
+#     parameters:
+#       max_connections: "500"
+#       shared_buffers: "2GB"
+#       work_mem: "32MB"
+#       maintenance_work_mem: "1GB"
+#       random_page_cost: "1.1"
+#       effective_cache_size: "6GB"
+#       ssl: "on"
+#       password_encryption: "scram-sha-256"
+#     pg_hba:
+#       - hostssl all all all scram-sha-256
+
+#   # TLS configuration
+#   certificates:
+#     serverTLSSecret: "postgres-server-tls"  # Pre-created TLS secret
+#     replicationTLSSecret: "postgres-replication-tls"
+
+#   # Users and databases
+#   bootstrap:
+#     initdb:
+#       database: "appdb"
+#       owner: "appuser"
+#       secret:
+#         name: "postgres-appuser-creds"
+    
+#     # Application user configuration
+#     users:
+#       - name: "appuser"
+#         password:
+#           secret:
+#             name: "postgres-appuser-creds"
+#         options: "SUPERUSER"
+
+#   # Maintenance configuration
+#   primaryUpdateStrategy: unsupervised
+#   primaryUpdateMethod: switchover
+#   stopDelay: 3600  # 1 hour
+
+#   # Maintenance window
+#   maintenanceWindow:
+#     every: "Sat 02:00"
+#     duration: "4h"
