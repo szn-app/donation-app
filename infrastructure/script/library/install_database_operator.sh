@@ -35,7 +35,7 @@ install_stackgres_operator() {
 install_cloudnativepg_operator() {
     install_pg_admin() {
         helm repo add runix https://helm.runix.net
-        helm upgrade pgadmin4 runix/pgadmin4
+        helm upgrade --debug --install pgadmin4 runix/pgadmin4
         # TODO: use helm values to set appropriate service and credentials - check file pgadmin4-values.yml
 
         expose() {
