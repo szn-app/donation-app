@@ -19,7 +19,7 @@ EOF
 }
 
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner
-hetzner_cloud_provision() {
+hetzner-cloud#provision#task@infrastructure() {
     action=${1:-"install"}
 
     if ! command -v kubectl-ctx &> /dev/null; then

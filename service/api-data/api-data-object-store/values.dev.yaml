@@ -1,0 +1,11 @@
+tenant: 
+  configSecret: 
+    existingSecret: false
+    accessKey: 'minio'
+    secretKey: '12345678'
+  pools:
+    - name: pool
+      servers: 1
+      volumesPerServer: 1
+      size: 1Gi
+      storageClassName: longhorn-network-storage-1replica

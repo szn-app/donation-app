@@ -287,5 +287,7 @@ metadata:
 provisioner: k8s.io/minikube-hostpath
 EOF
 
+# TODO: mock hcloud-volumes and other storage classes defined when kube-hetzner terraform module is used 
+
   kubectl apply -f $t
 }

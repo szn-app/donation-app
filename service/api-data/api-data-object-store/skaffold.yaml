@@ -1,0 +1,63 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data-object-store
+
+deploy:
+  # https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-minio-tenant-helm.html#deploy-tenant-helm
+  # https://min.io/docs/minio/kubernetes/upstream/reference/tenant-chart-values.html
+  helm: {}
+  statusCheck: true
+  
+portForward:
+  - resourceType: Service
+    namespace: object-store
+    resourceName: minio-object-store-console
+    port: 9443
+
+profiles:
+
+- name: development
+        
+  deploy: 
+    helm:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-object-store development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-object-store development"]
+              dir: .
+        
+      releases:
+        - name: minio-object-store
+          remoteChart: minio-operator/tenant
+          namespace: object-store
+          createNamespace: true
+          valuesFiles:
+            - minio-tenant-values.yaml
+            - values.dev.yaml
+
+- name: production
+  deploy: 
+    helm:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-object-store production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-object-store production"]
+              dir: .
+        
+      releases:
+        - name: minio-object-store
+          remoteChart: minio-operator/tenant
+          namespace: object-store
+          createNamespace: true
+          valuesFiles:
+            - minio-tenant-values.yaml
+            - values.prod.yaml.local

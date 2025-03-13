@@ -15,7 +15,7 @@ EOF
     sudo systemctl restart systemd-resolved
 }
 
-minikube_install_resources() {
+install-resources.minikube@infrastructure() {
     kubectl label node minikube role=worker # used for some affinity/selector configurations in the app manifest/helm files
     kubectl ctx minikube
     kubectl config get-contexts
@@ -58,7 +58,7 @@ minikube_install_resources() {
     }
 }
 
-bootstrap_minikube_docker() {
+dev.minikube#provision#task@infrastructure() {
     action=${1:-"install"}
 
     if ! command -v kubectl-ctx &> /dev/null; then
@@ -82,7 +82,7 @@ bootstrap_minikube_docker() {
     minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker
     # minikube start --driver=docker
 
-    minikube_install_resources
+    install-resources.minikube@infrastructure
 
     minikube status
 
@@ -154,7 +154,7 @@ ABANDONED_bootstrap_minikube_baremetal() {
     minikube start --driver none
     sudo minikube start --driver=none --apiserver-ips 127.0.0.1 --apiserver-name localhost
 
-    minikube_install_resources
+    install-resources.minikube@infrastructure
 
     minikube status
 }
