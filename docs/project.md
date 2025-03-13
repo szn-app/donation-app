@@ -4,6 +4,7 @@
 - `/kubernetes`: Kubernetes manifests for orchestration-specific configuration files. 
   - following base + overlays Kustomize folder structure https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/#bases-and-overlays
 - `/script` 
+  - naming convension for script function: <function>.<module>#<label>@<namespace>  These are used to filter functions such as those of specific module or namespace or label defined as hooks
 
 ### workspaces
 - root project can be opened to access entire project files

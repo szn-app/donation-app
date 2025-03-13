@@ -4,7 +4,6 @@
 # $1` ./script.sh start_local_session_scaffold`
 # $2` ./script.sh dev_skaffold`
 
-
 # run & expose gateway with minimum scaffold services
 start_local_session_scaffold() {
     sudo echo "" # prompt for sudo password
@@ -43,7 +42,8 @@ start_local_session_scaffold() {
 
     set_user_inotify_limit
     fix_sync_issue
-    
+    execute '#predeploy-hook'
+
     # pushd scaffold && skaffold run --profile development && popd        
     tunnel_minikube -v
 }

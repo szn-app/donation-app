@@ -4,30 +4,12 @@
 # `./script.sh <function-name> [args...]`
 
 # set -e
-
-load_scripts_recursive() {
-    SCRIPT_DIR="$1"  # Get directory from argument
-
-    # Validate input
-    if [[ -z "$SCRIPT_DIR" ]]; then
-        echo "Usage: $0 <script_directory>"
-        return 1
-    elif [[ ! -d "$SCRIPT_DIR" ]]; then
-        echo "Error: '$SCRIPT_DIR' is not a valid directory."
-        return 1
-    fi
-
-    # Find and source all .sh scripts recursively
-    for script in $(find "$SCRIPT_DIR" -type f -name "*.sh"); do
-        echo "Sourcing $script..."
-        source "$script"
-    done
-}
+source ./script/module/utility.sh
 
 # load functions
-load_scripts_recursive "./infrastructure/script/"
 load_scripts_recursive "./script/" 
-source ./service/api-data/api-data-db/script.sh # TODO: 
+load_scripts_recursive "./infrastructure/" 'script/'
+load_scripts_recursive "./service/" 'script/'
 
 # call function in this script file from commandline argument
 {

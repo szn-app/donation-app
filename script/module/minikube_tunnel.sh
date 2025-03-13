@@ -284,7 +284,9 @@ remove_dns_forwarding() {
 tunnel_minikube_delete() {
     # Gracefully terminate minikube tunnel processes
     echo "Gracefully stopping minikube tunnel processes..."
-    ps aux | grep "minikube tunnel" && kill -2 $(pgrep -f "minikube tunnel")
+    if pgrep -f "minikube tunnel" > /dev/null 2>&1; then
+        kill -2 "$(pgrep -f "minikube tunnel")" >/dev/null 2>&1
+    fi
 
     remove_dns_forwarding
 }

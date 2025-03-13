@@ -31,6 +31,8 @@ record_version() {
     echo "Skaffold version: ${SKAFFOLD_VERSION}" >> version.txt
     ECHO "Conntrack version: ${CONNTRACK_VERSION}" >> version.txt
     echo "PostgreSQL version: ${POSTGRESQL_VERSION}" >> version.txt
+    yq --version >> version.txt
+    mc --version >> version.txt
 
     cat ./version.txt
 }

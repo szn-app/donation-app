@@ -11,11 +11,12 @@ deploy_api_data_supabase() {
 
     # S3 storage class 
 
-    helm upgrade supabase supabase/supabase -f values.yaml --namespace supabase
+    helm upgrade --install supabase supabase/supabase -f values.yaml --namespace supabase
 
     verify() {
         # use to test setup 
         # https://github.com/supabase-community/supabase-kubernetes/blob/main/charts/supabase/README.md#testing-suite
+        echo ''
     }
 }
 
