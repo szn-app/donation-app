@@ -46,7 +46,7 @@ install_ory_stack() {
         fi
     }
 
-    load_scripts_recursive() {
+    load_scripts_recursive.util() {
         SCRIPT_DIR="$1"  # Get directory from argument
 
         # Validate input
@@ -65,7 +65,7 @@ install_ory_stack() {
         done
     }
 
-    load_scripts_recursive .
+    load_scripts_recursive.util .
 
     env_files() {
         local environment="$1"

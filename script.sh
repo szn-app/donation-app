@@ -7,9 +7,9 @@
 source ./script/module/utility.sh
 
 # load functions
-load_scripts_recursive "./script/" 
-load_scripts_recursive "./infrastructure/" 'script/'
-load_scripts_recursive "./service/" 'script/'
+load_scripts_recursive.util "./script/" 
+load_scripts_recursive.util "./infrastructure/" 'script/'
+load_scripts_recursive.util "./service/" 'script/'
 
 # call function in this script file from commandline argument
 {

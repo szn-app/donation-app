@@ -1,11 +1,8 @@
 #!/bin/bash
-
-# usage: 
-# $1` ./script.sh start_local_session_scaffold`
-# $2` ./script.sh dev_skaffold`
+# set -e
 
 # run & expose gateway with minimum scaffold services
-start_local_session_scaffold() {
+local-dev.bootstrap#task@monorepo() {
     sudo echo "" # prompt for sudo password
 
     {
@@ -42,13 +39,13 @@ start_local_session_scaffold() {
 
     set_user_inotify_limit
     fix_sync_issue
-    execute '#predeploy-hook'
+    execute.util '#predeploy-hook'
 
     # pushd scaffold && skaffold run --profile development && popd        
     tunnel_minikube -v
 }
 
-dev_skaffold() {
+dev_skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile development 
     }
@@ -59,7 +56,7 @@ dev_skaffold() {
     }
     
     wait_for_terminating_resources
-    # start_local_session_scaffold
+    # local-dev.bootstrap@monorepo
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -127,7 +124,7 @@ dev_skaffold() {
     }
 }
 
-dev_production_mode() {
+dev_production_mode@monorepo() {
     delete() {
         skaffold delete --profile local-production
     }
@@ -137,7 +134,7 @@ dev_production_mode() {
     }
 
     wait_for_terminating_resources
-    # start_local_session_scaffold
+    # local-dev.bootstrap@monorepo
 
     skaffold dev --profile local-production --port-forward --tail
 

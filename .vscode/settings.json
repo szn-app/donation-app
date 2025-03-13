@@ -119,6 +119,7 @@
         "*.yml.gotmpl": "yaml",
         "*.tf.patch": "terraform",
         "*.yaml.tera": "yaml",
+        "*.yaml.local": "yaml"
         // "*.yaml.tera": "yaml-tera" // TODO:
       },
       "hediet.vscode-drawio.resizeImages": null,

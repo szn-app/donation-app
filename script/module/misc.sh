@@ -3,7 +3,7 @@ misc_() {
     find ./ -maxdepth 4 -name "script.sh" -exec chmod +x {} \;
 }
 
-record_version() { 
+record_version#bootstrap#task@monorepo() { 
     NODE_VERSION=$(node -v | cut -d 'v' -f2)
     PNPM_VERSION=$(pnpm --version | cut -d ' ' -f2)
     RUST_VERSION=$(rustc --version | awk '{print $2}') 
@@ -29,7 +29,7 @@ record_version() {
     echo "kOps version: ${KOPS_VERSION}" >> version.txt
     echo "---\nCilium version: ${CILIUM_VERSION}\n" >> version.txt
     echo "Skaffold version: ${SKAFFOLD_VERSION}" >> version.txt
-    ECHO "Conntrack version: ${CONNTRACK_VERSION}" >> version.txt
+    echo "Conntrack version: ${CONNTRACK_VERSION}" >> version.txt
     echo "PostgreSQL version: ${POSTGRESQL_VERSION}" >> version.txt
     yq --version >> version.txt
     mc --version >> version.txt
