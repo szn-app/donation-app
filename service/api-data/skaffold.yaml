@@ -1,6 +1,8 @@
 # https://skaffold.dev/docs/references/yaml/
 apiVersion: skaffold/v4beta12
 kind: Config
+metadata:
+  name: api-data
 
 requires:
   - path: database

@@ -5,9 +5,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-example
+  name: cluster-app-data
   labels:
-    cnpg.io/cluster: cluster-example
+    cnpg.io/cluster: cluster-app-data
 
 spec:
   # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
@@ -17,9 +17,12 @@ spec:
     name: postgresql-extension-images
     major: 17
 
+  # Cluster topology: aim for 2 synchronous standby replicas with RPO=0
   instances: 3
   primaryUpdateStrategy: unsupervised # promote automatically a standby to primary before the primary pod is updated
+  primaryUpdateMethod: switchover # ensure new primary is fully caught up with the old primary before promoting it
   enablePDB: true # pod distruction budget
+  stopDelay: 3600  # 1 hour
 
   # Storage configuration
   # use local machine storage (performant, durability achieved by replication) & not network distributed storage (reschedualable); cnpg automates to schedule lost pods, thus performance is the main concern
@@ -27,34 +30,90 @@ spec:
     size: 5Gi
     storageClass: longhorn-local-ext4-strict-locality
     resizeInUseVolumes: true
+    # pvcTemplate: # optionally provide a PVC kubernetes tempate
   walStorage:
     size: 1Gi # typically 10-20% of the data storage size
     storageClass: longhorn-local-ext4-strict-locality
     resizeInUseVolumes: true
 
-  bootstrap:
-    initdb:
-      database: app-db
-      owner: user-postgres
-      secret:
-        name: postgresql-superuser-credentials
   superuserSecret:
     name: postgresql-superuser-credentials
-  
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      # NOTE: do not conflict with 'postgres' user & 'postgres' database are created by default and required by the CNPG operator
+      database: app
+      
+      owner: user-postgres # needs to match secret username
+      secret:
+        name: postgresql-superuser-credentials
+
+    # # Application additional user configuration
+    # users:
+    #   - name: "appuser"
+    #     password:
+    #       secret:
+    #         name: "postgres-appuser-creds"
+    #     options: "SUPERUSER"
+
+      postInitApplicationSQLRefs: 
+        configMapRefs:
+        - name: init-sql-config
+          key: init.sql
+
+      # set consistent locals supporting internationalization
+      encoding: UTF8
+      locale: C
+      localeProvider: libc   
+
+  # PostgreSQL configuration 
+  # https://www.postgresql.org/docs/8/runtime-config.html https://www.postgresql.org/docs/current/config-setting.html
+  # https://www.postgresql.org/docs/current/auth-pg-hba-conf.html
+  postgresql:
+    parameters:
+      timezone: "America/Chicago"
+#       max_connections: "500"
+#       shared_buffers: "2GB"
+#       work_mem: "32MB"
+#       maintenance_work_mem: "1GB"
+#       random_page_cost: "1.1"
+#       effective_cache_size: "6GB"
+#       ssl: "on"
+#       password_encryption: "scram-sha-256"
+    pg_hba:
+      - hostssl all all all scram-sha-256
+
+
+  # TODO: deal with backing up to Amazon S3 or Hetzner Object Storage for even cheaper resources (need to verify)
   backup:
-    barmanObjectStore:
-      destinationPath: s3://my-bucket/backups/
-      s3Credentials:
-        accessKeyId:
-          name: my-s3-creds
-          key: accessKey
-        secretAccessKey:
-          name: my-s3-creds
-          key: secretKey
-
+    retentionPolicy: "15d"
+    volumeSnapshot: 
+      className: longhorn-network-storage-1replica
+  #   barmanObjectStore:
+  #     destinationPath: s3://my-bucket/backups/
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: my-s3-creds
+  #         key: accessKey
+  #       secretAccessKey:
+  #         name: my-s3-creds
+  #         key: secretKey
+      # wal:
+      #   compression: gzip
   monitoring:
-    enablePodMonitor: true
+    enablePodMonitor: true # For Prometheus operator integration
+    # customQueriesConfigMap: "postgres-custom-metrics"
 
+# TODO: monitor and adjust values
+#   # Resource allocation
+#   resources:
+    # requests:
+    #   memory: "512Mi"
+    #   cpu: "1"
+    # limits:
+    #   memory: "1Gi"
+    #   cpu: "2"
 ---
 
 apiVersion: policy/v1
@@ -65,93 +124,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      cnpg.io/cluster: cluster-example
+      cnpg.io/cluster: cluster-app-data
 
---- 
+---
 
-# apiVersion: postgresql.cnpg.io/v1
-# kind: Cluster
-# metadata:
-#   name: postgres-cluster
-#   namespace: database-prod
-# spec:
-#   # Cluster topology
-#   instances: 3
-  
-#   # Storage configuration
-#   storage:
-#     size: 20Gi
-#     storageClass: "premium-ssd"  # Update with your storage class
-#     resizeInUseVolumes: true
-
-#   # Backup configuration
-#   backup:
-#     retentionPolicy: "90d"
-#     target:
-#       s3:
-#         bucket: "postgres-backups"
-#         path: "/backups"
-#         endpoint: "s3.amazonaws.com"
-#         region: "us-west-2"
-#         credentials:
-#           secret:
-#             name: backup-s3-credentials
-
-#   # Monitoring configuration
-#   monitoring:
-#     enablePodMonitor: true  # For Prometheus operator integration
-#     customQueriesConfigMap: "postgres-custom-metrics"
-
-#   # Resource allocation
-#   resources:
-#     requests:
-#       cpu: "2"
-#       memory: "4Gi"
-#     limits:
-#       cpu: "4"
-#       memory: "8Gi"
-
-#   # PostgreSQL configuration
-#   postgresql:
-#     parameters:
-#       max_connections: "500"
-#       shared_buffers: "2GB"
-#       work_mem: "32MB"
-#       maintenance_work_mem: "1GB"
-#       random_page_cost: "1.1"
-#       effective_cache_size: "6GB"
-#       ssl: "on"
-#       password_encryption: "scram-sha-256"
-#     pg_hba:
-#       - hostssl all all all scram-sha-256
-
-#   # TLS configuration
-#   certificates:
-#     serverTLSSecret: "postgres-server-tls"  # Pre-created TLS secret
-#     replicationTLSSecret: "postgres-replication-tls"
-
-#   # Users and databases
-#   bootstrap:
-#     initdb:
-#       database: "appdb"
-#       owner: "appuser"
-#       secret:
-#         name: "postgres-appuser-creds"
-    
-#     # Application user configuration
-#     users:
-#       - name: "appuser"
-#         password:
-#           secret:
-#             name: "postgres-appuser-creds"
-#         options: "SUPERUSER"
-
-#   # Maintenance configuration
-#   primaryUpdateStrategy: unsupervised
-#   primaryUpdateMethod: switchover
-#   stopDelay: 3600  # 1 hour
-
-#   # Maintenance window
-#   maintenanceWindow:
-#     every: "Sat 02:00"
-#     duration: "4h"

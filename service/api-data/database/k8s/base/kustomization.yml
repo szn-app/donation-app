@@ -5,6 +5,9 @@ resources:
   - namespace.yml
   - postgresql-cluster.yml
 
+configurations:
+  - name-reference.kustomize-config.yml # fixes association of ConfiMap name to cluster reference
+
 # [BUG in Kustomize https://github.com/kubernetes-sigs/kustomize/issues/5047] specifiying namespace ruins configMapGenerator name resolution
 # namespace: database # using customization transformers instead (which provides more options)
 transformers:
@@ -15,3 +18,11 @@ transformers:
       name: _not_important_here
       namespace: database
     unsetOnly: true
+
+configMapGenerator:
+  - name: init-sql-config
+    namespace: database
+    # behavior: replace
+    files:
+      - init.sql=./init.sql
+      

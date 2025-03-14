@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dev-cluster-example
+  name: dev--cluster-app-data
   namespace: database
 spec:
   type: LoadBalancer
@@ -9,4 +9,4 @@ spec:
     - port: 5432
       targetPort: 5432
   selector:
-    cnpg.io/cluster: cluster-example
+    cnpg.io/cluster: cluster-app-data
