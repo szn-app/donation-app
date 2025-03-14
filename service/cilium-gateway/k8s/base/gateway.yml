@@ -213,6 +213,30 @@ spec:
 
     ###
 
+    - name: https-k8s-minio
+      protocol: HTTPS
+      port: 443
+      hostname: "minio.k8s.donation-app.test"
+      allowedRoutes:
+        namespaces:
+          from: All # required for letsecrypt
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+
+    - name: http-k8s-minio
+      protocol: HTTP
+      port: 80
+      hostname: "minio.k8s.donation-app.test"
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    ###
+
     # # TODO: add http routes to this listener
     # - name: https-k8s-grafana
     #   protocol: HTTPS

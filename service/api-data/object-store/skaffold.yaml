@@ -7,6 +7,7 @@ deploy:
   # https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-minio-tenant-helm.html#deploy-tenant-helm
   # https://min.io/docs/minio/kubernetes/upstream/reference/tenant-chart-values.html
   helm: {}
+  kubectl: {}
   statusCheck: true
   
 portForward:
@@ -18,7 +19,12 @@ portForward:
 profiles:
 
 - name: development
-        
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  
   deploy: 
     helm:
       hooks:
@@ -38,9 +44,15 @@ profiles:
           createNamespace: true
           valuesFiles:
             - minio-tenant-values.yaml
-            - values.dev.yaml
+            - values.dev.yaml      
 
 - name: production
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+
   deploy: 
     helm:
       hooks:

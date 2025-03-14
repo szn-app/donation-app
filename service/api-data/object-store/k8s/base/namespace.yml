@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+
+metadata:
+  name: object-store
+
+---
+
+# add auth namespace in case Keto is not deployed yet
+apiVersion: v1
+kind: Namespace
+
+metadata:
+  name: auth

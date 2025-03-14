@@ -1,10 +1,11 @@
 skaffold#task@api-data-object-store() { 
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
-
+    
     skaffold dev --profile development --port-forward --tail
 
     verify() {
         skaffold render --profile production
+        skaffold delete --profile development
     }
 
     popd
@@ -25,4 +26,7 @@ example@api-data-object-store() {
         # create bucket
         mc mb minio-object-store/mybucket --insecure
     }
+
+    # ssh into minikube and navigate to the corresponding persistent volume to view the files
 }
+
