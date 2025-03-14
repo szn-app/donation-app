@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3](https://github.com/szn-app/donation-app/compare/api-data@v0.0.2...api-data@v0.0.3) (2025-03-14)
+
+
+### Features
+
+* initial database Postgresql configurations ([7226bff](https://github.com/szn-app/donation-app/commit/7226bffe11af7aaf864e4a37fcf212b9c027487c))
+
 ## [0.0.2](https://github.com/szn-app/donation-app/compare/api-data-v0.0.1...api-data@v0.0.2) (2025-03-05)
 
 
