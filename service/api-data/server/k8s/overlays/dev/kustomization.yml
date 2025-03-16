@@ -8,9 +8,16 @@ images:
   - name: api-data
     newTag: latest
 
-# configMapGenerator:
-#   - name: properties-map-api-data
-#     env: config.properties
+configMapGenerator:
+  - name: properties-map-api-data-server
+    namespace: donation-app
+    env: .properties
+
+secretGenerator:
+  - name: secrets-api-data-server
+    namespace: donation-app
+    envs:
+      - .env.development
 
 patches:
   - patch: |-

@@ -19,11 +19,41 @@ spec:
           ports:
             - containerPort: 80
               name: api-data
-          # env:
-          #   - name: DATABASE_URL
-          #     value: "postgres://$(DB_USER):$(DB_PASSWORD)@postgres:5432/mydatabase"
-          # envFrom:
-          #   - secretRef:
-          #       name: db-secret
-            # - configMapRef:
-            #   name: microservice-config
+
+          env:
+            - name: POSTGRESQL_URL_RW
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_URL_RW
+                  optional: false
+            - name: POSTGRESQL_URL_RO
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_URL_RO
+                  optional: false
+            - name: POSTGRESQL_URL_R
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_URL_R
+                  optional: false
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets-api-data-server
+                  key: POSTGRESQL_USERNAME
+                  optional: false
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets-api-data-server
+                  key: POSTGRESQL_PASSWORD
+                  optional: false
+
+          envFrom:
+            - configMapRef:
+                name: properties-map-api-data-server 
+            - secretRef:
+                name: secrets-api-data-server

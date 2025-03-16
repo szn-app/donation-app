@@ -11,8 +11,8 @@
         "source ${workspaceFolder}/script.sh && add_vscode_tasks#bootstrap#task@monorepo"
       ],
       "presentation": {
-        "reveal": "always",
-        "panel": "new"
+        "reveal": "silent",
+        "panel": "dedicated"
       },
       "group": "none",
       "options": {
@@ -29,52 +29,6 @@
       }
     },
     {
-      "label": "dev_skaffold#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && dev_skaffold#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) dev_skaffold#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "local-dev.bootstrap#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && local-dev.bootstrap#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "new"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) local-dev.bootstrap#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
       "label": "record_version#bootstrap#task@monorepo",
       "type": "shell",
       "command": "bash",
@@ -84,7 +38,7 @@
       ],
       "presentation": {
         "reveal": "always",
-        "panel": "new"
+        "panel": "dedicated"
       },
       "group": "none",
       "options": {
@@ -107,7 +61,7 @@
       ],
       "presentation": {
         "reveal": "always",
-        "panel": "new"
+        "panel": "dedicated"
       },
       "group": "none",
       "options": {
@@ -130,7 +84,7 @@
       ],
       "presentation": {
         "reveal": "always",
-        "panel": "new"
+        "panel": "dedicated"
       },
       "group": "none",
       "options": {
@@ -153,13 +107,105 @@
       ],
       "presentation": {
         "reveal": "always",
-        "panel": "new"
+        "panel": "dedicated"
       },
       "group": "none",
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) skaffold#task@api-data-object-store"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "dev.local#bootstrap#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && dev.local#bootstrap#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) dev.local#bootstrap#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "dev.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && dev.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) dev.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "dev_production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && dev_production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) dev_production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@api-data-database",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-database"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@api-data-database"
         }
       },
       "dependsOrder": "parallel",

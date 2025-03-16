@@ -4,6 +4,17 @@ kind: Kustomization
 resources:
   - ../dev
 
+configMapGenerator:
+  - name: properties-map-api-data-server
+    namespace: donation-app
+    env: .properties
+
+secretGenerator:
+  - name: secrets-api-data-server
+    namespace: donation-app
+    envs:
+      - .env
+
 # TODO:
 patches:
   - patch: |-

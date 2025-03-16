@@ -15,6 +15,13 @@ pub async fn post_data(data: Json<PostData>) -> JsonResponse<PostData> {
 }
 
 pub async fn get_data() -> JsonResponse<PostData> {
+    let db_url = std::env::var("POSTGRESQL_URL_RW").unwrap_or_else(|_| "Not set".to_owned());
+    dbg!(&db_url);
+    let db_url = std::env::var("POSTGRESQL_URL_RO").unwrap_or_else(|_| "Not set".to_owned());
+    dbg!(&db_url);
+    let db_url = std::env::var("POSTGRESQL_URL_R").unwrap_or_else(|_| "Not set".to_owned());
+    dbg!(&db_url);
+
     JsonResponse(PostData {
         id: 1,
         name: "Hello, World!".to_string(),
@@ -25,4 +32,9 @@ pub fn routes() -> Router {
     Router::new()
         .route("/post_data", axum::routing::post(post_data))
         .route("/get_data", axum::routing::get(get_data))
+}
+
+// Handler for routes that don't match any defined routes
+pub async fn handle_not_found() -> (axum::http::StatusCode, &'static str) {
+    (axum::http::StatusCode::NOT_FOUND, "not found")
 }

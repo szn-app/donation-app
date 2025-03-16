@@ -1,7 +1,7 @@
 apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
-  name: api-data
+  name: api-data-server
 
 requires:
   - path: ../object-store
@@ -62,8 +62,18 @@ profiles:
       - k8s/overlays/dev
   deploy:
     kubeContext: minikube
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-server development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-server development"]
+              dir: .
 
-# TODO:
+# TODO: update and fix implementation
 - name: volume-development
   # activation:
   #   - kubeContext: minikube
@@ -108,12 +118,36 @@ profiles:
       paths:
       - k8s/overlays/dev
 
+  deploy:
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-server development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-server development"]
+              dir: .
+
 - name: production
 
   manifests:
     kustomize:
       paths:
       - k8s/overlays/prod
+
+  deploy:
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-server production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-server production"]
+              dir: .
 
 # NOTE: used in CI/CD github workflow
 # TODO: implement in workflow and apply to other services. Use skaffold.env to set and read version number

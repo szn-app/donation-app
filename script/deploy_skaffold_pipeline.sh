@@ -2,7 +2,7 @@
 # set -e
 
 # run & expose gateway with minimum scaffold services
-local-dev.bootstrap#task@monorepo() {
+dev.local#bootstrap#task@monorepo() {
     sudo echo "" # prompt for sudo password
 
     {
@@ -45,7 +45,7 @@ local-dev.bootstrap#task@monorepo() {
     tunnel_minikube -v
 }
 
-dev_skaffold#task@monorepo() {
+dev.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile development 
     }
@@ -56,7 +56,7 @@ dev_skaffold#task@monorepo() {
     }
     
     wait_for_terminating_resources
-    # local-dev.bootstrap@monorepo
+    # dev.local#bootstrap#task@monorepo
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -124,7 +124,7 @@ dev_skaffold#task@monorepo() {
     }
 }
 
-dev_production_mode@monorepo() {
+dev_production_mode.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile local-production
     }
@@ -134,7 +134,7 @@ dev_production_mode@monorepo() {
     }
 
     wait_for_terminating_resources
-    # local-dev.bootstrap@monorepo
+    # dev.local#bootstrap#task@monorepo
 
     skaffold dev --profile local-production --port-forward --tail
 
@@ -144,7 +144,7 @@ dev_production_mode@monorepo() {
     }
 }
 
-# NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER 
+# NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER when running baremetal to solve inotify issues
 ABANDANONED_dev_skaffold_inotify_volume() {
     source ./script.sh
     ABANDONED_bootstrap_minikube_baremetal
