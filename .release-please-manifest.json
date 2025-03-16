@@ -1,5 +1,5 @@
 {
-  ".": "0.4.18",
+  ".": "0.4.19",
   "service/web-server": "0.0.75",
   "service/api-data/server": "0.0.3",
   "service/auth-ui": "1.3.1",
