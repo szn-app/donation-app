@@ -1,6 +1,6 @@
 ### automerge pull requests
 
-name: automerge
+name: automerge_pull_request
 
 on:
   pull_request:

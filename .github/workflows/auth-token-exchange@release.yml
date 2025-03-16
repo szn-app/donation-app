@@ -2,14 +2,15 @@
 name: auth-token-exchange@release
 
 on:
-  workflow_call:
-    # inputs:
-    #   config-path:
-    #     required: true
-    #     type: string
-    # secrets:
-    #   token:
-    #     required: true
+    workflow_call:
+      # inputs:
+      #   config-path:
+      #     required: true
+      #     type: string
+      # secrets:
+      #   token:
+      #     required: true
+    workflow_dispatch:  
 
 jobs: 
   
