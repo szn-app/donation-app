@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.75](https://github.com/szn-app/donation-app/compare/web-server@v0.0.74...web-server@v0.0.75) (2025-03-16)
+
+
+### Bug Fixes
+
+* callback redirect in case of already signed-in user ([85d7c97](https://github.com/szn-app/donation-app/commit/85d7c972181c8eada59154545364d94fbc2815b5))
+
 ## [0.0.74](https://github.com/szn-app/donation-app/compare/web-server@v0.0.73...web-server@v0.0.74) (2025-03-05)
 
 
