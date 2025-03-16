@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.18](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.17...donation-app@v0.4.18) (2025-03-16)
+
+
+### Features
+
+* exopse minio console ([f1e9d2e](https://github.com/szn-app/donation-app/commit/f1e9d2e6a369842941e8bfde7fcc6269ba61ce64))
+* initial database Postgresql configurations ([7226bff](https://github.com/szn-app/donation-app/commit/7226bffe11af7aaf864e4a37fcf212b9c027487c))
+* pass database configuration to api-data server ([fcf1f8c](https://github.com/szn-app/donation-app/commit/fcf1f8cc7012348d80ae93c7901e404eb0773721))
+* setup CNPG database deployment ([fb7f0e2](https://github.com/szn-app/donation-app/commit/fb7f0e2b9188f7c60975e3327874c340498e3a9d))
+* setup MinIO object store with network volume ([3fa9bbf](https://github.com/szn-app/donation-app/commit/3fa9bbf645c04cf6631bc4d3ac3ebe61abb510fb))
+
+
+### Bug Fixes
+
+* callback redirect in case of already signed-in user ([85d7c97](https://github.com/szn-app/donation-app/commit/85d7c972181c8eada59154545364d94fbc2815b5))
+
 ## [0.4.17](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.16...donation-app@v0.4.17) (2025-03-05)
 
 
