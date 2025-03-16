@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.19](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.18...donation-app@v0.4.19) (2025-03-16)
+
+
+### Bug Fixes
+
+* **ci:** move workflow to required folder ([2d0f9c8](https://github.com/szn-app/donation-app/commit/2d0f9c81b5435c0c8a379a38bda986eff3e42086))
+* use # instead of @ to permit special character naming ([99a777b](https://github.com/szn-app/donation-app/commit/99a777b6e8753dc19bc7b0fca5707258ed7536ac))
+
 ## [0.4.18](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.17...donation-app@v0.4.18) (2025-03-16)
 
 
