@@ -1,4 +1,4 @@
-name: auth-ui@release
+name: auth-ui.release
 
 on:
     workflow_call:

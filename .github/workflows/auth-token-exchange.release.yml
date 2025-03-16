@@ -1,5 +1,5 @@
 
-name: auth-token-exchange@release
+name: auth-token-exchange.release
 
 on:
     workflow_call:

@@ -63,19 +63,23 @@ jobs:
   web-server:
     needs: [release-please]
     if: ${{ needs.release-please.outputs.web-server--release_created }}
-    uses: ./.github/workflows/web-server@release.yml@main
-    
+    uses: ./.github/workflows/web-server.release.yml
+    secrets: inherit 
+
   auth-ui: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.auth-ui--release_created }}
-    uses: ./.github/workflows/auth-ui@release.yml@main
+    uses: ./.github/workflows/auth-ui.release.yml
+    secrets: inherit 
 
   auth-token-exchange: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.auth-token-exchange--release_created }}
-    uses: ./.github/workflows/auth-token-exchange@release.yml@main
+    uses: ./.github/workflows/auth-token-exchange.release.yml
+    secrets: inherit 
 
   api-data: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.api-data--release_created }}
-    uses: ./.github/workflows/api-data@release.yml@main
+    uses: ./.github/workflows/api-data.release.yml
+    secrets: inherit 

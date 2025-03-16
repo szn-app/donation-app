@@ -1,4 +1,4 @@
-name: api-data@release
+name: api-data.release
 
 on:
     workflow_call:

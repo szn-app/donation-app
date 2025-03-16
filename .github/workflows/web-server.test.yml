@@ -1,6 +1,6 @@
 ### run tests for microservice unit test and integration tests
 
-name: web-server@test
+name: web-server.test
 
 on:
   pull_request:
