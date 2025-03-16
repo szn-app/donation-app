@@ -3,13 +3,10 @@ name: auth-token-exchange.release
 
 on:
     workflow_call:
-      # inputs:
-      #   config-path:
-      #     required: true
-      #     type: string
-      # secrets:
-      #   token:
-      #     required: true
+      inputs:
+        tag-name:
+          required: true
+          type: string
     workflow_dispatch:  
 
 jobs: 
@@ -39,10 +36,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
         run: |
-          release_id=$(gh release view ${{ needs.release-please.outputs.auth-token-exchange--tag_name }} --json databaseId | jq -r '.databaseId')
+          release_id=$(gh release view ${{ inputs.tag-name }} --json databaseId | jq -r '.databaseId')
           echo "release_id=$release_id" >> $GITHUB_OUTPUT
           if [[ -z "$release_id" ]]; then
-            echo "Error: release id retrieval failed for tagname: ${{ needs.release-please.outputs.auth-token-exchange--tag_name }}"
+            echo "Error: release id retrieval failed for tagname: ${{ inputs.tag-name }}"
             exit 1;
           else 
             echo "release_id=$release_id"
@@ -60,14 +57,14 @@ jobs:
           TAG=auth-token-exchange:latest
           docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
           docker push ghcr.io/szn-app/donation-app/$TAG
-          VERSION_TAG=${{ needs.release-please.outputs.auth-token-exchange--tag_name }}
+          VERSION_TAG=${{ inputs.tag-name }}
           MAPPED_VERSION="${VERSION_TAG//@/:}"
           docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
           docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
 
       - name: Update release description
         run: |
-          release_desc=$(gh release view ${{ needs.release-please.outputs.auth-token-exchange--tag_name }} --json body | jq -r '.body')
+          release_desc=$(gh release view ${{ inputs.tag-name }} --json body | jq -r '.body')
           new_desc=$(cat <<EOF
           $release_desc
           ___
@@ -75,6 +72,6 @@ jobs:
           * [auth-token-exchange:latest](https://ghcr.io/szn-app/donation-app/auth-token-exchange:latest)
           EOF
           )
-          gh release edit ${{ needs.release-please.outputs.auth-token-exchange--tag_name }} --notes "$new_desc"
+          gh release edit ${{ inputs.tag-name }} --notes "$new_desc"
         env:
           GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}

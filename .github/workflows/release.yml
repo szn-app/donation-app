@@ -64,22 +64,30 @@ jobs:
     needs: [release-please]
     if: ${{ needs.release-please.outputs.web-server--release_created == 'true' || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/web-server.release.yml
-    secrets: inherit 
+    secrets: inherit
+    with: 
+        tag-name: ${{ needs.release-please.outputs.web-server--tag_name || 'dummy' }}
 
   auth-ui: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.auth-ui--release_created || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/auth-ui.release.yml
-    secrets: inherit 
+    secrets: inherit
+    with: 
+        tag-name: ${{ needs.release-please.outputs.auth-ui--tag_name || 'dummy' }}
 
   auth-token-exchange: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.auth-token-exchange--release_created || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/auth-token-exchange.release.yml
-    secrets: inherit 
+    secrets: inherit
+    with: 
+        tag-name: ${{ needs.release-please.outputs.auth-token-exchange--tag_name || 'dummy' }}
 
   api-data: 
     needs: [release-please]
     if: ${{ needs.release-please.outputs.api-data--release_created || github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/api-data.release.yml
-    secrets: inherit 
+    secrets: inherit
+    with: 
+        tag-name: ${{ needs.release-please.outputs.api-data--tag_name || 'dummy' }}
