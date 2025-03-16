@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/szn-app/donation-app/compare/auth-ui@v1.3.0...auth-ui@v1.3.1) (2025-03-16)
+
+
+### Bug Fixes
+
+* callback redirect in case of already signed-in user ([85d7c97](https://github.com/szn-app/donation-app/commit/85d7c972181c8eada59154545364d94fbc2815b5))
+
 ## [1.3.0](https://github.com/szn-app/donation-app/compare/auth-ui@v1.2.0...auth-ui@v1.3.0) (2025-03-05)
 
 
