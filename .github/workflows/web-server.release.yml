@@ -37,6 +37,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Create Dummy Release for Debugging
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+        run: |
+          if [ "${{ inputs.tag-name }}" = "dummy" ]; then
+            if ! gh release view "dummy" &>/dev/null; then
+              gh release create "dummy" --title "dummy" --notes "Auto-created dummy tag for debugging"
+            fi
+          fi
+
       # find release ID given the associated tag and pass it to Tauri build in following step (bc it seems like tauri-action fails to find the release id sometimes)
       - name: Find Release ID
         id: find_release_id
