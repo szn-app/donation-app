@@ -2,10 +2,10 @@
 # set -e
 
 # run & expose gateway with minimum scaffold services
-dev.local#bootstrap#task@monorepo() {
+local#bootstrap#task@monorepo() {
     sudo echo "" # prompt for sudo password
 
-    {
+    run_minikube() {
         # Check if minikube is already running
         if ! minikube status --profile minikube &>/dev/null; then
             echo "Starting minikube..."
@@ -37,11 +37,18 @@ dev.local#bootstrap#task@monorepo() {
         fi
     }
 
+    run_scaffold_only() {
+        pushd scaffold && skaffold run --profile development && popd
+    }
+
+    run_minikube
+    
     set_user_inotify_limit
     fix_sync_issue
-    execute.util '#predeploy-hook'
 
-    # pushd scaffold && skaffold run --profile development && popd        
+    execute.util '#predeploy-hook' # prepare for deployment
+    skaffold run --profile local-production # run entire services
+
     tunnel_minikube -v
 }
 
@@ -56,7 +63,7 @@ dev.skaffold#task@monorepo() {
     }
     
     wait_for_terminating_resources
-    # dev.local#bootstrap#task@monorepo
+    # local#bootstrap#task@monorepo
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -134,7 +141,7 @@ dev_production_mode.skaffold#task@monorepo() {
     }
 
     wait_for_terminating_resources
-    # dev.local#bootstrap#task@monorepo
+    # local#bootstrap#task@monorepo
 
     skaffold dev --profile local-production --port-forward --tail
 

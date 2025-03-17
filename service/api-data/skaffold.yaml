@@ -16,7 +16,7 @@ requires:
   - path: object-store
     configs: []                 
     activeProfiles:                                     
-     - name: development                               
+     - name: development
        activatedBy: [development, local-production]
      - name: production                               
        activatedBy: [production]

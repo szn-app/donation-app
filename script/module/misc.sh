@@ -3,7 +3,7 @@ misc_() {
     find ./ -maxdepth 4 -name "script.sh" -exec chmod +x {} \;
 }
 
-record_version#bootstrap#task@monorepo() { 
+record_version#setup#task@monorepo() { 
     NODE_VERSION=$(node -v | cut -d 'v' -f2)
     PNPM_VERSION=$(pnpm --version | cut -d ' ' -f2)
     RUST_VERSION=$(rustc --version | awk '{print $2}') 
