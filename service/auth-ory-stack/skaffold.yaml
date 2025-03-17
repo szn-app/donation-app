@@ -19,11 +19,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && prehook_auth_ory_stack development"]
+              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-ory-stack development"]
               dir: .
         after:
           - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && posthook_auth_ory_stack development"]
+              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-ory-stack development"]
               dir: .
 
 - name: production
@@ -36,9 +36,9 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && prehook_auth_ory_stack production"]
+              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-ory-stack production"]
               dir: .
         after:
           - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && posthook_auth_ory_stack production"]
+              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-ory-stack production"]
               dir: .

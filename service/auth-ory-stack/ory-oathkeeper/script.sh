@@ -1,11 +1,37 @@
 #!/bin/bash
+set -e
+
+generate_config#bootstrap@oathkeeper() {    
+    pushd "$(dirname "${BASH_SOURCE[0]}")"
+
+    CLIENT_NAME="oathkeeper-introspection"
+    SECRET_NAME="ory-hydra-client--oathkeeper-introspection"
+    CLIENT_SECRET=$(kubectl get secret "$SECRET_NAME" -n "auth" -o jsonpath='{.data.client_secret}')
+
+    if [[ -z "$CLIENT_SECRET" ]]; then
+        printf "Error: generate_config#bootstrap@oathkeeper function depends on create_oauth2_client_for_trusted_app@hydra"
+    fi
+
+    # create authorization header value
+    OATHKEEPER_CLIENT_CREDENTIALS=$(printf "${CLIENT_NAME}:${CLIENT_SECRET}" | base64 -w 0)
+
+    secret="./config/.env"
+
+    t=$(mktemp) && cat <<EOF > "$t"
+OATHKEEPER_CLIENT_CREDENTIALS="${OATHKEEPER_CLIENT_CREDENTIALS}"
+EOF
+    mv $t $secret
+    echo "generated secrets file: file://$(readlink -f $secret)"
+    
+    popd
+}
 
 ### usecases: 
 # Examples of Oathkeeper validation setups possible: 
 #   a. JWT stored in a cookie
 #   b. Kratos session token
 #   c. Hydra OAuth2 access token in a cookie
-install_oathkeeper() {
+install@oathkeeper() {
     set -e
     local environment="$1"
 
@@ -15,29 +41,8 @@ install_oathkeeper() {
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
-    generate_oathkeeper_oauth2_client_credentials_env_file() {
-        CLIENT_NAME="oathkeeper-introspection"
-        SECRET_NAME="ory-hydra-client--oathkeeper-introspection"
-        CLIENT_SECRET=$(kubectl get secret "$SECRET_NAME" -n "auth" -o jsonpath='{.data.client_secret}')
-
-        if [[ -z "$CLIENT_SECRET" ]]; then
-            printf "Error: generate_oathkeeper_oauth2_client_credentials_env_file@install_oathkeeper function depends on create_oauth2_client_for_trusted_app"
-        fi
-
-        # create authorization header value
-        OATHKEEPER_CLIENT_CREDENTIALS=$(printf "${CLIENT_NAME}:${CLIENT_SECRET}" | base64 -w 0)
-
-        secret="./secret.env"
-
-        t=$(mktemp) && cat <<EOF > "$t"
-OATHKEEPER_CLIENT_CREDENTIALS="${OATHKEEPER_CLIENT_CREDENTIALS}"
-EOF
-        mv $t $secret
-        echo "generated secrets file: file://$(readlink -f $secret)"
-    }
-
     # used also to update access rules
-    helm_install_oathkeeper() {
+    helm.install@oathkeeper() {
         local environment="$1"
 
         # t="$(mktemp).pem" && openssl genrsa -out "$t" 2048 # create private key
@@ -53,8 +58,8 @@ EOF
     }
 
     printf "install Ory Aothkeeper \n"
-    generate_oathkeeper_oauth2_client_credentials_env_file
-    helm_install_oathkeeper $environment
+    generate_config#bootstrap@oathkeeper
+    helm.install@oathkeeper $environment
 
     # Wait for Oathkeeper deployment to be ready
     printf "Waiting for Oathkeeper deployment to be ready...\n"

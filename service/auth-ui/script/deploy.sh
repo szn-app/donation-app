@@ -5,6 +5,8 @@ dev.skaffold@auth-ui() {
 }
 
 generate_config@auth-ui() {
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+
     local environment=$1
     local environment_short=$(if [ "$environment" == "development" ]; then echo "dev"; else echo "prod"; fi)
 
@@ -27,6 +29,8 @@ EOF
     else
         echo "secrets file already exists: file://$secret_file"
     fi
+
+    popd
 }
 
 func#predeploy-hook@auth-ui() {

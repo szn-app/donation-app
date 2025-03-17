@@ -102,8 +102,8 @@ fn parse_arguments() -> clap::ArgMatches {
 
 fn load_environment_variables(environment: &str) {
     log::debug!("Loading environment variables for {}", environment);
-    let dotenv_file = format!(".env.{}", environment);
-    let dotenv_file_local = format!(".env.{}.local", environment);
+    let dotenv_file = format!("config/.env.{}", environment);
+    let dotenv_file_local = format!("config/.env.{}.local", environment);
 
     // Load environment variables from .env files
     if std::path::Path::new(&dotenv_file).exists() {
@@ -114,7 +114,7 @@ fn load_environment_variables(environment: &str) {
         dotenv::from_filename(&dotenv_file_local).ok();
     } else {
         // list found .env files
-        let paths = fs::read_dir(".").unwrap();
+        let paths = fs::read_dir("config").unwrap();
         for path in paths {
             let path = path.unwrap().path();
             if let Some(extension) = path.extension() {
@@ -135,7 +135,7 @@ fn load_environment_variables(environment: &str) {
     }
 
     // load environment variables for database
-    let dotenv_db_file = format!("db_hydra_secret.env");
+    let dotenv_db_file = format!("config/db_hydra_secret.env");
     dotenv::from_filename(&dotenv_db_file).ok();
     {
         for field in db_env_file_required_fields {

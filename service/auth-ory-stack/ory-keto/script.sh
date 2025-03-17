@@ -1,5 +1,7 @@
-generate_database_keto_credentials() {
-    db_secret_file="./db_keto_secret.env"
+generate_db_credential@keto() {
+    pushd "$(dirname "${BASH_SOURCE[0]}")"
+
+    db_secret_file="./config/db_keto_secret.env"
     if [ ! -f "$db_secret_file" ]; then
         t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
@@ -8,12 +10,14 @@ EOF
 
         mv $t $db_secret_file
         echo "generated secrets file: file://$(readlink -f $db_secret_file)" 
-        else
+    else
         echo "using existing credentials file: file://$(readlink -f $db_secret_file)"
-        fi
+    fi
+
+    popd
 }
 
-create_keto_policies() {
+create_policies@keto() {
         local environment=$1
 
         # https://www.ory.sh/docs/keto#ory-permission-language
@@ -59,7 +63,7 @@ EOF
             kubectl exec setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t" >/dev/null 2>&1
         }
         {
-            kubectl cp ./policies.rts setup-pod-keto:policies.rts --namespace auth
+            kubectl cp ./config/policies.rts setup-pod-keto:policies.rts --namespace auth
             
             printf "admin_uuid = %s  admin_username = %s \n" "$admin_uuid" "$admin_username"
 
@@ -125,37 +129,37 @@ EOF
         # fi
 }
 
-install_keto() {
+# create .env files from default template if doesn't exist
+create_env_files@keto() {
+    # Find all *.env.template files
+    find ./config -name "*.env.template" | while IFS= read -r template_file; do
+            # Extract filename without extension
+            filename=$(basename "$template_file" | cut -d '.' -f 1)
+            env_file="$(dirname "$template_file")/$filename.env"
+
+            # Check if .env file already exists
+            if [ ! -f "$env_file" ]; then
+                # Create a new .env file from the template in the same directory
+                cp "$template_file" "$env_file" 
+                echo "created env file file://$(readlink -f $env_file) from $template_file"
+            else
+                echo "env file already exists: file://$(readlink -f $env_file)"
+            fi
+    done
+}
+
+install@keto() {
     set -e
     local environment="$1"
     
-    # create .env files from default template if doesn't exist
-    create_env_files() {
-        # Find all *.env.template files
-        find . -name "*.env.template" | while IFS= read -r template_file; do
-                # Extract filename without extension
-                filename=$(basename "$template_file" | cut -d '.' -f 1)
-                env_file="$(dirname "$template_file")/$filename.env"
-
-                # Check if .env file already exists
-                if [ ! -f "$env_file" ]; then
-                    # Create a new .env file from the template in the same directory
-                    cp "$template_file" "$env_file" 
-                    echo "created env file file://$(readlink -f $env_file) from $template_file"
-                else
-                    echo "env file already exists: file://$(readlink -f $env_file)"
-                fi
-        done
-    }
-
     # ory stack charts
     helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
     # postgreSQL
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
-    generate_database_keto_credentials
-    create_env_files
+    generate_db_credential@keto
+    create_env_files@keto
 
     if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -167,7 +171,7 @@ install_keto() {
         printf "install Postgresql for Ory Keto \n"
 
         set -a
-            source ./db_keto_secret.env # DB_USER, DB_PASSWORD
+            source ./config/db_keto_secret.env # DB_USER, DB_PASSWORD
         set +a
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-keto bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
@@ -181,7 +185,7 @@ install_keto() {
         # preprocess file through substituting env values
         t="$(mktemp).yml" && cargo run --release --bin render-template -- --environment $environment < ./keto-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
         set -a
-            source ./db_keto_secret.env # DB_USER, DB_PASSWORD
+            source ./config/db_keto_secret.env # DB_USER, DB_PASSWORD
         set +a
         l="$(mktemp).log" && helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yml -f $t \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
@@ -193,7 +197,7 @@ install_keto() {
     kubectl wait --for=condition=available deployment/keto --namespace=auth --timeout=300s
 
 
-    create_keto_policies $environment
+    create_policies@keto $environment
 
     verify() {
         alias keto="docker run -it --network cat-videos-example_default -e KETO_READ_REMOTE=\"keto:4466\" oryd/keto:v0.7.0-alpha.1"

@@ -97,7 +97,7 @@ fn load_environment_variables(environment: &str) {
     log::debug!("Loading environment variables for {}", environment);
 
     // load environment variables for database
-    let dotenv_secret_file = format!("secret.env");
+    let dotenv_secret_file = format!("./config/.env");
     dotenv::from_filename(&dotenv_secret_file).ok();
     {
         for field in secret_env_file_required_fields {

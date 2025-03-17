@@ -1,4 +1,4 @@
-create_kratos_identities() {
+create_identities@kratos() {
     local environment=$1
 
     printf "Kratos: create default users \n"
@@ -30,7 +30,7 @@ EOF
         
         if [ "$environment" = "production" ]; then
             set -a
-                source admin_user_secret.env
+                source config/admin_user_secret.env
             set +a
 
             username=$ADMIN_USERNAME
@@ -83,77 +83,112 @@ EOF
     # fi
 }
 
-install_kratos() {
-    set -e
-    local environment=$1
+generate_default_username@kratos() {( # use subshell to avoid change variables    
+    pushd "$(dirname "${BASH_SOURCE[0]}")" # two levels up: from script directory to project root
 
-    generate_default_username_kratos() {( # use subshell to avoid change variables    
-        local environment=production
-        if [ -f ./.env.$environment ]; then
-            source ./.env.$environment
-        elif [ -f ./.env.$environment.local ]; then
-            source ./.env.$environment.local
-        else
-            echo "Error: .env.$environment file not found."
-            exit 1
-        fi
+    local environment=production
+    if [ -f ./config/.env.$environment ]; then
+        source ./config/.env.$environment
+    elif [ -f ./config/.env.$environment.local ]; then
+        source ./config/.env.$environment.local
+    else
+        echo "Error: .env.$environment file not found."
+        exit 1
+    fi
 
-        if [ -z "$DOMAIN_NAME" ]; then
-            echo "Error: DOMAIN_NAME environment variable is not set"
-            return 
-        fi
+    if [ -z "$DOMAIN_NAME" ]; then
+        echo "Error: DOMAIN_NAME environment variable is not set"
+        return 
+    fi
 
-        local username="admin-$(openssl rand -hex 8)@$DOMAIN_NAME"
-        local password="$(openssl rand -base64 64 | tr -dc 'A-Za-z0-9!@#$%^&*()_+-=[]{}|;:,.<>?~`' | head -c 32)"
+    local username="admin-$(openssl rand -hex 8)@$DOMAIN_NAME"
+    local password="$(openssl rand -base64 64 | tr -dc 'A-Za-z0-9!@#$%^&*()_+-=[]{}|;:,.<>?~`' | head -c 32)"
 
-        file="./admin_user_secret.env"
-        if [ ! -f "$file" ]; then
-            t=$(mktemp) && cat <<EOF > "$t"
+    file="./config/admin_user_secret.env"
+    if [ ! -f "$file" ]; then
+        t=$(mktemp) && cat <<EOF > "$t"
 ADMIN_USERNAME="$username"
 ADMIN_PASSWORD="$password"
 EOF
 
-            mv $t $file
-            echo "generated secrets file: file://$(readlink -f $file)"
-        else
-            echo "Secrets file file://$(readlink -f $file) already exists."
-        fi
-    )}
+        mv $t $file
+        echo "generated secrets file: file://$(readlink -f $file)"
+    else
+        echo "Secrets file file://$(readlink -f $file) already exists."
+    fi
 
-    generate_database_kratos_credentials() {( # use subshell to avoid change variables
-        db_secret_file="./db_kratos_secret.env"
-        if [ ! -f "$db_secret_file" ]; then
-            t=$(mktemp) && cat <<EOF > "$t"
+    popd
+)}
+
+generate_database_credentials@kratos() {( # use subshell to avoid change variables
+    pushd "$(dirname "${BASH_SOURCE[0]}")"
+
+    local db_secret_file="./config/db_kratos_secret.env"
+    if [ ! -f "$db_secret_file" ]; then
+        t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
 DB_PASSWORD="$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')"
 EOF
 
-            mv $t $db_secret_file
-            echo "generated secrets file: file://$(readlink -f $db_secret_file)"
-        else
-            echo "Secrets file file://$(readlink -f $db_secret_file) already exists."
-        fi
+        mv $t $db_secret_file
+        echo "generated secrets file: file://$(readlink -f $db_secret_file)"
+    else
+        echo "Secrets file file://$(readlink -f $db_secret_file) already exists."
+    fi
 
-    )}
+    popd
+)}
 
-    # create .env files from default template if doesn't exist
-    create_env_files() {
-        # Find all *.env.template files
-        find . -name "*.env.template" | while IFS= read -r template_file; do
-                # Extract filename without extension
-                filename=$(basename "$template_file" | cut -d '.' -f 1)
-                env_file="$(dirname "$template_file")/$filename.env"
+generate_env_file@kratos() {
+    pushd "$(dirname "${BASH_SOURCE[0]}")" # two levels up: from script directory to project root
 
-                # Check if .env file already exists
-                if [ ! -f "$env_file" ]; then
-                    # Create a new .env file from the template in the same directory
-                    cp "$template_file" "$env_file" 
-                    echo "created env file file://$(readlink -f $env_file) from $template_file"
-                else
-                    echo "env file already exists: file://$(readlink -f $env_file)"
-                fi
-        done
-    }
+    env_file_name="./config/jsonnet.env"
+    google_jsonnet_file="./config/google-oidc-mapper.jsonnet"
+
+    # Check if the JSONNET file exists
+    if [[ ! -f "$google_jsonnet_file" ]]; then
+        echo "Error: File '$google_jsonnet_file' not found!"
+        return 1
+    fi
+
+    # Read the JSONNET file and encode it as base64
+    google_jsonnet_base64=$(base64 -w 0 < "$google_jsonnet_file")
+
+    t=$(mktemp) && cat <<EOF > "$t"
+GOOGLE_JSONNET_MAPPER_BASE64="$google_jsonnet_base64"
+EOF
+    mv $t $env_file_name
+    echo "generated env file: file://$(readlink -f $env_file_name)"
+
+    popd
+}
+
+# create .env files from default template if doesn't exist
+create_env_files@kratos() {
+    pushd "$(dirname "${BASH_SOURCE[0]}")"
+
+    # Find all *.env.template files
+    find . -name "config/*.env.template" | while IFS= read -r template_file; do
+            # Extract filename without extension
+            filename=$(basename "$template_file" | cut -d '.' -f 1)
+            env_file="$(dirname "$template_file")/$filename.env"
+
+            # Check if .env file already exists
+            if [ ! -f "$env_file" ]; then
+                # Create a new .env file from the template in the same directory
+                cp "$template_file" "$env_file" 
+                echo "created env file file://$(readlink -f $env_file) from $template_file"
+            else
+                echo "env file already exists: file://$(readlink -f $env_file)"
+            fi
+    done
+
+    popd
+}
+
+install@kratos() {
+    set -e
+    local environment=$1
 
     # ory stack charts
     helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
@@ -161,30 +196,10 @@ EOF
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
-    generate_kratos_env_file() {
-        env_file_name="jsonnet.env"
-        google_jsonnet_file="./google-oidc-mapper.jsonnet"
-
-        # Check if the JSONNET file exists
-        if [[ ! -f "$google_jsonnet_file" ]]; then
-            echo "Error: File '$google_jsonnet_file' not found!"
-            return 1
-        fi
-
-        # Read the JSONNET file and encode it as base64
-        google_jsonnet_base64=$(base64 -w 0 < "$google_jsonnet_file")
-
-        t=$(mktemp) && cat <<EOF > "$t"
-GOOGLE_JSONNET_MAPPER_BASE64="$google_jsonnet_base64"
-EOF
-        mv $t $env_file_name
-        echo "generated env file: file://$(readlink -f $env_file_name)"
-    }
-
-    generate_database_kratos_credentials
-    generate_default_username_kratos
-    create_env_files
-    generate_kratos_env_file
+    generate_database_credentials@kratos
+    generate_default_username@kratos
+    create_env_files@kratos
+    generate_env_file@kratos
     
     if helm list -n auth | grep -q 'postgres-kratos' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -195,7 +210,7 @@ EOF
     if [ "$upgrade_db" = true ]; then
         printf "install Postgresql for Ory Kratos \n"
         set -a
-            source db_kratos_secret.env
+            source config/db_kratos_secret.env
         set +a
         
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-kratos bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
@@ -211,13 +226,13 @@ EOF
         t="$(mktemp).yml" && cargo run --release --bin render-template-config -- --environment $environment < kratos-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
         q="$(mktemp).yml" && cargo run --release --bin render-template-helm -- --environment $environment < helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
         set -a
-            source db_kratos_secret.env
+            source config/db_kratos_secret.env
         set +a
         default_secret="$(openssl rand -hex 16)"
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
         cipher_secret="$(openssl rand -hex 16)"
         l="$(mktemp).log" && helm upgrade --debug --install --atomic kratos ory/kratos -n auth --create-namespace -f $q -f $t \
-            --set-file kratos.identitySchemas.identity-schema\\.json=./identity-schema.json \
+            --set-file kratos.identitySchemas.identity-schema\\.json=./config/identity-schema.json \
             --set kratos.config.secrets.default[0]="$default_secret" \
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
             --set kratos.config.secrets.cipher[0]="$cipher_secret" \
@@ -229,7 +244,7 @@ EOF
     printf "Waiting for Kratos deployment to be ready...\n"
     kubectl wait --for=condition=available deployment/kratos --namespace=auth --timeout=300s
 
-    create_kratos_identities $environment
+    create_identities@kratos $environment
 
     verify_jsonnet() {
         kratos help jsonnet lint
@@ -240,7 +255,7 @@ EOF
         {
             # manually validate rendered templates and deployment manifest files
             y="$(mktemp).yml" && helm upgrade --dry-run --install kratos ory/kratos -n auth --create-namespace -f $q -f $t \
-                --set-file kratos.identitySchemas.identity-schema\\.json=./identity-schema.json \
+                --set-file kratos.identitySchemas.identity-schema\\.json=./config/identity-schema.json \
                 --set kratos.config.secrets.default[0]="$default_secret" \
                 --set kratos.config.secrets.cookie[0]="$cookie_secret" \
                 --set kratos.config.secrets.cipher[0]="$cipher_secret" \

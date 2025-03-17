@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-create_oauth2_client_for_trusted_app() {
+create_oauth2_client_for_trusted_app@hydra() {
     environment=${1:-development}
 
     set -a 
-        if [ -f ./.env.$environment ]; then
-            source ./.env.$environment
-        elif [ -f ./.env.$environment.local ]; then
-            source ./.env.$environment.local
+        if [ -f ./config/.env.$environment ]; then
+            source ./config/.env.$environment
+        elif [ -f ./config/.env.$environment.local ]; then
+            source ./config/.env.$environment.local
         else
             echo "Error: .env.$environment file not found."
             exit 1
@@ -20,7 +20,7 @@ create_oauth2_client_for_trusted_app() {
         echo "APP_URL: $APP_URL" # debug print
     fi
 
-    example_hydra_admin() { 
+    example_hydra_admin() {
         kubectl run -it --rm --image=debian:latest debug-pod --namespace auth -- /bin/bash
         {
             # install hydra
@@ -59,7 +59,7 @@ EOF
         kubectl exec setup-pod --namespace auth -- /bin/sh -c "chmod +x $t && $t" >/dev/null 2>&1
     }
     
-    example_using_hydra() { 
+    example_using_hydra() {
         t="$(mktemp).sh" && cat << 'EOF' > $t
 #!/bin/bash
 hydra create oauth2-client --name frontend-client-2 --audience backend-service --endpoint http://hydra-admin --grant-type authorization_code,refresh_token --response-type code --redirect-uri ${APP_URL} --scope offline_access,openid --skip-consent --skip-logout-consent --token-endpoint-auth-method client_secret_post
@@ -84,7 +84,6 @@ EOF
     }
 
     {
-
         # app client users for trusted app
 
         # redirect uri is where the resource owner (user) will be redirected to once the authorization server grants permission to the client
@@ -298,43 +297,47 @@ EOF
 
 }
 
-install_hydra() {
-    set -e
-    local environment=$1
+# create .env files from default template if doesn't exist
+create_env_files@hydra() {
+    # Find all *.env.template files
+    find ./config -name "*.env.template" | while IFS= read -r template_file; do
+            # Extract filename without extension
+            filename=$(basename "$template_file" | cut -d '.' -f 1)
+            env_file="$(dirname "$template_file")/$filename.env"
 
-    # create .env files from default template if doesn't exist
-    create_env_files() {
-        # Find all *.env.template files
-        find . -name "*.env.template" | while IFS= read -r template_file; do
-                # Extract filename without extension
-                filename=$(basename "$template_file" | cut -d '.' -f 1)
-                env_file="$(dirname "$template_file")/$filename.env"
+            # Check if .env file already exists
+            if [ ! -f "$env_file" ]; then
+                # Create a new .env file from the template in the same directory
+                cp "$template_file" "$env_file" 
+                echo "created env file file://$(readlink -f $env_file) from $template_file"
+            else
+                echo "env file already exists: file://$(readlink -f $env_file)"
+            fi
+    done
+}
 
-                # Check if .env file already exists
-                if [ ! -f "$env_file" ]; then
-                    # Create a new .env file from the template in the same directory
-                    cp "$template_file" "$env_file" 
-                    echo "created env file file://$(readlink -f $env_file) from $template_file"
-                else
-                    echo "env file already exists: file://$(readlink -f $env_file)"
-                fi
-        done
-    }
+generate_db_credentials@hydra() {
+    pushd "$(dirname "${BASH_SOURCE[0]}")"
 
-    generate_database_hydra_credentials() {
-        db_secret_file="./db_hydra_secret.env"
-        if [ ! -f "$db_secret_file" ]; then
-            t=$(mktemp) && cat <<EOF > "$t"
+    db_secret_file="./config/db_hydra_secret.env"
+    if [ ! -f "$db_secret_file" ]; then
+        t=$(mktemp) && cat <<EOF > "$t"
 DB_USER="$(shuf -n 1 /usr/share/dict/words | tr -d '\n')"
 DB_PASSWORD="$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')"
 EOF
 
-            mv $t $db_secret_file
-            echo "generated secrets file: file://$(readlink -f $db_secret_file)" 
-        else
-            echo "db secret file already exists: file://$(readlink -f $db_secret_file)"
-        fi
-    }
+        mv $t $db_secret_file
+        echo "generated secrets file: file://$(readlink -f $db_secret_file)" 
+    else
+        echo "db secret file already exists: file://$(readlink -f $db_secret_file)"
+    fi
+
+    popd
+}
+
+install@hydra() {
+    set -e
+    local environment=$1
 
     # ory stack charts
     helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
@@ -342,8 +345,8 @@ EOF
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
-    generate_database_hydra_credentials
-    create_env_files
+    generate_db_credentials@hydra
+    create_env_files@hydra
 
     if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -355,7 +358,7 @@ EOF
         printf "install Postgresql for Ory Hydra \n"
 
         set -a
-            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+            source ./config/db_hydra_secret.env # DB_USER, DB_PASSWORD
         set +a
         l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
             --set auth.username=${DB_USER} \
@@ -370,7 +373,7 @@ EOF
         t="$(mktemp).yml" && cargo run --release --bin render-template-config -- --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
         q="$(mktemp).yml" && cargo run --release --bin render-template-helm -- --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
         set -a
-            source ./db_hydra_secret.env # DB_USER, DB_PASSWORD
+            source ./config/db_hydra_secret.env # DB_USER, DB_PASSWORD
         set +a
         system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
@@ -382,7 +385,7 @@ EOF
     }
 
 
-    create_oauth2_client_for_trusted_app $environment
+    create_oauth2_client_for_trusted_app@hydra $environment
 
     # Wait for Hydra deployment to be ready
     printf "Waiting for Hydra deployment to be ready...\n"

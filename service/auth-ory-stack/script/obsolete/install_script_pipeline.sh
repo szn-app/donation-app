@@ -102,11 +102,11 @@ install_ory_stack() {
     helm repo update > /dev/null 2>&1 
 
     env_files $environment
-    install_kratos $environment
+    install@kratos $environment
     install_hydra $environment
-    install_keto # depends on `install_kratos`
+    install_keto # depends on `install@kratos`
     create_oauth2_client_for_trusted_app $environment
-    install_oathkeeper # depends on `create_oauth2_client_for_trusted_app`
+    install@oathkeeper # depends on `create_oauth2_client_for_trusted_app`
 
     manual_verify() {
         # use --debug with `helm` for verbose output

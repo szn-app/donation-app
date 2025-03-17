@@ -9,5 +9,6 @@ source ./script/module/utility.sh
 load_scripts_recursive.util "./script/" 
 load_scripts_recursive.util "./infrastructure/" 'script/'
 load_scripts_recursive.util "./service/" 'script/'
+load_scripts_recursive.util "./service/auth-ory-stack"
 
 call_function "$@"

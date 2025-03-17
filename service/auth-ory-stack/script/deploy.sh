@@ -4,35 +4,35 @@
 
 set -e  # Exit immediately if a command exits with a non-zero status
 
-prehook_auth_ory_stack() {
+func#predeploy_hook@auth-ory-stack() {
     local environment=${1:-development}
     
     # Check if Kratos service exists in the auth namespace
     if kubectl get service kratos-admin -n auth &>/dev/null; then
         echo "Kratos service already exists, skipping installation"
     else 
-        pushd ory-kratos && source script.sh && install_kratos $environment && popd
+        pushd ory-kratos && source script.sh && install@kratos $environment && popd
     fi
     
     # Check if Hydra service exists in the auth namespace
     if kubectl get service hydra-admin -n auth &>/dev/null; then
         echo "Hydra service already exists, skipping installation"
     else
-        pushd ory-hydra && source script.sh && install_hydra $environment && popd
+        pushd ory-hydra && source script.sh && install@hydra $environment && popd
     fi
     
     # Check if Keto service exists in the auth namespace
     if kubectl get service keto-read -n auth &>/dev/null; then
         echo "Keto service already exists, skipping installation"
     else
-        pushd ory-keto && source script.sh && install_keto $environment && popd
+        pushd ory-keto && source script.sh && install@keto $environment && popd
     fi
 
     # Check if Oathkeeper service exists in the auth namespace
     if kubectl get service oathkeeper-api -n auth &>/dev/null; then
         echo "Oathkeeper service already exists, skipping installation"
     else
-        pushd ory-oathkeeper && source script.sh && install_oathkeeper $environment && popd
+        pushd ory-oathkeeper && source script.sh && install@oathkeeper $environment && popd
     fi
 
     manual_verify() {
@@ -85,13 +85,13 @@ prehook_auth_ory_stack() {
     }
 }
 
-posthook_auth_ory_stack() {
+func#postdeploy_hook@auth-ory-stack() {
     local environment=${1:-development}
     echo "Posthook $environment"
 }
 
 # https://k8s.ory.sh/helm/
-delete_ory_stack() {
+delete@auth-ory-stack() {
     local environment="${1:-development}" # environment = development, production
 
     helm uninstall kratos -n auth
