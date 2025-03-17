@@ -1,11 +1,11 @@
 ### run tests for microservice unit test and integration tests
 
-name: api-data.test
+name: auth-token-exchange.test
 
 on:
   pull_request:
     branches: [main]
-    paths: ['service/api-data/server/**']
+    paths: ['service/auth-token-exchange/**']
   workflow_dispatch: 
       
 jobs:
@@ -27,7 +27,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./service/api-data/server
+        working-directory: ./service/auth-token-exchange
 
     runs-on: ${{ matrix.platform }}
     steps:

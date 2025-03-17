@@ -1,7 +1,7 @@
-prehook_auth_token_exchange() {
+func#predeploy_hook@auth-token-exchange() {
     echo "prehook with $1"
 }
 
-posthook_auth_token_exchange() {
+func#postdeploy_hook@auth-token-exchange() {
     echo "prehook with $1"
 }

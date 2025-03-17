@@ -4,7 +4,3 @@ kind: Kustomization
 resources:
   - ../../base
 
-# configMapGenerator:
-#   - name: properties-map-api-data
-#     env: config.properties
-

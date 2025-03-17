@@ -3,7 +3,7 @@ apiVersion: skaffold/v4beta12
 kind: Config
 
 requires:
-  - path: scaffold
+  - path: service/scaffold
     configs: []                 
     activeProfiles:                                     
      - name: development                               

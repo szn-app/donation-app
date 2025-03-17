@@ -1,18 +1,18 @@
-misc_web_server() {
+misc@web-server() {
         cargo create-tauri-app
 }
 
-dev_web_server() { 
+dev@web-server() { 
     pnpm run dev
     pnpm run lint -- --debug
     pnpm run lint -- --fix
 }
 
-dev_web_server_skaffold() {     
+dev.skaffold@web-server() {     
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 }
 
-bootstrap_web_server() { 
+bootstrap@web_server() { 
     # https://typescript-eslint.io/getting-started/
     # https://react-v9.holt.courses/lessons/tools/linting
     install_eslint() {
@@ -36,12 +36,12 @@ bootstrap_web_server() {
      }
 }
 
-add_shadcn_components() { 
+add_shadcn_components@web-server() { 
     pnpm dlx shadcn@latest add "component-name" 
 }
 
 ## IMPORTANT! used in .github/workflows/*
-build_react_spa() {
+build_react_spa@web-server() {
     pushd ./service/web-server
 
     pnpm install --frozen-lockfile
@@ -50,19 +50,19 @@ build_react_spa() {
     popd
 }
 
-develop_tauri_desktop_with_workaround_black_screen() { 
+develop_tauri_desktop_with_workaround_black_screen@web-server() { 
     cd ./service/web-server
     WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
 }
 
-develop_tauri_android() { 
+develop_tauri_android@web-server() { 
     ./script.sh setup_android_sdk_variables
 
     cargo tauri android init
     cargo tauri android dev
 }
 
-develop_pnpm_react() { 
+develop_pnpm_react@web-server() { 
     cd web-server
     pnpm install
     # run application development
@@ -71,7 +71,7 @@ develop_pnpm_react() {
     pnpm run dev
 }
 
-build_app() {
+build_app@web-server() {
     pnpm install
     NO_STRIP=true cargo tauri build 
     # run application

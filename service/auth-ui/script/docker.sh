@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## IMPORTANT! used in .github/workflows/*
-bulid_container_auth_ui() {
+build_container#package_hook@auth-ui() {
     pushd kratos-selfservice-ui-node
     
     docker build . -t auth-ui:latest

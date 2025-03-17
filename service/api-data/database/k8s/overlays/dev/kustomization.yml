@@ -6,10 +6,6 @@ resources:
   - ../../base
   - service.yml
 
-# configMapGenerator:
-#   - name: properties-map-api-data
-#     env: config.properties
-
 patches:
 
   # update with short down time

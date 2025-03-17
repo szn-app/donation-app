@@ -10,9 +10,8 @@ requires:
      - name: development                               
        activatedBy: [development]
      - name: production                               
-       activatedBy: [production] 
+       activatedBy: [production]
 
-  
 build:
   local: 
     push: false
@@ -62,11 +61,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ui development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-hook@auth-ui development"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ui development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-hook@auth-ui development"]
               dir: .
 
 - name: local-production
@@ -91,11 +90,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ui production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-hook@auth-ui production"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ui production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-hook@auth-ui production"]
               dir: .
 
 - name: production
@@ -108,9 +107,9 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_ui production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-hook@auth-ui production"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_ui production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-hook@auth-ui production"]
               dir: .

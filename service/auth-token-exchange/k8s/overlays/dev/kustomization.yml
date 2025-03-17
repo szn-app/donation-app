@@ -8,10 +8,6 @@ images:
   - name: auth-token-exchange
     newTag: latest
 
-# configMapGenerator:
-#   - name: properties-map-auth-token-exchange
-#     env: config.properties
-
 patches:
   - patch: |-
       apiVersion: apps/v1

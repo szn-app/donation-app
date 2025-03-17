@@ -19,8 +19,7 @@ configMapGenerator:
 secretGenerator:
   - name: secrets-api-data-server
     namespace: donation-app
-    envs:
-      - .env.local
+    env: .env.local
 
 patches:
   - patch: |-

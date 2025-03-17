@@ -57,11 +57,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_token_exchange development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange development"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange development"]
               dir: .
 
 - name: local-production
@@ -83,11 +83,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_token_exchange development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange development"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange development"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange development"]
               dir: .
 
 - name: production
@@ -101,9 +101,9 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && prehook_auth_token_exchange production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange production"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && posthook_auth_token_exchange production"]
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange production"]
               dir: .

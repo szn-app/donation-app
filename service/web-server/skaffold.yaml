@@ -3,15 +3,6 @@ kind: Config
 metadata:
   name: web-server
 
-# requires:
-#   - path: ../../scaffold
-#     configs: []                 
-#     activeProfiles:                                     
-#      - name: development                               
-#        activatedBy: [development]
-#      - name: production                               
-#        activatedBy: [production] 
-
 build:
   local: 
     push: false

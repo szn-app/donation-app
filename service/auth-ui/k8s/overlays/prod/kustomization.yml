@@ -24,13 +24,12 @@ images:
 configMapGenerator:
   - name: properties-map-auth-ui
     namespace: auth
-    env: .env
+    env: .properties
 
 secretGenerator:
   - name: secrets-auth-ui
     namespace: auth
-    envs:
-      - secret.env
+    env: .env.local
 
 patches:
   - patch: |-

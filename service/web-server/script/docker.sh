@@ -1,5 +1,5 @@
 # IMPORTANT! used by release.yml workflow
-build_container_web_server() {
+build_container#package_hook@web-server() {
     # NOTE: uses buildx (instead of the legacy build)
     if [ "$1" == "development" ]; then
         docker build . --target development -t web-server:latest # --build-arg ENV=development
@@ -8,6 +8,6 @@ build_container_web_server() {
     fi
 }
 
-run_web_server() {
+run_container@web-server() {
     docker run -d -p 80:80 web-server
 }

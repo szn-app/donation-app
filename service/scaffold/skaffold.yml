@@ -10,24 +10,7 @@ deploy:
   statusCheck: true
 
 requires:
-#   - path: ../service/cilium-gateway # handled as reference in kustomize
-    # configs: []                 
-    # activeProfiles:                                     
-    #  - name: development                               
-    #    activatedBy: [development]
-    #  - name: production                               
-    #    activatedBy: [production]
-
-
-  # - path: ../service/envoy-proxy # handled as reference in kustomize
-  #   configs: []                 
-  #   activeProfiles:                                     
-  #    - name: development                               
-  #      activatedBy: [development]
-  #    - name: production                               
-  #      activatedBy: [production]
-
-  - path: ../service/auth-ory-stack
+  - path: ../cilium-gateway
     configs: []                 
     activeProfiles:                                     
      - name: development                               
@@ -35,7 +18,7 @@ requires:
      - name: production                               
        activatedBy: [production]
 
-  - path: ../service/auth-ory-admin-ui
+  - path: ../envoy-proxy
     configs: []                 
     activeProfiles:                                     
      - name: development                               
@@ -43,7 +26,23 @@ requires:
      - name: production                               
        activatedBy: [production]
 
-  - path: ../service/auth-ui
+  - path: ../auth-ory-stack
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
+
+  - path: ../auth-ory-admin-ui
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
+
+  - path: ../auth-ui
     configs: []                 
     activeProfiles:                                     
      - name: development                               
@@ -53,7 +52,7 @@ requires:
      - name: local-production
        activatedBy: [local-production]
 
-  - path: ../service/auth-token-exchange
+  - path: ../auth-token-exchange
     configs: []                 
     activeProfiles:                                     
     - name: development                               

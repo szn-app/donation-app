@@ -1,4 +1,4 @@
-
+# generating config must happen before skaffold runs because of limitation with skaffold's lifecycle hooks
 generate_config#predeploy-hook@api-data-object-store() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
 

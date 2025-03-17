@@ -59,7 +59,7 @@ jobs:
         working-directory: ./service/auth-token-exchange
         run: |
           chmod +x ./script.sh
-          ./script.sh build_container_auth_token_exchange
+          ./script.sh build_container#package_hook@auth-token-exchange
 
       - name: upload container to Github Container Registry
         run: |

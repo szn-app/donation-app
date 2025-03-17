@@ -1,10 +1,10 @@
-test() {
+test@api-data() {
     export RUST_LOG=debug
     cargo watch -q -c -w src/ -x run
     cargo watch -q -c -w tests/ -x "test -q test_main -- --nocapture" 
 }
 
-single_test() {
+single_test@api-data() {
     export RUST_LOG=debug
 
     cargo watch -q -c -w src/ -x run &
@@ -13,7 +13,7 @@ single_test() {
     kill $(jobs -p)
 }
 
-bootstrap() { 
+bootstrap@api-data() { 
     cargo install cargo-binstall
     
     # cargo binstall cargo-watch
@@ -21,7 +21,7 @@ bootstrap() {
 }
 
 # NOTE: used for docker command
-hot_reload_api_data() {
+hot_reload@api-data() {
     cargo +nightly watch -q -c -w src/ -x run
 
     verify() {
@@ -32,7 +32,7 @@ hot_reload_api_data() {
     }
 }
 
-dev_api_data_skaffold() {     
+dev.skaffold@api-data() {     
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     
     skaffold run --profile production --port-forward
