@@ -85,7 +85,7 @@ jobs:
         working-directory: ./
         run: |
           chmod +x ./script.sh
-          ./script.sh build_react_spa
+          ./script.sh build_react_spa@web-server
 
       - name: compress frontend assets
         if: startsWith(matrix.platform, 'ubuntu')
@@ -139,7 +139,7 @@ jobs:
         working-directory: ./
         run: |
           chmod +x ./script.sh
-          ./script.sh install_tauri_dependencies_debian
+          ./script.sh install_tauri_dependencies_debian#setup@monorepo
 
       - name: install Rust
         uses: dtolnay/rust-toolchain@stable

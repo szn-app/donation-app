@@ -15,6 +15,18 @@ install_tauri_dependencies_debian#setup@monorepo() {
         librsvg2-dev
 }
 
+install_tauri_dependencies_fedora#setup@monorepo() {
+    sudo dnf check-update
+    sudo dnf install webkit2gtk4.0-devel \
+        openssl-devel \
+        curl \
+        wget \
+        file \
+        libappindicator-gtk3-devel \
+        librsvg2-devel
+    sudo dnf group install "C Development Tools and Libraries"
+}
+
 # one-time scripts to setup the project
 bootstrap_local_dev_machine#setup@monorepo() {
     provision_tauri() {
@@ -30,9 +42,9 @@ bootstrap_local_dev_machine#setup@monorepo() {
             echo "Detected version: $version"
 
             if [[ "$distro" == "Fedora" ]]; then
-                install_tauri_dependencies_fedora
+                install_tauri_dependencies_fedora#setup@monorepo
             elif [[ "$distro" == "Debian" ]]; then
-                install_tauri_dependencies_debian
+                install_tauri_dependencies_debian#setup@monorepo
             else
                 echo "Error: unsupported Linux distribution detected"
                 exit 1
@@ -47,18 +59,6 @@ bootstrap_local_dev_machine#setup@monorepo() {
 
         echo "create-tauri-app $(cargo create-tauri-app --version)"
         echo "cargo-tauri $(cargo tauri --version)"
-    }
-
-    install_tauri_dependencies_fedora() {
-        sudo dnf check-update
-        sudo dnf install webkit2gtk4.0-devel \
-            openssl-devel \
-            curl \
-            wget \
-            file \
-            libappindicator-gtk3-devel \
-            librsvg2-devel
-        sudo dnf group install "C Development Tools and Libraries"
     }
 
     setup_android_sdk_variables() { 
