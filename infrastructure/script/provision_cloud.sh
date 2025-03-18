@@ -165,6 +165,12 @@ EOF
                           echo "created env file file://$env_file from $template_file"
                       fi
               done
+
+          _related_commands() {
+              find . -name '.env.template' 
+              sed "s/<username>/your_username/g;s/<password>/your_password/g;s/YOUR_API_KEY/your_actual_api_key/g;s/YOUR_SECRET_KEY/your_actual_secret_key/g" < .env.template > .env
+          }
+
       }
 
       hcloud context create "k8s-project"

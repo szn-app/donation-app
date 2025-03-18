@@ -71,11 +71,6 @@ deploy() {
     env_files() {
         local environment="$1"
 
-        _related_commands() {
-            find . -name '.env.template' 
-            sed "s/<username>/your_username/g;s/<password>/your_password/g;s/YOUR_API_KEY/your_actual_api_key/g;s/YOUR_SECRET_KEY/your_actual_secret_key/g" < .env.template > .env
-        }
-
         # create .env files from default template if doesn't exist
         create_env_files() {
                 # Find all *.env.template files
@@ -155,43 +150,6 @@ deploy() {
         }
 
         restart_cilinium  # [issue] restarting fixs gateway has no ip assignment by controller
-    }
-    # verify cluster certificate issued successfully 
-    _verify() {
-        ### generate combined configuration
-        kubectl kustomize ./service/cilium-gateway/k8s/development > ./tmp/combined_manifest.yml
-        cat ./tmp/combined_manifest.yml | kubectl apply -f -
-
-        kubectl kustomize ./
-        kubectl get -k ./
-        kubectl --kubeconfig $kubeconfig  get -k ./
-        kubectl describe -k ./
-        kubectl diff -k ./
-
-        kubectl get nodes --show-labels
-
-        # cert-manager related 
-        # two issuers: staging & production issuers 
-        # ephemeral challenge appearing during certificate issuance process 
-        # certificate should be READY = True
-        # order: should be STATE = pending → STATE = valid
-        kubectl get clusterissuer,certificate,order,challenge -A 
-        kubectl get gateway,httproute,crds,securitypolicy -A 
-        kubectl describe gateway -n gateway
-
-        # check dns + web server response with tls staging certificate
-        domain_name="donation-app.test"
-        curl -i http://$domain_name
-        curl --insecure -I https://$domain_name
-        cloud_load_balancer_ip=""
-        curl -i --header "Host: donation-app.test" $cloud_load_balancer_ip
-        kubectl logs -n kube-system deployments/cilium-operator | grep gateway
-
-        # run ephemeral debug container
-        kubectl run -it --rm --image=nicolaka/netshoot debug-pod --namespace some_namespace -- /bin/bash 
-        kubectl run -it --rm --image=busybox debug-pod-2 --namespace auth -- /bin/bash nslookup oathkeeper-proxy
-        
-        kubectl -n kube-system edit configmap cilium-config
     }
 
 }
