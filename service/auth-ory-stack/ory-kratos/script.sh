@@ -188,21 +188,16 @@ create_env_files@kratos() {(
     popd
 )}
 
-install@kratos() {
+database.install@kratos() {( 
     set -e
     local environment=$1
 
-    # ory stack charts
-    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
     # postgreSQL
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
     generate_database_credentials@kratos
-    generate_default_username@kratos
-    create_env_files@kratos
-    generate_env_file@kratos
-    
+
     if helm list -n auth | grep -q 'postgres-kratos' && [ "$environment" = "development" ]; then
         upgrade_db=false
     else
@@ -221,7 +216,22 @@ install@kratos() {
             --set auth.database=kratos_db > $l 2>&1 && printf "Kratos database logs: file://$l\n"
         # this will generate 'postgres-kratos-postgresql' service
     fi
+)}
 
+install@kratos() {
+    set -e
+    local environment=$1
+
+    database.install@kratos $environment
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    helm repo update > /dev/null 2>&1 
+
+    generate_default_username@kratos
+    create_env_files@kratos
+    generate_env_file@kratos
+    
     printf "install Ory Kratos \n"
     {
         # preprocess file through substituting env values

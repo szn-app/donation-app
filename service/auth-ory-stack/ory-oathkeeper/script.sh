@@ -51,7 +51,7 @@ install@oathkeeper() {
         # echo "jwt file created file://$y"
 
         t="$(mktemp).yml" && cargo run --release --bin render-template -- --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        j="$(mktemp)-combined-access-rules.json" && jq -s '.[0] + .[1]' ./access-rules.json ./test-access-rules.json > $j && printf "combined json access-rules: file://$j\n" 
+        j="$(mktemp)-combined-access-rules.json" && jq -s '.[0] + .[1]' ./config/access-rules.json ./config/test-access-rules.json > $j && printf "combined json access-rules: file://$j\n" 
         l="$(mktemp).log" && helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f $t \
                 --set-file oathkeeper.accessRules=$j > $l 2>&1 && printf "Oathkeeper database logs: file://$l\n"
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 
@@ -68,10 +68,10 @@ install@oathkeeper() {
     verify() { 
         {
             # manually validate rendered deployment manifest files
-            t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
+            t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./config/access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
         }
 
-        oathkeeper rules validate --file ./access-rules.json
+        oathkeeper rules validate --file ./config/access-rules.json
 
         curl -i https://auth.donation-app.test/authorize/health/alive
         curl -i https://auth.donation-app.test/authorize/health/ready

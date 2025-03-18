@@ -149,18 +149,15 @@ create_env_files@keto() {
     done
 }
 
-install@keto() {
+database.install@keto() {( 
     set -e
-    local environment="$1"
-    
-    # ory stack charts
-    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    local environment=$1
+
     # postgreSQL
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
     generate_db_credential@keto
-    create_env_files@keto
 
     if helm list -n auth | grep -q 'postgres-keto' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -180,6 +177,19 @@ install@keto() {
             --set auth.database=keto_db > $l 2>&1 && printf "Keto database logs: file://$l\n"
         # this will generate 'postgres-keto-postgresql' service
     fi
+)}
+
+install@keto() {
+    set -e
+    local environment="$1"
+    
+    database.install@keto $environment
+
+    create_env_files@keto
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    helm repo update > /dev/null 2>&1 
 
     printf "install Ory Keto \n"
     {

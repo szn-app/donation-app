@@ -335,18 +335,15 @@ EOF
     popd
 )}
 
-install@hydra() {
+database.install@hydra() {( 
     set -e
     local environment=$1
 
-    # ory stack charts
-    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    generate_db_credentials@hydra
+    
     # postgreSQL
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
-
-    generate_db_credentials@hydra
-    create_env_files@hydra
 
     if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
         upgrade_db=false
@@ -366,6 +363,20 @@ install@hydra() {
             --set auth.database=hydra_db > $l 2>&1 && printf "Hydra database logs: file://$l\n"
         # this will generate 'postgres-hydra-postgresql' service
     fi
+)}
+
+
+install@hydra() {
+    set -e
+    local environment=$1
+
+    # ory stack charts
+    helm repo add ory https://k8s.ory.sh/helm/charts > /dev/null 2>&1
+    helm repo update > /dev/null 2>&1 
+
+    database.install@hydra $environment
+
+    create_env_files@hydra
 
     printf "install Ory Hydra \n"
     {
