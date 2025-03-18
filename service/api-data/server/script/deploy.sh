@@ -17,14 +17,15 @@ run_container@api-data() {
     docker run -d -p 80:80 api-data
 }
 
-generate_config@api-data-server() {
-    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
+generate_config@api-data-server() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
     pushd k8s/overlays/prod/
 
     local filename='.env.local'
     
     if [ -f "$filename" ]; then
         echo "config file: $filename already exists"
+        popd && popd
         return
     fi
 
@@ -38,14 +39,14 @@ EOF
     
     popd
     popd
-}
+)}
 
-func#predeploy-skaffold-hook@api-data-server() {
+func#predeploy-skaffold-hook@api-data-server() {(
     local environment=$1
 
     generate_config@api-data-server
-}
+)}
 
-func#postdeploy-skaffold-hook@api-data-server() {
+func#postdeploy-skaffold-hook@api-data-server() {(
     local environment=$1
-}
+)}

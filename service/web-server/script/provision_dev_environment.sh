@@ -1,7 +1,7 @@
 
 ## https://v2.tauri.app/start/prerequisites/#linux
 ## IMPORTANT! script is used in ./github/workflows/*
-install_tauri_dependencies_debian() {
+install_tauri_dependencies_debian#setup@monorepo() {
     sudo apt update
     sudo apt install libwebkit2gtk-4.1-dev \
         build-essential \
@@ -16,27 +16,7 @@ install_tauri_dependencies_debian() {
 }
 
 # one-time scripts to setup the project
-bootstrap_local_dev_machine() {
-    clone_with_submodules() { 
-        git clone --recursive https://github.com/szn-app/donation-app
-    }
-
-    git_submodule() {
-        onetime_intialization() {
-            git submodule add https://github.com/szn-app/fork-kratos-selfservice-ui-node.git service/auth-ui/kratos-selfservice-ui-node
-            git submodule add https://github.com/szn-app/ai-generated dependency/ai-generated
-        }
-
-        example_remove() { 
-            git submodule deinit -f service/auth-ui/kratos-selfservice-ui-node
-            git rm --cached service/auth-ui/kratos-selfservice-ui-node
-            rm -r .git/modules/kratos-selfservice-ui-node
-            # [manual] remove section from .git/config
-        }
-
-        git submodule init && git submodule update
-    }
-
+bootstrap_local_dev_machine#setup@monorepo() {
     provision_tauri() {
         if [[ $OSTYPE == 'linux-gnu' && -f /etc/redhat-release ]]; then 
             sudo dnf install lsb_release -y
@@ -99,22 +79,6 @@ bootstrap_local_dev_machine() {
         ./studio
         
         ## then install the SDKs required for Tauri from the android studio settings (SDK manager)
-    }
-
-    setup_docker_github_container_registry() {
-        CR_PAT='token'
-        echo $CR_PAT | docker login ghcr.io -u 'username' --password-stdin # using PAT token    
-    }
-
-    generate_initial_release_please_config() {
-        pnpm install release-please -g
-
-        # using `release-please-config.json` file to bootstrap release-please 
-        release-please bootstrap --token=$GITHUB_TOKEN --repo-url=szn-app/donation-app --dry-run
-
-        # for debug development: 
-        release-please release-pr --token=$GITHUB_TOKEN --repo-url=szn-app/donation-app --dry-run
-        release-please github-release --token=$GITHUB_TOKEN --repo-url=szn-app/donation-app
     }
 
     setup_nodejs_for_react_development_environment() {

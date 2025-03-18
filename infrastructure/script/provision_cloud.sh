@@ -1,23 +1,5 @@
 #!/bin/bash
 
-# remove warnings and logs from coredns
-remove_warnings_logs() { 
-  kubectl apply -f - <<'EOF'
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: coredns-custom
-  namespace: kube-system
-data:
-  log.override: |
-    #
-  stub.server: |
-    #
-EOF
-
-  kubectl rollout restart deploy/coredns -n kube-system
-}
-
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner
 hetzner-cloud#provision#task@infrastructure() {
     action=${1:-"install"}
@@ -48,6 +30,23 @@ hetzner-cloud#provision#task@infrastructure() {
       kubectl krew list | grep ctx && kubectl krew list | grep ns 
 
     }
+
+  # remove warnings and logs from coredns
+  remove_warnings_logs() { 
+    kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  log.override: |
+    #
+  stub.server: |
+    #
+EOF
+    kubectl rollout restart deploy/coredns -n kube-system
+  }
 
     manually_prerequisites() {
       # TODO: automate

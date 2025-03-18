@@ -50,4 +50,4 @@ COPY ./script/dev.sh /bin/dev.sh
 RUN chmod +x /bin/dev.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["source /bin/dev.sh && hot_reload_api_data"]
+CMD ["source /bin/dev.sh && hot_reload@api-data"]

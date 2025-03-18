@@ -39,4 +39,4 @@ COPY ./script/dev.sh /bin/dev.sh
 RUN chmod +x /bin/dev.sh
 
 ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["source /bin/dev.sh && hot_reload_auth_token_exchange"]
+CMD ["source /bin/dev.sh && hot_reload@auth-token-exchange"]

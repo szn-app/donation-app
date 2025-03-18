@@ -49,7 +49,7 @@ local#bootstrap#task@monorepo() {
     execute.util '#predeploy-hook' # prepare for deployment
     skaffold run --profile local-production # run entire services
 
-    tunnel_minikube -v
+    tunnel.minikube#task@monorepo -v
 }
 
 dev.skaffold#task@monorepo() {
@@ -59,7 +59,7 @@ dev.skaffold#task@monorepo() {
 
     # run on separate shell
     expose_domain() {
-        tunnel_minikube -v
+        tunnel.minikube#task@monorepo -v
     }
     
     wait_for_terminating_resources
@@ -69,8 +69,8 @@ dev.skaffold#task@monorepo() {
 
     dev_expose_service() { 
         source ./script.sh
-        tunnel_minikube_delete # if already running will case connection issues, thus requires deletion
-        tunnel_minikube -v
+        tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
+        tunnel.minikube#task@monorepo -v
     }
 
     freeup_minikube_space() {
@@ -137,7 +137,7 @@ dev_production_mode.skaffold#task@monorepo() {
     }
 
     expose_domain() {
-        tunnel_minikube -v
+        tunnel.minikube#task@monorepo -v
     }
 
     wait_for_terminating_resources
@@ -149,6 +149,11 @@ dev_production_mode.skaffold#task@monorepo() {
         skaffold run --profile production --tail
 
     }
+}
+
+delete.dev.skaffold#task@monorepo() {
+    skaffold delete --profile development
+    skaffold delete --profile local-production
 }
 
 # NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER when running baremetal to solve inotify issues

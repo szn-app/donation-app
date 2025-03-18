@@ -13,13 +13,6 @@ single_test@api-data() {
     kill $(jobs -p)
 }
 
-bootstrap@api-data() { 
-    cargo install cargo-binstall
-    
-    # cargo binstall cargo-watch
-    cargo install cargo-watch --locked
-}
-
 # NOTE: used for docker command
 hot_reload@api-data() {
     cargo +nightly watch -q -c -w src/ -x run

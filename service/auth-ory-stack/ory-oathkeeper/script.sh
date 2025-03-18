@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-generate_config#bootstrap@oathkeeper() {    
-    pushd "$(dirname "${BASH_SOURCE[0]}")"
+generate_config#bootstrap@oathkeeper() {(
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
     CLIENT_NAME="oathkeeper-introspection"
     SECRET_NAME="ory-hydra-client--oathkeeper-introspection"
@@ -24,7 +24,7 @@ EOF
     echo "generated secrets file: file://$(readlink -f $secret)"
     
     popd
-}
+)}
 
 ### usecases: 
 # Examples of Oathkeeper validation setups possible: 

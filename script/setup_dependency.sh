@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 ### contains some scripts used for tools intallaions
 # NOTE: these are not used anywhere in the code, they are merely for documentation records
 
@@ -141,4 +144,11 @@ install_mc() {
     export PATH=$PATH:$HOME/minio-binaries/
 
     mc --version
+}
+
+install_binary_tools#rust@monorepo() {
+    cargo install rust-script
+    cargo install cargo-binstall
+    # cargo binstall cargo-watch
+    cargo install cargo-watch --locked
 }

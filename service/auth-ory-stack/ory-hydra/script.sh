@@ -298,7 +298,7 @@ EOF
 }
 
 # create .env files from default template if doesn't exist
-create_env_files@hydra() {
+create_env_files@hydra() {(
     # Find all *.env.template files
     find ./config -name "*.env.template" | while IFS= read -r template_file; do
             # Extract filename without extension
@@ -314,10 +314,10 @@ create_env_files@hydra() {
                 echo "env file already exists: file://$(readlink -f $env_file)"
             fi
     done
-}
+)}
 
-generate_db_credentials@hydra() {
-    pushd "$(dirname "${BASH_SOURCE[0]}")"
+generate_db_credentials@hydra() {(
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
     db_secret_file="./config/db_hydra_secret.env"
     if [ ! -f "$db_secret_file" ]; then
@@ -333,7 +333,7 @@ EOF
     fi
 
     popd
-}
+)}
 
 install@hydra() {
     set -e

@@ -1,5 +1,6 @@
-generate_db_credential@keto() {
-    pushd "$(dirname "${BASH_SOURCE[0]}")"
+generate_db_credential@keto() {(
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+
 
     db_secret_file="./config/db_keto_secret.env"
     if [ ! -f "$db_secret_file" ]; then
@@ -15,7 +16,7 @@ EOF
     fi
 
     popd
-}
+)}
 
 create_policies@keto() {
         local environment=$1

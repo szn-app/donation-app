@@ -4,13 +4,13 @@ dev.skaffold@auth-ui() {
     skaffold run --profile production --port-forward --tail
 }
 
-generate_config@auth-ui() {
-    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
-
+generate_config@auth-ui() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
     local environment=$1
     local environment_short=$(if [ "$environment" == "development" ]; then echo "dev"; else echo "prod"; fi)
 
     if [ "$environment" != "production" ]; then
+        popd
         return
     fi
 
@@ -31,7 +31,7 @@ EOF
     fi
 
     popd
-}
+)}
 
 func#predeploy-hook@auth-ui() {
     local environment=${1:-development}

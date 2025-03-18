@@ -291,7 +291,7 @@ tunnel_minikube_delete() {
     remove_dns_forwarding
 }
 
-tunnel_minikube() {
+tunnel.minikube#task@monorepo() {
     local verbose=false
     local background=false
 

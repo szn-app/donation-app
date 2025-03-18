@@ -1,0 +1,23 @@
+# project root kustomization file that includes all other kustomizations
+apiVersion: skaffold/v4beta12
+kind: Config
+
+build:
+  local: {}
+  artifacts: []
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+profiles:
+  - name: development
+    manifests:
+      kustomize:
+        paths:
+        - ./overlays/dev # rely on local containers built by skaffold
+
+  - name: production
+    manifests:
+      kustomize:
+        paths:
+        - ./overlays/prod

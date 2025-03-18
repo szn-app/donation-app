@@ -84,7 +84,7 @@ EOF
 }
 
 generate_default_username@kratos() {( # use subshell to avoid change variables    
-    pushd "$(dirname "${BASH_SOURCE[0]}")" # two levels up: from script directory to project root
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
     local environment=production
     if [ -f ./config/.env.$environment ]; then
@@ -98,6 +98,7 @@ generate_default_username@kratos() {( # use subshell to avoid change variables
 
     if [ -z "$DOMAIN_NAME" ]; then
         echo "Error: DOMAIN_NAME environment variable is not set"
+        popd
         return 
     fi
 
@@ -121,7 +122,7 @@ EOF
 )}
 
 generate_database_credentials@kratos() {( # use subshell to avoid change variables
-    pushd "$(dirname "${BASH_SOURCE[0]}")"
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
     local db_secret_file="./config/db_kratos_secret.env"
     if [ ! -f "$db_secret_file" ]; then
@@ -139,8 +140,8 @@ EOF
     popd
 )}
 
-generate_env_file@kratos() {
-    pushd "$(dirname "${BASH_SOURCE[0]}")" # two levels up: from script directory to project root
+generate_env_file@kratos() {(
+    pushd "$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
     env_file_name="./config/jsonnet.env"
     google_jsonnet_file="./config/google-oidc-mapper.jsonnet"
@@ -148,6 +149,7 @@ generate_env_file@kratos() {
     # Check if the JSONNET file exists
     if [[ ! -f "$google_jsonnet_file" ]]; then
         echo "Error: File '$google_jsonnet_file' not found!"
+        popd
         return 1
     fi
 
@@ -161,10 +163,10 @@ EOF
     echo "generated env file: file://$(readlink -f $env_file_name)"
 
     popd
-}
+)}
 
 # create .env files from default template if doesn't exist
-create_env_files@kratos() {
+create_env_files@kratos() {(
     pushd "$(dirname "${BASH_SOURCE[0]}")"
 
     # Find all *.env.template files
@@ -184,7 +186,7 @@ create_env_files@kratos() {
     done
 
     popd
-}
+)}
 
 install@kratos() {
     set -e

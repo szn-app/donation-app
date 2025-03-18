@@ -1,6 +1,12 @@
 # generating config must happen before skaffold runs because of limitation with skaffold's lifecycle hooks
-generate_config#predeploy-hook@api-data-object-store() {
-    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
+generate_config#predeploy-hook@api-data-object-store() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+
+    if [ -f "values.prod.yaml.local" ]; then
+        echo "values.prod.yaml.local already exists, skipping generation"
+        popd
+        return
+    fi
 
     local ACCESS_KEY="${ACCESS_KEY:-$(openssl rand -hex 8)}"
     local SECRET_KEY="${SECRET_KEY:-$(openssl rand -hex 16)}"
@@ -15,7 +21,7 @@ tenant:
 EOF
     
     popd
-}
+)}
 
 func#predeploy-skaffold-hook@api-data-object-store() {
     local environment=$1

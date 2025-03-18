@@ -1,19 +1,22 @@
 # installs an Envoy gateway class internal to the cluster (not exposed externally)
 # https://gateway.envoyproxy.io/docs/install/install-helm/
 install_envoy_gateway_class() {
-    pushd ./infrastructure/helm_values
     
     action=${1:-"install"}
     {
-        if [ "$action" == "delete" ]; then
-            # permit forceful deletion of gatewayclass
-            kubectl delete envoyproxy envoy-proxy-config-internal -n envoy-gateway-system # --force
-            kubectl patch gatewayclass envoy-internal -n envoy-gateway-system -p '{"metadata":{"finalizers":[]}}' --type=merge 
-            kubectl delete gatewayclass envoy-internal -n envoy-gateway-system # --force
-            helm delete envoy-gateway -n envoy-gateway-system
-            return 
-        fi
+      if [ "$action" == "delete" ]; then
+          pushd ./infrastructure/helm_values
+          # permit forceful deletion of gatewayclass
+          kubectl delete envoyproxy envoy-proxy-config-internal -n envoy-gateway-system # --force
+          kubectl patch gatewayclass envoy-internal -n envoy-gateway-system -p '{"metadata":{"finalizers":[]}}' --type=merge 
+          kubectl delete gatewayclass envoy-internal -n envoy-gateway-system # --force
+          helm delete envoy-gateway -n envoy-gateway-system
+          popd
+          return
+      fi
     }
+
+    pushd ./infrastructure/helm_values
 
     install_gateway_class() {
         # install CRDs (NOTE: Helm doesn't update CRDs already installed - manual upgrade would be required)
