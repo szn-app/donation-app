@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.20](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.19...donation-app@v0.4.20) (2025-03-18)
+
+
+### Bug Fixes
+
+* **script:** match function names after refactoring ([b87a9e7](https://github.com/szn-app/donation-app/commit/b87a9e7af13f7be5dff75324a6f9df90a8aeb6c6))
+
 ## [0.4.19](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.18...donation-app@v0.4.19) (2025-03-16)
 
 

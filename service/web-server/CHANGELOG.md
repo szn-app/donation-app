@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.76](https://github.com/szn-app/donation-app/compare/web-server@v0.0.75...web-server@v0.0.76) (2025-03-18)
+
+
+### Bug Fixes
+
+* **script:** match function names after refactoring ([b87a9e7](https://github.com/szn-app/donation-app/commit/b87a9e7af13f7be5dff75324a6f9df90a8aeb6c6))
+
 ## [0.0.75](https://github.com/szn-app/donation-app/compare/web-server@v0.0.74...web-server@v0.0.75) (2025-03-16)
 
 
