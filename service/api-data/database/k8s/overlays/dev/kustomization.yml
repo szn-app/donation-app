@@ -2,13 +2,31 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - postgresql-user-credentials.yml
+  - secret.yml
   - ../../base
   - service.yml
 
+# namespace: database # using customization transformers instead (which provides more options)
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: _not_important_here
+      namespace: api-data
+    unsetOnly: true
+
+secretGenerator:
+  - name: postgresql-credentials-user
+    env: config/user.env.development
+    behavior: merge
+
+  - name: postgresql-credentials-superuser
+    env: config/superuser.env.development
+    behavior: merge
+
 patches:
 
-  # update with short down time
   - patch: |-
       apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
@@ -25,17 +43,5 @@ patches:
         name: cluster-app-data
         
       spec:
-        superuserSecret:
-          name: dev--postgresql-superuser-credentials
-
-  - patch: |-
-      apiVersion: postgresql.cnpg.io/v1
-      kind: Cluster
-      metadata:
-        name: cluster-app-data
-        
-      spec:
-        bootstrap: 
-          initdb:
-            secret:
-              name: dev--postgresql-superuser-credentials
+        superuserSecret: 
+          name: postgresql-credentials-superuser

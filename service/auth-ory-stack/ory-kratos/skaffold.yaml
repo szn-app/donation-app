@@ -1,0 +1,49 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-kratos
+
+requires: 
+  - path: ../ory-kratos-db
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
+
+manifests:
+  kustomize:
+    paths:
+    - k8s/base
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+profiles:
+- name: development
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@ory-kratos development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@ory-kratos development"]
+              dir: .
+
+- name: production
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@ory-kratos production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@ory-kratos production"]
+              dir: .

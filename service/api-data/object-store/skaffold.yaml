@@ -12,7 +12,7 @@ deploy:
   
 portForward:
   - resourceType: Service
-    namespace: object-store
+    namespace: api-data
     resourceName: minio-object-store-console
     port: 9443
 
@@ -40,7 +40,7 @@ profiles:
       releases:
         - name: minio-object-store
           remoteChart: minio-operator/tenant
-          namespace: object-store
+          namespace: api-data
           createNamespace: true
           valuesFiles:
             - minio-tenant-values.yaml
@@ -68,8 +68,8 @@ profiles:
       releases:
         - name: minio-object-store
           remoteChart: minio-operator/tenant
-          namespace: object-store
+          namespace: api-data
           createNamespace: true
           valuesFiles:
             - minio-tenant-values.yaml
-            - values.prod.yaml.local
+            - config/values.prod.yaml.local

@@ -21,7 +21,7 @@ generate_config@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
     pushd k8s/overlays/prod/
 
-    local filename='.env.local'
+    local filename='config/.env.local'
     
     if [ -f "$filename" ]; then
         echo "config file: $filename already exists"
@@ -32,6 +32,7 @@ generate_config@api-data-server() {(
     local POSTGRESQL_USERNAME="${POSTGRESQL_USERNAME:-pguser_$(openssl rand -hex 4)}"
     local POSTGRESQL_PASSWORD="${POSTGRESQL_PASSWORD:-$(openssl rand -base64 16 | head -c 16)}"
     
+    mkdir -p $(dirname "$filename")
     cat <<EOF > $filename
 POSTGRESQL_USERNAME=$POSTGRESQL_USERNAME
 POSTGRESQL_PASSWORD=$POSTGRESQL_PASSWORD

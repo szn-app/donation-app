@@ -47,9 +47,15 @@ local#bootstrap#task@monorepo() {
     fix_sync_issue
 
     execute.util '#predeploy-hook' # prepare for deployment
-    skaffold run --profile local-production # run entire services
+    pushd service/scaffold && skaffold run --profile development && popd # run entire services
 
     tunnel.minikube#task@monorepo -v
+}
+
+freeup_space.minikube#cleanup#task@monorepo() {
+    minikube ssh df
+    minikube ssh 'docker image prune -a -f'
+    docker system prune --all --force
 }
 
 dev.skaffold#task@monorepo() {
@@ -71,12 +77,6 @@ dev.skaffold#task@monorepo() {
         source ./script.sh
         tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
         tunnel.minikube#task@monorepo -v
-    }
-
-    freeup_minikube_space() {
-        minikube ssh df
-        minikube ssh 'docker image prune -a -f'
-        docker system prune --all --force
     }
 
     verify() { 

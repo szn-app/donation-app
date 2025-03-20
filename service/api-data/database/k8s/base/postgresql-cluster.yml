@@ -36,18 +36,19 @@ spec:
     storageClass: longhorn-local-ext4-strict-locality
     resizeInUseVolumes: true
 
-  superuserSecret:
-    name: postgresql-superuser-credentials
+  # superuser 'postgres' will have password automatically generated if no corresponding secret is provided
+  # superuserSecret:
+  #   name: postgresql-credentials-superuser # patched in kustomize for development
   enableSuperuserAccess: true
 
   bootstrap:
     initdb:
       # NOTE: do not conflict with 'postgres' user & 'postgres' database are created by default and required by the CNPG operator
       database: app
-      
-      owner: user-postgres # needs to match secret username
+      # needs to match secret username
+      owner: postgres-user
       secret:
-        name: postgresql-superuser-credentials
+        name: postgresql-credentials # user credentials secret
 
     # # Application additional user configuration
     # users:

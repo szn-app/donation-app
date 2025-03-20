@@ -72,7 +72,7 @@ add_vscode_tasks#setup#task@monorepo() {
                 "args": ["-c", "source ${workspaceFolder}/script.sh && " + $task],
                 "presentation": {
                     "reveal": "always",
-                    "panel": "new"
+                    "panel": "dedicated"
                 },
                 "group": "none",
                 "options": {

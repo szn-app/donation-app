@@ -12,3 +12,4 @@
 
 ## Kubernetes HA for production
 - 3 control plane nodes + 2 worker agent nodes should be the minimum
+- Each microservice is deployed within its own namespace.

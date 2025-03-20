@@ -4,14 +4,22 @@ kind: Kustomization
 resources:
   - ../dev
 
+# namespace: api-data # using customization transformers instead (which provides more options)
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: _not_important_here
+      namespace: api-data
+    unsetOnly: true
+
 configMapGenerator:
   - name: properties-map-api-data-server
-    namespace: donation-app
     env: .properties
 
 secretGenerator:
   - name: secrets-api-data-server
-    namespace: donation-app
     envs:
       - .env
 

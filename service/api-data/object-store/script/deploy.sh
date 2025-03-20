@@ -1,9 +1,10 @@
 # generating config must happen before skaffold runs because of limitation with skaffold's lifecycle hooks
 generate_config#predeploy-hook@api-data-object-store() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+    local filename="config/values.prod.yaml.local"
 
-    if [ -f "values.prod.yaml.local" ]; then
-        echo "values.prod.yaml.local already exists, skipping generation"
+    if [ -f $filename ]; then
+        echo "$filename already exists, skipping generation"
         popd
         return
     fi
@@ -11,14 +12,16 @@ generate_config#predeploy-hook@api-data-object-store() {(
     local ACCESS_KEY="${ACCESS_KEY:-$(openssl rand -hex 8)}"
     local SECRET_KEY="${SECRET_KEY:-$(openssl rand -hex 16)}"
 
-    mkdir -p "$(dirname "values.prod.yaml.local")"
-    cat <<EOF > values.prod.yaml.local
+    mkdir -p "$(dirname $filename)"
+    cat <<EOF > $filename
 tenant:
       configSecret:
         existingSecret: false
         accessKey: $ACCESS_KEY
         secretKey: $SECRET_KEY
 EOF
+
+    echo "generated config file: $filename"
     
     popd
 )}

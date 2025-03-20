@@ -1,0 +1,12 @@
+# project root kustomization file that includes all other kustomizations
+apiVersion: skaffold/v4beta12
+kind: Config
+
+manifests:
+  kustomize:
+    paths:
+    - ./base
+
+deploy:
+  kubectl: {}
+  statusCheck: true

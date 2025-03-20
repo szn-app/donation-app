@@ -1,0 +1,131 @@
+# https://cloudnative-pg.io/documentation/current/bootstrap/
+# refrence docs: https://cloudnative-pg.io/documentation/current/cloudnative-pg.v1/
+# https://cloudnative-pg.io/documentation/current/samples/
+
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: kratos--cluster
+  labels:
+    cnpg.io/cluster: kratos--cluster
+
+spec:
+  # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ClusterImageCatalog
+    name: postgresql-extension-images
+    major: 17
+
+  # Cluster topology: aim for 2 synchronous standby replicas with RPO=0
+  instances: 3
+  primaryUpdateStrategy: unsupervised # promote automatically a standby to primary before the primary pod is updated
+  primaryUpdateMethod: switchover # ensure new primary is fully caught up with the old primary before promoting it
+  enablePDB: true # pod distruction budget
+  stopDelay: 3600  # 1 hour
+
+  # Storage configuration
+  # use local machine storage (performant, durability achieved by replication) & not network distributed storage (reschedualable); cnpg automates to schedule lost pods, thus performance is the main concern
+  storage:
+    size: 5Gi
+    storageClass: longhorn-local-ext4-strict-locality
+    resizeInUseVolumes: true
+    # pvcTemplate: # optionally provide a PVC kubernetes tempate
+  walStorage:
+    size: 1Gi # typically 10-20% of the data storage size
+    storageClass: longhorn-local-ext4-strict-locality
+    resizeInUseVolumes: true
+
+  # superuser 'postgres' will have password automatically generated if no corresponding secret is provided
+  # superuserSecret:
+  #   name: kratos--postgresql-credentials-superuser # patched in kustomize for development
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      # NOTE: do not conflict with 'postgres' user & 'postgres' database are created by default and required by the CNPG operator
+      database: kratos-db
+      # needs to match secret username
+      owner: postgres-user
+      secret:
+        name: kratos--postgresql-credentials-user # user credentials secret
+
+    # # Application additional user configuration
+    # users:
+    #   - name: "appuser"
+    #     password:
+    #       secret:
+    #         name: "postgres-appuser-creds"
+    #     options: "SUPERUSER"
+
+      postInitApplicationSQLRefs: 
+        configMapRefs:
+        - name: init-sql-config
+          key: init.sql
+
+      # set consistent locals supporting internationalization
+      encoding: UTF8
+      locale: C
+      localeProvider: libc   
+
+  # PostgreSQL configuration 
+  # https://www.postgresql.org/docs/8/runtime-config.html https://www.postgresql.org/docs/current/config-setting.html
+  # https://www.postgresql.org/docs/current/auth-pg-hba-conf.html
+  postgresql:
+    parameters:
+      timezone: "America/Chicago"
+#       max_connections: "500"
+#       shared_buffers: "2GB"
+#       work_mem: "32MB"
+#       maintenance_work_mem: "1GB"
+#       random_page_cost: "1.1"
+#       effective_cache_size: "6GB"
+#       ssl: "on"
+#       password_encryption: "scram-sha-256"
+    pg_hba:
+      - hostssl all all all scram-sha-256
+
+
+  # TODO: deal with backing up to Amazon S3 or Hetzner Object Storage for even cheaper resources (need to verify)
+  backup:
+    retentionPolicy: "15d"
+    volumeSnapshot: 
+      className: longhorn-network-storage-1replica
+  #   barmanObjectStore:
+  #     destinationPath: s3://my-bucket/backups/
+  #     s3Credentials:
+  #       accessKeyId:
+  #         name: my-s3-creds
+  #         key: accessKey
+  #       secretAccessKey:
+  #         name: my-s3-creds
+  #         key: secretKey
+      # wal:
+      #   compression: gzip
+  monitoring:
+    enablePodMonitor: true # For Prometheus operator integration
+    # customQueriesConfigMap: "postgres-custom-metrics"
+
+# TODO: monitor and adjust values
+#   # Resource allocation
+#   resources:
+    # requests:
+    #   memory: "512Mi"
+    #   cpu: "1"
+    # limits:
+    #   memory: "1Gi"
+    #   cpu: "2"
+---
+
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: kratos--postgres-cluster-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      cnpg.io/cluster: kratos--cluster
+
+---
+

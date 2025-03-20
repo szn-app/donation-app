@@ -8,7 +8,7 @@ requires:
     configs: []                 
     activeProfiles:                                     
      - name: development                               
-       activatedBy: [development]
+       activatedBy: [development, local-production]
      - name: production                               
        activatedBy: [production] 
 

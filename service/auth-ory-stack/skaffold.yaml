@@ -3,42 +3,43 @@ kind: Config
 metadata:
   name: auth-ory-stack
 
-deploy:
-  kubectl: {}
-  statusCheck: true
+requires:
+  - path: k8s
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
-profiles:
+  - path: ./ory-kratos
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
-- name: development
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-ory-stack development"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-ory-stack development"]
-              dir: .
+  - path: ./ory-hydra
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
 
-- name: production
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-ory-stack production"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-ory-stack production"]
-              dir: .
+  - path: ./ory-keto
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]
+
+  - path: ./ory-oathkeeper
+    configs: []                 
+    activeProfiles:                                     
+     - name: development                               
+       activatedBy: [development, local-production]
+     - name: production                               
+       activatedBy: [production]

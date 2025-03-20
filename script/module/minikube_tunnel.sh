@@ -281,7 +281,7 @@ remove_dns_forwarding() {
     wait_until_internet_resolvable
 }
 
-tunnel_minikube_delete() {
+delete_tunnel.minikube#task@monorepo() {
     # Gracefully terminate minikube tunnel processes
     echo "Gracefully stopping minikube tunnel processes..."
     if pgrep -f "minikube tunnel" > /dev/null 2>&1; then
@@ -306,10 +306,10 @@ tunnel.minikube#task@monorepo() {
     # Check domain accessibility before proceeding
     if [ "$(check_gateway_external_ip)" = "0" ]; then
         echo "minikube tunnel already running"
-        read -t 5 -p "Do you want to refresh minikube tunnel? [y/n] " answer
+        read -t 10 -p "Do you want to refresh minikube tunnel? [y/n] " answer
         answer=${answer:-n}
         if [[ "$answer" =~ ^[Yy]$ ]]; then
-            tunnel_minikube_delete
+            delete_tunnel.minikube#task@monorepo
         else
             return
         fi
@@ -318,7 +318,7 @@ tunnel.minikube#task@monorepo() {
     # Register exit handler for proper cleanup
     cleanup_on_exit() {
         echo "Caught exit signal. Cleaning up... Stopping minikube tunnel and cleaning up DNS configuration..."
-        tunnel_minikube_delete
+        delete_tunnel.minikube#task@monorepo
         exit 0
     }
 
@@ -375,7 +375,7 @@ tunnel.minikube#task@monorepo() {
     # Ask user if they want to end the minikube tunnel
     echo "Minikube tunnel is running."
     # Set up trap to catch Ctrl+C
-    # trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; tunnel_minikube_delete; exit 0' INT
+    # trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; delete_tunnel.minikube#task@monorepo; exit 0' INT
 
     # echo "ctrl+C to cleanup"
     # sleep 10000000

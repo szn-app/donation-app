@@ -33,7 +33,7 @@ deploy:
   
 portForward:
   - resourceType: Service
-    namespace: donation-app
+    namespace: api-data
     resourceName: api-data
     port: 80
 

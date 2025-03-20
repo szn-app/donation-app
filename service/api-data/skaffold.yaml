@@ -5,6 +5,8 @@ metadata:
   name: api-data
 
 requires:
+  - path: k8s
+
   - path: database
     configs: []                 
     activeProfiles:                                     

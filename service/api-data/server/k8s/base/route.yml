@@ -28,7 +28,7 @@ kind: HTTPRoute
 
 metadata:
   name: internal-api-data
-  namespace: donation-app
+  namespace: api-data
 spec:
   parentRefs:
     - name: envoy-gateway-internal
@@ -42,7 +42,7 @@ spec:
     - backendRefs:
         # kubernetees service
         - name: api-data
-          namespace: donation-app
+          namespace: api-data
           port: 80
       matches:
         - path:
