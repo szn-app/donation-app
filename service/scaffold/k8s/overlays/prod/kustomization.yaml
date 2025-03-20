@@ -1,0 +1,144 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+  
+  - ../../route
+  
+# namePrefix: prod-
+# nameSuffix: -v1
+
+configurations:
+  - ./name-reference.kustomize-config.yaml
+
+patches:
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: add
+        path: /spec/template/spec/nodeSelector
+        value:
+          role: "worker"
+
+  ###
+  - target:
+      kind: HTTPRoute
+      name: https-test
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "test.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-test
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "test.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-test-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "test.wosoom.com"
+
+  ###
+  - target:
+      kind: HTTPRoute
+      name: https-api
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-api
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-api-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "api.wosoom.com"
+  ###
+  - target:
+      kind: HTTPRoute
+      name: https-k8s-longhorn
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "longhorn.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-k8s-longhorn
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "longhorn.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-k8s-longhorn-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "longhorn.k8s.wosoom.com"
+  ###
+  - target:
+      kind: HTTPRoute
+      name: https-k8s-dashboard
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "dashboard.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-k8s-dashboard
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "dashboard.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-k8s-dashboard-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "dashboard.k8s.wosoom.com"
+  ###
+  - target:
+      kind: HTTPRoute
+      name: https-k8s-hubble
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "hubble.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: internal-k8s-hubble
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "hubble.k8s.wosoom.com"
+
+  - target:
+      kind: HTTPRoute
+      name: http-k8s-hubble-redirect
+    patch: |-
+      - op: replace
+        path: /spec/hostnames/0
+        value: "hubble.k8s.wosoom.com"

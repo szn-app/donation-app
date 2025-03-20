@@ -348,8 +348,8 @@ install@hydra() {
         }
 
         # preprocess file through substituting env values
-        t="$(mktemp).yml" && ./script/render-template-config.script.rs --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        q="$(mktemp).yml" && ./script/render-template-helm.script.rs --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
+        t="$(mktemp).yaml" && ./script/render-template-config.script.rs --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        q="$(mktemp).yaml" && ./script/render-template-helm.script.rs --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
         
         system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 

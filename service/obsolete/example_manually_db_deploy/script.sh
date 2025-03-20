@@ -39,7 +39,7 @@ database.install#example@hydra() {(
         set -a
             source ./config/db_hydra_secret.env # DB_USER, DB_PASSWORD
         set +a
-        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yml \
+        l="$(mktemp).log" && helm upgrade --debug --reuse-values --install postgres-hydra bitnami/postgresql -n auth --create-namespace -f ./postgresql-values.yaml \
             --set auth.username=${DB_USER} \
             --set auth.password=${DB_PASSWORD} \
             --set auth.database=hydra_db > $l 2>&1 && printf "Hydra database logs: file://$l\n"

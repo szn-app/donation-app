@@ -1,4 +1,4 @@
-# IMPORTANT! used by release.yml workflow
+# IMPORTANT! used by release.yaml workflow
 build_container#package_hook@web-server() {
     # NOTE: uses buildx (instead of the legacy build)
     if [ "$1" == "development" ]; then

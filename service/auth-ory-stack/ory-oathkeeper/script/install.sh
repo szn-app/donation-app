@@ -50,9 +50,9 @@ install@oathkeeper() {
         # y="$(mktemp).json" && openssl rsa -in "$t" -pubout -outform PEM > $y 
         # echo "jwt file created file://$y"
 
-        t="$(mktemp).yml" && ./script/render-template.script.rs --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        t="$(mktemp).yaml" && ./script/render-template.script.rs --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
         j="$(mktemp)-combined-access-rules.json" && jq -s '.[0] + .[1]' ./config/access-rules.json ./config/test-access-rules.json > $j && printf "combined json access-rules: file://$j\n" 
-        l="$(mktemp).log" && helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f $t \
+        l="$(mktemp).log" && helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yaml -f $t \
                 --set-file oathkeeper.accessRules=$j > $l 2>&1 && printf "Oathkeeper database logs: file://$l\n"
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 
     }
@@ -68,7 +68,7 @@ install@oathkeeper() {
     verify() { 
         {
             # manually validate rendered deployment manifest files
-            t="$(mktemp).yml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yml -f ./oathkeeper-config.yml --set-file 'oathkeeper.accessRules=./config/access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
+            t="$(mktemp).yaml" && helm upgrade --dry-run --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yaml -f ./oathkeeper-config.yaml --set-file 'oathkeeper.accessRules=./config/access-rules.json' > $t && printf "generated manifest with replaced env variables: file://$t\n"
         }
 
         oathkeeper rules validate --file ./config/access-rules.json

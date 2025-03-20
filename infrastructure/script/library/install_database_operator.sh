@@ -36,7 +36,7 @@ install_cloudnativepg_operator() {
     install_pg_admin() {
         helm repo add runix https://helm.runix.net
         helm upgrade --debug --install pgadmin4 runix/pgadmin4
-        # TODO: use helm values to set appropriate service and credentials - check file pgadmin4-values.yml
+        # TODO: use helm values to set appropriate service and credentials - check file pgadmin4-values.yaml
 
         expose() {
             export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=pgadmin4,app.kubernetes.io/instance=pgadmin4" -o jsonpath="{.items[0].metadata.name}")

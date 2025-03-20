@@ -3,7 +3,7 @@ install_kubernetes_dashboard() {
   printf "Installing Kubernetes Dashboard...\n"
 
   helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-  t="$(mktemp)-values.yml" && cat <<EOF > "$t" 
+  t="$(mktemp)-values.yaml" && cat <<EOF > "$t" 
 app: 
   scheduling: 
     nodeSelector:
@@ -74,13 +74,13 @@ EOF
     helm show values kubernetes-dashboard/kubernetes-dashboard
     # helm uninstall kubernetes-dashboard   --namespace kubernetes-dashboard
 
-      t="$(mktemp)-values.yml" && cat <<EOF > "$t" 
+      t="$(mktemp)-values.yaml" && cat <<EOF > "$t" 
 kong:
   proxy:
     http:
       enabled: true
 EOF
-    y="$(mktemp).yml" && helm template kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --namespace kubernetes-dashboard --values $t > $y && code $y
+    y="$(mktemp).yaml" && helm template kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --namespace kubernetes-dashboard --values $t > $y && code $y
 
     # get token 
     export USER_TOKEN=$(kubectl get secret admin-user -n kubernetes-dashboard -o jsonpath="{.data.token}" | base64 -d)

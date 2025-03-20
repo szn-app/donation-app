@@ -43,7 +43,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/web-server/k8s/overlays/prod/kustomization.yml",
+          "path": "service/web-server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -55,7 +55,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yml",
+          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -67,7 +67,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-ui/k8s/overlays/prod/kustomization.yml",
+          "path": "service/auth-ui/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -79,7 +79,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yml",
+          "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]

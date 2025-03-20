@@ -4,7 +4,7 @@ misc@api-data() {
     cargo build --release
 }
 
-# IMPORTANT! used by release.yml workflow
+# IMPORTANT! used by release.yaml workflow
 build_container#package_hook@api-data() {
     if [ "$1" == "development" ]; then
         docker build . --target development -t api-data:latest # --build-arg ENV=development

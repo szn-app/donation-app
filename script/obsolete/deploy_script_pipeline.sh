@@ -62,7 +62,7 @@ deploy() {
 
             {
                 pushd ./$environment_short 
-                t="$(mktemp).yml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
+                t="$(mktemp).yaml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
                 popd
             }
         popd 
@@ -115,7 +115,7 @@ deploy() {
             return 
          elif [ "$action" == "kustomize" ]; then
             pushd kubernetes/overlays/"$environment"
-            t="$(mktemp).yml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
+            t="$(mktemp).yaml" && kubectl kustomize ./ > $t && printf "rendered manifest template: file://$t\n"  # code -n $t
             popd
             return
          elif [ "$action" == "app" ]; then

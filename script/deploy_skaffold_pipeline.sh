@@ -117,7 +117,7 @@ dev.skaffold#task@monorepo() {
         {
             export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
             kubectl apply -k ./service/cilium-gateway/k8s/development
-            minikube tunnel # otherwise, with ingress-dns and ingress.yml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
+            minikube tunnel # otherwise, with ingress-dns and ingress.yaml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
             minikube dashboard
             kubectl describe gateway -n donation-app
             kubectl describe httproute -n donation-app
@@ -196,8 +196,8 @@ ABANDANONED_dev_skaffold_inotify_volume() {
 
 verify#example@monorepo() {
     ### generate combined configuration
-    kubectl kustomize ./service/cilium-gateway/k8s/development > ./tmp/combined_manifest.yml
-    cat ./tmp/combined_manifest.yml | kubectl apply -f -
+    kubectl kustomize ./service/cilium-gateway/k8s/development > ./tmp/combined_manifest.yaml
+    cat ./tmp/combined_manifest.yaml | kubectl apply -f -
 
     # replace variables and deploy with kustomize
     export $(cat .env | xargs) && kustomize build . | envsubst | kubectl apply -f -
