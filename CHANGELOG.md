@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.21](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.20...donation-app@v0.4.21) (2025-03-20)
+
+
+### Features
+
+* **auth:** migrate to CNPG HA postgresql setup for auth-ory-stack services; ([3f391aa](https://github.com/szn-app/donation-app/commit/3f391aad82507433bd1fc57729663a3ddc9a93e4))
+
+
+### Bug Fixes
+
+* namespace correction of object-store; ([fc3d8a1](https://github.com/szn-app/donation-app/commit/fc3d8a121dcbdf9081c4866bc6c3ec35b28b79d8))
+
 ## [0.4.20](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.19...donation-app@v0.4.20) (2025-03-18)
 
 
