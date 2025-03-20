@@ -32,6 +32,7 @@ func#predeploy-skaffold-hook@api-data-object-store() {
 
 func#postdeploy-skaffold-hook@api-data-object-store() {
     local environment=$1
+    local namespace='api-data'
 
     # wait till deployment stabilizes as it is controlled by an operator
     {
@@ -39,21 +40,22 @@ func#postdeploy-skaffold-hook@api-data-object-store() {
         kubectl wait --for=condition=Available deployment/minio-operator -n minio-operator --timeout=300s
 
         echo "Checking status of minio tenants..."
-        kubectl get tenants.minio.min.io -n object-store -o wide
+        kubectl get tenants.minio.min.io -n $namespace -o wide
 
         echo "Waiting for minio tenant pods to be ready..."
-        while true; do
-            TENANT_PODS=$(kubectl get pods -n object-store -l minio.min.io/tenant=minio-object-store -o name)
+        for i in $(seq 1 10); do
+            TENANT_PODS=$(kubectl get pods -n $namespace -l minio.min.io/tenant=minio-object-store -o name)
             if [ -n "$TENANT_PODS" ]; then
                 echo "Found minio tenant pods"
                 break
             fi
+
             echo "No minio tenant pods found yet, waiting 5 seconds..."
             sleep 5
         done
 
         for pod in $TENANT_PODS; do
-            kubectl wait --for=condition=Ready $pod -n object-store --timeout=300s || echo "Warning: $pod not ready"
+            kubectl wait --for=condition=Ready $pod -n $namespace --timeout=300s || echo "Warning: $pod not ready"
         done
 
         echo "MinIO deployment complete."

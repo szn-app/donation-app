@@ -671,6 +671,29 @@
       "dependsOrder": "parallel",
       "dependsOn": [],
       "problemMatcher": []
+    },
+    {
+      "label": "delete.minikube#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.minikube#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.minikube#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
     }
   ]
 }

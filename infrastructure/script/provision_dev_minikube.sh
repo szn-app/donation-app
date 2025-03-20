@@ -58,17 +58,16 @@ install-resources.minikube@infrastructure() {
     }
 }
 
+delete.minikube#provision#task@infrastructure() {
+    minikube delete
+}
+
 dev.minikube#provision#task@infrastructure() {
     action=${1:-"install"}
 
     if ! command -v kubectl-ctx &> /dev/null; then
         echo "kubectl ctx is not installed. Exiting."
         return
-    fi
-
-    if [ "$action" == "delete" ]; then
-        minikube delete
-        return 
     fi
 
     docker context ls

@@ -12,12 +12,12 @@ skaffold#task@api-data-object-store() {
 }
 
 example@api-data-object-store() {
-    watch kubectl get all -n object-store
+    watch kubectl get all -n api-data
 
     {
         mc --help # https://min.io/docs/minio/linux/reference/minio-mc.html#minio-mc-commands
         
-        kubectl port-forward svc/minio-object-store-hl 9000 -n object-store
+        kubectl port-forward svc/minio-object-store-hl 9000 -n api-data
 
         mc alias set minio-object-store https://localhost:9000 ACCESS_KEY SECRET_KEY --insecure
 
