@@ -80,8 +80,7 @@ dev.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # local#bootstrap#task@monorepo
 
-    # skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
-    skaffold dev --profile development --port-forward --tail
+    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
         source ./script.sh
@@ -179,11 +178,11 @@ verify#example@monorepo() {
     kubectl describe gateway -n gateway
 
     # check dns + web server response with tls staging certificate
-    domain_name="donation-app.test"
+    domain_name="donation-app.dev"
     curl -i http://$domain_name
     curl --insecure -I https://$domain_name
     cloud_load_balancer_ip=""
-    curl -i --header "Host: donation-app.test" $cloud_load_balancer_ip
+    curl -i --header "Host: donation-app.dev" $cloud_load_balancer_ip
     kubectl logs -n kube-system deployments/cilium-operator | grep gateway
 
     # run ephemeral debug container
@@ -220,11 +219,11 @@ minikube_scripts#example@monorepo() {
     minikube tunnel # expose all possible resources (e.g. loadbalancers)
     minikube service dev-web-server --url --namespace=donation-app
 
-    nslookup donation-app.test $(minikube ip) # query dns server running in minikube cluaster
-    dig donation-app.test
+    nslookup donation-app.dev $(minikube ip) # query dns server running in minikube cluaster
+    dig donation-app.dev
     export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-    curl --resolve donation-app.test:80:$GW donation-app.test
-    ping donation-app.test
+    curl --resolve donation-app.dev:80:$GW donation-app.dev
+    ping donation-app.dev
 
     # using ingress 
     kubectl describe ingress ingress -n donation-app
@@ -238,10 +237,10 @@ minikube_scripts#example@monorepo() {
         kubectl describe gateway -n donation-app
         kubectl describe httproute -n donation-app
         dig donation
-        curl --resolve donation-app.test:80:$GW donation-app.test
+        curl --resolve donation-app.dev:80:$GW donation-app.dev
     }
 
     kubectl apply -k ./kubernetes/overlays/dev
 
-    curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
+    curl -i --header "Host: donation-app.dev" "<ip-of-load-balancer>"
 }

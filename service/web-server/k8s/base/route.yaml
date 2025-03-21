@@ -27,7 +27,7 @@ spec:
       sectionName: https
 
   hostnames:
-    - donation-app.test
+    - donation-app.dev
 
   rules:
     - backendRefs:
@@ -85,7 +85,7 @@ spec:
       sectionName: http
 
   hostnames:
-    - "donation-app.test"
+    - "donation-app.dev"
 
   rules:
     - filters:

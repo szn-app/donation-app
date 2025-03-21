@@ -1,4 +1,4 @@
-# development setup with ingress to resolve dns: donation-app.test → ingress-dns → minikube ip  → ingress  → gateway
+# development setup with ingress to resolve dns: donation-app.dev → ingress-dns → minikube ip  → ingress  → gateway
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization

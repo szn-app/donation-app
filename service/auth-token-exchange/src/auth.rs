@@ -203,7 +203,7 @@ pub async fn oauth2_token(
             log::info!("--> Refresh token flow detected");
 
             /*
-            curl -k -i --request POST --url https://auth.donation-app.test/authorize/oauth2/token --header "accept: application/x-www-form-urlencoded" \
+            curl -k -i --request POST --url https://auth.donation-app.dev/authorize/oauth2/token --header "accept: application/x-www-form-urlencoded" \
                 --form "grant_type=refresh_token" \
                 --form "client_id=frontend-client"  \
                 --form "client_secret=UF...g=" \

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# add hosts DNS resolution in Fedora: resolve *.test to $(minikube ip)
-install_domain_dns_systemd_resolved_for_test_domains() {
+# add hosts DNS resolution in Fedora: resolve *.dev to $(minikube ip)
+install_domain_dns_systemd_resolved_for_dev_domains() {
     # add minikube dns to linux as a dns server https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/#Linux
     sudo mkdir -p /etc/systemd/resolved.conf.d
     sudo tee /etc/systemd/resolved.conf.d/minikube.conf << EOF
 [Resolve]
 # DNS=1.1.1.1 $(minikube ip) 8.8.8.8
 DNS=$(minikube ip) 8.8.8.8
-Domains=test
+Domains=dev
 # use the System's Existing DNS: makes systemd-resolved use the default DNS as a fallback
 # DNSStubListener=yes  # Important! Enables listening on 53 for stub queries
 EOF
@@ -86,7 +86,7 @@ dev.minikube#provision#task@infrastructure() {
     minikube status
 
     # TODO: use host solution instead to avoid issues
-    # install_domain_dns_systemd_resolved_for_test_domains
+    # install_domain_dns_systemd_resolved_for_dev_domains
     # NOTE: careful of minikube dns caching and limitations, if dns name is not resolved after a change, an entire restart of minikube and probably disable/enable addons is required. 
 
     verify() { 

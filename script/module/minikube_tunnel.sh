@@ -29,7 +29,7 @@ wait_until_internet_resolvable() {
     log "Internet is now resolvable"
 }
 
-# Function to check if donation-app.test is resolvable
+# Function to check if donation-app.dev is resolvable
 check_gateway_external_ip() {   
     # Return status based on whether we found an IP
     local external_ip
@@ -45,20 +45,20 @@ check_gateway_external_ip() {
 }
 
 check_donation_app_connectivity() {
-    log "Waiting for donation-app.test to be resolvable..."
+    log "Waiting for donation-app.dev to be resolvable..."
     local max_attempts=30
     local attempt=0
-    while ! nslookup donation-app.test 127.0.0.1 &>/dev/null; do
+    while ! nslookup donation-app.dev 127.0.0.1 &>/dev/null; do
         attempt=$((attempt+1))
         if [ $attempt -ge $max_attempts ]; then
-            log "Error: donation-app.test not resolvable after $max_attempts attempts"
+            log "Error: donation-app.dev not resolvable after $max_attempts attempts"
             return 1
         fi
-        log "Attempt $attempt - DNS resolution: waiting for donation-app.test to be resolvable, retrying in 2s..."
+        log "Attempt $attempt - DNS resolution: waiting for donation-app.dev to be resolvable, retrying in 2s..."
         sleep 2
     done
-    log "Success: donation-app.test is now resolvable"
-    time nslookup donation-app.test 127.0.0.1
+    log "Success: donation-app.dev is now resolvable"
+    time nslookup donation-app.dev 127.0.0.1
 }
 
 
@@ -81,7 +81,7 @@ cleanup_jobs() {
     fi
 }
 
-# add_config_section "custom_dns" "server=8.8.8.8" "server=1.1.1.1" "address=/.test/10.96.135.68"
+# add_config_section "custom_dns" "server=8.8.8.8" "server=1.1.1.1" "address=/.dev/10.96.135.68"
 # remove_config_section "custom_dns"
 add_config_section() {
     local conf_file="$1"  # First argument is the config file
@@ -128,9 +128,9 @@ NETWORK_MANAGER_CONFIG_2="/etc/NetworkManager/dnsmasq.d/test-domains.conf"
 
 hosts_example() {
     # remove previous entries
-    sudo sed -i '/\.test/d' /etc/hosts
+    sudo sed -i '/\.dev/d' /etc/hosts
     # add new entries
-    echo "$loadbalancer_ip donation-app.test auth.donation-app.test api.donation-app.test test.donation-app.test *.donation-app.test" | sudo tee -a /etc/hosts
+    echo "$loadbalancer_ip donation-app.dev auth.donation-app.dev api.donation-app.dev test.donation-app.dev *.donation-app.dev" | sudo tee -a /etc/hosts
 }
 
 dns_forwarding() {
@@ -154,7 +154,7 @@ dns_forwarding() {
 
     {
         add_config_section $DNSMASQ_CONF "custom_dns" <<EOF
-# echo "address=/.donation-app.test/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
+# echo "address=/.donation-app.dev/$loadbalancer_ip" | sudo tee -a /etc/dnsmasq.conf
 # all-servers
 # resolv-file=/etc/resolv.conf
 
@@ -175,7 +175,7 @@ server=8.8.4.4
 # Enable DNS caching
 cache-size=1000
 
-address=/.test/$loadbalancer_ip
+address=/.dev/$loadbalancer_ip
 
 EOF
     }
@@ -187,7 +187,7 @@ EOF
         sudo tee "$SYSTEMD_RESOLVED_CONFIG" > /dev/null <<EOF
 [Resolve]
 DNS=127.0.0.1
-Domains=~test
+Domains=~dev
 DNSSEC=no
 EOF
     }
@@ -197,7 +197,7 @@ EOF
     # {
     #     # makes dnsmasq be controlled by NetworkManager
     #     echo -e "[main]\ndns=dnsmasq" | sudo tee "$NETWORK_MANAGER_CONFIG_1" > /dev/null
-    #     echo "address=/test/127.0.0.1" | sudo tee "$NETWORK_MANAGER_CONFIG_2"
+    #     echo "address=/dev/127.0.0.1" | sudo tee "$NETWORK_MANAGER_CONFIG_2"
     #     echo "modified $NETWORK_MANAGER_CONFIG_1"
     #     echo "modified $NETWORK_MANAGER_CONFIG_2"
     # }
@@ -207,7 +207,7 @@ EOF
 
     verify() {
         systemctl status dnsmasq
-        dig donation-app.test @127.0.0.1
+        dig donation-app.dev @127.0.0.1
         code /etc/dnsmasq.conf
         code /etc/resolv.conf
     }
@@ -347,29 +347,29 @@ tunnel.minikube#task@monorepo() {
     dns_forwarding $loadbalancer_ip
     wait_until_internet_resolvable
     
-    # curl -k -i --header "Host: donation-app.test" $loadbalancer_ip
-    if nslookup test.donation-app.test > /dev/null 2>&1; then
-        log "test.donation-app.test resolvable"
+    # curl -k -i --header "Host: donation-app.dev" $loadbalancer_ip
+    if nslookup test.donation-app.dev > /dev/null 2>&1; then
+        log "test.donation-app.dev resolvable"
     fi
     
     # Try curl commands until domain is resolvable
     local max_attempts=30
     local attempt=0
-    log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
-    while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
+    log "Attempt $attempt - Web access: waiting for test.donation-app.dev to be accessible, retrying in 2s..."
+    while ! curl -k -i --resolve test.donation-app.dev:443:$loadbalancer_ip https://test.donation-app.dev/allow --connect-timeout 5 -o /dev/null -s; do
         attempt=$((attempt+1))
         if [ $attempt -ge $max_attempts ]; then
-            log "Error: test.donation-app.test not accessible after $max_attempts attempts"
+            log "Error: test.donation-app.dev not accessible after $max_attempts attempts"
             break
         fi
-        log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+        log "Attempt $attempt - Web access: waiting for test.donation-app.dev to be accessible, retrying in 2s..."
         sleep 2
     done
     
     if [ $attempt -lt $max_attempts ]; then
-        log "Success: test.donation-app.test is now accessible"
-        curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
-        curl -k -i https://test.donation-app.test/allow
+        log "Success: test.donation-app.dev is now accessible"
+        curl -k -i --resolve test.donation-app.dev:443:$loadbalancer_ip https://test.donation-app.dev/allow
+        curl -k -i https://test.donation-app.dev/allow
     fi
 
     # Ask user if they want to end the minikube tunnel

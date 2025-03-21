@@ -217,7 +217,7 @@ oathkeeper:
       upstream:
         url: "http://prod-web-server-v1.donation-app.svc.cluster.local:5555"
       match:
-        url: "https://example.test/"
+        url: "https://example.dev/"
         methods: ["HEAD", "GET", "POST", "OPTIONS", "PUT", "PATCH"]
       authenticators:
       - handler: "anonymous"
