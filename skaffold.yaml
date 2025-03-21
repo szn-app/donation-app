@@ -1,37 +1,16 @@
 # https://skaffold.dev/docs/references/yaml/
 apiVersion: skaffold/v4beta12
 kind: Config
+metadata:
+  name: monorepo
 
 requires:
   - path: service/scaffold
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [scaffold]          
 
   - path: service/web-server
     configs: []            
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development]
-     - name: production         
-       activatedBy: [production]
-     - name: local-production
-       activatedBy: [local-production]
 
   - path: service/api-data
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development]
-     - name: production                               
-       activatedBy: [production]
-     - name: local-production
-       activatedBy: [local-production]    
+    configs: [api-data]  
 
-profiles:
-  - name: development
-  - name: local-production
-  - name: production

@@ -3,14 +3,30 @@ kind: Config
 metadata:
   name: ory-kratos
 
+requires:
+  - path: .
+    configs: [ory-kratos-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-kratos-generic
+
 requires: 
   - path: ../ory-kratos-db
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [ory-kratos-db]
 
 manifests:
   kustomize:

@@ -3,14 +3,30 @@ kind: Config
 metadata:
   name: ory-hydra
 
+requires:
+  - path: .
+    configs: [ory-hydra-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-hydra-generic
+
 requires: 
   - path: ../ory-hydra-db
-    configs: []
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [ory-hydra-db]
 
 manifests:
   kustomize:

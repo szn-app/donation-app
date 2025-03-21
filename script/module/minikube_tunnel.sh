@@ -306,8 +306,8 @@ tunnel.minikube#task@monorepo() {
     # Check domain accessibility before proceeding
     if [ "$(check_gateway_external_ip)" = "0" ]; then
         echo "minikube tunnel already running"
-        read -t 10 -p "Do you want to refresh minikube tunnel? [y/n] " answer
-        answer=${answer:-n}
+        read -t 5 -p "Do you want to refresh minikube tunnel? [y/n] " answer
+        answer=${answer:-y}
         if [[ "$answer" =~ ^[Yy]$ ]]; then
             delete_tunnel.minikube#task@monorepo
         else

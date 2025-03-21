@@ -47,7 +47,7 @@ local#bootstrap#task@monorepo() {
     fix_sync_issue
 
     execute.util '#predeploy-hook' # prepare for deployment
-    pushd service/scaffold && skaffold run --profile local-production && popd # run entire services
+    pushd service/scaffold && skaffold run --module scaffold --profile local-production && popd # run entire services
 
     tunnel.minikube#task@monorepo -v
 }
@@ -198,7 +198,9 @@ skaffold_scripts#example@monorepo() {
     skaffold config list
     TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile development > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
     TEMP_FILE=$(mktemp -t skaffold_diagnose_XXXXXX.log) && skaffold diagnose > "$TEMP_FILE" 2>&1 && echo "Skaffold diagnose output saved to: $TEMP_FILE"
-    
+    skaffold inspect profile list | jq 
+    skaffold diagnose --module scaffold-generic --profile local-production | grep -C 10 scaffold-k8s
+
     skaffold delete --profile development
     skaffold build -v debug 
     skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false 

@@ -1,3 +1,19 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data-k8s
+
+manifests:
+  kustomize:
+    paths:
+    - ./k8s/base
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+---
+
 # https://skaffold.dev/docs/references/yaml/
 apiVersion: skaffold/v4beta12
 kind: Config
@@ -5,35 +21,14 @@ metadata:
   name: api-data
 
 requires:
-  - path: k8s
+  - path: .
+    configs: [api-data-k8s]
 
   - path: database
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [api-data-database]
 
   - path: object-store
-    configs: []                 
-    activeProfiles:                                     
-     - name: development
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [api-data-object-store]                 
 
   - path: server
     configs: []            
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development]
-     - name: production         
-       activatedBy: [production]
-     - name: local-production
-       activatedBy: [local-production]
-
-profiles:
-  - name: development
-  - name: local-production
-  - name: production

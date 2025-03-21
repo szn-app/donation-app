@@ -4,13 +4,29 @@ metadata:
   name: auth-ory-admin-ui
 
 requires:
-  - path: ../auth-ory-stack
-    configs: []                 
+  - path: .
+    configs: [auth-ory-admin-ui-generic]
     activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production] 
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: auth-ory-admin-ui-generic
+
+requires:
+  - path: ../auth-ory-stack
+    configs: [auth-ory-stack]                 
 
 deploy:
   kubectl: {}

@@ -5,19 +5,10 @@ metadata:
 
 requires:
   - path: ../object-store
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production] 
+    configs: [api-data-object-store]                 
+       
   - path: ../database
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [api-data-database]                 
 
 build:
   local: 

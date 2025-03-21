@@ -3,6 +3,27 @@ kind: Config
 metadata:
   name: ory-keto-db
 
+requires:
+  - path: .
+    configs: [ory-keto-db-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-keto-db-generic
+
 deploy:
   kubectl: {}
   statusCheck: true
