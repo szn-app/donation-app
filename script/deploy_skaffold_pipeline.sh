@@ -47,7 +47,7 @@ local#bootstrap#task@monorepo() {
     fix_sync_issue
 
     execute.util '#predeploy-hook' # prepare for deployment
-    pushd service/scaffold && skaffold run --profile development && popd # run entire services
+    pushd service/scaffold && skaffold run --profile local-production && popd # run entire services
 
     tunnel.minikube#task@monorepo -v
 }
@@ -56,6 +56,15 @@ freeup_space.minikube#cleanup#task@monorepo() {
     minikube ssh df
     minikube ssh 'docker image prune -a -f'
     docker system prune --all --force
+
+    verify() {
+        minikube ssh -- df -h
+        df -h
+    }
+}
+
+minikube#aggregate_cleanup#task@monorepo() {
+    execute.util '#minikube_cleanup' '#task'
 }
 
 dev.skaffold#task@monorepo() {
@@ -71,63 +80,13 @@ dev.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # local#bootstrap#task@monorepo
 
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    # skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --profile development --port-forward --tail
 
     dev_expose_service() { 
         source ./script.sh
         tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
         tunnel.minikube#task@monorepo -v
-    }
-
-    verify() { 
-        kubectl config view
-        skaffold config list
-        TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile development > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
-        TEMP_FILE=$(mktemp -t skaffold_diagnose_XXXXXX.log) && skaffold diagnose > "$TEMP_FILE" 2>&1 && echo "Skaffold diagnose output saved to: $TEMP_FILE"
-        
-        skaffold delete --profile development
-        skaffold build -v debug 
-        skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
-        skaffold dev --port-forward -v debug
-        skaffold debug
-        skaffold run
-    }
-
-    example_minikube_scripts() {
-        kubectl config view && kubectl get namespace && kubectl config get-contexts
-
-        (cd k8s/development && kubectl apply -k .)
-        kubectl get all
-    
-        minikube ip 
-        # expose service to host: 
-        minikube tunnel # expose all possible resources (e.g. loadbalancers)
-        minikube service dev-web-server --url --namespace=donation-app
-
-        nslookup donation-app.test $(minikube ip) # query dns server running in minikube cluaster
-        dig donation-app.test
-        export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-        curl --resolve donation-app.test:80:$GW donation-app.test
-        ping donation-app.test
-
-        # using ingress 
-        kubectl describe ingress ingress -n donation-app
-
-        # using gateway 
-        {
-            export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-            kubectl apply -k ./service/cilium-gateway/k8s/development
-            minikube tunnel # otherwise, with ingress-dns and ingress.yaml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
-            minikube dashboard
-            kubectl describe gateway -n donation-app
-            kubectl describe httproute -n donation-app
-            dig donation
-            curl --resolve donation-app.test:80:$GW donation-app.test
-        }
-
-        kubectl apply -k ./kubernetes/overlays/dev
-
-        curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
     }
 }
 
@@ -232,4 +191,55 @@ verify#example@monorepo() {
     kubectl run -it --rm --image=busybox debug-pod-2 --namespace auth -- /bin/bash nslookup oathkeeper-proxy
     
     kubectl -n kube-system edit configmap cilium-config
+}
+
+skaffold_scripts#example@monorepo() { 
+    kubectl config view
+    skaffold config list
+    TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile development > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
+    TEMP_FILE=$(mktemp -t skaffold_diagnose_XXXXXX.log) && skaffold diagnose > "$TEMP_FILE" 2>&1 && echo "Skaffold diagnose output saved to: $TEMP_FILE"
+    
+    skaffold delete --profile development
+    skaffold build -v debug 
+    skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
+    skaffold dev --port-forward -v debug
+    skaffold debug
+    skaffold run
+}
+
+minikube_scripts#example@monorepo() {
+    kubectl config view && kubectl get namespace && kubectl config get-contexts
+
+    (cd k8s/development && kubectl apply -k .)
+    kubectl get all
+
+    minikube ip 
+    # expose service to host: 
+    minikube tunnel # expose all possible resources (e.g. loadbalancers)
+    minikube service dev-web-server --url --namespace=donation-app
+
+    nslookup donation-app.test $(minikube ip) # query dns server running in minikube cluaster
+    dig donation-app.test
+    export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
+    curl --resolve donation-app.test:80:$GW donation-app.test
+    ping donation-app.test
+
+    # using ingress 
+    kubectl describe ingress ingress -n donation-app
+
+    # using gateway 
+    {
+        export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
+        kubectl apply -k ./service/cilium-gateway/k8s/development
+        minikube tunnel # otherwise, with ingress-dns and ingress.yaml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
+        minikube dashboard
+        kubectl describe gateway -n donation-app
+        kubectl describe httproute -n donation-app
+        dig donation
+        curl --resolve donation-app.test:80:$GW donation-app.test
+    }
+
+    kubectl apply -k ./kubernetes/overlays/dev
+
+    curl -i --header "Host: donation-app.test" "<ip-of-load-balancer>"
 }

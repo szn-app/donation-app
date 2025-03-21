@@ -694,6 +694,29 @@
       "dependsOrder": "parallel",
       "dependsOn": [],
       "problemMatcher": []
+    },
+    {
+      "label": "minikube#aggregate_cleanup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && minikube#aggregate_cleanup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) minikube#aggregate_cleanup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
     }
   ]
 }

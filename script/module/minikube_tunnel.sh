@@ -333,7 +333,7 @@ tunnel.minikube#task@monorepo() {
 
     sudo echo "" # switch to sudo explicitely      
 
-    minikube tunnel &
+    minikube tunnel --cleanup=true &
     sleep 2
 
     loadbalancer_ip=$(kubectl get svc nginx-gateway -n nginx-gateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -353,30 +353,30 @@ tunnel.minikube#task@monorepo() {
     fi
     
     # Try curl commands until domain is resolvable
-    # local max_attempts=30
-    # local attempt=0
-    # log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
-    # while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
-    #     attempt=$((attempt+1))
-    #     if [ $attempt -ge $max_attempts ]; then
-    #         log "Error: test.donation-app.test not accessible after $max_attempts attempts"
-    #         break
-    #     fi
-    #     log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
-    #     sleep 2
-    # done
+    local max_attempts=30
+    local attempt=0
+    log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+    while ! curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow --connect-timeout 5 -o /dev/null -s; do
+        attempt=$((attempt+1))
+        if [ $attempt -ge $max_attempts ]; then
+            log "Error: test.donation-app.test not accessible after $max_attempts attempts"
+            break
+        fi
+        log "Attempt $attempt - Web access: waiting for test.donation-app.test to be accessible, retrying in 2s..."
+        sleep 2
+    done
     
-    # if [ $attempt -lt $max_attempts ]; then
-    #     log "Success: test.donation-app.test is now accessible"
-    #     curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
-    #     curl -k -i https://test.donation-app.test/allow
-    # fi
+    if [ $attempt -lt $max_attempts ]; then
+        log "Success: test.donation-app.test is now accessible"
+        curl -k -i --resolve test.donation-app.test:443:$loadbalancer_ip https://test.donation-app.test/allow
+        curl -k -i https://test.donation-app.test/allow
+    fi
 
     # Ask user if they want to end the minikube tunnel
     echo "Minikube tunnel is running."
     # Set up trap to catch Ctrl+C
-    # trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; delete_tunnel.minikube#task@monorepo; exit 0' INT
+    trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; delete_tunnel.minikube#task@monorepo; exit 0' INT
 
     # echo "ctrl+C to cleanup"
-    # sleep 10000000
+    sleep 10000000
 }

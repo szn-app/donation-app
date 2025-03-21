@@ -28,18 +28,18 @@ delete_pvc#task@ory-kratos-db() {
     kubectl get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.finalizers}{"\n"}{end}' | awk '{print $1}' | xargs -I {} kubectl delete pv {}
 
     # Delete all persistent volume claims in the database namespace
-    kubectl delete pvc --all -n database --force
+    kubectl delete pvc --all -n auth --force
 
     # Wait to ensure PVCs are fully deleted
     echo "Waiting for PVCs to be deleted..."
-    kubectl wait --for=delete pvc --all -n database --timeout=60s || true
+    kubectl wait --for=delete pvc --all -n auth --timeout=60s || true
 
     # List any remaining PVCs that might be stuck
-    remaining_pvcs=$(kubectl get pvc -n database -o name 2>/dev/null)
+    remaining_pvcs=$(kubectl get pvc -n auth -o name 2>/dev/null)
     if [ -n "$remaining_pvcs" ]; then
         echo "Some PVCs still remain, trying to force delete with finalizers removal"
-        kubectl get pvc -n database -o name | xargs -I {} kubectl patch {} -n database --type=merge -p '{"metadata":{"finalizers":null}}'
-        kubectl delete pvc --all -n database --force
+        kubectl get pvc -n auth -o name | xargs -I {} kubectl patch {} -n auth --type=merge -p '{"metadata":{"finalizers":null}}'
+        kubectl delete pvc --all -n auth --force
     fi
 
 }
