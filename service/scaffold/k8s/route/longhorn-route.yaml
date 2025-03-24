@@ -19,7 +19,7 @@ spec:
       sectionName: https-k8s-longhorn
 
   hostnames:
-    - longhorn.k8s.donation-app.dev
+    - longhorn.k8s.donation-app.local
 
   rules:
     - backendRefs:
@@ -42,7 +42,7 @@ spec:
       sectionName: http
 
   hostnames:
-    - longhorn.k8s.donation-app.dev
+    - longhorn.k8s.donation-app.local
 
   rules:
     - backendRefs:
@@ -69,7 +69,7 @@ spec:
       sectionName: http-k8s-longhorn
 
   hostnames:
-    - "longhorn.k8s.donation-app.dev"
+    - "longhorn.k8s.donation-app.local"
 
   rules:
     - filters:

@@ -8,7 +8,7 @@ dev@web-server() {
     pnpm run lint -- --fix
 }
 
-dev.skaffold@web-server() {     
+skaffold@web-server() {     
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 }
 

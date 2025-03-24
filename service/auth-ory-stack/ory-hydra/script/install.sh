@@ -372,8 +372,8 @@ install@hydra() {
 
 verify#example@hydra() { 
     print_info() {
-        curl -k -s https://auth.donation-app.dev/authorize/.well-known/openid-configuration | jq
-        curl -k -s https://auth.donation-app.dev/authorize/.well-known/jwks.json | jq
+        curl -k -s https://auth.donation-app.local/authorize/.well-known/openid-configuration | jq
+        curl -k -s https://auth.donation-app.local/authorize/.well-known/jwks.json | jq
     }
 
     # /.well-known/jwks.json

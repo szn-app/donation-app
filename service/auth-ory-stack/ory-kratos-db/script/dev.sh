@@ -19,7 +19,7 @@ delete.skaffold@ory-kratos-db() {
     skaffold delete --profile development
 }
 
-delete_pvc#task@ory-kratos-db() {
+delete_pvc@ory-kratos-db() {
     # delete protection finalizers
     kubectl get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.finalizers}{"\n"}{end}' | awk '{print $1}' | xargs -I {} kubectl patch pv {} -p '{"metadata":{"finalizers":null}}'
 

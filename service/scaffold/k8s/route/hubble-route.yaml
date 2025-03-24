@@ -13,7 +13,7 @@ spec:
       sectionName: https-k8s-hubble
 
   hostnames:
-    - hubble.k8s.donation-app.dev
+    - hubble.k8s.donation-app.local
 
   rules:
     - backendRefs:
@@ -36,7 +36,7 @@ spec:
       sectionName: http
 
   hostnames:
-    - hubble.k8s.donation-app.dev
+    - hubble.k8s.donation-app.local
 
   rules:
     - backendRefs:
@@ -63,7 +63,7 @@ spec:
       sectionName: http-k8s-hubble
 
   hostnames:
-    - "hubble.k8s.donation-app.dev"
+    - "hubble.k8s.donation-app.local"
 
   rules:
     - filters:

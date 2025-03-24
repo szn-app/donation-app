@@ -2,7 +2,7 @@
 # set -e
 
 # run & expose gateway with minimum scaffold services
-local#bootstrap#task@monorepo() {
+start.minikube#bootstrap#task@monorepo() {
     sudo echo "" # prompt for sudo password
 
     run_minikube() {
@@ -49,7 +49,7 @@ local#bootstrap#task@monorepo() {
     execute.util '#predeploy-hook' # prepare for deployment
     pushd service/scaffold && skaffold run --module scaffold --profile local-production && popd # run entire services
 
-    tunnel.minikube#task@monorepo -v
+    start.tunnel.minikube#task@monorepo -v
 }
 
 freeup_space.minikube#cleanup#task@monorepo() {
@@ -67,39 +67,39 @@ minikube#aggregate_cleanup#task@monorepo() {
     execute.util '#minikube_cleanup' '#task'
 }
 
-dev.skaffold#task@monorepo() {
+development_mode.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile development 
     }
 
     # run on separate shell
     expose_domain() {
-        tunnel.minikube#task@monorepo -v
+        start.tunnel.minikube#task@monorepo -v
     }
     
     wait_for_terminating_resources.kubernetes#utility
-    # local#bootstrap#task@monorepo
+    # start.minikube#bootstrap#task@monorepo
 
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
         source ./script.sh
-        tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
-        tunnel.minikube#task@monorepo -v
+        start.tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
+        start.tunnel.minikube#task@monorepo -v
     }
 }
 
-dev_production_mode.skaffold#task@monorepo() {
+production_mode.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile local-production
     }
 
     expose_domain() {
-        tunnel.minikube#task@monorepo -v
+        start.tunnel.minikube#task@monorepo -v
     }
 
     wait_for_terminating_resources.kubernetes#utility
-    # local#bootstrap#task@monorepo
+    # start.minikube#bootstrap#task@monorepo
 
     skaffold dev --profile local-production --port-forward --tail
 
@@ -109,7 +109,7 @@ dev_production_mode.skaffold#task@monorepo() {
     }
 }
 
-delete.dev.skaffold#task@monorepo() {
+delete.skaffold#task@monorepo() {
     skaffold delete --profile development
     skaffold delete --profile local-production
 }
@@ -178,11 +178,11 @@ verify#example@monorepo() {
     kubectl describe gateway -n gateway
 
     # check dns + web server response with tls staging certificate
-    domain_name="donation-app.dev"
+    domain_name="donation-app.local"
     curl -i http://$domain_name
     curl --insecure -I https://$domain_name
     cloud_load_balancer_ip=""
-    curl -i --header "Host: donation-app.dev" $cloud_load_balancer_ip
+    curl -i --header "Host: donation-app.local" $cloud_load_balancer_ip
     kubectl logs -n kube-system deployments/cilium-operator | grep gateway
 
     # run ephemeral debug container
@@ -219,11 +219,11 @@ minikube_scripts#example@monorepo() {
     minikube tunnel # expose all possible resources (e.g. loadbalancers)
     minikube service dev-web-server --url --namespace=donation-app
 
-    nslookup donation-app.dev $(minikube ip) # query dns server running in minikube cluaster
-    dig donation-app.dev
+    nslookup donation-app.local $(minikube ip) # query dns server running in minikube cluaster
+    dig donation-app.local
     export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-    curl --resolve donation-app.dev:80:$GW donation-app.dev
-    ping donation-app.dev
+    curl --resolve donation-app.local:80:$GW donation-app.local
+    ping donation-app.local
 
     # using ingress 
     kubectl describe ingress ingress -n donation-app
@@ -237,10 +237,10 @@ minikube_scripts#example@monorepo() {
         kubectl describe gateway -n donation-app
         kubectl describe httproute -n donation-app
         dig donation
-        curl --resolve donation-app.dev:80:$GW donation-app.dev
+        curl --resolve donation-app.local:80:$GW donation-app.local
     }
 
     kubectl apply -k ./kubernetes/overlays/dev
 
-    curl -i --header "Host: donation-app.dev" "<ip-of-load-balancer>"
+    curl -i --header "Host: donation-app.local" "<ip-of-load-balancer>"
 }

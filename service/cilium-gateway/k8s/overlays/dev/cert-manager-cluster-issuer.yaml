@@ -16,8 +16,8 @@ metadata:
 spec:
   secretName: dev-tls
   dnsNames:
-  - '*.donation-app.dev'
-  - donation-app.dev
+  - '*.donation-app.local'
+  - donation-app.local
   issuerRef:
     name: selfsigned-issuer
     kind: ClusterIssuer

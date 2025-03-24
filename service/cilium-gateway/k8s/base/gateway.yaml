@@ -24,7 +24,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "donation-app.dev"
+      hostname: "donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -38,7 +38,7 @@ spec:
     - name: http
       protocol: HTTP
       port: 80
-      hostname: "donation-app.dev"
+      hostname: "donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -48,7 +48,7 @@ spec:
     - name: https-test
       protocol: HTTPS
       port: 443
-      hostname: "test.donation-app.dev"
+      hostname: "test.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -62,7 +62,7 @@ spec:
     - name: http-test
       protocol: HTTP
       port: 80
-      hostname: "test.donation-app.dev"
+      hostname: "test.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -72,7 +72,7 @@ spec:
     - name: https-api
       protocol: HTTPS
       port: 443
-      hostname: "api.donation-app.dev"
+      hostname: "api.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -86,7 +86,7 @@ spec:
     - name: http-api
       protocol: HTTP
       port: 80
-      hostname: "api.donation-app.dev"
+      hostname: "api.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -96,7 +96,7 @@ spec:
     - name: https-auth
       protocol: HTTPS
       port: 443
-      hostname: "auth.donation-app.dev"
+      hostname: "auth.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -110,7 +110,7 @@ spec:
     - name: http-auth
       protocol: HTTP
       port: 80
-      hostname: "auth.donation-app.dev"
+      hostname: "auth.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -120,7 +120,7 @@ spec:
     - name: https-k8s-longhorn
       protocol: HTTPS
       port: 443
-      hostname: "longhorn.k8s.donation-app.dev"
+      hostname: "longhorn.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -134,7 +134,7 @@ spec:
     - name: http-k8s-longhorn
       protocol: HTTP
       port: 80
-      hostname: "longhorn.k8s.donation-app.dev"
+      hostname: "longhorn.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -144,7 +144,7 @@ spec:
     - name: https-k8s-dashboard
       protocol: HTTPS
       port: 443
-      hostname: "dashboard.k8s.donation-app.dev"
+      hostname: "dashboard.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -158,7 +158,7 @@ spec:
     - name: http-k8s-dashboard
       protocol: HTTP
       port: 80
-      hostname: "dashboard.k8s.donation-app.dev"
+      hostname: "dashboard.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -168,7 +168,7 @@ spec:
     - name: https-k8s-hubble
       protocol: HTTPS
       port: 443
-      hostname: "hubble.k8s.donation-app.dev"
+      hostname: "hubble.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -182,7 +182,7 @@ spec:
     - name: http-k8s-hubble
       protocol: HTTP
       port: 80
-      hostname: "hubble.k8s.donation-app.dev"
+      hostname: "hubble.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -192,7 +192,7 @@ spec:
     - name: https-k8s-ory-admin
       protocol: HTTPS
       port: 443
-      hostname: "ory-admin.k8s.donation-app.dev"
+      hostname: "ory-admin.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -206,7 +206,7 @@ spec:
     - name: http-k8s-ory-admin
       protocol: HTTP
       port: 80
-      hostname: "ory-admin.k8s.donation-app.dev"
+      hostname: "ory-admin.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -216,7 +216,7 @@ spec:
     - name: https-k8s-minio
       protocol: HTTPS
       port: 443
-      hostname: "minio.k8s.donation-app.dev"
+      hostname: "minio.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All # required for letsecrypt
@@ -230,7 +230,7 @@ spec:
     - name: http-k8s-minio
       protocol: HTTP
       port: 80
-      hostname: "minio.k8s.donation-app.dev"
+      hostname: "minio.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All
@@ -241,7 +241,7 @@ spec:
     # - name: https-k8s-grafana
     #   protocol: HTTPS
     #   port: 443
-    #   hostname: "grafana.k8s.donation-app.dev"
+    #   hostname: "grafana.k8s.donation-app.local"
     #   allowedRoutes:
     #     namespaces:
     #       from: All # required for letsecrypt
@@ -258,7 +258,7 @@ spec:
     # - name: https-k8s-prometheus
     #   protocol: HTTPS
     #   port: 443
-    #   hostname: "prometheus.k8s.donation-app.dev"
+    #   hostname: "prometheus.k8s.donation-app.local"
     #   allowedRoutes:
     #     namespaces:
     #       from: All # required for letsecrypt

@@ -11,7 +11,7 @@ spec:
       sectionName: https-auth
 
   hostnames:
-    - auth.donation-app.dev
+    - auth.donation-app.local
 
   rules:
     - backendRefs:
@@ -67,7 +67,7 @@ spec:
       sectionName: http-auth
 
   hostnames:
-    - "auth.donation-app.dev"
+    - "auth.donation-app.local"
 
   rules:
     - filters:

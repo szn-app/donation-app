@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# add hosts DNS resolution in Fedora: resolve *.dev to $(minikube ip)
+# add hosts DNS resolution in Fedora: resolve *.local to $(minikube ip)
 install_domain_dns_systemd_resolved_for_dev_domains() {
     # add minikube dns to linux as a dns server https://minikube.sigs.k8s.io/docs/handbook/addons/ingress-dns/#Linux
     sudo mkdir -p /etc/systemd/resolved.conf.d
@@ -59,10 +59,18 @@ install-resources.minikube@infrastructure() {
 }
 
 delete.minikube#provision#task@infrastructure() {
+    # Confirm deletion
+    echo -n "Delete Minikube cluster? (y/n): " && read -r answer
+    if [[ "${answer,,}" != "y" ]]; then
+        echo "Aborted."
+        return 1
+    fi
+    echo "Deleting Minikube..."
+
     minikube delete
 }
 
-dev.minikube#provision#task@infrastructure() {
+install.minikube#provision#task@infrastructure() {
     action=${1:-"install"}
 
     if ! command -v kubectl-ctx &> /dev/null; then

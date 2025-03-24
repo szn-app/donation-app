@@ -68,7 +68,7 @@ spec:
       sectionName: https-test
 
   hostnames:
-    - test.donation-app.dev
+    - test.donation-app.local
 
   rules:
     - backendRefs:
@@ -91,7 +91,7 @@ spec:
       sectionName: http
 
   hostnames:
-    - test.donation-app.dev
+    - test.donation-app.local
 
   rules:
     - filters:
@@ -119,7 +119,7 @@ spec:
       sectionName: http-test
 
   hostnames:
-    - "test.donation-app.dev"
+    - "test.donation-app.local"
 
   rules:
     - filters:

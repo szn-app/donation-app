@@ -13,7 +13,7 @@ spec:
       sectionName: https-api
 
   hostnames:
-    - api.donation-app.dev
+    - api.donation-app.local
 
   rules:
     - backendRefs:
@@ -36,7 +36,7 @@ spec:
       sectionName: http
 
   hostnames:
-    - api.donation-app.dev
+    - api.donation-app.local
 
   rules:
     - backendRefs:
@@ -63,7 +63,7 @@ spec:
       sectionName: http-api
 
   hostnames:
-    - "api.donation-app.dev"
+    - "api.donation-app.local"
 
   rules:
     - filters:
