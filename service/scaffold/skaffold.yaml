@@ -58,6 +58,9 @@ requires:
   - path: ../auth-token-exchange
     configs: [auth-token-exchange]                 
 
+  - path: ../pgadmin4
+    configs: [pgadmin4]                 
+
 profiles:
   - name: development
   - name: local-production
