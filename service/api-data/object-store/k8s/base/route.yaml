@@ -28,7 +28,7 @@ kind: HTTPRoute
 
 metadata:
   name: internal-k8s-minio
-  namespace: auth
+  namespace: api-data
 spec:
   parentRefs:
     - name: envoy-gateway-internal
@@ -41,9 +41,9 @@ spec:
   rules:
     - backendRefs:
         # kubernetees service
-        - name: auth-minio-ui
-          namespace: auth
-          port: 80
+        - name: minio-object-store-console
+          namespace: api-data
+          port: 9090
       matches:
         - path:
             type: PathPrefix

@@ -41,7 +41,7 @@ spec:
   rules:
     - backendRefs:
         # kubernetees service
-        - name: kubernetes-dashboard-kong-proxy
+        - name: kubernetes-dashboard
           namespace: kubernetes-dashboard
           port: 80
       matches:

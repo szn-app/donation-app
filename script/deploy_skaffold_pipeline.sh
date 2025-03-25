@@ -47,7 +47,7 @@ start.minikube#bootstrap#task@monorepo() {
     fix_sync_issue
 
     execute.util '#predeploy-hook' # prepare for deployment
-    pushd service/scaffold && skaffold run --module scaffold --profile local-production && popd # run entire services
+    skaffold run --profile local-production --module monorepo-scaffold-only
 
     start.tunnel.minikube#task@monorepo -v
 }
@@ -80,14 +80,18 @@ development_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # start.minikube#bootstrap#task@monorepo
 
-    # skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false
+    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
         source ./script.sh
         start.tunnel.minikube#task@monorepo_delete # if already running will case connection issues, thus requires deletion
         start.tunnel.minikube#task@monorepo -v
     }
+}
+
+services.development_mode.skaffold#task@monorepo() {
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold dev --profile development --module monorepo-services-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 }
 
 production_mode.skaffold#task@monorepo() {
@@ -102,12 +106,17 @@ production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # start.minikube#bootstrap#task@monorepo
 
-    skaffold dev --profile local-production --port-forward --tail
+    skaffold dev --profile local-production  --module monorepo --port-forward --tail
 
     verify() { 
         skaffold run --profile production --tail
 
     }
+}
+
+scaffold.production_mode.skaffold#task@monorepo() {
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --tail --cleanup=false
 }
 
 delete.skaffold#task@monorepo() {
@@ -137,7 +146,7 @@ ABANDANONED_dev_skaffold_inotify_volume() {
     minikube_mount_root &
 
     pushd service/api-data/server
-    skaffold dev --profile volume-development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --profile volume-development --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     popd
 
     {
@@ -203,7 +212,7 @@ skaffold_scripts#example@monorepo() {
 
     skaffold delete --profile development
     skaffold build -v debug 
-    skaffold dev --tail --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
+    skaffold dev --tail --profile development --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
     skaffold dev --port-forward -v debug
     skaffold debug
     skaffold run

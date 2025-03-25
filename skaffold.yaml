@@ -14,3 +14,27 @@ requires:
   - path: service/api-data
     configs: [api-data]  
 
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: monorepo-services-only
+
+requires:
+  - path: service/web-server
+    configs: []            
+
+  - path: service/api-data
+    configs: [api-data]  
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: monorepo-scaffold-only
+
+requires:
+  - path: service/scaffold
+    configs: [scaffold]          

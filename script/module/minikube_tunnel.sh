@@ -184,21 +184,16 @@ EOF
     sudo systemctl restart dnsmasq
 
     {
+        # ⚠️ Conflict with mDNS (Bonjour/Avahi): If Avahi (Linux/macOS) or Bonjour (Windows/macOS) is running, .local names will not resolve through dnsmasq. Avoid using .local unless mDNS is disabled.
         sudo tee "$SYSTEMD_RESOLVED_CONFIG" > /dev/null <<EOF
 [Resolve]
-# Use local DNS resolver (systemd-resolved)
 DNS=127.0.0.1
-# Prioritize mDNS (.local domains) via Avahi
-# MulticastDNS=yes 
-# Search domains for hostname completion
 Domains=~local
-# Disable DNSSEC validation (improves compatibility with local networks)
+MulticastDNS=no
 DNSSEC=no
-# Fallback DNS servers if local resolution fails
-# FallbackDNS=1.1.1.1 8.8.8.8
-# Cache DNS responses (improves performance)
 Cache=no
 EOF
+# FallbackDNS=1.1.1.1 8.8.8.8
     }
     echo "modified $SYSTEMD_RESOLVED_CONFIG" 
     sudo systemctl restart systemd-resolved
@@ -221,6 +216,9 @@ EOF
         code /etc/resolv.conf
     }
     check_issue() {
+        sudo chmod 644 /etc/systemd/resolved.conf.d/*
+        sudo chown root:root /etc/systemd/resolved.conf.d/*
+
         dnsmasq_restart() { 
             sudo dnf update
             sudo dnf remove --allowerasing dnsmasq
@@ -342,8 +340,8 @@ start.tunnel.minikube#task@monorepo() {
         fi
     }
 
-    # sudo echo "" # switch to sudo explicitely      
-
+    sudo echo "" # switch to sudo explicitely      
+    
     minikube tunnel --cleanup=true &
     sleep 2
 
@@ -362,7 +360,7 @@ start.tunnel.minikube#task@monorepo() {
     if nslookup test.donation-app.local > /dev/null 2>&1; then
         log "test.donation-app.local resolvable"
     fi
-    
+
     # Try curl commands until domain is resolvable
     local max_attempts=30
     local attempt=0
@@ -388,6 +386,10 @@ start.tunnel.minikube#task@monorepo() {
     # Set up trap to catch Ctrl+C
     trap 'echo ""; echo "Stopping minikube tunnel and cleaning up DNS configuration..."; delete.tunnel.minikube#task@monorepo; exit 0' INT
 
-    # echo "ctrl+C to cleanup"
-    sleep 10000000
+    echo "Minikube tunnel is running. Press Ctrl+C to stop."
+    # Wait indefinitely
+    while true; do
+        sleep 86400 &  # Sleep for a day
+        wait $!  # Wait for the sleep to finish
+    done
 }

@@ -623,7 +623,7 @@
       "dependsOn": [],
       "problemMatcher": [],
       "runOptions": {
-        "runOn": "folderOpen",
+        "runOn": "folderOpen"
       }
     },
     {
@@ -763,6 +763,54 @@
       "dependsOrder": "parallel",
       "dependsOn": [],
       "problemMatcher": []
+    },
+    {
+      "label": "scaffold.production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && scaffold.production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) scaffold.production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "services.development_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && services.development_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) services.development_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
     }
   ]
 }
