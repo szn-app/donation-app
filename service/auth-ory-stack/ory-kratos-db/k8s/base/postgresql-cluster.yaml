@@ -5,9 +5,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: kratos--cluster
+  name: kratos--cluster-db
   labels:
-    cnpg.io/cluster: kratos--cluster
+    cnpg.io/cluster: kratos--cluster-db
 
 spec:
   # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
@@ -115,6 +115,7 @@ spec:
     # limits:
     #   memory: "1Gi"
     #   cpu: "2"
+    
 ---
 
 apiVersion: policy/v1
@@ -125,7 +126,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      cnpg.io/cluster: kratos--cluster
+      cnpg.io/cluster: kratos--cluster-db
 
 ---
 

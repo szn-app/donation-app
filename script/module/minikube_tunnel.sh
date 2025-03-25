@@ -186,9 +186,18 @@ EOF
     {
         sudo tee "$SYSTEMD_RESOLVED_CONFIG" > /dev/null <<EOF
 [Resolve]
+# Use local DNS resolver (systemd-resolved)
 DNS=127.0.0.1
+# Prioritize mDNS (.local domains) via Avahi
+# MulticastDNS=yes 
+# Search domains for hostname completion
 Domains=~local
+# Disable DNSSEC validation (improves compatibility with local networks)
 DNSSEC=no
+# Fallback DNS servers if local resolution fails
+# FallbackDNS=1.1.1.1 8.8.8.8
+# Cache DNS responses (improves performance)
+Cache=no
 EOF
     }
     echo "modified $SYSTEMD_RESOLVED_CONFIG" 
@@ -333,7 +342,7 @@ start.tunnel.minikube#task@monorepo() {
         fi
     }
 
-    sudo echo "" # switch to sudo explicitely      
+    # sudo echo "" # switch to sudo explicitely      
 
     minikube tunnel --cleanup=true &
     sleep 2

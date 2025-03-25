@@ -5,9 +5,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: hydra--cluster
+  name: hydra--cluster-db
   labels:
-    cnpg.io/cluster: hydra--cluster
+    cnpg.io/cluster: hydra--cluster-db
 
 spec:
   # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
@@ -125,7 +125,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      cnpg.io/cluster: hydra--cluster
+      cnpg.io/cluster: hydra--cluster-db
 
 ---
 

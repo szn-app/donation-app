@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - test-route.yaml
-  - api-route.yaml
   - dashboard-route.yaml
   - hubble-route.yaml
   - longhorn-route.yaml

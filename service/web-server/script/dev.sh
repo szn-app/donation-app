@@ -8,8 +8,15 @@ dev@web-server() {
     pnpm run lint -- --fix
 }
 
-skaffold@web-server() {     
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+skaffold#task@web-server() {
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+    # skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=true
+    popd
+}
+
+delete.skaffold#task@web-server() {
+    skaffold delete --profile development
 }
 
 bootstrap@web_server() { 

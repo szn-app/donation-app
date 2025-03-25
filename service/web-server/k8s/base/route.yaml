@@ -19,6 +19,7 @@ kind: HTTPRoute
 
 metadata:
   name: https-web-server
+  namespace: donation-app
 spec:
   parentRefs:
     - name: gateway
@@ -32,6 +33,7 @@ spec:
     - backendRefs:
         # kubernetees service
         - name: web-server
+          namespace: donation-app
           port: 80
       matches:
         - path:

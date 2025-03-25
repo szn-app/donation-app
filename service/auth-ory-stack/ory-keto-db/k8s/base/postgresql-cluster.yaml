@@ -5,9 +5,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: keto--cluster
+  name: keto--cluster-db
   labels:
-    cnpg.io/cluster: keto--cluster
+    cnpg.io/cluster: keto--cluster-db
 
 spec:
   # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
@@ -125,7 +125,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      cnpg.io/cluster: keto--cluster
+      cnpg.io/cluster: keto--cluster-db
 
 ---
 

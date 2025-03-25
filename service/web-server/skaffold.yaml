@@ -26,7 +26,7 @@ profiles:
   # activation:
   #   - kubeContext: minikube
       
-  build: 
+  build:
     artifacts:
     - image: web-server
       context: .

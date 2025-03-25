@@ -91,6 +91,13 @@ patches:
         path: /spec/listeners/18/hostname
         value: "minio.k8s.wosoom.com"
 
+      - op: replace
+        path: /spec/listeners/19/hostname
+        value: "pgadmin4.k8s.wosoom.com"
+      - op: replace
+        path: /spec/listeners/20/hostname
+        value: "pgadmin4.k8s.wosoom.com"
+
   # remove test listeners from production
   - target:
       kind: Gateway

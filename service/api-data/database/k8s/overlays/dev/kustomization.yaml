@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - secret.yaml
   - ../../base
-  - service.yaml
 
 # namespace: database # using customization transformers instead (which provides more options)
 transformers:
@@ -31,7 +30,7 @@ patches:
       apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
       metadata:
-        name: cluster-app-data
+        name: api-data--cluster-db
         
       spec:
         instances: 1
@@ -40,7 +39,7 @@ patches:
       apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
       metadata:
-        name: cluster-app-data
+        name: api-data--cluster-db
         
       spec:
         superuserSecret: 

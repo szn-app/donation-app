@@ -28,6 +28,12 @@ deploy:
   kubectl: {}
   statusCheck: true
 
+portForward:
+  - resourceType: Service
+    namespace: auth
+    resourceName: hydra--cluster-db-rw
+    port: 5432
+
 profiles:
 
 - name: development

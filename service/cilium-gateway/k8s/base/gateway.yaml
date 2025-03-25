@@ -21,6 +21,7 @@ spec:
 
     ###
 
+    #1
     - name: https
       protocol: HTTPS
       port: 443
@@ -45,6 +46,7 @@ spec:
 
     ###
 
+    #3
     - name: https-test
       protocol: HTTPS
       port: 443
@@ -69,6 +71,7 @@ spec:
 
     ###
 
+    #5
     - name: https-api
       protocol: HTTPS
       port: 443
@@ -93,6 +96,7 @@ spec:
 
     ###
 
+    #7
     - name: https-auth
       protocol: HTTPS
       port: 443
@@ -117,6 +121,7 @@ spec:
 
     ###
 
+    #9
     - name: https-k8s-longhorn
       protocol: HTTPS
       port: 443
@@ -141,6 +146,7 @@ spec:
 
     ###
 
+    #11
     - name: https-k8s-dashboard
       protocol: HTTPS
       port: 443
@@ -165,6 +171,7 @@ spec:
 
     ###
 
+    #13
     - name: https-k8s-hubble
       protocol: HTTPS
       port: 443
@@ -189,6 +196,7 @@ spec:
 
     ###
 
+    #15
     - name: https-k8s-ory-admin
       protocol: HTTPS
       port: 443
@@ -213,6 +221,7 @@ spec:
 
     ###
 
+    #17
     - name: https-k8s-minio
       protocol: HTTPS
       port: 443
@@ -231,6 +240,31 @@ spec:
       protocol: HTTP
       port: 80
       hostname: "minio.k8s.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    ###
+
+    #19
+    - name: https-k8s-pgadmin4
+      protocol: HTTPS
+      port: 443
+      hostname: "pgadmin4.k8s.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All # required for letsecrypt
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+
+    - name: http-k8s-pgadmin4
+      protocol: HTTP
+      port: 80
+      hostname: "pgadmin4.k8s.donation-app.local"
       allowedRoutes:
         namespaces:
           from: All

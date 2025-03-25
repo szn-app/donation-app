@@ -32,7 +32,7 @@ func#postdeploy-skaffold-hook@ory-hydra-db() {
 
     {
         # wait till deployment stabilizes as it is controlled by an operator
-        local cluster_name="hydra--cluster"
+        local cluster_name="hydra--cluster-db"
         local namespace="auth"
         
         kubectl wait --for=condition=Ready --timeout=120s Cluster/$cluster_name -n $namespace \

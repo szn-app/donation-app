@@ -32,7 +32,7 @@ func#postdeploy-skaffold-hook@api-data-database() {
 
     {
         # wait till deployment stabilizes as it is controlled by an operator
-        local cluster_name="cluster-app-data"
+        local cluster_name="api-data--cluster-db"
         local namespace="api-data"
         
         kubectl wait --for=condition=Ready --timeout=120s Cluster/$cluster_name -n $namespace \

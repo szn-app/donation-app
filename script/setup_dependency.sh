@@ -152,3 +152,56 @@ install_binary_tools#rust@monorepo() {
     # cargo binstall cargo-watch
     cargo install cargo-watch --locked
 }
+
+obsolete() {
+    install_darling() { # runs .dmg MacOS applicaitons on Linux
+        sudo dnf install make cmake clang bison dbus-devel flex glibc-devel.i686 fuse-devel \
+            systemd-devel elfutils-libelf-devel cairo-devel freetype-devel.{x86_64,i686} \
+            libjpeg-turbo-devel.{x86_64,i686} fontconfig-devel.{x86_64,i686} libglvnd-devel.{x86_64,i686} \
+            mesa-libGL-devel.{x86_64,i686} mesa-libEGL-devel.{x86_64,i686} mesa-libGLU-devel.{x86_64,i686} \
+            libtiff-devel.{x86_64,i686} libxml2-devel libbsd-devel git git-lfs libXcursor-devel \
+            libXrandr-devel giflib-devel pulseaudio-libs-devel libxkbfile-devel \
+            openssl-devel llvm libcap-devel libavcodec-free-devel libavformat-free-devel
+    
+    # follow instructions: 
+        # https://docs.darlinghq.org/build-instructions.html
+        # https://docs.darlinghq.org/installing-software.html
+
+        {
+            darling shell
+            {
+                ls -l /
+                uname
+                sw_vers
+
+                ls -al /Volumes/SystemRoot/home # mounted host system to the emulated system
+                
+            }
+        }
+    }
+
+    postgres_local_install_for_testing() {
+        install_supabase_cli() {
+            brew install supabase/tap/supabase
+        }
+
+        # https://www.postgresql.org/download/linux/redhat/
+        sudo dnf install postgresql-server 
+
+        # todo install pgadmin or cli tools on local not kubernetes
+    }
+}
+
+install_osx_hackintosh() { 
+    # TODO:    https://github.com/foxlet/macOS-Simple-KVM
+    
+    install_kvm() {
+        # https://docs.fedoraproject.org/en-US/quick-docs/virtualization-getting-started/
+        sudo dnf install @virtualization
+        sudo systemctl start libvirtd
+        sudo systemctl enable libvirtd
+        lsmod | grep kvm
+    }
+
+
+}

@@ -159,7 +159,7 @@ install@keto() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='keto-db'
-            export DB_HOST='keto--cluster-rw'
+            export DB_HOST='keto--cluster-db-rw'
         }
 
         # preprocess file through substituting env values

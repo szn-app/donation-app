@@ -102,36 +102,39 @@ serverDefinitions:
   existingSecret: ""
 
   servers:
-    kratos--cluster:
-        Name: "kratos--cluster"
+    kratos--cluster-db:
+        Name: "kratos--cluster-db"
         Group: "Servers"
         Port: 5432
         Username: "postgres"
-        Host: "kratos--cluster-rw.auth.svc"
+        Host: "kratos--cluster-db-rw.auth.svc"
         SSLMode: "prefer"
         MaintenanceDB: "postgres"
-    hydra--cluster:
-        Name: "hydra--cluster"
+        
+    hydra--cluster-db:
+        Name: "hydra--cluster-db"
         Group: "Servers"
         Port: 5432
         Username: "postgres"
-        Host: "hydra--cluster-rw.auth.svc"
+        Host: "hydra--cluster-db-rw.auth.svc"
         SSLMode: "prefer"
         MaintenanceDB: "postgres"
-    keto--cluster:
-        Name: "keto--cluster"
+        
+    keto--cluster-db:
+        Name: "keto--cluster-db"
         Group: "Servers"
         Port: 5432
         Username: "postgres"
-        Host: "keto--cluster-rw.auth.svc"
+        Host: "keto--cluster-db-rw.auth.svc"
         SSLMode: "prefer"
         MaintenanceDB: "postgres"
+        
     api-data-db:
         Name: "api-data-db"
         Group: "Servers"
         Port: 5432
         Username: "postgres"
-        Host: "cluster-app-data-rw.api-data.svc"
+        Host: "api-data--cluster-db-rw.api-data.svc"
         SSLMode: "prefer"
         MaintenanceDB: "postgres"
 

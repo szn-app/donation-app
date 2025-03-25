@@ -108,3 +108,19 @@ patches:
         path: /spec/listeners/15/tls/certificateRefs/0/name
         value: "dev-tls"
 
+  - target:
+      kind: Gateway
+      name: gateway
+    patch: |-
+      - op: replace
+        path: /spec/listeners/17/tls/certificateRefs/0/name
+        value: "dev-tls"
+
+  - target:
+      kind: Gateway
+      name: gateway
+    patch: |-
+      - op: replace
+        path: /spec/listeners/19/tls/certificateRefs/0/name
+        value: "dev-tls"
+

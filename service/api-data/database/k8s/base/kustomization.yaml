@@ -12,3 +12,8 @@ configMapGenerator:
     # behavior: replace
     files:
       - init.sql=./init.sql
+
+  # - name: test-data-sql-config
+  #   # behavior: replace
+  #   files:
+  #     - test-data.sql=./test-data.sql

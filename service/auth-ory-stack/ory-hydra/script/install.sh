@@ -344,7 +344,7 @@ install@hydra() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='hydra-db'
-            export DB_HOST='hydra--cluster-rw'
+            export DB_HOST='hydra--cluster-db-rw'
         }
 
         # preprocess file through substituting env values

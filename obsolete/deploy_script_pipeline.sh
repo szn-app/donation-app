@@ -155,7 +155,7 @@ deploy() {
 }
 
 deploy_local_minikube() {
-    sudo echo "elevated permission"
+    # sudo echo "elevated permission"
     action=${1:-"install"}
 
     if [ "$action" == "delete" ]; then

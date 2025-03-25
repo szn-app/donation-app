@@ -5,9 +5,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: cluster-app-data
+  name: api-data--cluster-db
   labels:
-    cnpg.io/cluster: cluster-app-data
+    cnpg.io/cluster: api-data--cluster-db
 
 spec:
   # https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
@@ -62,6 +62,8 @@ spec:
         configMapRefs:
         - name: init-sql-config
           key: init.sql
+        # - name: test-data-sql-config
+        #   key: test-data.sql
 
       # set consistent locals supporting internationalization
       encoding: UTF8
@@ -125,7 +127,7 @@ spec:
   minAvailable: 2
   selector:
     matchLabels:
-      cnpg.io/cluster: cluster-app-data
+      cnpg.io/cluster: api-data--cluster-db
 
 ---
 

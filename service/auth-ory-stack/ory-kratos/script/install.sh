@@ -200,7 +200,7 @@ install@kratos() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='kratos-db'
-            export DB_HOST='kratos--cluster-rw'
+            export DB_HOST='kratos--cluster-db-rw'
         }
 
         # preprocess file through substituting env values
