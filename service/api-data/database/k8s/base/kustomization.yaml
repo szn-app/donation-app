@@ -8,6 +8,7 @@ configurations:
   - name-reference.kustomize-config.yaml # fixes association of ConfiMap name to cluster reference
 
 configMapGenerator:
+  # IMPORTANT: config map has limit of ~1MB
   - name: init-sql-config
     # behavior: replace
     files:

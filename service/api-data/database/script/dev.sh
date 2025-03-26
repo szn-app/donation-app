@@ -23,3 +23,7 @@ cluster#benchmark@api-data-database() {
     # TODO: benchmark CNPG cluster
     echo ''
 }
+
+load-sql.dev#example@api-data-database() {
+    psql -h localhost -p 5432 -U postgres -d app -f ./tmp/data.sql
+}
