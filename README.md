@@ -25,7 +25,6 @@ Minikube version: v1.34.0
 Kubernetes version: 
 	Client Version::	v1.32.3
 	Kustomize Version::	v5.5.0
-	Server Version::	v1.31.0
 Kustomize version: v5.5.0
 kOps version: 1.30.3
 ---

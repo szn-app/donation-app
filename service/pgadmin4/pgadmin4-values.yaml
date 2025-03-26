@@ -201,17 +201,19 @@ extraContainers: |
 ##
 ## @param secretKeys.pgadminPasswordKey Name of key in existing secret to use for default pgadmin credentials. Only used when `existingSecret` is set.
 ##
-# existingSecret: ""
-# secretKeys:
-#   pgadminPasswordKey: password
+existingSecret: "pgadmin4-credentials"
+secretKeys:
+  pgadminPasswordKey: PASSWORD
 
 ## pgAdmin4 startup configuration
 ## Values in here get injected as environment variables
 ## Needed chart reinstall for apply changes
 env:
+  email: "admin@app.com"
+
   # can be email or nickname
-  email: admin@app.com
-  password: admin
+  # email: _
+  # password: _
   # pgpassfile: /var/lib/pgadmin/storage/pgadmin/file.pgpass
 
   # set context path for application (e.g. /pgadmin4/*)
