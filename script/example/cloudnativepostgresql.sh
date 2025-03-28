@@ -63,3 +63,15 @@ example@cnpg() {
         }
     }
 }
+
+sql.dev#example@postgres() {
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+    export PSQLRC=$(pwd)/.psqlrc
+    popd
+
+    # load sql file
+    psql -h localhost -p 5432 -U postgres -d app -f ./tmp/data.sql
+
+    # connect to database
+    psql -h localhost -p 5432 -U postgres -d app 
+}

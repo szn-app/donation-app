@@ -1,3 +1,4 @@
+-- controls how psql command behaves and views data
 -- Found at:
 --     http://www.if-not-true-then-false.com/2009/postgresql-psql-psqlrc-tips-and-tricks/
 --     http://opensourcedbms.com/dbms/psqlrc-psql-startup-file-for-postgres/
@@ -72,3 +73,5 @@
 \set ll '\\! ls -lrt;'
 
 \x auto
+\timing
+set bytea_output = 'hex'; 

@@ -73,9 +73,10 @@ spec:
   # PostgreSQL configuration 
   # https://www.postgresql.org/docs/8/runtime-config.html https://www.postgresql.org/docs/current/config-setting.html
   # https://www.postgresql.org/docs/current/auth-pg-hba-conf.html
-  postgresql:
+  postgresql: # customizes postgresql.conf options
     parameters:
-      timezone: "America/Chicago"
+        timezone: "UTC"
+        datestyle: 'ISO, DMY'
 #       max_connections: "500"
 #       shared_buffers: "2GB"
 #       work_mem: "32MB"

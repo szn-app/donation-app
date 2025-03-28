@@ -5,6 +5,10 @@
 start.minikube#bootstrap#task@monorepo() {
     # sudo echo "" # prompt for sudo password
 
+    stop_minikube() {
+        minikube stop --profile minikube
+    }
+
     run_minikube() {
         # Check if minikube is already running
         if ! minikube status --profile minikube &>/dev/null; then
