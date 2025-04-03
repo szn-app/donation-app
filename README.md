@@ -20,7 +20,7 @@ Node.js version: 22.13.0
 pnpm version: 10.6.4
 Rust version: 1.83.0
 Cargo version: 1.83.0
-Docker version: 28.0.2
+Docker version: 28.0.4
 Minikube version: v1.34.0
 Kubernetes version: 
 	Client Version::	v1.32.3
@@ -34,7 +34,7 @@ cilium image (stable): v1.17.2
 
 Skaffold version: v2.14.1
 Conntrack version: v1.4.7
-PostgreSQL version: 16.8
+PostgreSQL version: 17.4
 yq (https://github.com/mikefarah/yq/) version v4.45.1
 mc version RELEASE.2024-11-21T17-21-54Z (commit-id=1681e4497c09d7438a34e846f76dbde972ab7daf)
 Runtime: go1.23.4 linux/amd64

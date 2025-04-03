@@ -9,3 +9,5 @@
 - backup databse workflow https://supabase.com/docs/guides/deployment/ci/backups
 - migration DDL statements
 - local node storage cannot be used for db data as if the pod restarts on a different node, the persistent volume will not be available (doesn't apply for CNPG as the policy dicrates the volume creation or transfer)
+
+- Elastic search integration with Postgresql. 
