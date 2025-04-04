@@ -2,7 +2,7 @@
 set -e
 
 # https://stackgres.io/doc/latest/install/helm/
-install_stackgres_operator() {
+DEPRECATED_install_stackgres_operator() {
     helm repo add stackgres-charts https://stackgres.io/downloads/stackgres-k8s/stackgres/helm/
 
     # parameter options https://stackgres.io/doc/latest/install/helm/ & https://stackgres.io/doc/latest/install/helm/parameters/ & https://stackgres.io/doc/latest/reference/crd/sgconfig/#sgconfigspec

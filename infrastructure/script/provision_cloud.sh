@@ -205,9 +205,10 @@ EOF
       popd 
 
       install_envoy_gateway_class
-      # install_stackgres_operator
+      # DEPRECATED_install_stackgres_operator
       install_cloudnativepg_operator
       install_minio_operator
+      install_kafka_operator
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/

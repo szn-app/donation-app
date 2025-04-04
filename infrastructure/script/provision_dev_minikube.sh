@@ -52,9 +52,10 @@ install-resources.minikube@infrastructure() {
         install_gateway_api_crds
     }
     {
-        # install_stackgres_operator
+        # DEPRECATED_install_stackgres_operator
         install_cloudnativepg_operator
         install_minio_operator
+        install_kafka_operator
     }
 }
 
