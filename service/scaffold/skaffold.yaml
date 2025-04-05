@@ -61,6 +61,9 @@ requires:
   - path: ../pgadmin4
     configs: [pgadmin4]                 
 
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]                 
+
 profiles:
   - name: development
   - name: local-production

@@ -1,0 +1,20 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: controller-broker-role
+  labels:
+    strimzi.io/cluster: kafka-message-queue-cluster
+spec:
+  replicas: 1
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        class: longhorn-local-ext4-1replica
+        size: 10Gi
+        deleteClaim: true
+        kraftMetadata: shared

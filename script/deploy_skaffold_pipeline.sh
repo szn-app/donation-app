@@ -84,7 +84,7 @@ development_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # start.minikube#bootstrap#task@monorepo
 
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --profile development  --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
         source ./script.sh

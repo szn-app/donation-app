@@ -208,7 +208,7 @@ EOF
       # DEPRECATED_install_stackgres_operator
       install_cloudnativepg_operator
       install_minio_operator
-      install_kafka_operator
+      install.kafka-operator#task@infrastructure
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/

@@ -1,0 +1,38 @@
+# NOTE: Apache Kafka with Raft-based implementation is still under development and has some limitations. For instance, scaling of controller node or JBOD storage (you can specify type: jbod storage in Strimzi custom resources, but it should contain only a single volume) are not supported.
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: kafka-message-queue-cluster
+  annotations:
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+
+spec:
+  kafka:
+    # TODO: migrate to 4.0.0 when Kafka Strimzi operator new version is released which supports Kafka 4.0.0 check releases support at https://strimzi.io/downloads/
+    version: 3.9.0 
+    metadataVersion: 3.9-IV0
+
+    listeners:
+      - name: http
+        port: 9092
+        type: internal
+        tls: false
+      - name: https
+        port: 9093
+        type: internal
+        tls: true
+        
+    # TODO: not working when using KRaft (error: unknown field spec.kafka.config in v1beta2)
+    # config:
+    #   auto.create.topics.enable: "true"
+    #   offsets.topic.replication.factor: 3
+    #   transaction.state.log.replication.factor: 3
+    #   transaction.state.log.min.isr: 2
+    #   default.replication.factor: 3
+    #   min.insync.replicas: 2
+      
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
