@@ -6,7 +6,7 @@ install_monitoring() {
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm repo update
 
-    t="$(mktemp)-prometheus-values.yml" && cat <<EOF > "$t"
+    t="$(mktemp)-prometheus-values.yaml" && cat <<EOF > "$t"
 server:
   persistentVolume:
     storageClass: local-path
@@ -30,7 +30,7 @@ EOF
     helm upgrade prometheus --debug --install prometheus-community/prometheus --namespace monitoring --create-namespace -f $t
 
     # https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/values.yaml
-    t="$(mktemp)-monitoring-configuration.yml" && cat <<EOF > "$t"
+    t="$(mktemp)-monitoring-configuration.yaml" && cat <<EOF > "$t"
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -66,7 +66,7 @@ EOF
     helm repo update
 
     # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
-    t="$(mktemp)-grafana-values.yml" && cat <<EOF > "$t"
+    t="$(mktemp)-grafana-values.yaml" && cat <<EOF > "$t"
 nodeSelector: 
   role: worker
 persistence:

@@ -21,10 +21,10 @@ install_envoy_gateway_class() {
     install_gateway_class() {
         # install CRDs (NOTE: Helm doesn't update CRDs already installed - manual upgrade would be required)
         # https://gateway.envoyproxy.io/docs/tasks/traffic/gatewayapi-support/
-        helm upgrade --debug --install envoy-gateway oci://docker.io/envoyproxy/gateway-helm --version v1.2.6 -n envoy-gateway-system --create-namespace -f ./envoy-values.yml
+        helm upgrade --debug --install envoy-gateway oci://docker.io/envoyproxy/gateway-helm --version v1.2.6 -n envoy-gateway-system --create-namespace -f ./envoy-values.yaml
         kubectl wait --timeout=5m -n envoy-gateway-system deployment/envoy-gateway --for=condition=Available    
 
-        t="$(mktemp).yml" && cat << 'EOF' > $t
+        t="$(mktemp).yaml" && cat << 'EOF' > $t
 # customize EnvoyProxy CRD https://gateway.envoyproxy.io/docs/api/extension_types/
 # This configurations creates a service as ClusterIP preventing assigning external IP address to it
 apiVersion: gateway.envoyproxy.io/v1alpha1
@@ -72,7 +72,7 @@ EOF
 
     verify() {
         helm status envoy-gateway -n envoy-gateway-system
-        y="$(mktemp).yml" && helm get all envoy-gateway -n envoy-gateway-system > $y && printf "rendered manifest template: file://$y\n"  # code -n $y
+        y="$(mktemp).yaml" && helm get all envoy-gateway -n envoy-gateway-system > $y && printf "rendered manifest template: file://$y\n"  # code -n $y
 
 
         {

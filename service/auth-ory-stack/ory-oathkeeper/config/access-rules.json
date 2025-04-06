@@ -258,6 +258,45 @@
         "handler": "json"
       }
     ]
+  },
+
+  {
+    "id": "k8s-pgadmin4",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://pgadmin4.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "only": ["ory_kratos_session"], 
+          "extra_from": "@this",
+          "subject_from": "identity.id",
+          "preserve_path": true,
+          "preserve_host": true
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "remote_json",
+      "config": {
+        "remote": "http://keto-read:80/relation-tuples/check",
+        "payload": "{ \"namespace\": \"Endpoint\", \"object\": \"test\", \"relation\": \"access\", \"subject_set\": { \"namespace\": \"User\", \"object\": \"{{ print .Subject }}\", \"relation\": \"\" } }"
+      }
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
   }
 
 ]

@@ -256,7 +256,7 @@ kratos:
   #       plainBody:
   # {% endraw %}
   
-  # NOTE: configuration overriden by ory-kratos/kratos-config.yml
+  # NOTE: configuration overriden by ory-kratos/kratos-config.yaml
   config:
     courier:
       smtp: {}

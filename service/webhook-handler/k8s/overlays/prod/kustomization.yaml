@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+images:
+  - name: webhook-handler
+    newName: ghcr.io/szn-app/donation-app/webhook-handler
+    ### automatically updated
+    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
+    newTag: v0.0.1 # x-release-please-version
+
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: webhook-handler
+        
+      spec:
+        template:
+          spec:
+            containers:
+            - name: webhook-handler
+              imagePullPolicy: Always

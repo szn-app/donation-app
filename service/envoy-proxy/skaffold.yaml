@@ -3,6 +3,17 @@ kind: Config
 metadata:
   name: envoy-proxy
 
+requires:
+  - path: .
+    configs: [envoy-proxy-generic]
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: envoy-proxy-generic
+
 manifests:
   kustomize:
     paths:
@@ -10,8 +21,3 @@ manifests:
 
 deploy:
   kubectl: {}
-
-profiles:
-
-- name: development
-- name: production

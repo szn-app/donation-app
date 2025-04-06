@@ -3,14 +3,30 @@ kind: Config
 metadata:
   name: ory-keto
 
+requires:
+  - path: .
+    configs: [ory-keto-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-keto-generic
+
 requires: 
   - path: ../ory-keto-db
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [ory-keto-db]                 
 
 manifests:
   kustomize:

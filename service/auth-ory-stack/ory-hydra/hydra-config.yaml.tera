@@ -22,7 +22,7 @@ hydra:
           enabled: true
           allow_credentials: true
           allowed_origins:
-          - https://donation-app.test
+          - https://donation-app.local
           - {{ AUTH_BASE_URL }}
         {% endif %}
         

@@ -1,7 +1,9 @@
 
 # Development 
 
-Development PRs can be automerged (`gh merge ... --auto`), while release PRs should aggregate releases and merged manually. 
+Development PRs can be automerged (`gh merge ... --auto`), while release PRs should aggregate releases and merged manually.
+
+- vscode, gitbutler
 
 ## commits (following [Conventional Commit message](https://www.conventionalcommits.org/) and SemVer)
 - `feat: ...` → minor release; `fix: ...` → patch release; or with scopes `feat(frontend):`

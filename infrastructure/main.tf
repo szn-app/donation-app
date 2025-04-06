@@ -73,7 +73,7 @@ module "kube-hetzner" {
   # NOTE: if Cilium UI enabled it can be accessed using ssh tunnel
   cilium_hubble_enabled = false
   # Configures the list of Hubble metrics to collect.
-  # cilium_hubble_metrics_enabled = [] # specified in the overriding custom cilium-values.yml file
+  # cilium_hubble_metrics_enabled = [] # specified in the overriding custom cilium-values.yaml file
   # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
   cilium_values = local.helm_values_file["cilium"]
 

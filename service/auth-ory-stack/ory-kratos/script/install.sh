@@ -200,12 +200,12 @@ install@kratos() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='kratos-db'
-            export DB_HOST='kratos--cluster-rw'
+            export DB_HOST='kratos--cluster-db-rw'
         }
 
         # preprocess file through substituting env values
-        t="$(mktemp).yml" && ./script/render-template-config.script.rs --environment $environment < kratos-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        q="$(mktemp).yml" && ./script/render-template-helm.script.rs --environment $environment < helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
+        t="$(mktemp).yaml" && ./script/render-template-config.script.rs --environment $environment < kratos-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        q="$(mktemp).yaml" && ./script/render-template-helm.script.rs --environment $environment < helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
         
         default_secret="$(openssl rand -hex 16)"
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
@@ -236,7 +236,7 @@ verify#example@kratos()  {
 
     {
         # manually validate rendered templates and deployment manifest files
-        y="$(mktemp).yml" && helm upgrade --dry-run --install kratos ory/kratos -n auth --create-namespace -f $q -f $t \
+        y="$(mktemp).yaml" && helm upgrade --dry-run --install kratos ory/kratos -n auth --create-namespace -f $q -f $t \
             --set-file kratos.identitySchemas.identity-schema\\.json=./config/identity-schema.json \
             --set kratos.config.secrets.default[0]="$default_secret" \
             --set kratos.config.secrets.cookie[0]="$cookie_secret" \
@@ -250,30 +250,30 @@ verify#example@kratos()  {
         {
             # https://www.ory.sh/docs/kratos/quickstart#perform-registration-login-and-logout
             # return a new login flow and csrf_token 
-            flow=$(curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.test/authenticate/self-service/login/api")
+            flow=$(curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.local/authenticate/self-service/login/api")
             flowId=$(echo $flow | jq -r '.id')
             actionUrl=$(echo $flow | jq -r '.ui.action')
             echo $actionUrl
             # display info about the new login flow and required parameters
-            curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.test/authenticate/self-service/login/flows?id=$flowId" | jq
+            curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.local/authenticate/self-service/login/flows?id=$flowId" | jq
             curl -k -s -X POST -H  "Accept: application/json" -H "Content-Type: application/json" -d '{"identifier": "i-do-not-exist@user.org", "password": "the-wrong-password", "method": "password"}' "$actionUrl" | jq
         }
         {
-            # makes internal call to https://auth.donation-app.test/authenticate/self-service/login/api to retrieve csrf_token and redirect user
-            curl -k -s -i -X GET -H "Accept: text/html" https://auth.donation-app.test/authenticate/self-service/login/browser 
+            # makes internal call to https://auth.donation-app.local/authenticate/self-service/login/api to retrieve csrf_token and redirect user
+            curl -k -s -i -X GET -H "Accept: text/html" https://auth.donation-app.local/authenticate/self-service/login/browser 
             # login will make POST request with required parameters to /self-service/login/flows?id=$flowId 
-            printf "visit https://auth.donation-app.test/login?flow=$flowId\n"   
+            printf "visit https://auth.donation-app.local/login?flow=$flowId\n"   
         }
 
         # send cookies in curl
         {
             # A cookie jar for storing the CSRF tokens
-            cookieJar=$(mktemp) && flowId=$(curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" https://auth.donation-app.test/authenticate/self-service/login/browser | jq -r '.id')
+            cookieJar=$(mktemp) && flowId=$(curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" https://auth.donation-app.local/authenticate/self-service/login/browser | jq -r '.id')
             # The endpoint uses Ory Identities' REST API to fetch information about the request (requires the CSRF cookie created for the login flow)
-            curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" "https://auth.donation-app.test/authenticate/self-service/login/flows?id=$flowId" | jq
+            curl -k -s -X GET --cookie-jar $cookieJar --cookie $cookieJar -H "Accept: application/json" "https://auth.donation-app.local/authenticate/self-service/login/flows?id=$flowId" | jq
 
             # TODO: check session kratos info
-            # otherwise can check https://auth.donation-app.test/sessions
+            # otherwise can check https://auth.donation-app.local/sessions
             {
                 curl -k -i http://kratos-read:80/sessions/whoami
             }
@@ -282,8 +282,8 @@ verify#example@kratos()  {
 
     # registration flow 
     registration_flow() {
-        flowId=$(curl -k -s -X GET -H "Accept: application/json" https://auth.donation-app.test/authenticate/self-service/registration/api | jq -r '.id')
-        curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.test/authenticate/self-service/registration/flows?id=$flowId" | jq
+        flowId=$(curl -k -s -X GET -H "Accept: application/json" https://auth.donation-app.local/authenticate/self-service/registration/api | jq -r '.id')
+        curl -k -s -X GET -H "Accept: application/json" "https://auth.donation-app.local/authenticate/self-service/registration/flows?id=$flowId" | jq
     }
 
 }

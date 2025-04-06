@@ -8,7 +8,7 @@ install_gateway_api_cilium() {
 
   verify() {
     kubectl get crd -A
-    cilium status
+    cilium status # verify running and tls wireguard is running
     cilium config view | grep -w "gateway"
     cilium config view | grep -w "enabe-gateway-api"
     cilium sysdump

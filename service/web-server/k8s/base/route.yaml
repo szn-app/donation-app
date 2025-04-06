@@ -1,0 +1,110 @@
+# permit httproute to access backend service from another namespace
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-auth-from-donation-app
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: donation-app
+  to:
+    - group: ""
+      kind: Service
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: https-web-server
+  namespace: donation-app
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+      sectionName: https
+
+  hostnames:
+    - donation-app.local
+
+  rules:
+    - backendRefs:
+        # kubernetees service
+        - name: web-server
+          namespace: donation-app
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+    # handle token exchange in same domain to avoid CORS
+    - backendRefs:
+        - name: auth-token-exchange
+          namespace: auth
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/oauth2_token
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /oauth2_token
+
+    - backendRefs:
+        - name: auth-token-exchange
+          namespace: auth
+          port: 80
+      matches:
+        - path:
+            type: PathPrefix
+            value: /api/oauth2_revoke
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /oauth2_revoke
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+
+metadata:
+  name: http-redirect
+  namespace: cert-manager # HTTPRoute must be placed in same namespace as the target backend service
+spec:
+  parentRefs:
+    - name: gateway
+      namespace: gateway
+      sectionName: http
+
+  hostnames:
+    - "donation-app.local"
+
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+
+    - matches:
+        - path:
+            type: PathPrefix
+            value: "/.well-known/"
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: "/livez"
+      backendRefs:
+        - name: cert-manager-health-endpoint
+          namespace: cert-manager
+          port: 80

@@ -30,6 +30,7 @@
         "service/api-data/server",
         "service/auth-ui",
         "service/auth-token-exchange",
+        "service/webhook-handler",
         ".release-please-config.json",
         ".release-please-manifest.json",
         "Cargo.toml"
@@ -43,7 +44,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/web-server/k8s/overlays/prod/kustomization.yml",
+          "path": "service/web-server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -55,7 +56,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yml",
+          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -67,7 +68,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-ui/k8s/overlays/prod/kustomization.yml",
+          "path": "service/auth-ui/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
@@ -79,7 +80,19 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yml",
+          "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yaml",
+          "jsonpath": "$.images[0].newTag"
+        }
+      ]
+    },
+
+    "service/webhook-handler": {
+      "component": "webhook-handler",
+      "release-type": "rust",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "service/webhook-handler/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]

@@ -3,9 +3,36 @@ kind: Config
 metadata:
   name: ory-kratos-db
 
+requires:
+  - path: .
+    configs: [ory-kratos-db-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-kratos-db-generic
+
 deploy:
   kubectl: {}
   statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: auth
+    resourceName: kratos--cluster-db-rw
+    port: 5432
 
 profiles:
 

@@ -4,13 +4,19 @@ metadata:
   name: auth-ui
 
 requires:
+  - path: .
+    configs: [auth-ui-generic]
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: auth-ui-generic
+
+requires:
   - path: ../auth-ory-stack
-    configs: []                 
-    activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+    configs: [auth-ory-stack]                 
 
 build:
   local: 

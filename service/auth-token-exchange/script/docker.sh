@@ -4,7 +4,7 @@ misc@auth-token-exchange() {
     cargo build --release
 }
 
-# IMPORTANT! used by release.yml workflow
+# IMPORTANT! used by release.yaml workflow
 build_container#package_hook@auth-token-exchange() { 
     # NOTE: uses buildx (instead of the legacy build)
     docker build . -t auth-token-exchange:latest

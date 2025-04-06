@@ -3,6 +3,27 @@ kind: Config
 metadata:
   name: ory-oathkeeper
 
+requires:
+  - path: .
+    configs: [ory-oathkeeper-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: ory-oathkeeper-generic
+
 manifests:
   kustomize:
     paths:

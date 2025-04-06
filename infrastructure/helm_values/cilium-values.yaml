@@ -1,0 +1,76 @@
+# https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
+
+# Enable Kubernetes host-scope IPAM mode (required for K3s + Hetzner CCM)
+ipam:
+  mode: kubernetes
+k8s:
+  requireIPv4PodCIDR: true
+
+# Replace kube-proxy with Cilium
+kubeProxyReplacement: true
+l7Proxy: true
+
+# Enable health check server (healthz) for the kube-proxy replacement
+kubeProxyReplacementHealthzBindAddr: "0.0.0.0:10256"
+
+# Access to Kube API Server (mandatory if kube-proxy is disabled)
+k8sServiceHost: "127.0.0.1"
+k8sServicePort: "6444"
+
+# Set Tunnel Mode or Native Routing Mode (supported by Hetzner CCM Route Controller)
+routingMode: "native"
+# Set the native routable CIDR
+ipv4NativeRoutingCIDR: "10.42.0.0/16"
+
+# Bypass iptables Connection Tracking for Pod traffic (only works in Native Routing Mode)
+installNoConntrackIptablesRules: true
+
+endpointRoutes:
+  # Enable use of per endpoint routes instead of routing via the cilium_host interface.
+  enabled: true
+
+loadBalancer:
+  # Enable LoadBalancer & NodePort XDP Acceleration (direct routing (routingMode=native) is recommended to achieve optimal performance)
+  acceleration: native
+
+bpf:
+  # Enable eBPF-based Masquerading ("The eBPF-based implementation is the most efficient implementation")
+  masquerade: true
+
+hubble:
+  relay:
+    enabled: true
+    nodeSelector:
+      role: worker
+  ui:
+    enabled: true
+    nodeSelector:
+      role: worker
+
+  # https://docs.cilium.io/en/stable/observability/metrics/#hubble-metrics
+  metrics:
+    enabled:
+      # HTTP Metrics
+      - "httpV2:sourceContext=workload-name|app|pod;destinationContext=workload-name|app|pod|dns;labelsContext=source_namespace,destination_namespace"
+      # Policy Metrics
+      - "policy:sourceContext=workload-name|app|pod;destinationContext=workload-name|app|pod|dns;labelsContext=source_namespace,destination_namespace"
+  tls:
+    auto:
+      enabled: true
+      method: cronJob # generate certificates using hubble's hubblecertgen (check the hubblecertgen section for more details in cilium's helm values file)
+      certValidityDuration: 1095
+
+MTU: 1450
+
+gatewayAPI:
+  enabled: true
+
+certgen:
+  nodeSelector:
+    role: worker
+
+# Enable Cilium's eBPF-based encryption: encrypt network traffic cluster-wide (all pod-to-pod traffic including intra-node traffic on same host) 
+encryption:
+  enabled: true
+  type: wireguard
+  # nodeEncryption: false # Disable blanket encryption, rely on policy TODO: optimize performance by allowing encrytion for cross-node traffic only using a custom CiliumClusterwideNetworkPolicy policy which should be created to determine which pods communication should be encrypted

@@ -134,7 +134,7 @@ hydra:
   # -- Ability to override arguments of the entrypoint. Can be used in-depended of customCommand
   customArgs: []
 
-  # NOTE: configuration overriden by ory-hydra/hydra-config.yml
+  # NOTE: configuration overriden by ory-hydra/hydra-config.yaml
   # -- The ORY Hydra configuration. For a full list of available settings, check:
   #  https://www.ory.sh/docs/hydra/reference/configuration
   config:

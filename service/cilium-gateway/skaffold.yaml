@@ -3,19 +3,42 @@ kind: Config
 metadata:
   name: cilium-gateway
 
-deploy:
-  kubectl: {}
-  statusCheck: true
+requires:
+  - path: .
+    configs: [cilium-gateway-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: cilium-gateway-generic
 
 profiles:
 
 - name: development
+  deploy:
+    kubectl: {}
+    statusCheck: true
   manifests:
     kustomize:
       paths:
       - k8s/overlays/dev
 
 - name: production
+  deploy:
+    kubectl: {}
+    statusCheck: true
   manifests:
     kustomize:
       paths:

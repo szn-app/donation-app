@@ -3,58 +3,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "dev.minikube#provision#task@infrastructure",
+      "label": "kubernetes-k9s",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && dev.minikube#provision#task@infrastructure"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) dev.minikube#provision#task@infrastructure"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "hetzner-cloud#provision#task@infrastructure",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && hetzner-cloud#provision#task@infrastructure"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) hetzner-cloud#provision#task@infrastructure"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "skaffold#task@api-data-object-store",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-object-store"
+        "k9s"
       ],
       "presentation": {
         "reveal": "always",
@@ -65,193 +19,6 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) skaffold#task@api-data-object-store"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "local#bootstrap#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && local#bootstrap#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) local#bootstrap#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "dev.skaffold#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && dev.skaffold#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) dev.skaffold#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "dev_production_mode.skaffold#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && dev_production_mode.skaffold#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) dev_production_mode.skaffold#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "skaffold#task@api-data-database",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-database"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) skaffold#task@api-data-database"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "add_vscode_tasks#setup#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && add_vscode_tasks#setup#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) add_vscode_tasks#setup#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "add_vscode_workspaces#setup#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && add_vscode_workspaces#setup#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) add_vscode_workspaces#setup#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "config#aggregate_setup#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && config#aggregate_setup#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "silent",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) config#aggregate_setup#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": [],
-      "runOptions": {
-        "runOn": "folderOpen"
-      }
-    },
-    {
-      "label": "record_version#setup#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && record_version#setup#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) record_version#setup#task@monorepo"
         }
       },
       "dependsOrder": "parallel",
@@ -282,12 +49,12 @@
       "problemMatcher": []
     },
     {
-      "label": "delete.dev.skaffold#task@monorepo",
+      "label": "delete.skaffold#task@monorepo",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && delete.dev.skaffold#task@monorepo"
+        "source ${workspaceFolder}/script.sh && delete.skaffold#task@monorepo"
       ],
       "presentation": {
         "reveal": "always",
@@ -297,7 +64,7 @@
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
-          "label": "$(run) delete.dev.skaffold#task@monorepo"
+          "label": "$(run) delete.skaffold#task@monorepo"
         }
       },
       "dependsOrder": "parallel",
@@ -305,12 +72,12 @@
       "problemMatcher": []
     },
     {
-      "label": "tunnel.minikube#task@monorepo",
+      "label": "delete.skaffold#task@auth-ory-stack",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && tunnel.minikube#task@monorepo"
+        "source ${workspaceFolder}/script.sh && delete.skaffold#task@auth-ory-stack"
       ],
       "presentation": {
         "reveal": "always",
@@ -320,99 +87,7 @@
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
-          "label": "$(run) tunnel.minikube#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete_tunnel.minikube#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete_tunnel.minikube#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete_tunnel.minikube#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete#task@auth-ory-stack",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete#task@auth-ory-stack"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete#task@auth-ory-stack"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "deploy#task@auth-ory-stack",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && deploy#task@auth-ory-stack"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) deploy#task@auth-ory-stack"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete_deploy#task@auth-ory-stack",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete_deploy#task@auth-ory-stack"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete_deploy#task@auth-ory-stack"
+          "label": "$(run) delete.skaffold#task@auth-ory-stack"
         }
       },
       "dependsOrder": "parallel",
@@ -436,29 +111,6 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) skaffold#task@ory-kratos-db"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete_pvc#task@ory-kratos-db",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete_pvc#task@ory-kratos-db"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete_pvc#task@ory-kratos-db"
         }
       },
       "dependsOrder": "parallel",
@@ -528,52 +180,6 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) render.skaffold#task@ory-kratos-db"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete_pvc#task@ory-hydra-db",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete_pvc#task@ory-hydra-db"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete_pvc#task@ory-hydra-db"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
-      "label": "delete_pvc#task@ory-keto-db",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && delete_pvc#task@ory-keto-db"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) delete_pvc#task@ory-keto-db"
         }
       },
       "dependsOrder": "parallel",
@@ -694,6 +300,613 @@
       "dependsOrder": "parallel",
       "dependsOn": [],
       "problemMatcher": []
+    },
+    {
+      "label": "minikube#aggregate_cleanup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && minikube#aggregate_cleanup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) minikube#aggregate_cleanup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "delete.tunnel.minikube#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.tunnel.minikube#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.tunnel.minikube#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "start.minikube#bootstrap#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && start.minikube#bootstrap#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) start.minikube#bootstrap#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "start.tunnel.minikube#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && start.tunnel.minikube#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) start.tunnel.minikube#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "hetzner.cloud#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && hetzner.cloud#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) hetzner.cloud#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "install.minikube#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && install.minikube#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) install.minikube#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "delete.skaffold#task@auth-ory-stack",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.skaffold#task@auth-ory-stack"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.skaffold#task@auth-ory-stack"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "development_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && development_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) development_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@auth-ory-stack",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@auth-ory-stack"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@auth-ory-stack"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "delete_pvc#task@auth-ory-stack",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete_pvc#task@auth-ory-stack"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete_pvc#task@auth-ory-stack"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "add_vscode_tasks#setup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && add_vscode_tasks#setup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) add_vscode_tasks#setup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "add_vscode_workspaces#setup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && add_vscode_workspaces#setup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) add_vscode_workspaces#setup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "config#aggregate_setup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && config#aggregate_setup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) config#aggregate_setup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "delete.skaffold#task@web-server",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.skaffold#task@web-server"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.skaffold#task@web-server"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "record_version#setup#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && record_version#setup#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) record_version#setup#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@api-data-database",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-database"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@api-data-database"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@api-data-object-store",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@api-data-object-store"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@api-data-object-store"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@pgadmin4",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@pgadmin4"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@pgadmin4"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "skaffold#task@web-server",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@web-server"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@web-server"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": []
+    },
+    {
+      "label": "scaffold.production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && scaffold.production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) scaffold.production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "services.development_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && services.development_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) services.development_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "render.skaffold#task@kafka-message-queue",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && render.skaffold#task@kafka-message-queue"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) render.skaffold#task@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "skaffold#task@kafka-message-queue",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && skaffold#task@kafka-message-queue"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) skaffold#task@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "install.kafka-operator#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && install.kafka-operator#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) install.kafka-operator#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "github-workflow-config#setup#task@monorepo.script.rs",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && github-workflow-config#setup#task@monorepo.script.rs"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) github-workflow-config#setup#task@monorepo.script.rs"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
     }
   ]
 }

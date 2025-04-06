@@ -35,8 +35,8 @@ export function UserProvider({ children }: PropsWithChildren<{}>) {
   );
 }
 
-// NOTE: implicit OIDC config added: https://auth.donation-app.test/authorize/.well-known/openid-configuration
-// https://auth.donation-app.test/authorize/.well-known/jwks.json
+// NOTE: implicit OIDC config added: https://auth.donation-app.local/authorize/.well-known/openid-configuration
+// https://auth.donation-app.local/authorize/.well-known/jwks.json
 // https://github.com/authts/oidc-client-ts/blob/main/docs/protocols/authorization-code-grant-with-pkce.md
 export const oidcConfig: AuthProviderProps = {
   userStore: new WebStorageStateStore({ store: window.localStorage }), // persist user session in localStorage to enable silently re-establishing session on reload or new tab

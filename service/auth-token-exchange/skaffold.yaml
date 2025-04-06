@@ -4,13 +4,29 @@ metadata:
   name: auth-token-exchange
 
 requires:
-  - path: ../auth-ory-stack
-    configs: []                 
+  - path: .
+    configs: [auth-token-exchange-generic]
     activeProfiles:                                     
-     - name: development                               
-       activatedBy: [development, local-production]
-     - name: production                               
-       activatedBy: [production]
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: auth-token-exchange-generic
+
+requires:
+  - path: ../auth-ory-stack
+    configs: [auth-ory-stack]                 
 
 build:
   local: 
@@ -48,32 +64,6 @@ profiles:
         manual:
         - src: "src/**/*.rs"
           dest: .
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange development"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange development"]
-              dir: .
-
-- name: local-production
-
-  build: 
-    artifacts:
-    - image: auth-token-exchange
-      context: .
-      docker:
-        target: production
-        dockerfile: Dockerfile
-        buildArgs: {}
   manifests:
     kustomize:
       paths:

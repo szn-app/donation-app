@@ -344,12 +344,12 @@ install@hydra() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='hydra-db'
-            export DB_HOST='hydra--cluster-rw'
+            export DB_HOST='hydra--cluster-db-rw'
         }
 
         # preprocess file through substituting env values
-        t="$(mktemp).yml" && ./script/render-template-config.script.rs --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        q="$(mktemp).yml" && ./script/render-template-helm.script.rs --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
+        t="$(mktemp).yaml" && ./script/render-template-config.script.rs --environment $environment < ./hydra-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        q="$(mktemp).yaml" && ./script/render-template-helm.script.rs --environment $environment < ./helm-values.yaml.tera > $q && printf "generated manifest with replaced env variables: file://$q\n" 
         
         system_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64 -w 0)" 
         cookie_secret="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)" 
@@ -372,8 +372,8 @@ install@hydra() {
 
 verify#example@hydra() { 
     print_info() {
-        curl -k -s https://auth.donation-app.test/authorize/.well-known/openid-configuration | jq
-        curl -k -s https://auth.donation-app.test/authorize/.well-known/jwks.json | jq
+        curl -k -s https://auth.donation-app.local/authorize/.well-known/openid-configuration | jq
+        curl -k -s https://auth.donation-app.local/authorize/.well-known/jwks.json | jq
     }
 
     # /.well-known/jwks.json

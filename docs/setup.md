@@ -10,7 +10,8 @@
 - repo setting > Rulesets > Require status checks to pass > add job "enforce-all-checks"
 - repo setting > Rulesets > Require branches to be up to date before merging.
 - Organization github setting > Default package settings > Inherit access from source repository. + > package creation > public
-- setup Firefox exception for local _.test domains avoiding SSL certificate warning in the browser. Add new string in about:config > security.exception.siteList = _.test
+- setup Firefox exception for local _.dev domains avoiding SSL certificate warning in the browser. Add new string in about:config > security.exception.siteList = _.dev
+- go to about:preferences#privacy and view certificate and add to exception button.
 - For github packages turn on "Inherit access from source repository (recommended)" from pacakge settings.
 - Manual Cloudflare infrastructure setup required.
 - Manual Google OIDC client registration.

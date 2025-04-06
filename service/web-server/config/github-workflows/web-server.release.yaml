@@ -1,0 +1,162 @@
+name: web-server.release
+
+on:
+  workflow_call:
+    inputs:
+      tag-name:
+        required: true
+        type: string
+  workflow_dispatch:  
+
+jobs: 
+
+  publish-package:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "ubuntu-latest"
+            args: ""
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest" # for Intel based macs.
+            args: "--target x86_64-apple-darwin"
+          - platform: "windows-latest"
+            args: ""
+
+    runs-on: ${{matrix.platform}}
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./service/web-server
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create Dummy Release for Debugging
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+        run: |
+          if [ "${{ inputs.tag-name }}" = "dummy" ]; then
+            if ! gh release view "dummy" &>/dev/null; then
+              gh release create "dummy" --title "dummy" --notes "Auto-created dummy tag for debugging"
+            fi
+          fi
+
+      # find release ID given the associated tag and pass it to Tauri build in following step (bc it seems like tauri-action fails to find the release id sometimes)
+      - name: Find Release ID
+        id: find_release_id
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+        run: |
+          release_id=$(gh release view ${{ inputs.tag-name }} --json databaseId | jq -r '.databaseId')
+          echo "release_id=$release_id" >> $GITHUB_OUTPUT
+          if [[ -z "$release_id" ]]; then
+            echo "Error: release id retrieval failed for tagname: ${{ inputs.tag-name }}"
+            exit 1;
+          else 
+            echo "release_id=$release_id"
+          fi
+
+      - name: Install zip
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          sudo apt update -y
+          sudo apt install zip -y
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false # Prevent automatic installation of dependencies
+          version: latest
+
+      - name: install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: "pnpm"
+          cache-dependency-path: ./service/web-server
+
+      - name: install dependencies & build project
+        working-directory: ./
+        run: |
+          chmod +x ./script.sh
+          ./script.sh build_react_spa@web-server
+
+      - name: compress frontend assets
+        if: startsWith(matrix.platform, 'ubuntu')
+        working-directory: ./
+        run: |
+          mkdir -p target/ 
+          zip -r ./target/frontend.zip ./service/web-server/dist
+
+      - name: upload frontend assets
+        if: startsWith(matrix.platform, 'ubuntu')
+        working-directory: ./
+        run: gh release upload ${{ inputs.tag-name }} ./target/frontend.zip
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+
+      - name: build web-server container
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          chmod +x ./script.sh
+          ./script.sh build_container#package_hook@web-server production
+
+      - name: upload container to Github Container Registry
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          echo "${{ secrets.PAT_GITHUB_CONTAINER_REGISTRY }}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
+          TAG=web-server:latest
+          docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
+          docker push ghcr.io/szn-app/donation-app/$TAG
+          VERSION_TAG=${{ inputs.tag-name }}
+          MAPPED_VERSION="${VERSION_TAG//@/:}"
+          docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+          docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+
+      - name: Update release description
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          release_desc=$(gh release view ${{ inputs.tag-name }} --json body | jq -r '.body')
+          new_desc=$(cat <<EOF
+          $release_desc
+          ___
+          ### Container:
+          * [web-server:latest](https://ghcr.io/szn-app/donation-app/web-server:latest)
+          EOF
+          )
+          gh release edit ${{ inputs.tag-name }} --notes "$new_desc"
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+
+      - name: Install dependencies for tauri
+        if: startsWith(matrix.platform, 'ubuntu')
+        working-directory: ./
+        run: |
+          chmod +x ./script.sh
+          ./script.sh install_tauri_dependencies_debian#setup@monorepo
+
+      - name: install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: build project (tauri app) & upload artifacts to release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+        with:
+          projectPath: "service/web-server"
+          releaseId: ${{ steps.find_release_id.outputs.release_id }} # tag to find the release for (each github tag may be associated with a single release only)
+          args: ${{ matrix.args }} # build specific formats

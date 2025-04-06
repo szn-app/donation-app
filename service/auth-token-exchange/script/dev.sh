@@ -9,10 +9,38 @@ hot_reload@auth-token-exchange() {
     cargo watch -q -c -w src/ -x run
 }
 
+# NOTE: used in github workflows
+test#ci-hook#workflow@auth-token-exchange() {
+    set -e
+
+    echo "Starting the server..."
+    cargo run --release &
+    SERVER_PID=$!  # Capture the process ID of the server
+
+    sleep 2 
+
+    echo "Running tests..."
+    cargo test -q test_main -- --nocapture 
+    TEST_STATUS=$?
+
+    echo "Shutting down the server..."
+    kill $SERVER_PID
+    # Wait for the server to terminate
+    wait $SERVER_PID 2>/dev/null || true
+
+    if [ $TEST_STATUS -eq 0 ]; then
+        echo "Tests passed successfully!"
+        exit 0
+    else
+        echo "Tests failed!"
+        exit 1
+    fi
+}
+
 single_test@auth-token-exchange() { 
     export RUST_LOG=debug
 
-    cargo watch -q -c -w src/ -x run &
+    HYDRA_CLIENT_SECRET="dummy" cargo watch -q -c -w src/ -x run &
     sleep 1s
     cargo test -q test_main -- --nocapture 
     kill $(jobs -p)
@@ -25,7 +53,7 @@ bootstrap@auth-token-exchange() {
     cargo install cargo-watch --locked
 }
 
-dev.skaffold@auth-token-exchange() {     
+skaffold@auth-token-exchange() {     
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
     
     skaffold run --profile production --port-forward

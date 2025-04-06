@@ -32,7 +32,7 @@ func#postdeploy-skaffold-hook@ory-keto-db() {
 
     {
         # wait till deployment stabilizes as it is controlled by an operator
-        local cluster_name="keto--cluster"
+        local cluster_name="keto--cluster-db"
         local namespace="auth"
         
         kubectl wait --for=condition=Ready --timeout=120s Cluster/$cluster_name -n $namespace \

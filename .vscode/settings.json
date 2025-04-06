@@ -1,141 +1,156 @@
 {
-    "rust-analyzer.linkedProjects": [
-        "./service/auth-token-exchange/Cargo.toml",
-        "./service/web-server/src-tauri/Cargo.toml",
-        "./service/api-data/server/Cargo.toml",
-    ], 
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#1F3220",
-        "titleBar.activeBackground": "#2B462C",
-        "titleBar.activeForeground": "#F9FBF9"
-    }, 
-    "rust-analyzer.files.excludeDirs": [
-        "**/dependency/",
-    ], 
-    "highlight.regexes": {
-        "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *TODO(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
-          "filterFileRegex": ".*(?<!CHANGELOG.md)$",
-          "decorations": [
-            {
-              "overviewRulerColor": "#ffcc00",
-              "backgroundColor": "#ffcc00",
-              "color": "#1f1f1f",
-              "fontWeight": "bold"
-            },
-            {
-              "backgroundColor": "#ffcc00",
-              "color": "#1f1f1f"
-            }
-          ]
+  "rust-analyzer.linkedProjects": [
+    "./service/auth-token-exchange/Cargo.toml",
+    "./service/webhook-handler/Cargo.toml",
+    "./service/web-server/src-tauri/Cargo.toml",
+    "./service/api-data/server/Cargo.toml",
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#1F3220",
+    "titleBar.activeBackground": "#2B462C",
+    "titleBar.activeForeground": "#F9FBF9"
+  },
+  "rust-analyzer.files.excludeDirs": [
+    "**/dependency/",
+  ],
+  "highlight.regexes": {
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *TODO(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#ffcc00",
+          "backgroundColor": "#ffcc00",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
         },
-        "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:FIXME|FIX|BUG|UGLY|DEBUG|HACK)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
-          "filterFileRegex": ".*(?<!CHANGELOG.md)$",
-          "decorations": [
-            {
-              "overviewRulerColor": "#cc0000",
-              "backgroundColor": "#cc0000",
-              "color": "#1f1f1f",
-              "fontWeight": "bold"
-            },
-            {
-              "backgroundColor": "#cc0000",
-              "color": "#1f1f1f"
-            }
-          ]
-        },
-        "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:REVIEW|OPTIMIZE|TSC)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
-          "filterFileRegex": ".*(?<!CHANGELOG.md)$",
-          "decorations": [
-            {
-              "overviewRulerColor": "#00ccff",
-              "backgroundColor": "#00ccff",
-              "color": "#1f1f1f",
-              "fontWeight": "bold"
-            },
-            {
-              "backgroundColor": "#00ccff",
-              "color": "#1f1f1f"
-            }
-          ]
-        },
-        "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:IDEA)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
-          "filterFileRegex": ".*(?<!CHANGELOG.md)$",
-          "decorations": [
-            {
-              "overviewRulerColor": "#cc00cc",
-              "backgroundColor": "#cc00cc",
-              "color": "#1f1f1f",
-              "fontWeight": "bold"
-            },
-            {
-              "backgroundColor": "#cc00cc",
-              "color": "#1f1f1f"
-            }
-          ]
-        },
-        "(\\{\\{|\\}\\}|\\{%|%\\})": {
-          "filterFileRegex": ".*\\.yaml\\.tera$",
-          "decorations": [
-            {
-              "overviewRulerColor": "#00ccff",
-              "backgroundColor": "#ff69b4",
-              "color": "#1f1f1f",
-              "fontWeight": "bold"
-            },
-            {
-              "backgroundColor": "#ff69b4",
-              "color": "#1f1f1f"
-            }
-          ]
+        {
+          "backgroundColor": "#ffcc00",
+          "color": "#1f1f1f"
         }
-      },
-      "[typescriptreact]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-      },
-      "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-      },
-      "tailwindCSS.experimental.classRegex": [
-        ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-        ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-      ],
-      "vs-kubernetes": {
-        "disable-linters": ["resource-limits"]
-      },
-      "files.exclude": {
-        "**/.trunk/*actions/": true,
-        "**/.trunk/*logs/": true,
-        "**/.trunk/*notifications/": true,
-        "**/.trunk/*out/": true,
-        "**/.trunk/*plugins/": true
-      },
-      "files.watcherExclude": {
-        "**/.trunk/*actions/": true,
-        "**/.trunk/*logs/": true,
-        "**/.trunk/*notifications/": true,
-        "**/.trunk/*out/": true,
-        "**/.trunk/*plugins/": true
-      },
-      "files.associations": {
-        "*.yml.gotmpl": "yaml",
-        "*.tf.patch": "terraform",
-        "*.yaml.tera": "yaml",
-        "*.yaml.local": "yaml"
-        // "*.yaml.tera": "yaml-tera" // TODO:
-      },
-      "hediet.vscode-drawio.resizeImages": null,
-      "todohighlight.keywords": [],
-      "todohighlight.defaultStyle": {},
-      "hediet.vscode-drawio.theme": "Kennedy",
-      // "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true,
-      "prettier.requireConfig": true,
-      "[toml]": {
-        "editor.defaultFormatter": "tamasfe.even-better-toml"
-      },
-      "diffEditor.ignoreTrimWhitespace": false,
-      "[rust]": {
-        "editor.defaultFormatter": "rust-lang.rust-analyzer",
-        "editor.formatOnSave": true
-      }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:FIXME|FIX|BUG|UGLY|DEBUG|HACK)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#cc0000",
+          "backgroundColor": "#cc0000",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#cc0000",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:REVIEW|OPTIMIZE|TSC)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#00ccff",
+          "backgroundColor": "#00ccff",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#00ccff",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "((?:<!-- *)?(?:#|// @|//|./\\*+|<!--|--|\\* @|{!|{{!--|{{!) *(?:IDEA)(?:\\s*\\([^)]+\\))?:?)((?!\\w)(?: *-->| *\\*/| *!}| *--}}| *}}|(?= *(?:[^:]//|/\\*+|<!--|@|--|{!|{{!--|{{!))|(?: +[^\\n@]*?)(?= *(?:[^:]//|/\\*+|<!--|@|--(?!>)|{!|{{!--|{{!))|(?: +[^@\\n]+)?))": {
+      "filterFileRegex": ".*(?<!CHANGELOG.md)$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#cc00cc",
+          "backgroundColor": "#cc00cc",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#cc00cc",
+          "color": "#1f1f1f"
+        }
+      ]
+    },
+    "(\\{\\{|\\}\\}|\\{%|%\\})": {
+      "filterFileRegex": ".*\\.yaml\\.tera$",
+      "decorations": [
+        {
+          "overviewRulerColor": "#00ccff",
+          "backgroundColor": "#ff69b4",
+          "color": "#1f1f1f",
+          "fontWeight": "bold"
+        },
+        {
+          "backgroundColor": "#ff69b4",
+          "color": "#1f1f1f"
+        }
+      ]
+    }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
+  ],
+  "vs-kubernetes": {
+    "disable-linters": [
+      "resource-limits"
+    ]
+  },
+  "files.exclude": {
+    "**/.trunk/*actions/": true,
+    "**/.trunk/*logs/": true,
+    "**/.trunk/*notifications/": true,
+    "**/.trunk/*out/": true,
+    "**/.trunk/*plugins/": true
+  },
+  "files.watcherExclude": {
+    "**/.trunk/*actions/": true,
+    "**/.trunk/*logs/": true,
+    "**/.trunk/*notifications/": true,
+    "**/.trunk/*out/": true,
+    "**/.trunk/*plugins/": true
+  },
+  "files.associations": {
+    "*.yaml.gotmpl": "yaml",
+    "*.tf.patch": "terraform",
+    "*.yaml.tera": "yaml",
+    "*.yaml.local": "yaml"
+    // "*.yaml.tera": "yaml-tera" // TODO:
+  },
+  "hediet.vscode-drawio.resizeImages": null,
+  "todohighlight.keywords": [],
+  "todohighlight.defaultStyle": {},
+  "hediet.vscode-drawio.theme": "Kennedy",
+  // "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "prettier.requireConfig": true,
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "diffEditor.ignoreTrimWhitespace": false,
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "explorer.decorations.colors": true,
+  "problems.decorations.enabled": false,
+  "problems.visibility": false,
 }

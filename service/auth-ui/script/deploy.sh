@@ -1,4 +1,4 @@
-dev.skaffold@auth-ui() {     
+skaffold@auth-ui() {     
     skaffold dev --profile development --port-forward --auto-build=true --auto-deploy=true --cleanup=false
     
     skaffold run --profile production --port-forward --tail

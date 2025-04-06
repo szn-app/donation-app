@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner
-hetzner-cloud#provision#task@infrastructure() {
+hetzner.cloud#provision#task@infrastructure() {
     action=${1:-"install"}
 
     if ! command -v kubectl-ctx &> /dev/null; then
@@ -80,7 +80,7 @@ EOF
         set -a && source ".env" && set +a # export TF_TOKEN_app_terraform_io="" 
 
         # create kubeconfig (NOTE: do not version control this credentials file)
-        terraform output --raw kubeconfig > "$(realpath ~/.kube)/kubernetes-project-credentials.kubeconfig.yml"
+        terraform output --raw kubeconfig > "$(realpath ~/.kube)/kubernetes-project-credentials.kubeconfig.yaml"
 
         # Set default kubeconfig file path
         DEFAULT_KUBECONFIG="$HOME/.kube/config"
@@ -91,12 +91,12 @@ EOF
             echo "Backup of existing kubeconfig created at $DEFAULT_KUBECONFIG.bak"
         fi
 
-        # Find all kubeconfig files matching *.kubeconfig.yml in ~/.kube/
-        KUBECONFIG_FILES=$(find "$HOME/.kube" -type f -name "*.kubeconfig.yml")
+        # Find all kubeconfig files matching *.kubeconfig.yaml in ~/.kube/
+        KUBECONFIG_FILES=$(find "$HOME/.kube" -type f -name "*.kubeconfig.yaml")
 
         # Check if there are any files to merge
         if [ -z "$KUBECONFIG_FILES" ]; then
-            echo "No *.kubeconfig.yml files found in $HOME/.kube/"
+            echo "No *.kubeconfig.yaml files found in $HOME/.kube/"
             exit 1
         fi
 
@@ -107,7 +107,7 @@ EOF
 
         # Replace the default kubeconfig with the merged file
         mv "$DEFAULT_KUBECONFIG.tmp" "$DEFAULT_KUBECONFIG"
-        find $(realpath ~/.kube) -name "*.kubeconfig.yml" -exec chmod 600 {} + && chmod 600 $(realpath ~/.kube)/config
+        find $(realpath ~/.kube) -name "*.kubeconfig.yaml" -exec chmod 600 {} + && chmod 600 $(realpath ~/.kube)/config
         echo "Merged kubeconfig files into $DEFAULT_KUBECONFIG"
 
         # Verify the merge
@@ -205,9 +205,10 @@ EOF
       popd 
 
       install_envoy_gateway_class
-      # install_stackgres_operator
+      # DEPRECATED_install_stackgres_operator
       install_cloudnativepg_operator
       install_minio_operator
+      install.kafka-operator#task@infrastructure
 
       verify_installation() {
         k9s # https://k9scli.io/topics/commands/

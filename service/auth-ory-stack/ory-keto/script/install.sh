@@ -159,13 +159,13 @@ install@keto() {
             export DB_USER=$username
             export DB_PASSWORD=$password
             export DB_NAME='keto-db'
-            export DB_HOST='keto--cluster-rw'
+            export DB_HOST='keto--cluster-db-rw'
         }
 
         # preprocess file through substituting env values
-        t="$(mktemp).yml" && ./script/render-template.script.rs --environment $environment < ./keto-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
+        t="$(mktemp).yaml" && ./script/render-template.script.rs --environment $environment < ./keto-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
         
-        l="$(mktemp).log" && helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yml -f $t \
+        l="$(mktemp).log" && helm upgrade --debug --install --atomic keto ory/keto -n auth --create-namespace -f ./helm-values.yaml -f $t \
             --set env[0].name=DB_USER --set env[0].value=${DB_USER} \
             --set env[1].name=DB_PASSWORD --set env[1].value=${DB_PASSWORD} > $l 2>&1 && printf "Keto logs: file://$l\n"
     }

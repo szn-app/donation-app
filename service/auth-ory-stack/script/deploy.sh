@@ -15,7 +15,7 @@ func#postdeploy_hook@auth-ory-stack() {
 }
 
 # https://k8s.ory.sh/helm/
-delete#task@auth-ory-stack() {
+delete.skaffold#task@auth-ory-stack() {
     set e+
 
     # Uninstall Ory components
@@ -58,6 +58,12 @@ delete#task@auth-ory-stack() {
         kubectl get pvc -n auth -o name | xargs -I {} kubectl patch {} -n auth --type=merge -p '{"metadata":{"finalizers":null}}'
         kubectl delete pvc --all -n auth --force
     fi
+}
+
+delete_pvc#task@auth-ory-stack() {
+    delete_pvc@ory-kratos-db
+    delete_pvc@ory-keto-db
+    delete_pvc@ory-hydra-db
 }
 
 manual_verify#example@auth-ory-stack() {

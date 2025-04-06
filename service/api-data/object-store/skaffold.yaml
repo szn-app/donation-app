@@ -3,6 +3,27 @@ kind: Config
 metadata:
   name: api-data-object-store
 
+requires:
+  - path: .
+    configs: [api-data-object-store-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data-object-store-generic
+
 deploy:
   # https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-minio-tenant-helm.html#deploy-tenant-helm
   # https://min.io/docs/minio/kubernetes/upstream/reference/tenant-chart-values.html
@@ -14,7 +35,7 @@ portForward:
   - resourceType: Service
     namespace: api-data
     resourceName: minio-object-store-console
-    port: 9443
+    port: 9090
 
 profiles:
 

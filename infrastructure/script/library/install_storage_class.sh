@@ -130,6 +130,23 @@ parameters:
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
+  name: longhorn-local-ext4-1replica
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "2880"
+  fromBackup: ""
+  fsType: "ext4"
+  dataLocality: "best-effort"
+  diskSelector: "local-storage-disk"
+  nodeSelector: "worker" # where Longhorn node tag (internal Longhorn info) is set to worker (as volumes only mounted on agents)
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
   name: longhorn-local-ext4
 provisioner: driver.longhorn.io
 allowVolumeExpansion: true
@@ -174,6 +191,22 @@ parameters:
   fsType: "xfs"
   dataLocality: "best-effort"
   diskSelector: "local-storage-disk"
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-network-xfs-1replica
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "2880" # 48 hours in minutes
+  fromBackup: ""
+  fsType: "xfs"
+  dataLocality: "best-effort"
+  diskSelector: "network-storage-volume"
 ---
 # comparable to direct local storage (but may exhibit slower performance)
 kind: StorageClass
@@ -259,6 +292,12 @@ provisioner: k8s.io/minikube-hostpath
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: longhorn-local-ext4-1replica
+provisioner: k8s.io/minikube-hostpath
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: longhorn-local-ext4
 provisioner: k8s.io/minikube-hostpath
 ---
@@ -272,6 +311,12 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: longhorn-local-xfs
+provisioner: k8s.io/minikube-hostpath
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-network-xfs-1replica
 provisioner: k8s.io/minikube-hostpath
 ---
 apiVersion: storage.k8s.io/v1

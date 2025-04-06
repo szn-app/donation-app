@@ -12,6 +12,7 @@ exclude = [
     "service/auth-ory-stack/ory-kratos",
     "service/auth-ory-stack/ory-oathkeeper",
     "service/auth-token-exchange",
+    "service/webhook-handler",
     "service/web-server/src-tauri",
     "service/api-data/server",
 ]
