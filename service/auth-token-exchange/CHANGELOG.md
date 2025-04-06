@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.15](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.14...auth-token-exchange@v0.0.15) (2025-03-20)
+
+
+### Features
+
+* **auth:** migrate to CNPG HA postgresql setup for auth-ory-stack services; ([3f391aa](https://github.com/szn-app/donation-app/commit/3f391aad82507433bd1fc57729663a3ddc9a93e4))
+
 ## [0.0.14](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.13...auth-token-exchange@v0.0.14) (2025-03-05)
 
 
