@@ -64,6 +64,9 @@ requires:
   - path: ../kafka-message-queue
     configs: [kafka-message-queue]                 
 
+  - path: ../webhook-handler
+    configs: [webhook-handler]                 
+
 profiles:
   - name: development
   - name: local-production

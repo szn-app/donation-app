@@ -1,6 +1,7 @@
 {
   "rust-analyzer.linkedProjects": [
     "./service/auth-token-exchange/Cargo.toml",
+    "./service/webhook-handler/Cargo.toml",
     "./service/web-server/src-tauri/Cargo.toml",
     "./service/api-data/server/Cargo.toml",
   ],

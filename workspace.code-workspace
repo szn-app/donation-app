@@ -12,6 +12,9 @@
     },
     {
       "path": "service/web-server"
+    },
+    {
+      "path": "service/webhook-handler"
     }
   ],
   "settings": {

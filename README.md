@@ -11,6 +11,7 @@ Online donation platform for physical items.
 - api-data: serves web, desktop, and mobile apps.
 - auth-ui
 - auth-token-exchange
+- webhook-handler
 - Ory Stack
 
 ### Tools versions:

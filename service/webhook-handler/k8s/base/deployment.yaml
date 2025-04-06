@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: webhook-handler
+spec:
+  replicas: 2
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    spec:
+      containers:
+        - name: webhook-handler
+          image: webhook-handler:latest
+          ports:
+            - containerPort: 3010
+              name: webhook-handler
+
+          env:
+          # TODO: 
+          # - name: HYDRA_CLIENT_SECRET
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: ory-hydra-client--frontend-client
+          #       key: client_secret
+          #       optional: false
+
+          # envFrom:
+          # - secretRef:
+          #     name: ory-hydra-client--frontend-client # implicitely
+
+          # envFrom:
+          #   - configMapRef:
+          #       name: properties-webhook-handler
+

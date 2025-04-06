@@ -1,0 +1,43 @@
+### run tests for microservice unit test and integration tests
+
+name: webhook-handler.test
+
+on:
+  workflow_call:
+    # inputs:
+  workflow_dispatch:  
+      
+jobs:
+
+  test-cargo:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [
+          ### TODO: commented out to make testing faster
+          # macos-latest, 
+          ubuntu-latest, 
+          # windows-latest 
+        ]
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./service/webhook-handler
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './ -> target'
+
+      - name: test rust
+        run: cargo test

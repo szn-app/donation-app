@@ -30,6 +30,7 @@
         "service/api-data/server",
         "service/auth-ui",
         "service/auth-token-exchange",
+        "service/webhook-handler",
         ".release-please-config.json",
         ".release-please-manifest.json",
         "Cargo.toml"
@@ -80,6 +81,18 @@
         {
           "type": "generic",
           "path": "service/auth-token-exchange/k8s/overlays/prod/kustomization.yaml",
+          "jsonpath": "$.images[0].newTag"
+        }
+      ]
+    },
+
+    "service/webhook-handler": {
+      "component": "webhook-handler",
+      "release-type": "rust",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "service/webhook-handler/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]

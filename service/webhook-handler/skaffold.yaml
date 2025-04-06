@@ -1,0 +1,99 @@
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: webhook-handler
+
+requires:
+  - path: .
+    configs: [webhook-handler-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: webhook-handler-generic
+
+requires:
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]                 
+
+build:
+  local: 
+    push: false
+    useBuildkit: true
+  tagPolicy:
+    sha256: {} 
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+  
+portForward:
+  - resourceType: Service
+    resourceName: webhook-handler
+    namespace: donation-app
+    port: 80
+
+profiles:
+
+- name: development
+  # activation:
+  #   - kubeContext: minikube
+      
+  build: 
+    artifacts:
+    - image: webhook-handler
+      context: .
+      docker:
+        target: development
+        dockerfile: Dockerfile
+        buildArgs: {}
+      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
+      sync:
+        manual:
+        - src: "src/**/*.rs"
+          dest: .
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@webhook-handler development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@webhook-handler development"]
+              dir: .
+
+- name: production
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@webhook-handler production"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@webhook-handler production"]
+              dir: .
