@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/szn-app/donation-app/compare/auth-ui@v1.3.1...auth-ui@v1.4.0) (2025-03-20)
+
+
+### Features
+
+* **auth:** migrate to CNPG HA postgresql setup for auth-ory-stack services; ([3f391aa](https://github.com/szn-app/donation-app/commit/3f391aad82507433bd1fc57729663a3ddc9a93e4))
+
 ## [1.3.1](https://github.com/szn-app/donation-app/compare/auth-ui@v1.3.0...auth-ui@v1.3.1) (2025-03-16)
 
 
