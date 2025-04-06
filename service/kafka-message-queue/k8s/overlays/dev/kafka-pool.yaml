@@ -5,7 +5,7 @@ metadata:
   labels:
     strimzi.io/cluster: kafka-message-queue-cluster
 spec:
-  replicas: 1
+  replicas: 3
   roles:
     - controller
     - broker
@@ -15,6 +15,6 @@ spec:
       - id: 0
         type: persistent-claim
         class: longhorn-local-ext4-1replica
-        size: 10Gi
+        size: 2Gi
         deleteClaim: true
         kraftMetadata: shared

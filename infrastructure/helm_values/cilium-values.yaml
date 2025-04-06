@@ -68,3 +68,9 @@ gatewayAPI:
 certgen:
   nodeSelector:
     role: worker
+
+# Enable Cilium's eBPF-based encryption: encrypt network traffic cluster-wide (all pod-to-pod traffic including intra-node traffic on same host) 
+encryption:
+  enabled: true
+  type: wireguard
+  # nodeEncryption: false # Disable blanket encryption, rely on policy TODO: optimize performance by allowing encrytion for cross-node traffic only using a custom CiliumClusterwideNetworkPolicy policy which should be created to determine which pods communication should be encrypted

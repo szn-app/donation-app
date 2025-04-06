@@ -15,15 +15,26 @@ spec:
     metadataVersion: 3.9-IV0
 
     listeners:
+      # NOTE: communication is assumed to be network-level encrypted by Cilium
       - name: http
         port: 9092
         type: internal
         tls: false
+        authentication:
+          type: scram-sha-512
+
+      # for external endpoints
       - name: https
         port: 9093
         type: internal
         tls: true
-        
+        authentication:
+          type: scram-sha-512
+    
+    # supports user ACL authorization
+    # authorization:
+    #   type: simple
+
     # TODO: not working when using KRaft (error: unknown field spec.kafka.config in v1beta2)
     # config:
     #   auto.create.topics.enable: "true"

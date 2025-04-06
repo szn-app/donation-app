@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - kafka-message-queue-cluster.yaml
+  - user-secret.yaml
