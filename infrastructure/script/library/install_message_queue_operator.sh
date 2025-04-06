@@ -1,7 +1,6 @@
 # Strimzi Kafka operator https://strimzi.io/quickstarts/
 install.kafka-operator#task@infrastructure() {
     local operator_namespace="kafka-operator"
-    local kafka_cluster_namespace="kafka-message-queue"
     # Create the namespace for the Kafka Operator
     kubectl create namespace "$operator_namespace" || true
 
@@ -11,9 +10,9 @@ install.kafka-operator#task@infrastructure() {
     kubectl wait --for=condition=Ready pod -l name=strimzi-cluster-operator -n $operator_namespace --timeout=300s
 
     # Patch WATCH_NAMESPACE to watch kafka-ns
-    kubectl set env deployment/strimzi-cluster-operator WATCH_NAMESPACE="$kafka_cluster_namespace" -n "$operator_namespace"
+    kubectl set env deployment/strimzi-cluster-operator WATCH_NAMESPACE="" -n "$operator_namespace" # watch all namespaces
 
-    echo "Kafka Operator installed successfully in the $operator_namespace namespace, watching $kafka_cluster_namespace."
+    echo "Kafka Operator installed successfully in the $operator_namespace namespace, watching all namespaces for Kafka Strimzi CRDs."
 }
 
 delete.kafka-operator@infrastructure() {
