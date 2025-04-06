@@ -4,5 +4,5 @@
   "service/api-data/server": "0.0.4",
   "service/auth-ui": "1.4.0",
   "service/auth-token-exchange": "0.0.15",
-  "service/webhook-handler": "0.0.1"
+  "service/webhook-handler": "0.0.2"
 }
