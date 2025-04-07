@@ -53,8 +53,10 @@ bootstrap@webhook-handler() {
     cargo install cargo-watch --locked
 }
 
-skaffold@webhook-handler() {     
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
-    
-    skaffold run --profile production --port-forward
+skaffold#task@webhook-handler() {
+    skaffold dev --module webhook-handler-generic --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+}
+
+delete.skaffold#task@webhook-handler() {
+    skaffold delete --module webhook-handler-generic --profile development
 }

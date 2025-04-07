@@ -1,5 +1,6 @@
 # yaml config options passed to Kratos
 # https://www.ory.sh/docs/kratos/reference/configuration
+# https://github.com/ory/kratos/blob/91145e113fb2e64bea44c98ae192d85ccf6ed948/.schemastore/config.schema.json
 
 kratos:
 
@@ -129,12 +130,27 @@ kratos:
         login:
           ui_url: {{ AUTH_BASE_URL }}/login
           lifespan: 10m
+          # after: 
+          #   hooks:
+          #   - hook: web_hook
+          #     config:
+          #       url: http://webhook-handler.donation-app:80/webhook/auth/kratos
+          #       method: POST
+          #       headers: {}
+          #       body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
+          #       # synchronously wait for response but do not influence auth flow
+          #       response:
+          #         ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
+          #         parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
+
         logout:
           after:
             default_browser_return_url: {{ APP_URL }}
+
         registration:
           ui_url: {{ AUTH_BASE_URL }}/registration
           lifespan: 10m
+
           after:
             default_browser_return_url: {{ APP_URL }}
             oidc:
@@ -144,34 +160,39 @@ kratos:
               hooks:
                 - hook: session
                 # - hook: show_verification_ui
+
+            # general hooks that always get run (non-method specific)
+            hooks:
+            - hook: web_hook
+              config:
+                url: http://webhook-handler.donation-app:80/webhook/auth/kratos
+                method: POST
+                headers: {}
+                body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
+                # synchronously wait for response but do not influence auth flow
+                response:
+                  ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
+                  parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
+
         verification:
           enabled: true
           ui_url: {{ AUTH_BASE_URL }}/verification
           # use: code
           after:
             default_browser_return_url: {{ APP_URL }}
+
         settings:
           ui_url: {{ AUTH_BASE_URL }}/settings
           privileged_session_max_age: 15m
           # required_aal: highest_available
+
         recovery:
           enabled: true
           ui_url: {{ AUTH_BASE_URL }}/recovery
           # use: code
+
         error:
           ui_url: {{ AUTH_BASE_URL }}/error
-
-      # TODO: implement webhooks
-      # events: 
-      #   handlers: 
-      #     - name: webhooks
-      #       webhook:
-      #         url: {{ APP_URL }}/api/v1/auth/kratos/events
-      #         timeout: 5s
-      #         max_retries: 3
-      #         headers:
-      #           Authorization: "Bearer {{ JWT_SECRET }}"
-      #           Content-Type: application/json
 
     secrets:
       default:

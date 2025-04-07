@@ -125,20 +125,26 @@ generate_env_file@kratos() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     env_file_name="./config/jsonnet.env"
-    google_jsonnet_file="./config/google-oidc-mapper.jsonnet"
 
-    # Check if the JSONNET file exists
+    google_jsonnet_file="./config/google-oidc-mapper.jsonnet"
+    google_jsonnet_base64=$(base64 -w 0 < "$google_jsonnet_file")
     if [[ ! -f "$google_jsonnet_file" ]]; then
         echo "Error: File '$google_jsonnet_file' not found!"
         popd
         return 1
     fi
-
-    # Read the JSONNET file and encode it as base64
-    google_jsonnet_base64=$(base64 -w 0 < "$google_jsonnet_file")
+    
+    webhook_jsonnet_file="./config/webhook_registration_render_payload.jsonnet"
+    webhook_jsonnet_base64=$(base64 -w 0 < "$webhook_jsonnet_file")
+    if [[ ! -f "$webhook_jsonnet_file" ]]; then
+        echo "Error: File '$webhook_jsonnet_file' not found!"
+        popd
+        return 1
+    fi
 
     t=$(mktemp) && cat <<EOF > "$t"
 GOOGLE_JSONNET_MAPPER_BASE64="$google_jsonnet_base64"
+WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64="$webhook_jsonnet_base64"
 EOF
     mv $t $env_file_name
     echo "generated env file: file://$(readlink -f $env_file_name)"
