@@ -71,19 +71,24 @@ pub async fn webhook_kratos_registration_handler(
     );
 
     // send kafka topic message
-    let delivery_status = kafka_producer
-        .send::<_, _, _>(
-            FutureRecord::to(&"kratos-user-registered")
-                .key("user_id")
-                .payload(&payload.user_id.as_ref().unwrap()),
-            Duration::from_secs(5), // Timeout
-        )
-        .await;
+    {
+        let delivery_status = kafka_producer
+            .send::<_, _, _>(
+                FutureRecord::to(&"kratos-user-registered")
+                    .key("user_id")
+                    .payload(&payload.user_id.as_ref().unwrap()),
+                Duration::from_secs(5), // Timeout
+            )
+            .await;
 
-    match delivery_status {
-        Ok(_) => log::debug!("Message sent to Kafka"),
-        Err(e) => log::error!("Failed to send message to Kafka: {:?}", e),
+        match delivery_status {
+            Ok(_) => log::debug!("Message sent to Kafka"),
+            Err(e) => log::error!("Failed to send message to Kafka: {:?}", e),
+        }
     }
+
+    // gRPC/REST call to add user into the database
+    {}
 
     (StatusCode::OK, Json(payload))
 }

@@ -3,6 +3,52 @@ kind: Config
 metadata:
   name: web-server
 
+requires:
+  - path: .
+    configs: [web-server-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: web-server--no-dep
+
+requires:
+  - path: .
+    configs: [web-server-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: web-server-generic
+
 build:
   local: 
     push: false

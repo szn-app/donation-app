@@ -1,6 +1,52 @@
 apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
+  name: api-data
+
+requires:
+  - path: .
+    configs: [api-data-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data--no-dep
+
+requires:
+  - path: .
+    configs: [api-data-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
   name: api-data-k8s
 
 manifests:
@@ -18,7 +64,7 @@ deploy:
 apiVersion: skaffold/v4beta12
 kind: Config
 metadata:
-  name: api-data
+  name: api-data-generic
 
 requires:
   - path: .

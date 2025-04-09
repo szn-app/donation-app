@@ -51,7 +51,7 @@ start.minikube#bootstrap#task@monorepo() {
     fix_sync_issue
 
     execute.util '#predeploy-hook' # prepare for deployment
-    skaffold run --profile local-production --module monorepo-scaffold-only
+    production_mode.skaffold#task@monorepo
 
     start.tunnel.minikube#task@monorepo -v
 }
@@ -93,11 +93,6 @@ development_mode.skaffold#task@monorepo() {
     }
 }
 
-services.development_mode.skaffold#task@monorepo() {
-    wait_for_terminating_resources.kubernetes#utility
-    skaffold dev --profile development --module monorepo-services-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
-}
-
 production_mode.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile local-production
@@ -110,7 +105,7 @@ production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # start.minikube#bootstrap#task@monorepo
 
-    skaffold dev --profile local-production  --module monorepo --port-forward --tail
+    skaffold run --profile local-production  --module monorepo --auto-build=false --auto-deploy=false --cleanup=false # --port-forward --tail
 
     verify() { 
         skaffold run --profile production --tail
@@ -118,9 +113,14 @@ production_mode.skaffold#task@monorepo() {
     }
 }
 
+services.production_mode.skaffold#task@monorepo() {
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold run --profile development --module monorepo-services-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+}
+
 scaffold.production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --tail --cleanup=false
+    skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 }
 
 delete.skaffold#task@monorepo() {

@@ -6,10 +6,10 @@ metadata:
 
 requires:
   - path: service/scaffold
-    configs: [scaffold]          
+    configs: [scaffold]
 
   - path: service/web-server
-    configs: []            
+    configs: [web-server]
 
   - path: service/api-data
     configs: [api-data]  
@@ -23,10 +23,10 @@ metadata:
 
 requires:
   - path: service/web-server
-    configs: []            
+    configs: [web-server--no-dep]
 
   - path: service/api-data
-    configs: [api-data]  
+    configs: [api-data--no-dep]
 
 ---
 
