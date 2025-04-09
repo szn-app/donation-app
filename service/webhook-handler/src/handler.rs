@@ -29,7 +29,10 @@ struct WebhookPayloadRegistrationAfter {
 pub fn routes() -> Router {
     Router::new()
         .route("/health/status", get(health_status))
-        .route("/auth/kratos/registration", post(webhook_kratos_handler))
+        .route(
+            "/auth/kratos/registration",
+            post(webhook_kratos_registration_handler),
+        )
         .route("/auth/kratos/login", post(webhook_kratos_handler_debug))
         .fallback(handler_404)
 }
@@ -57,7 +60,7 @@ pub async fn webhook_kratos_handler_debug(
     (StatusCode::OK, Json(payload))
 }
 
-pub async fn webhook_kratos_handler(
+pub async fn webhook_kratos_registration_handler(
     Extension(app_config): Extension<AppConfig>,
     Extension(kafka_producer): Extension<FutureProducer>,
     Json(payload): Json<WebhookPayloadRegistrationAfter>,
@@ -70,7 +73,7 @@ pub async fn webhook_kratos_handler(
     // send kafka topic message
     let delivery_status = kafka_producer
         .send::<_, _, _>(
-            FutureRecord::to(&"kratos-user-registration")
+            FutureRecord::to(&"kratos-user-registered")
                 .key("user_id")
                 .payload(&payload.user_id.as_ref().unwrap()),
             Duration::from_secs(5), // Timeout
@@ -78,7 +81,7 @@ pub async fn webhook_kratos_handler(
         .await;
 
     match delivery_status {
-        Ok(_) => log::info!("Message sent to Kafka"),
+        Ok(_) => log::debug!("Message sent to Kafka"),
         Err(e) => log::error!("Failed to send message to Kafka: {:?}", e),
     }
 

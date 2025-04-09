@@ -67,6 +67,9 @@ requires:
   - path: ../webhook-handler
     configs: [webhook-handler]                 
 
+  - path: ../kafka-ui
+    configs: [kafka-ui]                 
+
 profiles:
   - name: development
   - name: local-production

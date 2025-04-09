@@ -1,0 +1,18 @@
+# https://docs.kafka-ui.provectus.io/configuration/helm-charts/configuration
+yamlApplicationConfig:
+  kafka:
+    clusters:
+      - name: kafka-message-queue-cluster
+        bootstrapServers:  kafka-message-queue-cluster-kafka-bootstrap.kafka-message-queue:9092
+        properties:
+          security.protocol: SASL_PLAINTEXT
+          sasl.mechanism: SCRAM-SHA-512        
+          sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="${KAFKA_USERNAME}" password="${KAFKA_PASSWORD}";
+
+  auth:
+    type: disabled
+    
+  management:
+    health:
+      ldap:
+        enabled: false
