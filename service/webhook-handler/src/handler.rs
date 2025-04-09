@@ -6,9 +6,20 @@ use axum::{
     Extension, Json, Router,
 };
 use log;
+use rdkafka::config::ClientConfig;
+use rdkafka::producer::{FutureProducer, FutureRecord};
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::net::SocketAddr;
+use std::time::Duration;
+
+#[derive(Clone)]
+pub struct AppConfig {
+    pub api_data_endpoint: String,
+    pub kafka_message_queue_endpoint: String,
+    pub kafka_sasl_username: String,
+    pub kafka_sasl_password: String,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 struct WebhookPayloadRegistrationAfter {
@@ -18,7 +29,8 @@ struct WebhookPayloadRegistrationAfter {
 pub fn routes() -> Router {
     Router::new()
         .route("/health/status", get(health_status))
-        .route("/webhook/auth/kratos", post(webhook_kratos_handler))
+        .route("/auth/kratos/registration", post(webhook_kratos_handler))
+        .route("/auth/kratos/login", post(webhook_kratos_handler_debug))
         .fallback(handler_404)
 }
 
@@ -37,15 +49,17 @@ pub async fn health_status() -> impl IntoResponse {
     Html(format!("ok")).into_response()
 }
 
-pub async fn webhook_kratos_handler_2(Json(payload): Json<WebhookPayload>) -> impl IntoResponse {
-    log::info!("Received webhook data: {:?}", payload); // Log the received payload
-    println!("executed webhook kratos");
+pub async fn webhook_kratos_handler_debug(
+    Json(payload): Json<serde_json::Value>,
+) -> impl IntoResponse {
+    log::info!("Received webhook data: {:?}", payload);
 
-    StatusCode::OK
+    (StatusCode::OK, Json(payload))
 }
 
-// TODO:
 pub async fn webhook_kratos_handler(
+    Extension(app_config): Extension<AppConfig>,
+    Extension(kafka_producer): Extension<FutureProducer>,
     Json(payload): Json<WebhookPayloadRegistrationAfter>,
 ) -> impl IntoResponse {
     log::debug!(
@@ -53,13 +67,36 @@ pub async fn webhook_kratos_handler(
         payload.user_id.as_deref().unwrap_or_default()
     );
 
+    // send kafka topic message
+    let delivery_status = kafka_producer
+        .send::<_, _, _>(
+            FutureRecord::to(&"kratos-user-registration")
+                .key("user_id")
+                .payload(&payload.user_id.as_ref().unwrap()),
+            Duration::from_secs(5), // Timeout
+        )
+        .await;
+
+    match delivery_status {
+        Ok(_) => log::info!("Message sent to Kafka"),
+        Err(e) => log::error!("Failed to send message to Kafka: {:?}", e),
+    }
+
     (StatusCode::OK, Json(payload))
 }
 
-pub async fn webhook_kratos_handler_debug(
-    Json(payload): Json<serde_json::Value>,
-) -> impl IntoResponse {
-    log::info!("Received webhook data: {:?}", payload);
+pub fn create_kafka_producer(endpoint: &str, username: &str, password: &str) -> FutureProducer {
+    let mut kafka_config = ClientConfig::new();
 
-    (StatusCode::OK, Json(payload))
+    // https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
+    kafka_config
+        .set("bootstrap.servers", endpoint)
+        .set("security.protocol", "sasl_plaintext")
+        .set("sasl.mechanism", "SCRAM-SHA-512") // Matches your JAAS config
+        .set("sasl.username", username)
+        .set("sasl.password", password);
+
+    kafka_config
+        .create()
+        .expect("Failed to create Kafka producer")
 }

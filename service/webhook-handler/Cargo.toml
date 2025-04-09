@@ -19,6 +19,8 @@ tracing-subscriber = { version = "~0.3.19", features = ["env-filter"] } # Utilit
 reqwest = { version = "0.11", features = ["json"] }
 log = "0.4.26"
 env_logger = "0.10.1"
+# https://github.com/confluentinc/librdkafka/wiki/Using-SASL-with-librdkafka
+rdkafka = { version = "0.25", features = ["cmake-build", "gssapi"] }
 
 [dev-dependencies]
 anyhow = "1.0.95"

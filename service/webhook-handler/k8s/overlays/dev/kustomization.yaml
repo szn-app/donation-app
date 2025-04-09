@@ -4,9 +4,23 @@ kind: Kustomization
 resources:
   - ../../base
 
+# namespace: donation-app # using customization transformers instead (which provides more options)
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: _not_important_here
+      namespace: donation-app
+    unsetOnly: true
+
 images:
   - name: webhook-handler
     newTag: latest
+
+configMapGenerator:
+  - name: properties-map-webhook-handler
+    env: .properties
 
 patches:
   - patch: |-

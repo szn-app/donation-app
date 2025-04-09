@@ -24,11 +24,6 @@ delete.skaffold#task@auth-ory-stack() {
     helm uninstall keto -n auth || echo "Failed to uninstall Keto, may not exist" 
     helm uninstall oathkeeper -n auth || echo "Failed to uninstall Oathkeeper, may not exist"
 
-    # Uninstall databases
-    helm uninstall postgres-kratos -n auth || echo "Failed to uninstall Kratos PostgreSQL, may not exist"
-    helm uninstall postgres-hydra -n auth || echo "Failed to uninstall Hydra PostgreSQL, may not exist"
-    helm uninstall postgres-keto -n auth || echo "Failed to uninstall Keto PostgreSQL, may not exist"
-
     minikube ssh -- "sudo rm -rf /tmp/hostpath-provisioner/auth/"
 
     # Delete Hydra OAuth client secrets - continue even if they don't exist

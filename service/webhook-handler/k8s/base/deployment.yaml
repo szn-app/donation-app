@@ -21,19 +21,32 @@ spec:
               name: webhook-handler
 
           env:
-          # TODO: 
-          # - name: HYDRA_CLIENT_SECRET
-          #   valueFrom:
-          #     secretKeyRef:
-          #       name: ory-hydra-client--frontend-client
-          #       key: client_secret
-          #       optional: false
+            - name: API_DATA_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-webhook-handler
+                  key: API_DATA_ENDPOINT
+                  optional: false
+            - name: KAFKA_MESSAGE_QUEUE_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-webhook-handler
+                  key: KAFKA_MESSAGE_QUEUE_ENDPOINT
+                  optional: false
+
+            # Kafka user credentials
+            - name: KAFKA_SASL_USERNAME
+              value: kafka-user
+            - name: KAFKA_SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-user
+                  key: "password"
+                  optional: false
 
           # envFrom:
-          # - secretRef:
-          #     name: ory-hydra-client--frontend-client # implicitely
+            # - configMapRef:
+            #     name: properties-map-webhook-handler 
 
-          # envFrom:
-          #   - configMapRef:
-          #       name: properties-webhook-handler
-
+            # - secretRef:
+            #     name: kafka-user

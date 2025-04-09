@@ -32,6 +32,7 @@ pub fn routes() -> Router {
     Router::new()
         .route("/post_data", axum::routing::post(post_data))
         .route("/get_data", axum::routing::get(get_data))
+    // TODO: add POST '/user_creation' { user_id }
 }
 
 // Handler for routes that don't match any defined routes

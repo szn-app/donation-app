@@ -6,6 +6,9 @@ FROM rust AS build
 COPY . /app
 WORKDIR /app
 
+# Install build dependencies
+RUN apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev
+
 RUN cargo build --release --locked
 
 # configure run script
@@ -28,6 +31,10 @@ ENTRYPOINT ["/bin/webhook-handler"]
 # ---
 
 FROM rust AS development
+
+# Install cmake build dependencies
+RUN apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev 
+
 RUN cargo install cargo-watch --locked
 
 COPY . /app

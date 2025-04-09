@@ -126,6 +126,8 @@ scaffold.production_mode.skaffold#task@monorepo() {
 delete.skaffold#task@monorepo() {
     skaffold delete --profile development
     skaffold delete --profile local-production
+
+    delete.skaffold#task@auth-ory-stack
 }
 
 # NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER when running baremetal to solve inotify issues

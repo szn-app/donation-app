@@ -130,18 +130,19 @@ kratos:
         login:
           ui_url: {{ AUTH_BASE_URL }}/login
           lifespan: 10m
-          # after: 
-          #   hooks:
-          #   - hook: web_hook
-          #     config:
-          #       url: http://webhook-handler.donation-app:80/webhook/auth/kratos
-          #       method: POST
-          #       headers: {}
-          #       body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
-          #       # synchronously wait for response but do not influence auth flow
-          #       response:
-          #         ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
-          #         parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
+          after:
+            # general hooks that always get run (non-method specific)
+            hooks:
+            - hook: web_hook
+              config:
+                url: http://webhook-handler.donation-app:80/auth/kratos/login
+                method: POST
+                headers: {}
+                body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
+                # synchronously wait for response but do not influence auth flow
+                response:
+                  ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
+                  parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
 
         logout:
           after:
@@ -156,23 +157,33 @@ kratos:
             oidc:
               hooks:
                 - hook: session
+                - hook: web_hook
+                  config:
+                    url: "http://webhook-handler.donation-app:80/auth/kratos/registration"
+                    method: POST
+                    headers: {}
+                    body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
+                    # synchronously wait for response but do not influence auth flow
+                    response:
+                      ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
+                      parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
             password:
               hooks:
                 - hook: session
                 # - hook: show_verification_ui
+                - hook: web_hook
+                  config:
+                    url: "http://webhook-handler.donation-app:80/auth/kratos/registration"
+                    method: POST
+                    headers: {}
+                    body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
+                    # synchronously wait for response but do not influence auth flow
+                    response:
+                      ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
+                      parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
 
             # general hooks that always get run (non-method specific)
-            hooks:
-            - hook: web_hook
-              config:
-                url: http://webhook-handler.donation-app:80/webhook/auth/kratos
-                method: POST
-                headers: {}
-                body: "base64://{{ WEBHOOK_RENDER_PAYLOAD_JSONNET_BASE64 }}" # Encoded Jsonnet template used to render payload.
-                # synchronously wait for response but do not influence auth flow
-                response:
-                  ignore: false  # Defines if the webhook response should be ignored and run async. Boolean. OPTIONAL
-                  parse: false # Defines if the webhook response should be parsed and interpreted. Boolean. OPTIONAL
+            # hooks:           
 
         verification:
           enabled: true

@@ -4,12 +4,26 @@ kind: Kustomization
 resources:
   - ../../base
 
+# namespace: donation-app # using customization transformers instead (which provides more options)
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: _not_important_here
+      namespace: donation-app
+    unsetOnly: true
+
 images:
   - name: webhook-handler
     newName: ghcr.io/szn-app/donation-app/webhook-handler
     ### automatically updated
     # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
     newTag: v0.0.1 # x-release-please-version
+
+configMapGenerator:
+  - name: properties-map-webhook-handler
+    env: .properties
 
 patches:
   - patch: |-
