@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.5](https://github.com/szn-app/donation-app/compare/api-data@v0.0.4...api-data@v0.0.5) (2025-04-09)
+
+
+### Features
+
+* broadcast kratos events to kafka ([d214be8](https://github.com/szn-app/donation-app/commit/d214be8c231516fe6d7548a57b59122527c2f5fc))
+
 ## [0.0.4](https://github.com/szn-app/donation-app/compare/api-data@v0.0.3...api-data@v0.0.4) (2025-03-20)
 
 
