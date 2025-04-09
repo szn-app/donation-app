@@ -271,6 +271,31 @@ spec:
 
     ###
 
+    #21
+    - name: https-k8s-kafka
+      protocol: HTTPS
+      port: 443
+      hostname: "kafka.k8s.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All # required for letsecrypt
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+
+    - name: http-k8s-kafka
+      protocol: HTTP
+      port: 80
+      hostname: "kafka.k8s.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    ###
+
     # # TODO: add http routes to this listener
     # - name: https-k8s-grafana
     #   protocol: HTTPS
