@@ -30,3 +30,7 @@ skaffold@api-data() {
     
     skaffold run --profile production --port-forward
 }
+
+verify_grpc@api-data() { 
+    grpcurl -plaintext -d '{"name": "World"}' localhost:8082 example.Greeter/SayHello
+}

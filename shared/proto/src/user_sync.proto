@@ -1,0 +1,14 @@
+// proto/user.proto
+syntax = "proto3";
+
+package user_sync;
+
+service UserSync {
+  rpc AddUser (AddUserRequest) returns (AddUserResponse);
+}
+
+message AddUserRequest {
+  string user_id = 1;
+}
+
+message AddUserResponse {}

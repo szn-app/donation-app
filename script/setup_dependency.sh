@@ -205,6 +205,12 @@ install_osx_hackintosh() {
         sudo systemctl enable libvirtd
         lsmod | grep kvm
     }
+}
 
+install_grpc_dependency() {
+    # Rust `tonic` dependnecy to compile protobuf definitions
+    sudo dnf install protobuf-compiler protobuf-devel -y
 
+    # install dev tools
+    curl -sSL "https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin
 }

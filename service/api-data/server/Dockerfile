@@ -6,6 +6,8 @@ FROM rust AS build
 COPY . /app
 WORKDIR /app
 
+RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
+
 RUN cargo build --release --locked
 
 # configure run script
@@ -33,6 +35,8 @@ FROM rust:latest AS development
 # fixes cargo build error on volume mounted code - https://github.com/rust-lang/rustup/issues/2949
 # ENV RUSTUP_PERMIT_COPY_RENAME=true
 # ENV CARGO_TARGET_DIR=/tmp/target
+
+RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
 
 RUN rustup toolchain install nightly && \
     rustup toolchain install stable && \

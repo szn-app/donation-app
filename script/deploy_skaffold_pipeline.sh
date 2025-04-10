@@ -105,7 +105,7 @@ production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # start.minikube#bootstrap#task@monorepo
 
-    skaffold run --profile local-production  --module monorepo --auto-build=false --auto-deploy=false --cleanup=false # --port-forward --tail
+    skaffold run --profile local-production  --module monorepo # --port-forward --tail
 
     verify() { 
         skaffold run --profile production --tail
