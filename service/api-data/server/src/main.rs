@@ -55,6 +55,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     return Err(Status::invalid_argument("User ID cannot be empty"));
                 }
 
+                log::debug!("Adding {}", user_id);
+
                 //  TODO: Simulate database operation (replace with actual database logic) // For demonstration, assume the operation succeeds unless user_id is "fail"
                 if user_id == "fail" {
                     return Err(Status::internal("Failed to add user to database"));

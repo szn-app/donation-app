@@ -608,7 +608,7 @@
         "source ${workspaceFolder}/script.sh && config#aggregate_setup#task@monorepo"
       ],
       "presentation": {
-        "reveal": "silent",
+        "reveal": "always",
         "panel": "dedicated"
       },
       "group": "none",

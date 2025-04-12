@@ -25,6 +25,53 @@ hot_reload@api-data() {
     }
 }
 
+OBSOLETE_symlink_shared_components#setup#symlink@api-data() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+
+    TARGET_DIR="../../../shared"
+    LINK_NAME="shared"
+
+    if [ -d "$TARGET_DIR" ]; then
+    if [ ! -L "$LINK_NAME" ]; then
+        echo "Creating symlink '$LINK_NAME' pointing to '$TARGET_DIR'"
+        ln -s "$TARGET_DIR" "$LINK_NAME"
+    else
+        echo "Symlink '$LINK_NAME' already exists."
+    fi
+    else
+    echo "Target directory '$TARGET_DIR' does not exist."
+    fi
+
+    delete() { 
+        unlink $LINK_NAME
+    }
+
+    popd   
+)}
+
+shared-mount-point#setup#mount-bind@api-data() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+
+    local source_dir="../../../shared"
+    local target="shared" # target mount point
+
+    if mountpoint -q "$target"; then
+        echo "Already mounted at $target"
+        findmnt $target
+    else
+        mkdir -p "$target"
+        sudo mount --bind "$source_dir" "$target"
+        
+        echo "Bind mounted $source_dir at $target"
+    fi
+
+    delete() {
+        sudo umount "$target"
+    }
+
+    popd
+)}
+
 skaffold@api-data() {     
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     

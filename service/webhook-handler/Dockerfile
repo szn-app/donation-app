@@ -6,7 +6,9 @@ FROM rust AS build
 COPY . /app
 WORKDIR /app
 
-# Install build dependencies
+# Rust protobuf compiler dependency
+RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
+# Kafka Rust dependency compiler requirements
 RUN apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev
 
 RUN cargo build --release --locked
@@ -32,7 +34,9 @@ ENTRYPOINT ["/bin/webhook-handler"]
 
 FROM rust AS development
 
-# Install cmake build dependencies
+# Rust protobuf compiler dependency
+RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
+# Kafka Rust dependency compiler requirements
 RUN apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev 
 
 RUN cargo install cargo-watch --locked

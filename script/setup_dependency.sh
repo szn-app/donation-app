@@ -207,7 +207,7 @@ install_osx_hackintosh() {
     }
 }
 
-install_grpc_dependency() {
+install_grpc_dependency#local-dependency() {
     # Rust `tonic` dependnecy to compile protobuf definitions
     sudo dnf install protobuf-compiler protobuf-devel -y
 

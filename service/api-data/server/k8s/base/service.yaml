@@ -6,6 +6,9 @@ metadata:
 spec:
   type: ClusterIP
   ports: 
-    - name: service-api-data
+    - name: service-api-data-http
       port: 80
-      targetPort: api-data
+      targetPort: api-data-http
+    - name: service-api-data-grpc
+      port: 50051
+      targetPort: api-data-grpc

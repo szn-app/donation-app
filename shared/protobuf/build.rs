@@ -1,8 +1,4 @@
-// fn main() -> Result<(), Box<dyn std::error::Error>> {
-//     tonic_build::compile_protos("proto/service.proto")?;
-//     Ok(())
-// }
-
+// build protobuf stubs
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tonic_build::configure()
         .build_server(true)

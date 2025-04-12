@@ -2,11 +2,12 @@ use tonic::{
     transport::Server as TonicServer, Request as TonicRequest, Response as TonicResponse, Status,
 };
 
+// import generated gRPC proto-rust file into module
 mod proto_user_sync {
     tonic::include_proto!("user_sync");
 }
 
-// Generated gRPC code
+// import generated gRPC proto-rust file into module
 mod proto_test {
     tonic::include_proto!("test");
 }

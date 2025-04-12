@@ -3,6 +3,8 @@ set -e
 
 config#aggregate_setup#task@monorepo() {
     execute.util '#setup' '#task' '@monorepo'
+    execute.util '#setup' '#mount-bind'
+    echo 'DONE successfully'
 }
 
 git_submodule#setup@monorepo() {

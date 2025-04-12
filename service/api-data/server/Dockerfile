@@ -6,6 +6,7 @@ FROM rust AS build
 COPY . /app
 WORKDIR /app
 
+# Rust protobuf compiler dependency
 RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
 
 RUN cargo build --release --locked
@@ -36,6 +37,7 @@ FROM rust:latest AS development
 # ENV RUSTUP_PERMIT_COPY_RENAME=true
 # ENV CARGO_TARGET_DIR=/tmp/target
 
+# Rust protobuf compiler dependency
 RUN apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
 
 RUN rustup toolchain install nightly && \

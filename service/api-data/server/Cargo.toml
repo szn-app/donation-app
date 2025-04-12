@@ -23,7 +23,7 @@ env_logger = "0.10.1"
 prost = "0.13.5"
 tonic = "0.13.0"
 tonic-reflection = "0.13.0"
-shared_proto = { path = "../../../shared/proto" }
+shared_proto = { path = "./shared/protobuf" }
 
 [dev-dependencies]
 anyhow = "1.0.95"

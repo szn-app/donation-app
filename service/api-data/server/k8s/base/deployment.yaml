@@ -17,8 +17,10 @@ spec:
         - name: api-data
           image: api-data:latest
           ports:
-            - containerPort: 80
-              name: api-data
+            - containerPort: 8081
+              name: api-data-http
+            - containerPort: 8082
+              name: api-data-grpc
 
           env:
             - name: POSTGRESQL_URL_RW
