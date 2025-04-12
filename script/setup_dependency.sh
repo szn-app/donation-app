@@ -75,6 +75,8 @@ install_k8s_tools() {
 
     install_kustomize
     brew install derailed/k9s/k9s
+    brew install jesseduffield/lazydocker/lazydocker
+    brew install jesseduffield/lazygit/lazygit
     kubectl krew install ctx
     kubectl krew install ns
     brew install fzf

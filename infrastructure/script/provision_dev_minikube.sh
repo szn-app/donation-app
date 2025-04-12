@@ -104,6 +104,9 @@ install.minikube#provision#task@infrastructure() {
         kubetcl ctx minikube
         kubectl cluster-info 
         kubectl get nodes
+        
+        lazydocker --version
+        lazygit --version
     }
 
 }

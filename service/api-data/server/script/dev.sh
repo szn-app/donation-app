@@ -72,11 +72,19 @@ shared-mount-point#setup#mount-bind@api-data() {(
     popd
 )}
 
-skaffold@api-data() {     
+skaffold#task@api-data() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
+
     skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
-    
-    skaffold run --profile production --port-forward
-}
+
+    verify() {
+        skaffold render --profile production
+        skaffold delete --profile development
+        skaffold run --profile production --port-forward
+    }
+
+    popd
+)}
 
 verify_grpc@api-data() { 
     grpcurl -plaintext -d '{"name": "World"}' localhost:8082 example.Greeter/SayHello
