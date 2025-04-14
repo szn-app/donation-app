@@ -127,7 +127,7 @@ delete.skaffold#task@monorepo() {
     skaffold delete --profile development
     skaffold delete --profile local-production
 
-    delete.skaffold#task@auth-ory-stack
+    execute.util '#task' '#manual-delete'
 }
 
 # NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER when running baremetal to solve inotify issues

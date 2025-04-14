@@ -15,9 +15,13 @@ render.skaffold#task@api-data-database() {
     popd
 }
 
-delete.skaffold@api-data-database() {
+delete.skaffold#task@api-data-database() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+
     skaffold delete --profile development
-}
+
+    popd
+)}
 
 cluster#benchmark@api-data-database() {
     # TODO: benchmark CNPG cluster

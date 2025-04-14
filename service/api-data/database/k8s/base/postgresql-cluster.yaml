@@ -44,11 +44,12 @@ spec:
   bootstrap:
     initdb:
       # NOTE: do not conflict with 'postgres' user & 'postgres' database are created by default and required by the CNPG operator
-      database: app
+      database: app # owner of database is the user below
       # needs to match secret username
       owner: postgres-user
       secret:
-        name: postgresql-credentials # user credentials secret
+        # user credentials secret
+        name: postgresql-credentials-user
 
     # # Application additional user configuration
     # users:

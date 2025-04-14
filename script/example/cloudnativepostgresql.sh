@@ -27,26 +27,27 @@ example@cnpg() {
     popd
     
     verify() {
-        kubectl describe clusters.postgresql.cnpg.io -n database
-        kubectl logs -l cnpg.io/cluster=api-data--cluster-db -n database
-        watch kubectl get pods,service,pvc,pdb -n database -o wide -w
+        kubectl describe clusters.postgresql.cnpg.io -n api-data
+        kubectl logs -l cnpg.io/cluster=api-data--cluster-db -n api-data
+        watch kubectl get pods,service,pvc,pdb -n api-data -o wide -w
         kubectl get pods -A -l cnpg.io/cluster=api-data--cluster-db
-        kubectl cnpg status api-data--cluster-db -n database --verbose
+        kubectl cnpg status api-data--cluster-db -n api-data --verbose
 
         connect_to_db_from_pod(){
             # Get the first pod from the cluster and run psql on it
-            CLUSTER_POD=$(kubectl get pods -A -l cnpg.io/cluster=api-data--cluster-db -o jsonpath='{.items[0].metadata.name}' -n database)
-            kubectl exec -it $CLUSTER_POD -n database -- psql -U postgres
+            CLUSTER_POD=$(kubectl get pods -A -l cnpg.io/cluster=api-data--cluster-db -o jsonpath='{.items[0].metadata.name}' -n api-data)
+            kubectl exec -it $CLUSTER_POD -n api-data -- psql -U postgres
             # SELECT usename, passwd FROM pg_shadow WHERE usename = 'user-postgres';
             # then run commands: \l, \c database_name, \dt
         }
 
         connect_to_db() {
             # username and password info
-            kubectl get secret postgresql-credentials -n database -o json | jq -r '.data | to_entries[] | "\(.key): \(.value|@base64d)"'
-            local PASSWORD=$(kubectl get secret postgresql-credentials -n database -o jsonpath='{.data.password}' | base64 --decode)
-            local USERNAME=$(kubectl get secret postgresql-credentials -n database -o jsonpath='{.data.username}' | base64 --decode)
-            local SERVICE_IP=$(kubectl get svc api-data--cluster-db-rw -n database -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            kubectl get secret postgresql-credentials-user -n api-data -o json | jq -r '.data | to_entries[] | "\(.key): \(.value|@base64d)"'
+            local PASSWORD=$(kubectl get secret postgresql-credentials-user -n api-data -o jsonpath='{.data.password}' | base64 --decode)
+            local USERNAME=$(kubectl get secret postgresql-credentials-user -n api-data -o jsonpath='{.data.username}' | base64 --decode)
+            local SERVICE_IP=$(kubectl get svc api-data--cluster-db-rw -n api-data -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            SERVICE_IP=${SERVICE_IP:-localhost}
 
             # [manual] port-forward database
             {
