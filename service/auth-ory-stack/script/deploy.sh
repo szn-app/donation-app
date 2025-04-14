@@ -15,7 +15,7 @@ func#postdeploy_hook@auth-ory-stack() {
 }
 
 # https://k8s.ory.sh/helm/
-delete.skaffold#task@auth-ory-stack() {
+delete.skaffold#task#manual-delete@auth-ory-stack() {
     set e+
 
     # Uninstall Ory components

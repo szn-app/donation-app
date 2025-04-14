@@ -68,6 +68,8 @@ metadata:
   name: kafka-ui-generic
 
 requires:
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]                 
   - path: .
     configs: [kafka-ui-k8s]                 
     activeProfiles:                                     

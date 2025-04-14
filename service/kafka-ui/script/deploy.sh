@@ -13,13 +13,18 @@ generate_config#predeploy-skaffold-hook@kafka-ui() {(
     local secret_name="kafka-user"
     local source_namespace="kafka-message-queue"
 
-    export KAFKA_USERNAME=$(kubectl get secret "$secret_name" -n "$source_namespace" -o yaml | yq eval '.data."sasl.jaas.config"' - | base64 -d | grep -o 'username="[^"]*"' | cut -d'"' -f2)
-    export KAFKA_PASSWORD=$(kubectl get secret "$secret_name" -n "$source_namespace" -o yaml | yq eval '.data.password' - | base64 -d)
+    if kubectl get secret "$secret_name" -n "$source_namespace" &> /dev/null; then
+        export KAFKA_USERNAME=$(kubectl get secret "$secret_name" -n "$source_namespace" -o yaml | yq eval '.data."sasl.jaas.config"' - | base64 -d | grep -o 'username="[^"]*"' | cut -d'"' -f2)
+        export KAFKA_PASSWORD=$(kubectl get secret "$secret_name" -n "$source_namespace" -o yaml | yq eval '.data.password' - | base64 -d)
 
-    mkdir -p "$(dirname $filename)"
-    envsubst < $template_file > $filename
+        mkdir -p "$(dirname $filename)"
+        envsubst < $template_file > $filename
 
-    echo "generated config file: $filename"
+        echo "generated config file: $filename"
+    else
+        echo "ERROR: Secret '$secret_name' does not exist in namespace '$source_namespace'"
+        return 1;
+    fi
 
     popd
 )}

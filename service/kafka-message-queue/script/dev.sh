@@ -19,8 +19,12 @@ delete.skaffold@kafka-message-queue() {
     skaffold delete --profile development
 }
 
-manual_delete@kafka-message-queue() {
-    kubectl -n kafka-message-queue delete $(kubectl get strimzi -o name -n kafka-message-queue)
+delete#task#manual-delete@kafka-message-queue() {
+    if kubectl get strimzi -n kafka-message-queue --no-headers 2>/dev/null | grep -q .; then
+      kubectl -n kafka-message-queue delete $(kubectl get strimzi -o name -n kafka-message-queue)
+    else
+        echo "No Strimzi resources found in namespace kafka-message-queue."
+    fi
     kubectl delete pvc -l strimzi.io/name=my-cluster-kafka -n kafka-message-queue # new kafka instances may fail trying to use the same pvc
 }
 
