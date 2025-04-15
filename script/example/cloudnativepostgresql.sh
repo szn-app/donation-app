@@ -1,3 +1,6 @@
+# NOTES: 
+# - initialization sql migration is executed as superuser (any created table owner will be superuser). 
+
 example@cnpg() {
     upgrade() { 
         # set to maintenance mode

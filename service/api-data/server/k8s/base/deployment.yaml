@@ -23,23 +23,23 @@ spec:
               name: api-data-grpc
 
           env:
-            - name: POSTGRESQL_URL_RW
+            - name: POSTGRESQL_ENDPOINT_RW
               valueFrom:
                 configMapKeyRef:
                   name: properties-map-api-data-server
-                  key: POSTGRESQL_URL_RW
+                  key: POSTGRESQL_ENDPOINT_RW
                   optional: false
-            - name: POSTGRESQL_URL_RO
+            - name: POSTGRESQL_ENDPOINT_RO
               valueFrom:
                 configMapKeyRef:
                   name: properties-map-api-data-server
-                  key: POSTGRESQL_URL_RO
+                  key: POSTGRESQL_ENDPOINT_RO
                   optional: false
-            - name: POSTGRESQL_URL_R
+            - name: POSTGRESQL_ENDPOINT_R
               valueFrom:
                 configMapKeyRef:
                   name: properties-map-api-data-server
-                  key: POSTGRESQL_URL_R
+                  key: POSTGRESQL_ENDPOINT_R
                   optional: false
             - name: POSTGRESQL_USERNAME
               valueFrom:

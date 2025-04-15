@@ -1,3 +1,4 @@
+use api_data::server;
 use env_logger;
 use log;
 use std::env;
@@ -13,8 +14,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or(log_level)).init();
 
-    tokio::select! {
-        result = api_data::http::start_http_server() => result,
-        result = api_data::grpc::start_grpc_server() => result
-    }
+    let postgres_endpoint_rw =
+        env::var("POSTGRESQL_ENDPOINT_RW").expect("POSTGRESQL_ENDPOINT_RW env not set");
+    let postgres_endpoint_ro =
+        env::var("POSTGRESQL_ENDPOINT_RO").expect("POSTGRESQL_ENDPOINT_RO env not set");
+    let postgres_endpoint_r =
+        env::var("POSTGRESQL_ENDPOINT_R").expect("POSTGRESQL_ENDPOINT_R env not set");
+
+    server::run_server(
+        &postgres_endpoint_rw,
+        &postgres_endpoint_ro,
+        &postgres_endpoint_r,
+    )
+    .await
 }

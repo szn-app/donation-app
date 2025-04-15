@@ -10,6 +10,51 @@ requires:
   - path: ../database
     configs: [api-data-database]                 
 
+  - path: .
+    configs: [api-data-server-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data-server--no-dep
+
+requires:
+  - path: .
+    configs: [api-data-server-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
+      - name: production
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: api-data-server-generic
+
 build:
   local: 
     push: false

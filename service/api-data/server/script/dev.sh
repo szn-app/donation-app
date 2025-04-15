@@ -72,10 +72,14 @@ shared-mount-point#setup#mount-bind@api-data() {(
     popd
 )}
 
-skaffold#task@api-data() {(
+skaffold#task@api-data-server() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
 
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --module api-data-server --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+
+    no-dep() {
+        skaffold dev --module api-data-server--no-dep --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    }
 
     verify() {
         skaffold render --profile production
@@ -86,6 +90,18 @@ skaffold#task@api-data() {(
     popd
 )}
 
+delete.skaffold#task@api-data-server() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+    
+    skaffold delete --profile development
+    
+    popd
+)}
+
 verify_grpc@api-data() { 
     grpcurl -plaintext -d '{"name": "World"}' localhost:8082 example.Greeter/SayHello
+}
+
+cargo@api-data() { 
+    cargo test -q test_main -- --nocapture
 }
