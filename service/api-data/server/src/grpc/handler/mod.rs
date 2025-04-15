@@ -38,7 +38,7 @@ impl proto::user_sync::UserSync for UserSyncService {
             .map_err(|e| Status::internal(format!("Failed to get DB connection: {}", e)))?;
 
         let _ = client
-            .execute("INSERT INTO users (kratos_id) VALUES ($1)", &[&user_id])
+            .execute("INSERT INTO users (id_kratos) VALUES ($1)", &[&user_id])
             .await
             .map_err(|e| Status::internal(format!("DB error: {}", e)))?;
 

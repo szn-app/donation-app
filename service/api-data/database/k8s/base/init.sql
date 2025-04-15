@@ -11,7 +11,7 @@ GRANT ALL ON test TO "postgres-user";
 
 -- app tables: 
 CREATE TABLE users { 
-    id_kratos TEXT
+    id_kratos UUID NOT NULL UNIQUE
 };
 GRANT ALL ON users TO "postgres-user";
 

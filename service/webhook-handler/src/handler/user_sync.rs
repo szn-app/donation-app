@@ -13,7 +13,7 @@ use std::net::SocketAddr;
 use std::time::Duration;
 use tonic::transport::Channel;
 
-use crate::server::AppConfig;
+use crate::server::context::AppConfig;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WebhookPayloadRegistrationAfter {
