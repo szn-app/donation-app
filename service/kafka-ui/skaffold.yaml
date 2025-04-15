@@ -4,6 +4,29 @@ metadata:
   name: kafka-ui
 
 requires:
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]
+  - path: .
+    configs: [kafka-ui-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
+
+---
+
+apiVersion: skaffold/v4beta12
+kind: Config
+metadata:
+  name: kafka-ui--no-dep
+
+requires:
   - path: .
     configs: [kafka-ui-generic]
     activeProfiles:                                     
@@ -68,8 +91,6 @@ metadata:
   name: kafka-ui-generic
 
 requires:
-  - path: ../kafka-message-queue
-    configs: [kafka-message-queue]                 
   - path: .
     configs: [kafka-ui-k8s]                 
     activeProfiles:                                     
