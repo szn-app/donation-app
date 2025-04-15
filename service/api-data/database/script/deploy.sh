@@ -19,8 +19,30 @@ EOF
     popd
 )}
 
+validate_sql_syntax@api-data-database() {
+    local sql_migration_file="./k8s/base/init.sql"
+
+    if [ -z "$sql_migration_file" ]; then
+        echo "Error: No SQL migration file provided."
+        exit 1
+    fi
+
+    ./script/sqlparser-validate-syntax.script.rs -s -f $sql_migration_file
+    {
+        exit_code=$?
+        if [ $exit_code -eq 0 ]; then
+            echo "SQL syntax is valid for $sql_migration_file"
+        else
+            echo "Error: Invalid SQL syntax or issue with $sql_migration_file"
+            return 1
+        fi
+    }
+}
+
 func#predeploy-skaffold-hook@api-data-database() {
     local environment=$1
+
+    validate_sql_syntax@api-data-database
 
     if [ "$environment" != "development" ]; then
         generate_database_credentials@api-data-database

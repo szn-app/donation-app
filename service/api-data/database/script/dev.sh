@@ -27,3 +27,7 @@ cluster#benchmark@api-data-database() {
     # TODO: benchmark CNPG cluster
     echo ''
 }
+
+bootstrap@api-data-database() { 
+    echo ''
+}

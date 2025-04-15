@@ -1,18 +1,18 @@
-/*
- Postgresql sematnics https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT
- */
+
+--------- Postgresql sematnics https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT
+
 -- example table
 create table test (i integer);
 insert into test (
-        select generate_series(1, 100)
-    );
+    select generate_series(1, 100)
+);
 GRANT ALL ON test TO "postgres-user";
 ---
 
 -- app tables: 
-CREATE TABLE users { 
+CREATE TABLE users (
     id_kratos UUID NOT NULL UNIQUE
-};
+);
 GRANT ALL ON users TO "postgres-user";
 
 ---
