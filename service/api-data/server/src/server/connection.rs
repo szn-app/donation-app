@@ -3,6 +3,7 @@ use std::error::Error;
 use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
 use std::str::FromStr;
+use std::time::Duration;
 use tokio_postgres;
 
 #[derive(Debug, Clone)]
@@ -112,7 +113,7 @@ impl PostgresPool {
         r: tokio_postgres::Config,
     ) -> Result<PostgresPool, Box<dyn Error>> {
         let mgr_config = deadpool_postgres::ManagerConfig {
-            recycling_method: deadpool_postgres::RecyclingMethod::Fast,
+            recycling_method: deadpool_postgres::RecyclingMethod::Verified, // vs RecyclingMethod::Fast which avoid connection checks
         };
 
         let rw_mgr =
@@ -121,14 +122,35 @@ impl PostgresPool {
             deadpool_postgres::Manager::from_config(ro, tokio_postgres::NoTls, mgr_config.clone());
         let r_mgr = deadpool_postgres::Manager::from_config(r, tokio_postgres::NoTls, mgr_config);
 
+        // rough heuristic is max_size = (CPU cores × 2) + 1 per pool
         let rw_pool = deadpool_postgres::Pool::builder(rw_mgr)
             .max_size(10)
+            .timeouts(deadpool_postgres::Timeouts {
+                wait: Some(Duration::from_secs(10)),
+                create: Some(Duration::from_secs(5)),
+                recycle: Some(Duration::from_secs(30)),
+            })
+            .runtime(deadpool_postgres::Runtime::Tokio1)
             .build()?;
+
         let ro_pool = deadpool_postgres::Pool::builder(ro_mgr)
             .max_size(20)
+            .timeouts(deadpool_postgres::Timeouts {
+                wait: Some(Duration::from_secs(10)),
+                create: Some(Duration::from_secs(5)),
+                recycle: Some(Duration::from_secs(30)),
+            })
+            .runtime(deadpool_postgres::Runtime::Tokio1)
             .build()?;
+
         let r_pool = deadpool_postgres::Pool::builder(r_mgr)
             .max_size(15)
+            .timeouts(deadpool_postgres::Timeouts {
+                wait: Some(Duration::from_secs(10)),
+                create: Some(Duration::from_secs(5)),
+                recycle: Some(Duration::from_secs(30)),
+            })
+            .runtime(deadpool_postgres::Runtime::Tokio1)
             .build()?;
 
         Ok(PostgresPool {

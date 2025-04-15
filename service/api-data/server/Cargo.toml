@@ -25,7 +25,11 @@ tonic = "0.13.0"
 tonic-reflection = "0.13.0"
 shared_proto = { path = "./shared/protobuf" }
 deadpool-postgres = "0.14.1"
-tokio-postgres = "0.7.13"
+tokio-postgres = {version = "0.7.13", features = ["with-uuid-1"]}
+retry = "2.1.0"
+uuid = { version = "1.16.0", features = ["v4", "serde"] }
+postgres-types = { version = "0.2.9", features = ["derive"] }
+
 
 [dev-dependencies]
 anyhow = "1.0.95"
