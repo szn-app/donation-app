@@ -20,3 +20,10 @@ dev_expose_service@pgadmin4() {
     echo "Visit http://127.0.0.1:8080 to use your application"
     kubectl port-forward $POD_NAME 8080:80
 }
+
+delete.skaffold#task#manual-delete@pgadmin4() {
+    local secret_name="pgadmin4-credentials"
+    local namespace="default"
+    printf "deleting secret $secret_name"
+    kubectl delete secret $secret_name -n $namespace || true
+}

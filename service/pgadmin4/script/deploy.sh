@@ -1,7 +1,9 @@
 create_secret#predeploy-hook@pgadmin4() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+
     local filename="config/.env.development"
     local secret_name="pgadmin4-credentials"
+    local namespace="default"
 
     if [ ! -f "$filename" ]; then
         echo "Error: File $filename not found"
@@ -9,7 +11,7 @@ create_secret#predeploy-hook@pgadmin4() {(
     fi
 
     # Check if the secret already exists and delete it if it does
-    kubectl get secret $secret_name &> /dev/null
+    kubectl get secret $secret_name -n $namespace &> /dev/null
     if [ $? -eq 0 ]; then
         echo "Secret $secret_name already exists"
         return 0
@@ -17,7 +19,7 @@ create_secret#predeploy-hook@pgadmin4() {(
 
     # Create the secret from file
     echo "Creating secret $secret_name from $filename"
-    kubectl create secret generic $secret_name --from-env-file="$filename"
+    kubectl create secret generic $secret_name -n $namespace --from-env-file="$filename"
     
     popd
 )}

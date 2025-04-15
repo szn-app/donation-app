@@ -32,7 +32,7 @@ kOps version: 1.30.3
 ---
 Cilium version: cilium-cli: v0.16.23 compiled with go1.23.4 on linux/amd64
 cilium image (default): v1.16.5
-cilium image (stable): v1.17.2
+cilium image (stable): v1.17.3
 
 Skaffold version: v2.14.1
 Conntrack version: v1.4.7
