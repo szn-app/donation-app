@@ -27,6 +27,8 @@ metadata:
 requires:
   - path: ../kafka-message-queue
     configs: [kafka-message-queue]                 
+  # - path: ../api-data
+  #   configs: [api-data]                 
 
 build:
   local: 
