@@ -1,0 +1,7 @@
+Table "test" {
+  "i" integer
+}
+
+Table "user_account" {
+  "id_kratos" UUID [unique, not null]
+}

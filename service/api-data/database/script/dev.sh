@@ -31,3 +31,26 @@ cluster#benchmark@api-data-database() {
 bootstrap@api-data-database() { 
     echo ''
 }
+
+
+### option 1.
+# manual load sql to .drawio.svg
+### option 2: 
+view-db-diagram#task@api-data-database() { (
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+    install() {
+        pnpm add -g @dbml/cli # fails for sql with extension syntex it seems.
+    }
+    
+    sql2dbml ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
+
+    ### [option 2]
+    docker run -p 8080:80 ghcr.io/chartdb/chartdb:latest
+    # -v $(pwd)/k8s/base/init.sql:/schema.sql # not working, no way to load on startup :(
+    
+    # [manual] requires running command against Postgres database or load DBML format from previous stage (copy-paste; file picker not supported for DBML)
+
+    popd
+)}
+
+### [OBSOLETE] also download https://github.com/jgraph/drawio-desktop/releases/tag/v26.2.2 for local development/testing because it supports sql to diagram directly (copy SQL from LLM to diagram) --- ( actually it is not perfect, it doesn't create relations only tables)

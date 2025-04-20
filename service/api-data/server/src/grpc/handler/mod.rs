@@ -71,7 +71,7 @@ impl proto::user_sync::UserSync for UserSyncService {
         }?;
 
         let _ = client
-            .execute("INSERT INTO users (id_kratos) VALUES ($1)", &[&user_id])
+            .execute("INSERT INTO user.account (id) VALUES ($1)", &[&user_id])
             .await
             .map_err(|e| {
                 log::error!("gRPC database error: {}", e);

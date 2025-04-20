@@ -1,0 +1,184 @@
+{
+  "id": "0",
+  "name": "Diagram 1",
+  "createdAt": "2025-04-20T08:08:56.052Z",
+  "updatedAt": "2025-04-20T08:08:56.052Z",
+  "databaseType": "generic",
+  "tables": [
+    {
+      "id": "1",
+      "name": "test",
+      "schema": "public",
+      "order": 0,
+      "fields": [
+        {
+          "id": "2",
+          "name": "i",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "hasCharMaxLength": true
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1745092260708
+        }
+      ],
+      "indexes": [],
+      "x": -200,
+      "y": 600,
+      "color": "#7175fa",
+      "isView": false,
+      "createdAt": 1745092260708,
+      "diagramId": "okybkovh09pm"
+    },
+    {
+      "id": "3",
+      "name": "user.account",
+      "schema": "public",
+      "order": 1,
+      "fields": [
+        {
+          "id": "4",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1745092260708,
+          "comments": "synced Kratos ID"
+        }
+      ],
+      "indexes": [],
+      "x": 55.08009358529837,
+      "y": 468.18159903036496,
+      "color": "#7175fa",
+      "isView": false,
+      "createdAt": 1745092260708,
+      "diagramId": "okybkovh09pm",
+      "comments": "account credentials\n",
+      "width": 337
+    },
+    {
+      "id": "5",
+      "name": "group",
+      "x": 1146.25,
+      "y": 532.5,
+      "fields": [
+        {
+          "id": "6",
+          "name": "id",
+          "type": {
+            "id": "bigint",
+            "name": "bigint"
+          },
+          "unique": true,
+          "nullable": false,
+          "primaryKey": true,
+          "createdAt": 1745131338049
+        },
+        {
+          "id": "7",
+          "name": "field_2",
+          "type": {
+            "id": "bigint",
+            "name": "bigint"
+          },
+          "unique": false,
+          "nullable": true,
+          "primaryKey": false,
+          "createdAt": 1745132940940
+        }
+      ],
+      "indexes": [],
+      "color": "#4dee8a",
+      "createdAt": 1745131338049,
+      "isView": false,
+      "order": 2,
+      "diagramId": "okybkovh09pm",
+      "width": 272
+    },
+    {
+      "id": "8",
+      "name": "membership",
+      "x": 500,
+      "y": 550,
+      "fields": [
+        {
+          "id": "9",
+          "name": "id",
+          "type": {
+            "id": "bigint",
+            "name": "bigint"
+          },
+          "unique": true,
+          "nullable": false,
+          "primaryKey": true,
+          "createdAt": 1745131345973
+        },
+        {
+          "id": "10",
+          "name": "id_account",
+          "type": {
+            "id": "uuid",
+            "name": "uuid"
+          },
+          "unique": false,
+          "nullable": true,
+          "primaryKey": false,
+          "createdAt": 1745132844216
+        },
+        {
+          "id": "11",
+          "name": "id_group",
+          "type": {
+            "id": "bigint",
+            "name": "bigint"
+          },
+          "unique": false,
+          "nullable": true,
+          "primaryKey": false,
+          "createdAt": 1745131375381
+        }
+      ],
+      "indexes": [],
+      "color": "#c05dcf",
+      "createdAt": 1745131345973,
+      "isView": false,
+      "order": 3,
+      "diagramId": "okybkovh09pm",
+      "width": 450
+    }
+  ],
+  "relationships": [
+    {
+      "id": "12",
+      "name": "management_member_id_group_fk",
+      "sourceTableId": "8",
+      "targetTableId": "5",
+      "sourceFieldId": "11",
+      "targetFieldId": "6",
+      "sourceCardinality": "many",
+      "targetCardinality": "one",
+      "createdAt": 1745131436829,
+      "diagramId": "okybkovh09pm"
+    },
+    {
+      "id": "13",
+      "name": "management_membership_id_user_account_fk",
+      "sourceTableId": "8",
+      "targetTableId": "3",
+      "sourceFieldId": "10",
+      "targetFieldId": "4",
+      "sourceCardinality": "many",
+      "targetCardinality": "one",
+      "createdAt": 1745132891939,
+      "diagramId": "okybkovh09pm"
+    }
+  ],
+  "dependencies": []
+}
