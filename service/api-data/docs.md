@@ -39,25 +39,16 @@ permit **owners** to post **items** with text & photos, and mark status as avail
 
 ## List of enteties
 
-1. user.account
-   - account credentials and verification for app auth
-2. user.management_group
-   - represent managing group for offers/requests
-3. user.management_member
-   - members of a managing group
-4. user.community_group
-5. user.community_member
----
-6. listing.donation_offer
-7. listing.donation_request
-8. listing.category
+1. listing.donation_offer
+2. listing.donation_request
+3. listing.category
     - product/goods/merchandise category classifying items (not following any classification standard/system) into groups based on function/purpose, context of usage, target audience, general broad characteristics defining intended primary use / form/material / principles of operation, etc, 
 ---
-9.  exchange.transaction
+1.  exchange.transaction
     - records the transaction details between the users
-10. exchange.schedule
+2.  exchange.schedule
     - exchange opportunities as specific date-time or window timeframe (handling both flexible nad fixed times)
-11. exchange.track
+3.  exchange.track
     - updates on transaction, cancellation, timing change, activity etc.
 ---
 1.  communicate.message

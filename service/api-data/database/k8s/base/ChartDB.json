@@ -1,8 +1,8 @@
 {
   "id": "0",
   "name": "Diagram 1",
-  "createdAt": "2025-04-20T08:08:56.052Z",
-  "updatedAt": "2025-04-20T08:08:56.052Z",
+  "createdAt": "2025-04-20T08:48:53.180Z",
+  "updatedAt": "2025-04-20T08:48:53.180Z",
   "databaseType": "generic",
   "tables": [
     {
@@ -26,8 +26,8 @@
         }
       ],
       "indexes": [],
-      "x": -200,
-      "y": 600,
+      "x": 1792.5187059664083,
+      "y": -269.5210455988675,
       "color": "#7175fa",
       "isView": false,
       "createdAt": 1745092260708,
@@ -47,27 +47,27 @@
             "id": "uuid"
           },
           "nullable": false,
-          "primaryKey": false,
+          "primaryKey": true,
           "unique": true,
           "createdAt": 1745092260708,
           "comments": "synced Kratos ID"
         }
       ],
       "indexes": [],
-      "x": 55.08009358529837,
-      "y": 468.18159903036496,
+      "x": 40.641552237715686,
+      "y": 71.92385315781839,
       "color": "#7175fa",
       "isView": false,
       "createdAt": 1745092260708,
       "diagramId": "okybkovh09pm",
-      "comments": "account credentials\n",
+      "comments": "account credentials and verification for app auth",
       "width": 337
     },
     {
       "id": "5",
-      "name": "group",
-      "x": 1146.25,
-      "y": 532.5,
+      "name": "user.group",
+      "x": 50.5251399556704,
+      "y": 251.75058490811475,
       "fields": [
         {
           "id": "6",
@@ -83,33 +83,141 @@
         },
         {
           "id": "7",
-          "name": "field_2",
+          "name": "name",
           "type": {
-            "id": "bigint",
-            "name": "bigint"
+            "id": "varchar",
+            "name": "varchar"
           },
           "unique": false,
           "nullable": true,
           "primaryKey": false,
           "createdAt": 1745132940940
+        },
+        {
+          "id": "8",
+          "name": "description",
+          "type": {
+            "id": "text",
+            "name": "text"
+          },
+          "unique": false,
+          "nullable": true,
+          "primaryKey": false,
+          "createdAt": 1745137537626
+        },
+        {
+          "id": "9",
+          "name": "type",
+          "type": {
+            "id": "enum",
+            "name": "enum"
+          },
+          "unique": false,
+          "nullable": false,
+          "primaryKey": false,
+          "createdAt": 1745138098922,
+          "comments": "represents: individual profile, organization profile, community profile"
         }
       ],
-      "indexes": [],
+      "indexes": [
+        {
+          "id": "10",
+          "name": "index_1",
+          "fieldIds": [],
+          "unique": false,
+          "createdAt": 1745137004084
+        }
+      ],
       "color": "#4dee8a",
       "createdAt": 1745131338049,
       "isView": false,
       "order": 2,
       "diagramId": "okybkovh09pm",
-      "width": 272
+      "width": 272,
+      "comments": "community group, organization group, etc. "
     },
     {
-      "id": "8",
-      "name": "membership",
-      "x": 500,
-      "y": 550,
+      "id": "11",
+      "name": "user.membership",
+      "x": 544.9199064147017,
+      "y": 132.8865832920562,
       "fields": [
         {
-          "id": "9",
+          "id": "12",
+          "name": "id_account",
+          "type": {
+            "id": "uuid",
+            "name": "uuid"
+          },
+          "unique": true,
+          "nullable": false,
+          "primaryKey": true,
+          "createdAt": 1745132844216
+        },
+        {
+          "id": "13",
+          "name": "id_group",
+          "type": {
+            "id": "bigint",
+            "name": "bigint"
+          },
+          "unique": true,
+          "nullable": false,
+          "primaryKey": true,
+          "createdAt": 1745131375381
+        },
+        {
+          "id": "14",
+          "name": "role",
+          "type": {
+            "id": "enum",
+            "name": "enum"
+          },
+          "unique": false,
+          "nullable": true,
+          "primaryKey": false,
+          "createdAt": 1745137091689,
+          "comments": "member, moderator, admin\n\nNOTE: only used for querying purposes; enforcement is encoded in Keto tuple-based graph relationships."
+        },
+        {
+          "id": "15",
+          "name": "joined_at",
+          "type": {
+            "id": "timestamp",
+            "name": "timestamp"
+          },
+          "unique": false,
+          "nullable": false,
+          "primaryKey": false,
+          "createdAt": 1745137294372,
+          "comments": "use timestamp with timezone"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "16",
+          "name": "index_1",
+          "fieldIds": [],
+          "unique": false,
+          "createdAt": 1745137012441
+        }
+      ],
+      "color": "#c05dcf",
+      "createdAt": 1745131345973,
+      "isView": false,
+      "order": 3,
+      "diagramId": "okybkovh09pm",
+      "width": 450,
+      "comments": ""
+    },
+    {
+      "id": "17",
+      "name": "example$user.group-specific-type",
+      "x": -437.5958800567945,
+      "y": 220.4775935296894,
+      "fields": [
+        {
+          "id": "18",
           "name": "id",
           "type": {
             "id": "bigint",
@@ -118,23 +226,11 @@
           "unique": true,
           "nullable": false,
           "primaryKey": true,
-          "createdAt": 1745131345973
+          "createdAt": 1745138652045
         },
         {
-          "id": "10",
-          "name": "id_account",
-          "type": {
-            "id": "uuid",
-            "name": "uuid"
-          },
-          "unique": false,
-          "nullable": true,
-          "primaryKey": false,
-          "createdAt": 1745132844216
-        },
-        {
-          "id": "11",
-          "name": "id_group",
+          "id": "19",
+          "name": "type_specific_metadata",
           "type": {
             "id": "bigint",
             "name": "bigint"
@@ -142,25 +238,24 @@
           "unique": false,
           "nullable": true,
           "primaryKey": false,
-          "createdAt": 1745131375381
+          "createdAt": 1745138771737
         }
       ],
       "indexes": [],
-      "color": "#c05dcf",
-      "createdAt": 1745131345973,
+      "color": "#ff6b8a",
+      "createdAt": 1745138652045,
       "isView": false,
-      "order": 3,
-      "diagramId": "okybkovh09pm",
-      "width": 450
+      "order": 4,
+      "width": 248
     }
   ],
   "relationships": [
     {
-      "id": "12",
+      "id": "20",
       "name": "management_member_id_group_fk",
-      "sourceTableId": "8",
+      "sourceTableId": "11",
       "targetTableId": "5",
-      "sourceFieldId": "11",
+      "sourceFieldId": "13",
       "targetFieldId": "6",
       "sourceCardinality": "many",
       "targetCardinality": "one",
@@ -168,16 +263,27 @@
       "diagramId": "okybkovh09pm"
     },
     {
-      "id": "13",
+      "id": "21",
       "name": "management_membership_id_user_account_fk",
-      "sourceTableId": "8",
+      "sourceTableId": "11",
       "targetTableId": "3",
-      "sourceFieldId": "10",
+      "sourceFieldId": "12",
       "targetFieldId": "4",
       "sourceCardinality": "many",
       "targetCardinality": "one",
       "createdAt": 1745132891939,
       "diagramId": "okybkovh09pm"
+    },
+    {
+      "id": "22",
+      "name": "example$user.group-specific-type_id_fk",
+      "sourceTableId": "17",
+      "targetTableId": "5",
+      "sourceFieldId": "18",
+      "targetFieldId": "6",
+      "sourceCardinality": "one",
+      "targetCardinality": "one",
+      "createdAt": 1745138726952
     }
   ],
   "dependencies": []
