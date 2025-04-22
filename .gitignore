@@ -41,3 +41,6 @@ kube.config
 *.txt.tmp
 *.env 
 *.local
+
+# tools specific
+dbml-error.log

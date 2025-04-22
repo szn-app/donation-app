@@ -1,7 +1,174 @@
-Table "test" {
-  "i" integer
+Table "user"."account" {
+  "id" UUID [pk]
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
 }
 
-Table "user_account" {
-  "id_kratos" UUID [unique, not null]
+Table "user"."community" {
+  "id" BIGINT [pk]
+  "organizer" UUID
+  "title" VARCHAR(255)
+  "description" TEXT
+  "type" ENUM('individual','organization','other')
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "created_by" UUID
 }
+
+Table "user"."committee" {
+  "id_profile" BIGINT
+  "id_community" BIGINT
+  "role" ENUM('organizer','moderator','member')
+  "joined_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    (id_profile, id_community) [pk]
+  }
+}
+
+Table "user"."profile" {
+  "id" BIGINT [pk]
+  "owner" UUID
+  "name" VARCHAR(255)
+  "description" TEXT
+  "type" ENUM('individual','organization','other')
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "created_by" UUID
+}
+
+Table "listing"."item" {
+  "id" BIGINT [pk]
+  "type" ENUM('sale','request','inquiry')
+  "intent_action" ENUM('request','offer')
+  "status" ENUM('active','completed','closed')
+  "title" VARCHAR(255)
+  "description" TEXT
+  "id_category" BIGINT
+  "condition" ENUM('new','used','refurbished')
+  "id_location" BIGINT
+  "views_count" BIGINT [default: 0]
+  "is_reported" BOOLEAN [default: FALSE]
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "created_by" UUID
+}
+
+Table "listing"."collection" {
+  "id" BIGINT [pk]
+  "id_community" BIGINT
+  "title" VARCHAR(255)
+  "visibility" ENUM('public','private')
+  "type" ENUM('featured','special_interest')
+}
+
+Table "listing"."category" {
+  "id" BIGINT [pk]
+  "title" VARCHAR(255)
+  "description" TEXT
+  "id_category_parent" BIGINT
+}
+
+Table "listing"."media" {
+  "id" BIGINT [pk]
+  "id_item" BIGINT
+  "url" VARCHAR(255)
+  "type" ENUM('image','video')
+}
+
+Table "listing"."location" {
+  "id" BIGINT [pk]
+  "address_line1" VARCHAR(255)
+  "address_line2" VARCHAR(255)
+  "city" VARCHAR(255)
+  "state" VARCHAR(255)
+  "district" BIGINT
+  "country" VARCHAR(255)
+  "latitude" DECIMAL
+  "longitude" DECIMAL
+  "entrance_note" TEXT
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table "interaction"."pledge" {
+  "id" BIGINT [pk]
+  "id_profile" BIGINT
+  "id_item" BIGINT
+  "intent_action" ENUM('donate','receive')
+  "message" TEXT
+  "status" ENUM('pending','approved','declined')
+  "pledged_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table "interaction"."transaction" {
+  "id" BIGINT [pk]
+  "id_pledge" BIGINT
+  "status" ENUM('completed','in-progress','failed')
+  "id_schedule" BIGINT
+  "id_location" BIGINT
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "completed_at" TIMESTAMP
+}
+
+Table "interaction"."message" {
+  "id" BIGINT [pk]
+  "id_sender" BIGINT
+  "id_transaction" BIGINT
+  "type" ENUM('schedule_opportunity','message')
+  "content" TEXT
+  "sent_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+}
+
+Table "interaction"."schedule" {
+  "id" BIGINT [pk]
+  "scheduled_for" TIMESTAMP
+}
+
+Table "interaction"."schedule_opportunity" {
+  "id" BIGINT [pk]
+  "window_start" TIMESTAMP
+  "window_end" TIMESTAMP
+}
+
+Table "interaction"."review" {
+  "id_transaction" BIGINT
+  "id_profile" BIGINT
+  "id_reviewer_profile" BIGINT
+  "comment" TEXT
+  "score" INT
+  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+
+  Indexes {
+    (id_transaction, id_profile) [pk]
+  }
+}
+
+Ref "fk_committee_community":"user"."community"."id" < "user"."committee"."id_community"
+
+Ref "fk_committee_profile":"user"."profile"."id" < "user"."committee"."id_profile"
+
+Ref "fk_item_category":"listing"."category"."id" < "listing"."item"."id_category"
+
+Ref "fk_item_location":"listing"."location"."id" < "listing"."item"."id_location"
+
+Ref "fk_media_item":"listing"."item"."id" < "listing"."media"."id_item"
+
+Ref "fk_pledge_profile":"user"."profile"."id" < "interaction"."pledge"."id_profile"
+
+Ref "fk_pledge_item":"listing"."item"."id" < "interaction"."pledge"."id_item"
+
+Ref "fk_transaction_pledge":"interaction"."pledge"."id" < "interaction"."transaction"."id_pledge"
+
+Ref "fk_transaction_location":"listing"."location"."id" < "interaction"."transaction"."id_location"
+
+Ref "fk_transaction_schedule":"interaction"."schedule"."id" < "interaction"."transaction"."id_schedule"
+
+Ref "fk_message_sender":"user"."profile"."id" < "interaction"."message"."id_sender"
+
+Ref "fk_message_transaction":"interaction"."transaction"."id" < "interaction"."message"."id_transaction"
+
+Ref "fk_review_transaction":"interaction"."transaction"."id" < "interaction"."review"."id_transaction"
+
+Ref "fk_review_profile":"user"."profile"."id" < "interaction"."review"."id_profile"
+
+Ref "fk_review_reviewer_profile":"user"."profile"."id" < "interaction"."review"."id_reviewer_profile"

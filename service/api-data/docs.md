@@ -34,23 +34,10 @@ permit **owners** to post **items** with text & photos, and mark status as avail
 ## List of namespaces/aspects
 - user: relationship between users and groups
 - listing
-- exchange: fulfilling request/order, coordination of exchange, logistics
-- communicate
+- interaction: fulfilling request/order, coordination of exchange, logistics
 
-## List of enteties
-
-1. listing.donation_offer
-2. listing.donation_request
-3. listing.category
-    - product/goods/merchandise category classifying items (not following any classification standard/system) into groups based on function/purpose, context of usage, target audience, general broad characteristics defining intended primary use / form/material / principles of operation, etc, 
----
-1.  exchange.transaction
-    - records the transaction details between the users
-2.  exchange.schedule
-    - exchange opportunities as specific date-time or window timeframe (handling both flexible nad fixed times)
-3.  exchange.track
-    - updates on transaction, cancellation, timing change, activity etc.
----
-1.  communicate.message
-2.  communicate.event
-3.  communicate.reputation
+# Notes: 
+- management permissions within groups and within profiles (who can change what) is handled in Ory Keto's graph relationship (complex relationships can be easily encoded), instead of within the Postgresql tables. Values of roles may be duplicated for easier querying. 
+- user account is the core system identity, while profiles are the public interaction identities with other users (interaction model are defined through profiles which embody persona or specific representation of a user). Organizers would create a profile through which they will be creating communities and sharing donations.
+- communities have a steering committee and a single main organizer; It groups people with shared interest for donating and creating lists of items (collections); An item can be shared to many communities' collections (instead of a general free-for-all, listings will be highlighted for those who need them most inside a members only collection); 
+- Collections/Lists of items are the main purpose of a community, to share specialied collection of items to specific members or organize them in categories. These are groupings of diverse items all displayed in the webapp in a curated list.

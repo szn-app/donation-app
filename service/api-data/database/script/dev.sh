@@ -32,6 +32,11 @@ bootstrap@api-data-database() {
     echo ''
 }
 
+generate_dbml_from_sql_migration#task@api-data-database() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+    sql2dbml ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
+    popd
+)}
 
 ### option 1.
 # manual load sql to .drawio.svg

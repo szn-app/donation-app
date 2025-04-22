@@ -19,3 +19,11 @@ Development PRs can be automerged (`gh merge ... --auto`), while release PRs sho
 
 ## develop github acitons workflow 
 - https://nektosact.com/ locally test workflows
+
+# Database design: 
+- spin ChartDB container
+- load ChartDB JSON diagram
+- modify design
+- export to JSON; export to generic SQL; 
+- convert generic to postgres SQL using LLM; 
+- modify permissions commands and insert into `init.sql` migration script
