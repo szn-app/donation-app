@@ -93,6 +93,7 @@ install.minikube#provision#task@infrastructure() {
     install-resources.minikube@infrastructure
 
     minikube status
+    echo "DONE - Minikube install successful." 
 
     # TODO: use host solution instead to avoid issues
     # install_domain_dns_systemd_resolved_for_dev_domains

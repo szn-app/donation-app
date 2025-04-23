@@ -26,4 +26,4 @@ Development PRs can be automerged (`gh merge ... --auto`), while release PRs sho
 - modify design
 - export to JSON; export to generic SQL; 
 - convert generic to postgres SQL using LLM; 
-- modify permissions commands and insert into `init.sql` migration script
+- modify permissions commands and insert into `init.sql` migration script after fine-tunning for Postgresql

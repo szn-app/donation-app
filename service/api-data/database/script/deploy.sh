@@ -19,7 +19,8 @@ EOF
     popd
 )}
 
-validate_sql_syntax@api-data-database() {
+validate_sql_syntax#task@api-data-database() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
     local sql_migration_file="./k8s/base/init.sql"
 
     if [ -z "$sql_migration_file" ]; then
@@ -37,12 +38,13 @@ validate_sql_syntax@api-data-database() {
             return 1
         fi
     }
-}
+    popd
+)}
 
 func#predeploy-skaffold-hook@api-data-database() {
     local environment=$1
 
-    validate_sql_syntax@api-data-database
+    validate_sql_syntax#task@api-data-database
 
     if [ "$environment" != "development" ]; then
         generate_database_credentials@api-data-database

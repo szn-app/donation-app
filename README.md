@@ -21,10 +21,10 @@ Node.js version: 22.13.0
 pnpm version: 10.6.4
 Rust version: 1.83.0
 Cargo version: 1.83.0
-Docker version: 28.0.4
+Docker version: 28.1.1
 Minikube version: v1.34.0
 Kubernetes version: 
-	Client Version::	v1.32.3
+	Client Version::	v1.32.4
 	Kustomize Version::	v5.5.0
 Kustomize version: v5.5.0
 kOps version: 1.30.3
@@ -33,7 +33,7 @@ Cilium version: cilium-cli: v0.16.23 compiled with go1.23.4 on linux/amd64
 cilium image (default): v1.16.5
 cilium image (stable): v1.17.3
 
-Skaffold version: v2.14.1
+Skaffold version: v2.15.0
 Conntrack version: v1.4.7
 PostgreSQL version: 17.4
 yq (https://github.com/mikefarah/yq/) version v4.45.1

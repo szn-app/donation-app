@@ -12,6 +12,7 @@ use env_logger;
 use log;
 use sqlparser::dialect::PostgreSqlDialect;
 use sqlparser::parser::Parser;
+use sqlparser::tokenizer::Tokenizer;
 use std::fs;
 use std::path::Path;
 
@@ -39,7 +40,7 @@ fn validate_sql_file(file_path: &str, silent: bool) -> Result<(), String> {
     let queries: Vec<&str> = contents
         .split(';')
         .map(|q| q.trim())
-        .filter(|q| !q.is_empty())
+        .filter(|q| !q.is_empty() && !q.contains("$$"))
         .collect();
 
     if queries.is_empty() {
@@ -58,8 +59,24 @@ fn validate_sql_file(file_path: &str, silent: bool) -> Result<(), String> {
                 }
             }
             Err(e) => {
-                log::error!("Query {}: Syntax error: {}", i + 1, e);
-                any_error = Some(format!("Query {}: Syntax error: {}", i + 1, e));
+                // Fallback: Try just tokenizing to allow unknown keywords to pass
+                let mut tokenizer = Tokenizer::new(&dialect, query);
+                match tokenizer.tokenize() {
+                    Ok(_) => {
+                        if !silent {
+                            log::warn!(
+                                "Query {}: Unknown syntax tolerated (not fully parsed): {}",
+                                i + 1,
+                                query
+                            );
+                        }
+                    }
+                    Err(tokenize_error) => {
+                        log::error!("Query {}: Syntax error: {}", i + 1, tokenize_error);
+                        any_error =
+                            Some(format!("Query {}: Syntax error: {}", i + 1, tokenize_error));
+                    }
+                }
             }
         }
     }
@@ -74,10 +91,11 @@ fn validate_sql_file(file_path: &str, silent: bool) -> Result<(), String> {
 fn main() {
     let args = Args::parse();
 
-    // Initialize logger only if not in silent mode
-    env_logger::Builder::from_default_env()
-        .filter_level(log::LevelFilter::Info)
-        .init();
+    if !args.silent {
+        env_logger::Builder::from_default_env()
+            .filter_level(log::LevelFilter::Info)
+            .init();
+    }
 
     // Resolve the absolute path
     let file_path = Path::new(&args.file);

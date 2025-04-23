@@ -4,15 +4,13 @@ create_secret#predeploy-hook@pgadmin4() {(
     local filename="config/.env.development"
     local secret_name="pgadmin4-credentials"
     local namespace="default"
-
     if [ ! -f "$filename" ]; then
         echo "Error: File $filename not found"
         return 1
     fi
 
     # Check if the secret already exists and delete it if it does
-    kubectl get secret $secret_name -n $namespace &> /dev/null
-    if [ $? -eq 0 ]; then
+    if kubectl get secret $secret_name -n $namespace >/dev/null 2>&1; then
         echo "Secret $secret_name already exists"
         return 0
     fi

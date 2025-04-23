@@ -41,7 +41,7 @@ generate_dbml_from_sql_migration#task@api-data-database() {(
 ### option 1.
 # manual load sql to .drawio.svg
 ### option 2: 
-view-db-diagram#task@api-data-database() { (
+view-db-diagram#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
     install() {
         pnpm add -g @dbml/cli # fails for sql with extension syntex it seems.

@@ -1,200 +1,245 @@
-
 --------- Postgresql sematnics https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT
-
 -- example table
 create table IF NOT EXISTS test (i integer);
-insert into test (i) select generate_series(1, 100);
+insert into test (i)
+select generate_series(1, 100);
 GRANT ALL ON test TO "postgres-user";
----
-
-CREATE SCHEMA IF NOT EXISTS user AUTHORIZATION "postgres-user";
--- app tables: 
-CREATE TABLE IF NOT EXISTS user.account (
-    id UUID NOT NULL UNIQUE
-);
-GRANT ALL ON user.account TO "postgres-user";
-
 ---
 -- TODO: 
 -- CREATE EXTENSION postgis;
-
 ------------------------------------------------------------------
 -- [MANUALLY AUTOGENRATED FROM CHARTDB DESIGN]
-
 --- TODO: update and manually modify to grant permission and merge with above SQL code
-
 -- Schema Definitions
-
 -- User Schema
-CREATE SCHEMA IF NOT EXISTS "user";
-CREATE SCHEMA IF NOT EXISTS "listing";
-CREATE SCHEMA IF NOT EXISTS "interaction";
-
+CREATE SCHEMA IF NOT EXISTS "user" AUTHORIZATION "postgres-user";
+ALTER DEFAULT PRIVILEGES IN SCHEMA "user"
+GRANT ALL ON TABLES TO "postgres-user";
+CREATE SCHEMA IF NOT EXISTS "listing" AUTHORIZATION "postgres-user";
+ALTER DEFAULT PRIVILEGES IN SCHEMA "listing"
+GRANT ALL ON TABLES TO "postgres-user";
+CREATE SCHEMA IF NOT EXISTS "interaction" AUTHORIZATION "postgres-user";
+ALTER DEFAULT PRIVILEGES IN SCHEMA "interaction"
+GRANT ALL ON TABLES TO "postgres-user";
 -- user.account Table
 CREATE TABLE IF NOT EXISTS "user"."account" (
     id UUID PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-
--- user.community Table
-CREATE TABLE IF NOT EXISTS "user"."community" (
-    id BIGINT PRIMARY KEY,
-    organizer UUID,
-    title VARCHAR(255),
-    description TEXT,
-    type ENUM('individual', 'organization', 'other'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID
-);
-
--- user.committee Table
-CREATE TABLE IF NOT EXISTS "user"."committee" (
-    id_profile BIGINT,
-    id_community BIGINT,
-    role ENUM('organizer', 'moderator', 'member'),
-    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_profile, id_community),
-    CONSTRAINT fk_committee_community FOREIGN KEY (id_community) REFERENCES "user"."community"(id),
-    CONSTRAINT fk_committee_profile FOREIGN KEY (id_profile) REFERENCES "user"."profile"(id)
-);
-
--- user.profile Table
+-- user.profile (no dependencies)
+DO $$ BEGIN CREATE TYPE profile_type AS ENUM ('individual', 'organization', 'company');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
 CREATE TABLE IF NOT EXISTS "user"."profile" (
-    id BIGINT PRIMARY KEY,
-    owner UUID,
-    name VARCHAR(255),
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name VARCHAR(100),
     description TEXT,
-    type ENUM('individual', 'organization', 'other'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID
+    type profile_type NULL,
+    owner UUID NOT NULL REFERENCES "user"."account"(id),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL,
+    created_by UUID NOT NULL REFERENCES "user"."account"(id),
+    CONSTRAINT chk_description_length CHECK (char_length(description) <= 10000)
 );
-
--- listing.item Table
-CREATE TABLE IF NOT EXISTS "listing"."item" (
-    id BIGINT PRIMARY KEY,
-    type ENUM('sale', 'request', 'inquiry'),
-    intent_action ENUM('request', 'offer'),
-    status ENUM('active', 'completed', 'closed'),
-    title VARCHAR(255),
+-- user.community (no dependencies)
+DO $$ BEGIN CREATE TYPE community_type AS ENUM ('solo', 'organized');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "user"."community" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(150),
     description TEXT,
-    id_category BIGINT,
-    condition ENUM('new', 'used', 'refurbished'),
-    id_location BIGINT,
-    views_count BIGINT DEFAULT 0,
-    is_reported BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID,
-    CONSTRAINT fk_item_category FOREIGN KEY (id_category) REFERENCES "listing"."category"(id),
-    CONSTRAINT fk_item_location FOREIGN KEY (id_location) REFERENCES "listing"."location"(id)
+    type community_type NOT NULL DEFAULT 'solo',
+    organizer UUID NOT NULL REFERENCES "user"."account"(id),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL,
+    created_by UUID NOT NULL REFERENCES "user"."account"(id),
+    CONSTRAINT chk_description_length CHECK (char_length(description) <= 10000)
 );
-
--- listing.collection Table
-CREATE TABLE IF NOT EXISTS "listing"."collection" (
-    id BIGINT PRIMARY KEY,
-    id_community BIGINT,
-    title VARCHAR(255),
-    visibility ENUM('public', 'private'),
-    type ENUM('featured', 'special_interest')
+-- user.committee (depends on community, profile)
+DO $$ BEGIN CREATE TYPE committee_role AS ENUM ('organizer', 'member');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "user"."committee" (
+    id_profile BIGINT REFERENCES "user"."profile"(id),
+    id_community BIGINT REFERENCES "user"."community"(id),
+    member_role committee_role NOT NULL,
+    joined_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (id_profile, id_community)
 );
-
--- listing.category Table
+-- listing.category (no dependencies)
 CREATE TABLE IF NOT EXISTS "listing"."category" (
-    id BIGINT PRIMARY KEY,
-    title VARCHAR(255),
-    description TEXT,
-    id_category_parent BIGINT
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    description TEXT NULL,
+    category_parent BIGINT NULL REFERENCES "listing"."category"(id) ON DELETE
+        SET NULL DEFERRABLE INITIALLY DEFERRED,
+    CONSTRAINT chk_no_self_reference CHECK (id <> category_parent), 
+    CONSTRAINT chk_description_length CHECK (char_length(description) <= 10000)
 );
-
--- listing.media Table
-CREATE TABLE IF NOT EXISTS "listing"."media" (
-    id BIGINT PRIMARY KEY,
-    id_item BIGINT,
-    url VARCHAR(255),
-    type ENUM('image', 'video'),
-    CONSTRAINT fk_media_item FOREIGN KEY (id_item) REFERENCES "listing"."item"(id)
-);
-
--- listing.location Table
+-- listing.location (no dependencies)
 CREATE TABLE IF NOT EXISTS "listing"."location" (
-    id BIGINT PRIMARY KEY,
-    address_line1 VARCHAR(255),
-    address_line2 VARCHAR(255),
-    city VARCHAR(255),
-    state VARCHAR(255),
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    address_line1 VARCHAR(64) NOT NULL,
+    address_line2 VARCHAR(64),
+    city VARCHAR(50) NOT NULL,
+    state VARCHAR(50),
     district BIGINT,
-    country VARCHAR(255),
-    latitude DECIMAL,
-    longitude DECIMAL,
+    country VARCHAR(50) NOT NULL,
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
     entrance_note TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT chk_entrance_note_length CHECK (char_length(entrance_note) <= 10000)
 );
-
--- interaction.pledge Table
-CREATE TABLE IF NOT EXISTS "interaction"."pledge" (
-    id BIGINT PRIMARY KEY,
-    id_profile BIGINT,
-    id_item BIGINT,
-    intent_action ENUM('donate', 'receive'),
-    message TEXT,
-    status ENUM('pending', 'approved', 'declined'),
-    pledged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_pledge_profile FOREIGN KEY (id_profile) REFERENCES "user"."profile"(id),
-    CONSTRAINT fk_pledge_item FOREIGN KEY (id_item) REFERENCES "listing"."item"(id)
+-- listing.item (depends on category, location)
+DO $$ BEGIN CREATE TYPE item_type AS ENUM ('in-kind', 'inquiry', 'monetary', 'service');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN CREATE TYPE item_intent_action AS ENUM ('request', 'offer');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN CREATE TYPE item_status AS ENUM ('draft', 'active', 'disabled', 'closed');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN CREATE TYPE item_condition AS ENUM ('brand_new', 'pre_owned_barely_used', 'pre_owned_usable', 'pre_owned_damaged');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "listing"."item" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type item_type NOT NULL,
+    intent_action item_intent_action NOT NULL,
+    status item_status NOT NULL DEFAULT 'draft',
+    title VARCHAR(150) NULL,
+    description TEXT NULL,
+    category BIGINT REFERENCES "listing"."category"(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
+    condition item_condition NOT NULL,
+    location BIGINT REFERENCES "listing"."location"(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
+    views_count BIGINT DEFAULT 0 NOT NULL,
+    is_reported BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL,
+    created_by UUID REFERENCES "user"."account"(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED,
+    CONSTRAINT chk_description_length CHECK (char_length(description) <= 10000)
 );
-
--- interaction.transaction Table
-CREATE TABLE IF NOT EXISTS "interaction"."transaction" (
-    id BIGINT PRIMARY KEY,
-    id_pledge BIGINT,
-    status ENUM('completed', 'in-progress', 'failed'),
-    id_schedule BIGINT,
-    id_location BIGINT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    CONSTRAINT fk_transaction_pledge FOREIGN KEY (id_pledge) REFERENCES "interaction"."pledge"(id),
-    CONSTRAINT fk_transaction_location FOREIGN KEY (id_location) REFERENCES "listing"."location"(id),
-    CONSTRAINT fk_transaction_schedule FOREIGN KEY (id_schedule) REFERENCES "interaction"."schedule"(id)
+-- listing.collection (depends on community)
+DO $$ BEGIN CREATE TYPE collection_visibility AS ENUM ('public', 'restricted');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN CREATE TYPE collection_type AS ENUM ('featured', 'regular');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "listing"."collection" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_community BIGINT REFERENCES "user"."community"(id) ON DELETE SET NULL,
+    title VARCHAR(150) NULL,
+    visibility collection_visibility NOT NULL,
+    type collection_type NULL,
+    position INT4 NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL
 );
-
--- interaction.message Table
-CREATE TABLE IF NOT EXISTS "interaction"."message" (
-    id BIGINT PRIMARY KEY,
-    id_sender BIGINT,
-    id_transaction BIGINT,
-    type ENUM('schedule_opportunity', 'message'),
-    content TEXT,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_message_sender FOREIGN KEY (id_sender) REFERENCES "user"."profile"(id),
-    CONSTRAINT fk_message_transaction FOREIGN KEY (id_transaction) REFERENCES "interaction"."transaction"(id)
+-- listing.media (depends on item)
+DO $$ BEGIN CREATE TYPE media_type AS ENUM ('image', 'video');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "listing"."media" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_item BIGINT REFERENCES "listing"."item"(id) ON DELETE CASCADE,
+    caption VARCHAR(150) NULL,
+    url VARCHAR(2048) NOT NULL,
+    type media_type NOT NULL, 
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
-
--- interaction.schedule Table
+-- listing.publish
+CREATE TABLE "listing"."publish" (
+    id_item bigint NOT NULL REFERENCES "listing"."item"("id") ON DELETE CASCADE,
+    id_collection bigint NOT NULL REFERENCES "listing"."collection"("id") ON DELETE CASCADE,
+    note text NULL,
+    position INT4 NOT NULL DEFAULT 0,
+    added_by UUID REFERENCES "user"."account"("id") ON DELETE SET NULL,
+    posted_on TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY ("id_item", "id_collection")
+);
+-- interaction.schedule (no dependencies)
 CREATE TABLE IF NOT EXISTS "interaction"."schedule" (
-    id BIGINT PRIMARY KEY,
-    scheduled_for TIMESTAMP
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    scheduled_for TIMESTAMPTZ NOT NULL
 );
-
--- interaction.schedule_opportunity Table
-CREATE TABLE IF NOT EXISTS "interaction"."schedule_opportunity" (
-    id BIGINT PRIMARY KEY,
-    window_start TIMESTAMP,
-    window_end TIMESTAMP
+-- interaction.pledge (depends on profile, item)
+DO $$ BEGIN CREATE TYPE pledge_intent_action AS ENUM ('give', 'receive');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN CREATE TYPE pledge_status AS ENUM ('pending', 'approved', 'declined');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "interaction"."pledge" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_profile BIGINT REFERENCES "user"."profile"(id) ON DELETE CASCADE,
+    id_item BIGINT REFERENCES "listing"."item"(id) ON DELETE CASCADE,
+    intent_action pledge_intent_action NOT NULL,
+    message TEXT NULL,
+    status pledge_status NOT NULL DEFAULT 'pending',
+    pledged_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL,
+    updated_by UUID REFERENCES "user"."account"(id) ON DELETE SET NULL,
+    CONSTRAINT chk_message_length CHECK (char_length(message) <= 10000)
 );
-
--- interaction.review Table
+-- interaction.transaction (depends on pledge, location, schedule)
+DO $$ BEGIN CREATE TYPE transaction_status AS ENUM ('in-progress', 'completed', 'cancelled');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "interaction"."transaction" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_pledge BIGINT REFERENCES "interaction"."pledge"(id) ON DELETE CASCADE,
+    status transaction_status NOT NULL DEFAULT 'in-progress',
+    id_schedule BIGINT REFERENCES "interaction"."schedule"(id) ON DELETE SET NULL,
+    id_location BIGINT REFERENCES "listing"."location"(id) ON DELETE SET NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL
+);
+-- interaction.message (depends on profile, transaction)
+DO $$ BEGIN CREATE TYPE message_type AS ENUM ('text', 'schedule_opportunity');
+EXCEPTION
+WHEN duplicate_object THEN NULL;
+END $$;
+CREATE TABLE IF NOT EXISTS "interaction"."message" (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_sender BIGINT REFERENCES "user"."profile"(id) ON DELETE SET NULL,
+    id_transaction BIGINT REFERENCES "interaction"."transaction"(id) ON DELETE CASCADE,
+    type message_type NULL,
+    content TEXT NOT NULL,
+    sent_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ NULL, 
+    CONSTRAINT chk_content_length CHECK (char_length(content) <= 10000)
+);
+-- interaction.review (depends on transaction, profile)
 CREATE TABLE IF NOT EXISTS "interaction"."review" (
-    id_transaction BIGINT,
-    id_profile BIGINT,
-    id_reviewer_profile BIGINT,
+    id_transaction BIGINT REFERENCES "interaction"."transaction"(id) ON DELETE SET NULL,
+    id_subject_profile BIGINT REFERENCES "user"."profile"(id) ON DELETE SET NULL,
+    reviewer BIGINT REFERENCES "user"."profile"(id),
     comment TEXT,
-    score INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_transaction, id_profile),
-    CONSTRAINT fk_review_transaction FOREIGN KEY (id_transaction) REFERENCES "interaction"."transaction"(id),
-    CONSTRAINT fk_review_profile FOREIGN KEY (id_profile) REFERENCES "user"."profile"(id),
-    CONSTRAINT fk_review_reviewer_profile FOREIGN KEY (id_reviewer_profile) REFERENCES "user"."profile"(id)
+    score INT2 DEFAULT 0 NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    PRIMARY KEY (id_transaction, id_subject_profile),
+    CONSTRAINT chk_comment_length CHECK (char_length(comment) <= 10000)
+);
+-- interaction.schedule_opportunity (interaction.message)
+CREATE TABLE IF NOT EXISTS "interaction"."schedule_opportunity" (
+    id BIGINT REFERENCES "interaction"."message"(id),
+    window_start TIMESTAMPTZ NULL,
+    window_end TIMESTAMPTZ NULL
 );

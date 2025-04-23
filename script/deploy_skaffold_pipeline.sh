@@ -1,13 +1,25 @@
 #!/bin/bash
 # set -e
 
+stop_minikube#task() {
+    minikube stop --profile minikube
+    minikube status
+
+    sudo systemctl stop docker
+    sudo systemctl status docker
+}
+
+start_minikube#task() {
+    minikube start --profile minikube
+    minikube status
+
+    sudo systemctl start docker
+    sudo systemctl status docker
+}
+
 # run & expose gateway with minimum scaffold services
 start.minikube#bootstrap#task@monorepo() {
     # sudo echo "" # prompt for sudo password
-
-    stop_minikube() {
-        minikube stop --profile minikube
-    }
 
     run_minikube() {
         # Check if minikube is already running

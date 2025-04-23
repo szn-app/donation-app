@@ -60,7 +60,7 @@ EOF
 
     # https://cloudnative-pg.io/documentation/current/installation_upgrade/#installation-on-kubernetes
     kubectl cnpg install generate | kubectl apply --server-side -f -
-    kubectl wait --for=condition=Available deployment/cnpg-controller-manager -n cnpg-system --timeout=300s
+    kubectl wait --for=condition=Available deployment/cnpg-controller-manager -n cnpg-system --timeout=500s
 
     add_postgresql_image_list
 
