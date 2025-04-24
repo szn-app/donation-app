@@ -23,6 +23,16 @@ delete.skaffold#task@api-data-database() {(
     popd
 )}
 
+data-setup#test@api-data-database() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+
+    local file="test/test-data-schema-setup.autogen.sql"
+
+    PGPASSWORD=postgres psql -h localhost -p 5432 -U postgres -d app -f $file
+
+    popd
+)}
+
 cluster#benchmark@api-data-database() {
     # TODO: benchmark CNPG cluster
     echo ''

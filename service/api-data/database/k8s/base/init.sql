@@ -8,8 +8,8 @@ GRANT ALL ON test TO "postgres-user";
 -- TODO: 
 -- CREATE EXTENSION postgis;
 ------------------------------------------------------------------
--- [MANUALLY AUTOGENRATED FROM CHARTDB DESIGN]
---- TODO: update and manually modify to grant permission and merge with above SQL code
+-- [MANUALLY GENRATED FROM CHARTDB DESIGN] (NOTE: when mapping from chartDB it requires refining the types and adding permissions for Postgresql)
+
 -- Schema Definitions
 -- User Schema
 CREATE SCHEMA IF NOT EXISTS "user" AUTHORIZATION "postgres-user";
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS "user"."community" (
     title VARCHAR(150),
     description TEXT,
     type community_type NOT NULL DEFAULT 'solo',
-    organizer UUID NOT NULL REFERENCES "user"."account"(id),
+    owner UUID NOT NULL REFERENCES "user"."account"(id),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ NULL,
     created_by UUID NOT NULL REFERENCES "user"."account"(id),
@@ -104,7 +104,7 @@ DO $$ BEGIN CREATE TYPE item_intent_action AS ENUM ('request', 'offer');
 EXCEPTION
 WHEN duplicate_object THEN NULL;
 END $$;
-DO $$ BEGIN CREATE TYPE item_status AS ENUM ('draft', 'active', 'disabled', 'closed');
+DO $$ BEGIN CREATE TYPE item_status AS ENUM ('draft', 'active', 'disabled', 'archived');
 EXCEPTION
 WHEN duplicate_object THEN NULL;
 END $$;
