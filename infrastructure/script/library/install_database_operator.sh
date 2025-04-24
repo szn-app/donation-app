@@ -33,15 +33,12 @@ DEPRECATED_install_stackgres_operator() {
 # operand image: https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
 # community extension of operand image: https://github.com/cloudnative-pg/postgis-containers/pkgs/container/postgis
 install_cloudnativepg_operator() {
+    # add container images list locally to allow to customize CNPG deployments
     # https://cloudnative-pg.io/documentation/current/image_catalog/
     add_postgresql_image_list() {
-
-        #PostgreSQL Container Images
-        kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/Debian/ClusterImageCatalog-bookworm.yaml
-        # PostGIS Container Images
-        kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/postgis-containers/main/PostGIS/ClusterImageCatalog.yaml
-
-        cat << 'EOF' | kubectl apply -f -
+        explicit_definition_example() { 
+            # explicit definition example: 
+            cat << 'EOF' | kubectl apply -f -
 # https://cloudnative-pg.io/documentation/current/image_catalog/
 # define images for operators to use (any change to this file will trigger an update to all using resources)
 apiVersion: postgresql.cnpg.io/v1
@@ -56,6 +53,12 @@ spec:
     - major: 17
       image: ghcr.io/voltade/cnpg-supabase:17.4-11 
 EOF
+        }
+
+        # PostgreSQL Container Images without extensions
+        kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/postgres-containers/main/Debian/ClusterImageCatalog-bookworm.yaml
+        # PostGIS Container Images (PostGIS extension)
+        kubectl apply -f https://raw.githubusercontent.com/cloudnative-pg/postgis-containers/main/PostGIS/ClusterImageCatalog.yaml
     }
 
     # https://cloudnative-pg.io/documentation/current/installation_upgrade/#installation-on-kubernetes

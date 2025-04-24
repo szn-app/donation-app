@@ -14,7 +14,7 @@ spec:
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
     kind: ClusterImageCatalog
-    name: postgresql-extension-images
+    name: postgresql
     major: 17
 
   # Cluster topology: aim for 2 synchronous standby replicas with RPO=0

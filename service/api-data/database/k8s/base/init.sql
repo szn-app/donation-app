@@ -1,12 +1,18 @@
 --------- Postgresql sematnics https://www.postgresql.org/docs/current/protocol-flow.html#PROTOCOL-FLOW-MULTI-STATEMENT
+CREATE SCHEMA IF NOT EXISTS "extension" AUTHORIZATION "postgres-user";
+ALTER DEFAULT PRIVILEGES IN SCHEMA "extension"
+    GRANT ALL ON TABLES TO "postgres-user";
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extension;
+
+------------------------------------------------------------------
+
 -- example table
 create table IF NOT EXISTS test (i integer);
 insert into test (i)
 select generate_series(1, 100);
 GRANT ALL ON test TO "postgres-user";
----
--- TODO: 
--- CREATE EXTENSION postgis;
+
 ------------------------------------------------------------------
 -- [MANUALLY GENRATED FROM CHARTDB DESIGN] (NOTE: when mapping from chartDB it requires refining the types and adding permissions for Postgresql)
 
@@ -89,8 +95,7 @@ CREATE TABLE IF NOT EXISTS "listing"."location" (
     state VARCHAR(50),
     district BIGINT,
     country VARCHAR(50) NOT NULL,
-    latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6),
+    geom extension.GEOGRAPHY(Point, 4326), -- PostGIS column supporting latitude and longitude using WGS 84 coordinate system
     entrance_note TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT chk_entrance_note_length CHECK (char_length(entrance_note) <= 10000)
