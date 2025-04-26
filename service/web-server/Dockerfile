@@ -40,6 +40,7 @@ ENTRYPOINT ["/bin/nginx.sh"]
 # --- 
 
 FROM node:lts AS development
+
 RUN npm install -g pnpm
 
 COPY . /app

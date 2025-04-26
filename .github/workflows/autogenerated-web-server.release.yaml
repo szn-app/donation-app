@@ -91,7 +91,7 @@ jobs:
         if: startsWith(matrix.platform, 'ubuntu')
         working-directory: ./
         run: |
-          mkdir -p target/ 
+          mkdir -p target/
           zip -r ./target/frontend.zip ./service/web-server/dist
 
       - name: upload frontend assets
