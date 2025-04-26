@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.27](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.26...donation-app@v0.4.27) (2025-04-26)
+
+
+### Bug Fixes
+
+* container release name ([32dc455](https://github.com/szn-app/donation-app/commit/32dc455668161d12fb670fe4b4b0730968fcb740))
+
 ## [0.4.26](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.25...donation-app@v0.4.26) (2025-04-26)
 
 

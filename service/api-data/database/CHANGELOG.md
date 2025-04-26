@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.3.1](https://github.com/szn-app/donation-app/compare/api-data-database@v17.3.0...api-data-database@v17.3.1) (2025-04-26)
+
+
+### Bug Fixes
+
+* **dummy:** trigger release-please ([8586b85](https://github.com/szn-app/donation-app/commit/8586b85233e66a58f06c6be51d4e97992a3c97ad))
+
 ## [17.3.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.2.3...api-data-database@v17.3.0) (2025-04-26)
 
 
