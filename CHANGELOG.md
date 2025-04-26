@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.24](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.23...donation-app@v0.4.24) (2025-04-26)
+
+
+### Bug Fixes
+
+* api-data-database container build step ([0bf8b2b](https://github.com/szn-app/donation-app/commit/0bf8b2b896ff204300e8601ee0c226d47c98b6fd))
+
 ## [0.4.23](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.22...donation-app@v0.4.23) (2025-04-26)
 
 
