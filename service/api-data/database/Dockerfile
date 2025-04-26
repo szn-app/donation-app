@@ -14,8 +14,7 @@ FROM ghcr.io/cloudnative-pg/postgresql:${postgresql_release}-standard-${debian_v
 ARG postgresql_major
 USER root
 
-# TODO: install extensions
-
 # PostGIS
 # PostgREST
 # PostGraphile
+# TODO: install extensions
