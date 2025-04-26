@@ -56,7 +56,7 @@ pub struct PostgresConfigGroup {
 }
 
 impl PostgresConfigGroup {
-    fn new(
+    pub fn new(
         rw: &SocketAddr,
         ro: &SocketAddr,
         r: &SocketAddr,
@@ -107,7 +107,7 @@ pub struct PostgresPool {
 }
 
 impl PostgresPool {
-    async fn new(
+    pub async fn new(
         rw: tokio_postgres::Config,
         ro: tokio_postgres::Config,
         r: tokio_postgres::Config,
