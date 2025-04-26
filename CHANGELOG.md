@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.23](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.22...donation-app@v0.4.23) (2025-04-26)
+
+
+### Bug Fixes
+
+* release-please config naming ([8c961ff](https://github.com/szn-app/donation-app/commit/8c961ff536afa2511d2c45a61ebeff4ff7bacd03))
+
 ## [0.4.22](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.21...donation-app@v0.4.22) (2025-04-26)
 
 
