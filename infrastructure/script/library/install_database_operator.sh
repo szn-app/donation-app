@@ -76,3 +76,26 @@ EOF
         kubectl get crds | grep cnpg
     }
 }
+
+# https://cloudnative-pg.io/documentation/1.25/kubectl-plugin/
+install_cloudnativepg_kubectl_plugin@infrastructure() {
+    local tmp_dir=$(mktemp -d); 
+    pushd $tmp_dir
+
+    curl -sSfL https://github.com/cloudnative-pg/cloudnative-pg/raw/main/hack/install-cnpg-plugin.sh | sudo sh -s -- -b /usr/local/bin
+
+    cat > kubectl_complete-cnpg <<EOF
+#!/usr/bin/env sh
+
+# Call the __complete command passing it all arguments
+kubectl cnpg __complete "\$@"
+EOF
+
+    chmod +x kubectl_complete-cnpg
+    sudo mv kubectl_complete-cnpg /usr/local/bin
+
+    popd
+
+    kubectl cnpg version
+    # kubectl cnpg status
+}

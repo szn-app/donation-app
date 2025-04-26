@@ -99,6 +99,7 @@ install.minikube#provision#task@infrastructure() {
     # install_domain_dns_systemd_resolved_for_dev_domains
     # NOTE: careful of minikube dns caching and limitations, if dns name is not resolved after a change, an entire restart of minikube and probably disable/enable addons is required. 
 
+    # some tools must be installed separately (check corresponding scripts)
     verify() { 
         minikube kubectl -- get po -A # for a separate version kubectl install
         # or 
@@ -108,6 +109,8 @@ install.minikube#provision#task@infrastructure() {
         
         lazydocker --version
         lazygit --version
+        
+        kubectl cnpg version
     }
 
 }
