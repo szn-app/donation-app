@@ -4,6 +4,16 @@ test@webhook-handler() {
     cargo watch -q -c -w tests/ -x "test -q test_main -- --nocapture" 
 }
 
+misc@webhook-handler() { 
+    cargo build 
+    cargo run 
+    cargo build --release
+}
+
+run_container@webhook-handler() {
+    docker run -d -p 80:3010 webhook-handler
+}
+
 # NOTE: used for docker command
 hot_reload@webhook-handler() {
     cargo watch -q -c -w src/ -x run

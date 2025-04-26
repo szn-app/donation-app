@@ -54,6 +54,11 @@ jobs:
                     echo "release_id=$release_id"
                 fi
 
+        -   name: install dependency
+            run: | 
+                chmod +x script.sh
+                sudo ./script.sh install.system-dependency@api-data-server
+
         -   name: prepare repo
             run: |
                 chmod +x script.sh

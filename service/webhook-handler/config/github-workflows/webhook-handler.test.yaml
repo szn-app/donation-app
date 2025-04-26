@@ -39,6 +39,11 @@ jobs:
         with:
           workspaces: './ -> target'
 
+      - name: install dependency
+        run: | 
+          chmod +x script.sh
+          sudo ./script.sh install.system-dependency@webhook-handler
+
       - name: prepare repo
         run: |
           chmod +x script.sh
@@ -47,4 +52,4 @@ jobs:
       - name: test rust
         run: |
           chmod +x script.sh
-          ./script.sh test#ci-hook#workflow@webook-handler
+          ./script.sh test#ci-hook#workflow@webhook-handler

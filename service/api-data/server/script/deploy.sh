@@ -13,6 +13,12 @@ build_container#package_hook@api-data-server() {
     fi
 }
 
+# IMPORTANT! used by docker image build; & github workflow
+install.system-dependency@api-data-server() {
+    # Rust protobuf compiler dependency
+    apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
+}
+
 run_container@api-data() {
     docker run -d -p 80:80 api-data
 }
