@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.2.1](https://github.com/szn-app/donation-app/compare/api-data-database@v17.2.0...api-data-database@v17.2.1) (2025-04-26)
+
+
+### Bug Fixes
+
+* **dummy:** trigger release-please to deploy initial container ([3b021f3](https://github.com/szn-app/donation-app/commit/3b021f376a654f6dad714f74e810f32918d24396))
+
 ## [17.2.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.1.0...api-data-database@v17.2.0) (2025-04-26)
 
 
