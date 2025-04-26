@@ -1,5 +1,25 @@
 # Changelog
 
+## [17.2.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.1.0...api-data-database@v17.2.0) (2025-04-26)
+
+
+### Features
+
+* add users migrations and sql validation script. ([9d91d8c](https://github.com/szn-app/donation-app/commit/9d91d8cef5ad200bc0e2a1862c2352d1f63e6601))
+* change database postgresql configuration ([762c548](https://github.com/szn-app/donation-app/commit/762c548e7a50bef7fbd4b64604a545c10ff607fb))
+* comprehensive database model design for user, listing, interaction domains; ([749e4a9](https://github.com/szn-app/donation-app/commit/749e4a99aa13416462241e4d69fe6ff83ccdffcb))
+* customized CNPG image release ([e0bbc64](https://github.com/szn-app/donation-app/commit/e0bbc64ea06aabc2987f324140dfec3cc687ca11))
+* **db:** design profiles for solo, community groups, & organizations ([24ca523](https://github.com/szn-app/donation-app/commit/24ca5234c6601f730802d5dfbbe0de0257a389f4))
+* implement postgres connection pool; Add user to app database in api-data gRPC ([a5d626c](https://github.com/szn-app/donation-app/commit/a5d626c402ca265f56cc311dc20813580aa0ab46))
+* refine SQL migration definitions, match postgresql SQL, and set limits. ([7c367dc](https://github.com/szn-app/donation-app/commit/7c367dc337310a2cd6bf091d7bc1b465377a3bbb))
+
+
+### Bug Fixes
+
+* api-data's database secret name ([cb82970](https://github.com/szn-app/donation-app/commit/cb82970c7c43e7f3ab4c4ae4b58e9f0ef377cd0d))
+* dependency order of kafka-message-queue ([61f3456](https://github.com/szn-app/donation-app/commit/61f34561abb2c27a9ea0d64db0486ca84d68011f))
+* release-please config naming ([8c961ff](https://github.com/szn-app/donation-app/commit/8c961ff536afa2511d2c45a61ebeff4ff7bacd03))
+
 ## [17.1.0](https://github.com/szn-app/donation-app/compare/api-data--postgresql-cnpg-extension@v17.0.0...api-data--postgresql-cnpg-extension@v17.1.0) (2025-04-26)
 
 
