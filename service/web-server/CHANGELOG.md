@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.78](https://github.com/szn-app/donation-app/compare/web-server@v0.0.77...web-server@v0.0.78) (2025-04-26)
+
+
+### Bug Fixes
+
+* **dummy:** release please trigger ([ef6b635](https://github.com/szn-app/donation-app/commit/ef6b635c0a18db0a2d129321acd6eae8e64dd348))
+
 ## [0.0.77](https://github.com/szn-app/donation-app/compare/web-server@v0.0.76...web-server@v0.0.77) (2025-03-20)
 
 
