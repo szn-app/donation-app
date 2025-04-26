@@ -49,7 +49,8 @@ OBSOLETE_symlink_shared_components#setup#symlink@api-data() {(
     popd   
 )}
 
-shared-mount-point#setup#mount-bind@api-data() {(
+# IMPORTANT: used in github workflow (in addition to local monorepo setup)
+shared-mount-point#setup#mount-bind@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     local source_dir="../../../shared"

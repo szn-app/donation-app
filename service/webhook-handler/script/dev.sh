@@ -61,6 +61,7 @@ OBSOLETE_symlink_shared_components#setup#symlink@webhook-handler() {(
     popd   
 )}
 
+# IMPORTANT: used in github workflow (in addition to local monorepo setup)
 shared-mount-point#setup#mount-bind@webhook-handler() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
