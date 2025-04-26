@@ -71,5 +71,5 @@ func#postdeploy-skaffold-hook@api-data-database() {
 
 # IMPORTANT! used in github workflow
 build_container#package_hook@api-data-database() {
-    docker build . --target final -t api-data--postgresql-cnpg-extension:latest
+    docker build . --target final -t api-data-database:latest
 }

@@ -9,4 +9,4 @@ spec:
     images:
     - major: 17
       # NOTE: version of image is updated using release-please triggers
-      image: ghcr.io/szn-app/donation-app/api-data--postgresql-cnpg-extension:17.0.0
+      image: ghcr.io/szn-app/donation-app/api-data-database:17.0.0

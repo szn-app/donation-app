@@ -48,7 +48,7 @@ profiles:
 
   build: 
     artifacts:
-    - image: api-data--postgresql-cnpg-extension
+    - image: api-data-database
       context: .
       docker:
         target: final

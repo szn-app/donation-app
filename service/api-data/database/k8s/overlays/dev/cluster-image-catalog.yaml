@@ -8,4 +8,4 @@ metadata:
 spec:
     images:
     - major: 17
-      image: api-data--postgresql-cnpg-extension:latest
+      image: api-data-database:latest
