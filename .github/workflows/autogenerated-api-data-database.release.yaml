@@ -70,9 +70,9 @@ jobs:
                 MAPPED_VERSION="${VERSION_TAG//@/:}"
                 docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
                 docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
-                TAG=api-data-database:17
-                docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
-                docker push ghcr.io/szn-app/donation-app/$TAG
+                VERSION_TAG=api-data-database:17
+                docker tag $TAG ghcr.io/szn-app/donation-app/$VERSION_TAG
+                docker push ghcr.io/szn-app/donation-app/$VERSION_TAG
 
         -   name: Update release description
             run: |
