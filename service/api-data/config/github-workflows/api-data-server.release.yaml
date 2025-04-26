@@ -1,4 +1,4 @@
-name: api-data.release
+name: api-data-server.release
 
 on:
     workflow_call:
@@ -54,11 +54,11 @@ jobs:
                     echo "release_id=$release_id"
                 fi
 
-        -   name: build api-data container
+        -   name: build api-data server container
             working-directory: ./service/api-data/server
             run: |
                 chmod +x ./script.sh
-                ./script.sh build_container#package_hook@api-data production
+                ./script.sh build_container#package_hook@api-data-server production
 
         -   name: upload container to Github Container Registry
             run: |

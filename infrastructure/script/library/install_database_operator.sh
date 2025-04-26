@@ -32,6 +32,8 @@ DEPRECATED_install_stackgres_operator() {
 # operator image: https://github.com/cloudnative-pg/cloudnative-pg/pkgs/container/cloudnative-pg
 # operand image: https://github.com/cloudnative-pg/postgres-containers/pkgs/container/postgresql
 # community extension of operand image: https://github.com/cloudnative-pg/postgis-containers/pkgs/container/postgis
+#
+# TODO: once released install extensions dynamically https://www.gabrielebartolini.it/articles/2025/03/the-immutable-future-of-postgresql-extensions-in-kubernetes-with-cloudnativepg/
 install_cloudnativepg_operator() {
     # add container images list locally to allow to customize CNPG deployments
     # https://cloudnative-pg.io/documentation/current/image_catalog/

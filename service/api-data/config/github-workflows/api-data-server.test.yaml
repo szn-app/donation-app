@@ -1,6 +1,6 @@
 ### run tests for microservice unit test and integration tests
 
-name: api-data.test
+name: api-data-server.test
 
 on:
   workflow_call:
