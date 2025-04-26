@@ -63,10 +63,14 @@ jobs:
         -   name: upload container to Github Container Registry
             run: |
                 echo "${{ secrets.PAT_GITHUB_CONTAINER_REGISTRY }}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
-                TAG=api-data--postgresql-cnpg-extension:17
+                TAG=api-data--postgresql-cnpg-extension:latest
                 docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
                 docker push ghcr.io/szn-app/donation-app/$TAG
                 VERSION_TAG=${{ inputs.tag-name }}
+                MAPPED_VERSION="${VERSION_TAG//@/:}"
+                docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+                docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+                VERSION_TAG=17
                 MAPPED_VERSION="${VERSION_TAG//@/:}"
                 docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
                 docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
