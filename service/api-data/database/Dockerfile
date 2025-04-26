@@ -15,7 +15,6 @@ ARG postgresql_major
 USER root
 
 # TODO: install extensions
-
 # PostGIS
 # PostgREST
 # PostGraphile
