@@ -2,7 +2,7 @@
   ".": "0.4.28",
   "service/web-server": "0.0.78",
   "service/api-data/server": "0.0.5",
-  "service/api-data/database": "17.3.1",
+  "service/api-data/database": "17.3.2",
   "service/auth-ui": "1.4.0",
   "service/auth-token-exchange": "0.0.15",
   "service/webhook-handler": "0.0.3"
