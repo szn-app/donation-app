@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.26](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.25...donation-app@v0.4.26) (2025-04-26)
+
+
+### Features
+
+* setup api-data-database container for CNPG customized deployment ([49f2dec](https://github.com/szn-app/donation-app/commit/49f2deced6e7c422384541ada94abc32ff039a4d))
+
 ## [0.4.25](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.24...donation-app@v0.4.25) (2025-04-26)
 
 
