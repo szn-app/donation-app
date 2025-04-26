@@ -1770,7 +1770,7 @@ dependencies = [
 
 [[package]]
 name = "shared_proto"
-version = "0.1.0"
+version = "0.4.22"
 dependencies = [
  "prost",
  "tonic",
@@ -2432,7 +2432,7 @@ dependencies = [
 
 [[package]]
 name = "webhook-handler"
-version = "0.0.2"
+version = "0.0.3"
 dependencies = [
  "anyhow",
  "axum",
