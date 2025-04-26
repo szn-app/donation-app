@@ -63,7 +63,7 @@
       ]
     },
     "service/api-data/database": {
-      "component": "api-data--postgresql-cnpg-extension",
+      "component": "api-data-database",
       "release-type": "simple",
       "extra-files": [
         {
