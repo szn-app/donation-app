@@ -1,5 +1,12 @@
 # Changelog
 
+## [17.3.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.2.3...api-data-database@v17.3.0) (2025-04-26)
+
+
+### Features
+
+* setup api-data-database container for CNPG customized deployment ([49f2dec](https://github.com/szn-app/donation-app/commit/49f2deced6e7c422384541ada94abc32ff039a4d))
+
 ## [17.2.3](https://github.com/szn-app/donation-app/compare/api-data-database@v17.2.2...api-data-database@v17.2.3) (2025-04-26)
 
 
