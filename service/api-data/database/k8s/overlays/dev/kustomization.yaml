@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - secret.yaml
+  - cluster-image-catalog.yaml
   - ../../base
 
 # namespace: database # using customization transformers instead (which provides more options)
@@ -44,3 +45,13 @@ patches:
       spec:
         superuserSecret: 
           name: postgresql-credentials-superuser
+
+  - patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: api-data--cluster-db
+        
+      spec:
+        imageCatalogRef:
+          name: postgresql-cnpg-extension--dev

@@ -1,0 +1,12 @@
+# https://cloudnative-pg.io/documentation/current/image_catalog/
+# define images for operators to use (any change to this file will trigger an update to all using resources in the cluster)
+apiVersion: postgresql.cnpg.io/v1
+kind: ClusterImageCatalog
+metadata:
+    name: postgresql-cnpg-extension
+    namespace: cnpg-system
+spec:
+    images:
+    - major: 17
+      # NOTE: version of image is updated using release-please triggers
+      image: ghcr.io/szn-app/donation-app/api-data--postgresql-cnpg-extension:17.0.0

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 test@api-data() {
     export RUST_LOG=debug
     cargo watch -q -c -w src/ -x run

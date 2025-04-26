@@ -1,3 +1,5 @@
+#!/bin/bash
+
 misc@api-data() { 
     cargo build 
     cargo run 

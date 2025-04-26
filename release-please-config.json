@@ -28,6 +28,7 @@
       "exclude-paths": [
         "service/web-server",
         "service/api-data/server",
+        "service/api-data/database",
         "service/auth-ui",
         "service/auth-token-exchange",
         "service/webhook-handler",
@@ -58,6 +59,17 @@
           "type": "generic",
           "path": "service/api-data/server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
+        }
+      ]
+    },
+    "service/api-data/database": {
+      "component": "api-data--postgresql-cnpg-extension",
+      "release-type": "simple",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "service/api-data/database/k8s/base/cluster-image-catalog.yaml",
+          "jsonpath": "$.spec.images[0].image"
         }
       ]
     },

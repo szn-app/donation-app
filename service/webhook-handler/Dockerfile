@@ -3,10 +3,13 @@
 # building/compiling stage
 FROM rust AS build
 
+RUN apt-get update && apt-get install -y bash
+SHELL ["/bin/bash", "-c"]
+
 COPY . /app
 WORKDIR /app
 
-RUN chmod +x ./script.sh && ./script.sh install.system-dependency@webhook-handler
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@webhook-handler
 
 RUN cargo build --release --locked
 
@@ -31,12 +34,15 @@ ENTRYPOINT ["/bin/webhook-handler"]
 
 FROM rust AS development
 
-RUN chmod +x ./script.sh && ./script.sh install.system-dependency@webhook-handler
-
 RUN cargo install cargo-watch --locked
+
+RUN apt-get update && apt-get install -y bash
+SHELL ["/bin/bash", "-c"]
 
 COPY . /app
 WORKDIR /app
+
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@webhook-handler
 
 ENV RUST_LOG=debug
 

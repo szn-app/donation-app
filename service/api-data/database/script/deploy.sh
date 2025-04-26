@@ -68,3 +68,8 @@ func#postdeploy-skaffold-hook@api-data-database() {
             || echo "Warning: Timed out waiting for CNPG pods readiness."
     }
 }
+
+# IMPORTANT! used in github workflow
+build_container#package_hook@api-data-database() {
+    docker build . --target final -t api-data--postgresql-cnpg-extension:latest
+}

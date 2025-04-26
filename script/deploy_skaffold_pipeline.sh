@@ -62,6 +62,7 @@ start.minikube#bootstrap#task@monorepo() {
     set_user_inotify_limit
     fix_sync_issue
 
+    execute.util '#setup' '#mount-bind' # ensure mounts are setup
     execute.util '#predeploy-hook' # prepare for deployment
     production_mode.skaffold#task@monorepo
 

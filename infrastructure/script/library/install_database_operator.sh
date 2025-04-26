@@ -46,7 +46,7 @@ install_cloudnativepg_operator() {
 apiVersion: postgresql.cnpg.io/v1
 kind: ClusterImageCatalog
 metadata:
-    name: postgresql-extension-images
+    name: postgresql-supabase-extension
     namespace: cnpg-system
 spec:
     images:

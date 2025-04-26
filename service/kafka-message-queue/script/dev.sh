@@ -20,6 +20,8 @@ delete.skaffold@kafka-message-queue() {
 }
 
 delete#task#manual-delete@kafka-message-queue() {
+    delete.skaffold@kafka-message-queue
+    
     if kubectl get strimzi -n kafka-message-queue --no-headers 2>/dev/null | grep -q .; then
       kubectl -n kafka-message-queue delete $(kubectl get strimzi -o name -n kafka-message-queue)
     else

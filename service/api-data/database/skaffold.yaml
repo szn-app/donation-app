@@ -24,6 +24,14 @@ kind: Config
 metadata:
   name: api-data-database-generic
 
+build:
+  local: 
+    push: false
+    useBuildkit: true
+  tagPolicy:
+    # sha256: {} 
+    gitCommit: {}
+
 deploy:
   kubectl: {}
   statusCheck: true
@@ -37,6 +45,16 @@ portForward:
 profiles:
 
 - name: development
+
+  build: 
+    artifacts:
+    - image: api-data--postgresql-cnpg-extension
+      context: .
+      docker:
+        target: final
+        dockerfile: Dockerfile
+        buildArgs: {}
+
   manifests:
     kustomize:
       paths:

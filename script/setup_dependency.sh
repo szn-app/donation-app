@@ -216,3 +216,9 @@ install_grpc_dependency#local-dependency() {
     # install dev tools
     curl -sSL "https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin
 }
+
+install_pass_docker_image_dependency_with_github#local-dependency() {
+    sudo dnf install pass gnupg2 -y
+
+    # to fix gpg waiting for lock error: https://gist.github.com/bahadiraraz/f2fb15b07e0fce92d8d5a86ab33469f7
+}

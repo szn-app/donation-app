@@ -3,10 +3,13 @@
 # building/compiling stage
 FROM rust AS build
 
+RUN apt-get update && apt-get install -y bash
+SHELL ["/bin/bash", "-c"]
+
 COPY . /app
 WORKDIR /app
 
-RUN chmod +x ./script.sh && ./script.sh install.system-dependency@api-data-server
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@api-data-server
 
 RUN cargo build --release --locked
 
@@ -36,8 +39,6 @@ FROM rust:latest AS development
 # ENV RUSTUP_PERMIT_COPY_RENAME=true
 # ENV CARGO_TARGET_DIR=/tmp/target
 
-RUN chmod +x ./script.sh && ./script.sh install.system-dependency@api-data-server
-
 RUN rustup toolchain install nightly && \
     rustup toolchain install stable && \
     rustup default nightly && \
@@ -45,8 +46,13 @@ RUN rustup toolchain install nightly && \
 RUN cargo install cargo-watch --locked
 RUN rustup default nightly && rustc --version && cargo --version
 
+RUN apt-get update && apt-get install -y bash
+SHELL ["/bin/bash", "-c"]
+
 COPY . /app
 WORKDIR /app
+
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@api-data-server
 
 ENV RUST_LOG=debug
 
