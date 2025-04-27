@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: envoy-proxy
@@ -9,7 +9,7 @@ requires:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: envoy-proxy-generic

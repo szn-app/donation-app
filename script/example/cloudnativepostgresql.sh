@@ -16,18 +16,6 @@ example@cnpg() {
         # https://cloudnative-pg.io/documentation/1.22/backup_barmanobjectstore/
         echo ''
     }
-
-    pushd service/api-data/database
-
-    if ! kubectl get secret postgresql-superuser-credentials -n database &>/dev/null; then
-        kubectl create secret generic postgresql-superuser-credentials -n database \
-            --from-literal=username=user-postgres \
-            --from-literal=password=pass-postgres
-    fi
-
-    # TODO: get minio credentilas 
-
-    popd
     
     verify() {
         kubectl describe clusters.postgresql.cnpg.io -n api-data

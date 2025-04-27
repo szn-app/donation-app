@@ -1,5 +1,5 @@
 # https://skaffold.dev/docs/references/yaml/
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: monorepo
@@ -16,7 +16,7 @@ requires:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: monorepo-services-only
@@ -30,7 +30,7 @@ requires:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: monorepo-scaffold-only

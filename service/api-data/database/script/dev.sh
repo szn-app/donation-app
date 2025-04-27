@@ -4,21 +4,21 @@ set -e
 skaffold#task@api-data-database() { 
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
     
-    skaffold dev --profile development --port-forward --tail
+    skaffold dev --module api-data-database --profile development --port-forward --tail
 
     popd
 }
 
 render.skaffold#task@api-data-database() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
-    temp_file=$(mktemp) && skaffold render --profile development > "$temp_file" && echo "$temp_file"
+    temp_file=$(mktemp) && skaffold render --module api-data-database --profile development > "$temp_file" && echo "$temp_file"
     popd
 }
 
 delete.skaffold#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
 
-    skaffold delete --profile development
+    skaffold delete --module api-data-database --profile development
 
     popd
 )}
@@ -67,5 +67,29 @@ view-db-diagram#task@api-data-database() {(
 
     popd
 )}
+
+
+debug-cluster#example@api-data-database() { 
+    local cluster_name="api-data--cluster-db"
+    local namespace="api-data"
+
+    echo "Describing Cluster resource..."
+    kubectl describe cluster/$cluster_name -n $namespace
+
+    echo "Listing Pods with wide output..."
+    kubectl get pods -l cnpg.io/cluster=$cluster_name -n $namespace -o wide
+
+    # Get the first Pod name related to the cluster
+    pod_name=$(kubectl get pods -l cnpg.io/cluster=$cluster_name -n $namespace -o jsonpath='{.items[0].metadata.name}')
+
+    echo "Describing Pod: $pod_name..."
+    kubectl describe pod "$pod_name" -n "$namespace"
+
+    echo "Fetching logs from Pod: $pod_name (all containers)..."
+    kubectl logs "$pod_name" -n "$namespace" --all-containers=true
+
+    echo "Fetching recent Events in namespace $namespace..."
+    kubectl get events -n "$namespace" --sort-by='.metadata.creationTimestamp'
+}
 
 ### [OBSOLETE] also download https://github.com/jgraph/drawio-desktop/releases/tag/v26.2.2 for local development/testing because it supports sql to diagram directly (copy SQL from LLM to diagram) --- ( actually it is not perfect, it doesn't create relations only tables)

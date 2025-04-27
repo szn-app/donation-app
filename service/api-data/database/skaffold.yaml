@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data-database
@@ -19,7 +19,7 @@ profiles:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data-database-generic
@@ -47,6 +47,9 @@ profiles:
 - name: development
 
   build: 
+    tagPolicy:
+      envTemplate:
+        template: "17.0.0-dev" # tag used in CNPG for local development (NOTE: CNPG doesn't accept 'latest' tag)
     artifacts:
     - image: api-data-database
       context: .

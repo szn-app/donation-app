@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data
@@ -21,7 +21,7 @@ profiles:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data--no-dep
@@ -44,7 +44,7 @@ profiles:
 
 ---
 
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data-k8s
@@ -61,7 +61,7 @@ deploy:
 ---
 
 # https://skaffold.dev/docs/references/yaml/
-apiVersion: skaffold/v4beta12
+apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: api-data-generic
