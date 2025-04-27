@@ -92,4 +92,14 @@ debug-cluster#example@api-data-database() {
     kubectl get events -n "$namespace" --sort-by='.metadata.creationTimestamp'
 }
 
+test_installation_of_new_extensions#docker@api-data-database() { 
+    pushd service/api-data/database
+    docker build . --target builder -t api-data-database:builder    
+    docker run -it api-data-database:builder bash
+    popd
+}
+
+
+
 ### [OBSOLETE] also download https://github.com/jgraph/drawio-desktop/releases/tag/v26.2.2 for local development/testing because it supports sql to diagram directly (copy SQL from LLM to diagram) --- ( actually it is not perfect, it doesn't create relations only tables)
+

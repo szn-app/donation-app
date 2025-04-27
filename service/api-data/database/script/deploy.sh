@@ -70,6 +70,10 @@ func#postdeploy-skaffold-hook@api-data-database() {
 }
 
 # IMPORTANT! used in github workflow
-build_container#package_hook@api-data-database() {
+build_container#package_hook@api-data-database() {(
+    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
+
     docker build . --target final -t api-data-database:latest
-}
+
+    popd
+)}

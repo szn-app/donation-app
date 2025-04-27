@@ -46,7 +46,7 @@ profiles:
 
 - name: development
 
-  build: 
+  build:
     tagPolicy:
       envTemplate:
         template: "17.0.0-dev" # tag used in CNPG for local development (NOTE: CNPG doesn't accept 'latest' tag)

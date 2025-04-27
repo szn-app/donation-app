@@ -3,7 +3,8 @@ CREATE SCHEMA IF NOT EXISTS "extension" AUTHORIZATION "postgres-user";
 ALTER DEFAULT PRIVILEGES IN SCHEMA "extension"
     GRANT ALL ON TABLES TO "postgres-user";
 
-CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extension;
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extension CASCADE;
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA extension CASCADE;
 
 ------------------------------------------------------------------
 
