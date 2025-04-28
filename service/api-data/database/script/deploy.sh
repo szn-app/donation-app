@@ -19,16 +19,10 @@ EOF
     popd
 )}
 
-validate_sql_syntax#task@api-data-database() {(
-    pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
-    local sql_migration_file="./k8s/base/init.sql"
+func#predeploy-skaffold-hook@api-data-database() {
+    local environment=$1
 
-    if [ -z "$sql_migration_file" ]; then
-        echo "Error: No SQL migration file provided."
-        exit 1
-    fi
-
-    ./script/sqlparser-validate-syntax.script.rs -s -f $sql_migration_file
+    sqlparser-validate-syntax#task@api-data-database.script.rs -s
     {
         exit_code=$?
         if [ $exit_code -eq 0 ]; then
@@ -38,13 +32,6 @@ validate_sql_syntax#task@api-data-database() {(
             return 1
         fi
     }
-    popd
-)}
-
-func#predeploy-skaffold-hook@api-data-database() {
-    local environment=$1
-
-    validate_sql_syntax#task@api-data-database
 
     if [ "$environment" != "development" ]; then
         generate_database_credentials@api-data-database

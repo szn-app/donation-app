@@ -1267,30 +1267,6 @@
       "runOptions": {}
     },
     {
-      "label": "validate_sql_syntax#task@api-data-database",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && validate_sql_syntax#task@api-data-database"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) validate_sql_syntax#task@api-data-database"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": [],
-      "runOptions": {}
-    },
-    {
       "label": "start_minikube#task",
       "type": "shell",
       "command": "bash",
@@ -1331,6 +1307,30 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) stop_minikube#task"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "sqlparser-validate-syntax#task@api-data-database.script.rs",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && sqlparser-validate-syntax#task@api-data-database.script.rs"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) sqlparser-validate-syntax#task@api-data-database.script.rs"
         }
       },
       "dependsOrder": "parallel",

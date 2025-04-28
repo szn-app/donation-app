@@ -12,5 +12,6 @@ load_scripts_recursive.util "./service/" 'script/'
 
 # Call the function to register all Rust scripts
 find_and_register_rust_functions.util "./script"
+find_and_register_rust_functions.util "./service/api-data/database/script"
 
 call_function "$@"

@@ -13,3 +13,4 @@
 - Elastic search integration with Postgresql. 
 
 - migrate github workflow tests to within docker containers for an exact environment replica
+- use .psql extension instead of .sql 
