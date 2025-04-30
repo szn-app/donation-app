@@ -15,3 +15,4 @@
 - migrate github workflow tests to within docker containers for an exact environment replica
 - use .psql extension instead of .sql 
 - Improve sharing of common scripts such as sqlparser-validate-syntax#task@api-data-database.script.rs to services or components of microservices that use them. Create a global modular appraoch to share files accorss services.
+- restruture init.sql to use migration tool that manages migration changes over time and dump a current schema state of the database. 
