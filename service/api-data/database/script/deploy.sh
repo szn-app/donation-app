@@ -22,7 +22,7 @@ EOF
 func#predeploy-skaffold-hook@api-data-database() {
     local environment=$1
 
-    sqlparser-validate-syntax#task@api-data-database.script.rs -s
+    ./script.sh sqlparser-validate-syntax#task@api-data-database.script.rs -s
     {
         exit_code=$?
         if [ $exit_code -eq 0 ]; then

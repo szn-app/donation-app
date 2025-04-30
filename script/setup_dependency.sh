@@ -222,3 +222,8 @@ install_pass_docker_image_dependency_with_github#local-dependency() {
 
     # to fix gpg waiting for lock error: https://gist.github.com/bahadiraraz/f2fb15b07e0fce92d8d5a86ab33469f7
 }
+
+install_ai_tools() { 
+    # install claude desktop, windsurf, cursor
+    echo ""
+}

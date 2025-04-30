@@ -1,0 +1,1 @@
+used strictly for data access (no business logic & services)

@@ -1,6 +1,12 @@
 #!/bin/bash
 
-test@api-data() {
+test@api-data() { 
+    cargo test -q test_main -- --nocapture
+    cargo test -q tests::test_db_connection_and_query -- --nocapture
+    cargo test --features run_dev_test -q tests::test_db_connection_and_query -- --nocapture
+}
+
+test_watch@api-data() {
     export RUST_LOG=debug
     cargo watch -q -c -w src/ -x run
     cargo watch -q -c -w tests/ -x "test -q test_main -- --nocapture" 

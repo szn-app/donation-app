@@ -7,6 +7,13 @@ use std::time::Duration;
 use tokio_postgres;
 
 #[derive(Debug, Clone)]
+pub struct PostgresEndpointConfig {
+    pub rw: String,
+    pub ro: String,
+    pub r: String,
+}
+
+#[derive(Debug, Clone)]
 pub struct EndpointGroup {
     pub rw: SocketAddr,
     pub ro: SocketAddr,
@@ -234,5 +241,43 @@ impl DatabaseContext {
         // dbg!(row);
 
         Ok(())
+    }
+}
+
+// $`cargo test -q server::connection::tests::test_postgres_config_new -- --nocapture`
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+    use std::net::SocketAddr;
+    use std::str::FromStr;
+    use PostgresConfigGroup;
+
+    #[tokio::test]
+    async fn test_postgres_config_new() {
+        use std::net::ToSocketAddrs;
+
+        let addrs = "api-data--cluster-db-rw.api-data.svc:5432"
+            .parse()
+            .or_else(|e| {
+                eprintln!(
+                    "Failed to parse & resolve ro '{}': {}. Using fallback dummy value",
+                    "hostname", e
+                );
+                SocketAddr::from_str("192.0.2.1:5432")
+            });
+
+        return;
+
+        // if let Err(e) = "api-data-cluster-db-rw.api-data.svc:5432".parse::<SocketAddr>() {
+        //     eprintln!("{:?} {}", &e, e);
+        //     panic!("");
+        // };
+
+        let rw: SocketAddr = "api-data--cluster-db-rw.api-data.svc:5432".parse().unwrap();
+        let ro: SocketAddr = "api-data--cluster-db-ro.api-data.svc:5432".parse().unwrap();
+        let r: SocketAddr = "localhost:5432".parse().unwrap();
+
+        let result = PostgresConfigGroup::new(&rw, &ro, &r);
+        assert!(result.is_ok(), "Failed to create PostgresConfigGroup");
     }
 }

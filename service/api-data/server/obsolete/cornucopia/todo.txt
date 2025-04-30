@@ -1,0 +1,1 @@
+once cornucopia is back to maintenance, evaluate if to use it https://github.com/cornucopia-rs/cornucopia/issues/247

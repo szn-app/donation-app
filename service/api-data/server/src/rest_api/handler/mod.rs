@@ -9,14 +9,14 @@ pub struct PostData {
     pub name: String,
 }
 
-pub async fn post_data(
+pub async fn dummy_post_data(
     Extension(postgres_pool_group): Extension<PostgresPool>,
     data: Json<PostData>,
 ) -> JsonResponse<PostData> {
     JsonResponse(data.0)
 }
 
-pub async fn get_data(
+pub async fn dummy_get_data(
     Extension(postgres_pool_group): Extension<PostgresPool>,
 ) -> JsonResponse<PostData> {
     let db_url = std::env::var("POSTGRESQL_ENDPOINT_RW").unwrap_or_else(|_| "Not set".to_owned());
@@ -30,9 +30,4 @@ pub async fn get_data(
         id: 1,
         name: "Hello, World!".to_string(),
     })
-}
-
-// Handler for routes that don't match any defined routes
-pub async fn handle_not_found() -> (axum::http::StatusCode, &'static str) {
-    (axum::http::StatusCode::NOT_FOUND, "not found")
 }

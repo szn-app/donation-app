@@ -34,3 +34,6 @@ postgres-types = { version = "0.2.9", features = ["derive"] }
 [dev-dependencies]
 anyhow = "1.0.95"
 httpc-test = "0.1.10"
+
+[features]
+run_dev_test = []

@@ -29,7 +29,7 @@ example@cnpg() {
             CLUSTER_POD=$(kubectl get pods -A -l cnpg.io/cluster=api-data--cluster-db -o jsonpath='{.items[0].metadata.name}' -n api-data)
             kubectl exec -it $CLUSTER_POD -n api-data -- psql -U postgres
             # SELECT usename, passwd FROM pg_shadow WHERE usename = 'user-postgres';
-            # then run commands: \l, \c database_name, \dt
+            # then run commands: \l, \c database_name, \d <tablename>, \dt (list tables), \dT+ (list datatypes)
         }
 
         connect_to_db() {

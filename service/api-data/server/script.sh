@@ -5,5 +5,6 @@
 source ../../../script/module/utility.sh
 
 load_scripts_recursive.util "./script/" 
+find_and_register_rust_functions.util "./script"
 
 call_function "$@"
