@@ -181,6 +181,34 @@ impl PostgresPool {
 
         Ok(c)
     }
+
+    // used for simple tests during development
+    pub async fn new_single_point_pool(port: Option<u16>) -> Self {
+        // Base URL components
+        let user = "postgres";
+        let password = "postgres";
+        let host = "localhost";
+        let dbname = "app";
+        let port = port.unwrap_or(5432);
+
+        let postgresql_url = format!("{}:{}", host, port);
+
+        let postgres_pool_group = {
+            let db_context =
+                DatabaseContext::new(&postgresql_url, &postgresql_url, &postgresql_url)
+                    .await
+                    .expect("Failed to create database context");
+
+            db_context
+                .test_connection()
+                .await
+                .expect("Database pool connections failed");
+
+            db_context.postgres_pool_group
+        };
+
+        postgres_pool_group
+    }
 }
 
 pub struct DatabaseContext {

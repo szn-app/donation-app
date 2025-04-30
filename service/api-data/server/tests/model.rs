@@ -1,8 +1,14 @@
-use api_data::model::sql::SQL_GET_USERS;
-use tokio_postgres::{Error, NoTls};
+use api_data::database::query;
+use api_data::database::sql::SQL_GET_ACCOUNTS;
+use std::error::Error;
+use tokio_postgres::{self, NoTls};
 
 #[cfg(feature = "run_dev_test")]
 mod tests {
+    use api_data::server::connection::{self, PostgresPool};
+    use axum::routing::connect;
+    use hyper::server::conn;
+
     use super::*;
 
     #[tokio::test]
@@ -44,7 +50,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_db_connection_and_query() -> Result<(), Error> {
+    async fn test_db_connection_and_query() -> Result<(), tokio_postgres::Error> {
         let connection_string = "postgresql://postgres:postgres@localhost:5432/app";
 
         let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await?;
@@ -75,7 +81,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_query_1() -> Result<(), Error> {
+    async fn test_query_1() -> Result<(), tokio_postgres::Error> {
         let connection_string = "postgresql://postgres:postgres@localhost:5432/app";
 
         let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await?;
@@ -89,7 +95,7 @@ mod tests {
             }
         });
 
-        let rows = client.query(SQL_GET_USERS, &[]).await?;
+        let rows = client.query(SQL_GET_ACCOUNTS, &[]).await?;
 
         if !rows.is_empty() {
             let value: i32 = rows[0].get("id");
@@ -100,6 +106,27 @@ mod tests {
                 "Database connection and query test passed! value: {:?}",
                 rows[0].get::<usize, i32>(0)
             );
+        } else {
+            println!("Response has no rows");
+        }
+
+        Ok(())
+    }
+
+    //$ cargo test --features run_dev_test -q tests::test_query_2 -- --nocapture
+    #[tokio::test]
+    async fn test_query_2() -> Result<(), Box<dyn Error>> {
+        let postgres_pool_group = PostgresPool::new_single_point_pool(Option::Some(5432)).await;
+
+        let result = query::user::AccountRepository::get_accounts(&postgres_pool_group).await?;
+
+        if !result.is_empty() {
+            println!(
+                "Database connection and query test passed!\n id: {:?}",
+                result[0].id
+            );
+        } else {
+            println!("Empty vector returned");
         }
 
         Ok(())

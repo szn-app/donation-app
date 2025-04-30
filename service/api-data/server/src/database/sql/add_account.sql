@@ -1,0 +1,1 @@
+INSERT INTO "user"."account" (id) VALUES ($1)

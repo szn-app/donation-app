@@ -1,7 +1,7 @@
 use anyhow::Result;
 use axum::response::Json as JsonResponse;
 
-use api_data::http::handler::PostData;
+use api_data::rest_api::handler::PostData;
 
 #[tokio::test]
 #[ignore = "This test requires a local server to be running"]
