@@ -1,4 +1,5 @@
 use super::connection::PostgresPool;
+use crate::graphql_api;
 use crate::rest_api;
 
 use axum;
@@ -11,7 +12,8 @@ pub async fn start_http_server(
 
     let http_app = axum::Router::new()
         .merge(rest_api::routes())
-        .layer(axum::Extension(postgres_pool_group))
+        .layer(axum::Extension(postgres_pool_group.clone()))
+        .merge(graphql_api::routes(postgres_pool_group))
         .fallback(handle_not_found);
 
     let listener = tokio::net::TcpListener::bind(http_addr).await?;

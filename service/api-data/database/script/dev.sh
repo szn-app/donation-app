@@ -51,7 +51,7 @@ generate_dbml_from_sql_migration#task@api-data-database() {(
 generate_ddl_live_database#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
 
-    PGPASSWORD=postgres pg_dump -h localhost -p 5432 -d app -U postgres -s -F p -E UTF-8 -f ./k8s/base/ddl-schema-export-from-live-database.sql
+    PGPASSWORD=postgres pg_dump -h localhost -p 5432 -d app -U postgres -s -F p -E UTF-8 -f ./k8s/base/ddl-schema-export-from-live-database-autogen.sql
     
     popd
 )}

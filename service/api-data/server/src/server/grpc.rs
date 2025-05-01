@@ -1,4 +1,5 @@
 use crate::server::connection::PostgresPool;
+use log;
 use std::error::Error;
 use std::net;
 

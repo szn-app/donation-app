@@ -4,36 +4,51 @@ version = "0.0.5"
 edition = "2021"
 
 [dependencies]
+shared_proto = { path = "./shared/protobuf" }
+
+# async runtime
+tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking I/O platform.
+
+# database
+tokio-postgres = {version = "0.7.13", features = ["with-uuid-1", "with-time-0_3", "with-bit-vec-0_6", "array-impls"]}
+deadpool-postgres = "0.14.1"
+postgres-types = { version = "0.2.9", features = ["derive"] }
+
+# web server
 axum = "0.8.1" # Web framework that focuses on ergonomics and modularity.
-base64 = "0.22.1" # Encode and decode base64 as bytes or utf8.
 http = "1.2.0" # Types for HTTP requests and responses.
 hyper = { version = "1.6.0", features = ["full"] } # A fast and correct HTTP library.
-once_cell = "1.20.3" # Single assignment cells and lazy values.
-serde = { version = "1.0.217", features = ["derive"] } # A serialization/deserialization framework.
-serde_json = { version = "1.0.138" } # Serde serialization/deserialization of JSON data.
-tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking I/O platform.
 tower = "0.5.2" # Modular reusable components for building robust clients and servers.
 tower-cookies = "0.11.0"
 tower-http = { version = "0.6.2", features = ["cors"] }
-tracing = "0.1.41" # Application-level tracing for Rust.
-tracing-subscriber = { version = "~0.3.19", features = ["env-filter"] } # Utilities for `tracing` subscribers.
-reqwest = { version = "0.11", features = ["json"] }
-log = "0.4.26"
-env_logger = "0.10.1"
-prost = "0.13.5"
+
+# api
+async-graphql = {version = "7.0.16", features = ["graphiql", "uuid", "time", "dataloader", "decimal", "url"]}
+async-graphql-axum = "7.0.16"
+async-graphql-derive = "7.0.16"
 tonic = "0.13.0"
 tonic-reflection = "0.13.0"
-shared_proto = { path = "./shared/protobuf" }
-deadpool-postgres = "0.14.1"
-tokio-postgres = {version = "0.7.13", features = ["with-uuid-1", "with-time-0_3", "with-bit-vec-0_6", "array-impls"]}
-retry = "2.1.0"
-uuid = { version = "1.16.0", features = ["v4", "serde"] }
-postgres-types = { version = "0.2.9", features = ["derive"] }
+prost = "0.13.5"
+reqwest = { version = "0.11", features = ["json"] }
+
+# types
 time = { version = "0.3.41", features = ["formatting", "parsing"] }
+uuid = { version = "1.16.0", features = ["v4", "serde"] }
 rust_decimal = "1.37.1"
 geo-types = {version = "0.7.16", features = []}
-bit-vec = "0.8.0"
+url = "2.5.4"
 
+# utils
+base64 = "0.22.1" # Encode and decode base64 as bytes or utf8.
+once_cell = "1.20.3" # Single assignment cells and lazy values.
+serde = { version = "1.0.217", features = ["derive"] } # A serialization/deserialization framework.
+serde_json = { version = "1.0.138" } # Serde serialization/deserialization of JSON data.
+tracing = "0.1.41" # Application-level tracing for Rust.
+tracing-subscriber = { version = "~0.3.19", features = ["env-filter"] } # Utilities for `tracing` subscribers.
+log = "0.4.26"
+env_logger = "0.10.1"
+retry = "2.1.0"
+bit-vec = "0.8.0"
 
 [dev-dependencies]
 anyhow = "1.0.95"

@@ -2,7 +2,7 @@
   {
     "id": "api-private",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/private</?><.*>",
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/rest/private</?><.*>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -41,8 +41,35 @@
   {
     "id": "api-allow-public",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/public</?><.*>",
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/rest/public</?><.*>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "anonymous"
+      }
+    ],
+    "authorizer": {
+      "handler": "allow"
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": null
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json"
+      }
+    ]
+  },
+
+  {
+    "id": "api-allow-graphql",
+    "match": {
+      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/graphql</?><.*>",
+      "methods": ["GET", "POST"]
     },
     "authenticators": [
       {

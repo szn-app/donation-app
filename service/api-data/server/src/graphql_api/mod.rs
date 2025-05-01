@@ -1,24 +1,45 @@
-// TODO:
+pub mod mutation_resolver;
+pub mod query_resolver;
 
-// use async_graphql::{EmptyMutation, EmptySubscription, Schema};
-// use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-// use axum::{routing::get, Extension, Json, Router};
-// use std::sync::Arc;
+use crate::server::connection::PostgresPool;
+use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
+use async_graphql_axum::GraphQL;
+use axum::{
+    response::{Html, IntoResponse},
+    routing::get,
+    Router,
+};
+use mutation_resolver::MutationResolver;
+use query_resolver::QueryResolver;
+use std::{convert::Infallible, sync::Arc};
 
-// use crate::{
-//     graphql::QueryRoot, // You should define this somewhere
-// };
+// context-based appraoch to share data with resolvers
+#[derive(Clone)]
+pub struct Context {}
 
-// pub async fn graphql_handler(
-//     schema: Extension<Schema<QueryRoot, EmptyMutation, EmptySubscription>>,
-//     req: GraphQLRequest,
-// ) -> GraphQLResponse {
-//     schema.execute(req.into_inner()).await.into()
-// }
+pub fn routes(postgres_pool_group: PostgresPool) -> Router {
+    let context = Context {};
 
-// // Optional: Serve GraphQL Playground UI
-// async fn graphql_playground() -> axum::response::Html<String> {
-//     axum::response::Html(async_graphql::http::playground_source(
-//         async_graphql::http::GraphQLPlaygroundConfig::new("/graphql"),
-//     ))
-// }
+    let query_resolver = QueryResolver {
+        postgres_pool_group: postgres_pool_group.clone(), // pass context as instance value
+    };
+    let mutation_resolver = MutationResolver {
+        postgres_pool_group: postgres_pool_group, // pass context as instance value
+    };
+    let subscription_resolver = EmptySubscription;
+
+    let graphql_impl_schema =
+        Schema::build(query_resolver, mutation_resolver, subscription_resolver)
+            .data(context)
+            .finish();
+
+    Router::new().route(
+        "/graphql",
+        get(graphiql_handler).post_service(GraphQL::new(graphql_impl_schema)),
+    )
+}
+
+// GraphiQL UI explorer interface
+async fn graphiql_handler() -> impl IntoResponse {
+    Html(GraphiQLSource::build().endpoint("/graphql").finish())
+}

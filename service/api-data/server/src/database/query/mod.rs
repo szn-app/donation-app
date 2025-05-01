@@ -52,7 +52,9 @@ pub mod user {
         pub async fn get_accounts(
             postgres_pool_group: &connection::PostgresPool,
         ) -> Result<Vec<model::user::Account>, Box<dyn Error>> {
-            let client = Self::db_client(&postgres_pool_group.ro).await?;
+            log::debug!("--> get_accounts");
+
+            let client = Self::db_client(&postgres_pool_group.r).await?;
 
             let rows: Vec<tokio_postgres::Row> = client
                 .query(sql::SQL_GET_ACCOUNTS, &[])
@@ -70,20 +72,46 @@ pub mod user {
 
         pub async fn add_account(
             postgres_pool_group: &connection::PostgresPool,
-            user_uuid: uuid::Uuid,
-        ) -> Result<(), Box<dyn Error>> {
+            id: uuid::Uuid,
+        ) -> Result<model::user::Account, Box<dyn Error>> {
+            log::debug!("--> add_account");
+
             let client = Self::db_client_with_retry(&postgres_pool_group.rw).await?;
 
             // Insert user into database
-            client
-                .execute(sql::SQL_ADD_ACCOUNT, &[&user_uuid])
+            let row: tokio_postgres::Row = client
+                .query_one(sql::SQL_ADD_ACCOUNT, &[&id])
                 .await
                 .map_err(|e| {
                     log::error!("Database error while adding user: {}", e);
                     e
                 })?;
 
-            Ok(())
+            let account: model::user::Account = row.into();
+
+            Ok(account)
         }
+    }
+}
+
+mod util {
+    use super::*;
+
+    fn log_full_db_err(err: &tokio_postgres::error::Error, msg: &str) {
+        let dberr = match err.as_db_error() {
+            None => {
+                log::error!("Error unwrapping tokio_postgres DbError: {:?}", &err);
+                return;
+            }
+            Some(err) => err,
+        };
+        log::error!(
+            "DB error: {} {}",
+            dberr.message(),
+            dberr
+                .detail()
+                .expect("cannot retrieve detail error from postgres")
+        );
+        log::error!("{}", msg);
     }
 }

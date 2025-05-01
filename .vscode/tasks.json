@@ -1051,30 +1051,6 @@
       "runOptions": {}
     },
     {
-      "label": "skaffold#task@api-data",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && skaffold#task@api-data"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) skaffold#task@api-data"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": [],
-      "runOptions": {}
-    },
-    {
       "label": "skaffold#task@api-data-server",
       "type": "shell",
       "command": "bash",
