@@ -167,6 +167,38 @@ impl PostgresPool {
         })
     }
 
+    pub fn new_mock() -> PostgresPool {
+        use deadpool_postgres::{Config, ManagerConfig, RecyclingMethod, Runtime};
+        use tokio_postgres::NoTls;
+
+        Self {
+            rw: {
+                let mut cfg = Config::new();
+                cfg.dbname = Some("deadpool".to_string());
+                cfg.manager = Some(ManagerConfig {
+                    recycling_method: RecyclingMethod::Fast,
+                });
+                cfg.create_pool(Some(Runtime::Tokio1), NoTls).unwrap()
+            },
+            ro: {
+                let mut cfg = Config::new();
+                cfg.dbname = Some("deadpool".to_string());
+                cfg.manager = Some(ManagerConfig {
+                    recycling_method: RecyclingMethod::Fast,
+                });
+                cfg.create_pool(Some(Runtime::Tokio1), NoTls).unwrap()
+            },
+            r: {
+                let mut cfg = Config::new();
+                cfg.dbname = Some("deadpool".to_string());
+                cfg.manager = Some(ManagerConfig {
+                    recycling_method: RecyclingMethod::Fast,
+                });
+                cfg.create_pool(Some(Runtime::Tokio1), NoTls).unwrap()
+            },
+        }
+    }
+
     pub async fn test_connection(
         &self,
     ) -> Result<deadpool_postgres::Object, deadpool_postgres::PoolError> {
