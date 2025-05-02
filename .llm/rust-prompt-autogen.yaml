@@ -1,0 +1,445 @@
+---
+# Project Specs and Code Generation Instructions
+project:
+  name: "GraphQL Monorepo"
+  description: "Rust backend with TypeScript/React frontend connected via GraphQL"
+  properties:
+    - monorepo
+    - self-hosted
+    - production-ready
+    - secure
+    - testable
+
+# Technical Stack
+tech-stack:
+  backend:
+    language: rust
+    framework: axum
+    database: postgresql
+    apis: graphql
+  frontend:
+    language: typescript
+    framework: react
+    api-client: apollo-client
+  infrastructure:
+    orchestration: kubernetes
+    auth: ory-stack
+    ci-cd: github-actions
+    local-dev: skaffold
+    iac: terraform
+  development:
+    ide: vscode
+    version-control: github
+
+# Core Libraries
+libraries:
+  rust:
+    - name: tokio
+      version: "1.28" 
+      purpose: "Async runtime"
+      required-features: ["full"]
+    - name: axum
+      version: "0.6"
+      purpose: "Web framework"
+    - name: async-graphql
+      version: "5.0"
+      purpose: "GraphQL implementation"
+      modules: ["async-graphql", "async-graphql-axum"]
+    - name: tokio-postgres
+      version: "0.7"
+      purpose: "PostgreSQL client"
+      required-features: ["with-uuid-1", "with-chrono-0_4"]
+    - name: deadpool-postgres
+      version: "0.10"
+      purpose: "Connection pooling"
+    - name: serde
+      version: "1.0"
+      purpose: "Serialization/deserialization"
+      required-features: ["derive"]
+    - name: tracing
+      version: "0.1"
+      purpose: "Logging and instrumentation"
+  typescript:
+    - name: apollo-client
+      version: "^3.7"
+      purpose: "GraphQL client"
+    - name: graphql-codegen
+      version: "^4.0"
+      purpose: "Type generation from GraphQL schema"
+      modules: ["cli", "typescript", "typescript-operations", "typescript-react-apollo"]
+
+# Code Style Preferences
+code-style:
+  rust:
+    error-handling: "Use anyhow for application errors and thiserror for library errors"
+    async-style: "Use async/await with proper error propagation"
+    modules: "Organize code in module hierarchies with clear separation of concerns"
+    types: "Prefer strong typing with custom types over primitive types"
+    formatting: "Follow rustfmt conventions"
+    logging: "Use tracing macros instead of println for all logging"
+    testing: "Include unit tests for all public functions"
+    comments: "Document public APIs with rustdoc comments"
+  typescript:
+    types: "Use strict TypeScript with proper typing, avoid any"
+    components: "Use functional components with hooks"
+    styling: "Use CSS modules or styled-components"
+    state: "Use Apollo Client cache for GraphQL data"
+
+# Architecture Templates
+architecture:
+  backend:
+    directory-structure: |
+      backend/
+      ├── src/
+      │   ├── db/         # Database connection and queries
+      │   ├── graphql/    # GraphQL schema, resolvers
+      │   ├── models/     # Domain models 
+      │   ├── config/     # Configuration handling
+      │   ├── error/      # Error types and handling
+      │   ├── utils/      # Utility functions
+      │   └── main.rs     # Application entry point
+      ├── tests/          # Integration tests
+      ├── Cargo.toml
+      └── Dockerfile
+    
+    db-access-pattern: |
+      - Use deadpool-postgres for connection pooling
+      - Pass pool to GraphQL context
+      - Use tokio-postgres for queries
+      - Separate query logic from business logic
+      - Implement transaction handling for multi-step operations
+    
+    graphql-pattern: |
+      - Define schema with async-graphql
+      - Separate Query and Mutation root types
+      - Use SimpleObject, Object, InputObject attributes
+      - Implement ComplexObject for relationships
+      - Pass database pool in context
+      - Use dataloader pattern for N+1 query prevention
+
+  frontend: 
+    directory-structure: |
+      frontend/
+      ├── src/
+      │   ├── components/   # React components
+      │   ├── graphql/      # GraphQL operations
+      │   │   ├── queries/  # GraphQL query documents
+      │   │   └── mutations/# GraphQL mutation documents
+      │   ├── hooks/        # Custom React hooks
+      │   ├── generated/    # Generated TypeScript types
+      │   ├── pages/        # Page components
+      │   └── App.tsx       # Main application
+      ├── codegen.yml       # GraphQL code generation config
+      ├── package.json
+      └── Dockerfile
+
+# Reusable Instructions For LLM
+instructions:
+  general:
+    - "Follow the project architecture patterns precisely"
+    - "Include proper error handling for all operations"
+    - "Add comments explaining complex logic"
+    - "Include all necessary imports"
+    - "Generate complete files, not snippets"
+  
+  rust-backend:
+    - "Use async/await for all database operations"
+    - "Implement proper connection pooling"
+    - "Use GraphQL context for dependency injection"
+    - "Apply proper error handling with anyhow and thiserror"
+    - "Use UUID for all entity IDs"
+    - "Use chrono::DateTime<Utc> for timestamp fields"
+    - "Implement validation for all input data"
+    - "Return descriptive GraphQL errors"
+    - "Add tracing instrumentation for operations"
+  
+  rust-graphql:
+    - "Define GraphQL schema using async-graphql macros"
+    - "Separate types, queries, and mutations into different modules"
+    - "Use SimpleObject for simple types, Object for types with resolvers"
+    - "Use InputObject for input types"
+    - "Implement ComplexObject for relations between types"
+    - "Use Context to access database pool and other dependencies"
+    - "Return Result<T> from resolvers to handle errors properly"
+    - "Use appropriate scalar types (UUID, DateTime, etc.)"
+  
+  rust-database:
+    - "Use deadpool-postgres for connection pooling"
+    - "Implement repository pattern for database access"
+    - "Use parameterized queries to prevent SQL injection"
+    - "Handle NULL values properly with Option<T>"
+    - "Implement proper transaction management"
+    - "Add indexes for fields used in WHERE clauses"
+    - "Implement pagination for list queries"
+  
+  typescript-frontend:
+    - "Use Apollo Client for GraphQL operations"
+    - "Generate TypeScript types with GraphQL Code Generator"
+    - "Use React hooks for state management"
+    - "Implement proper loading and error states"
+    - "Use TypeScript interfaces for all props"
+    - "Use async/await for all asynchronous operations"
+    - "Implement lazy loading for routes"
+
+# Example Templates
+templates:
+  rust-graphql-type: |
+    use async_graphql::{SimpleObject, InputObject, Context, Object, Result};
+    use chrono::{DateTime, Utc};
+    use uuid::Uuid;
+    use crate::models::EntityName;
+    use crate::db::Pool;
+    
+    #[derive(SimpleObject)]
+    #[graphql(complex)]
+    pub struct EntityNameType {
+        pub id: Uuid,
+        pub name: String,
+        pub created_at: DateTime<Utc>,
+        pub updated_at: DateTime<Utc>,
+    }
+    
+    #[ComplexObject]
+    impl EntityNameType {
+        pub async fn related_items(&self, ctx: &Context<'_>) -> Result<Vec<RelatedItemType>> {
+            let pool = ctx.data::<Pool>()?;
+            let client = pool.get().await?;
+            
+            // Fetch related items query
+            
+            Ok(items)
+        }
+    }
+    
+    #[derive(InputObject)]
+    pub struct CreateEntityNameInput {
+        pub name: String,
+        // Other fields
+    }
+  
+  rust-graphql-resolver: |
+    pub struct QueryRoot;
+    
+    #[Object]
+    impl QueryRoot {
+        async fn entity(&self, ctx: &Context<'_>, id: Uuid) -> Result<Option<EntityType>> {
+            let pool = ctx.data::<Pool>()?;
+            let client = pool.get().await?;
+            
+            let row = client
+                .query_opt(
+                    "SELECT id, name, created_at, updated_at FROM entities WHERE id = $1",
+                    &[&id],
+                )
+                .await?;
+            
+            let entity = row.map(|row| EntityType {
+                id: row.get("id"),
+                name: row.get("name"),
+                created_at: row.get("created_at"),
+                updated_at: row.get("updated_at"),
+            });
+            
+            Ok(entity)
+        }
+    }
+  
+  rust-graphql-mutation: |
+    pub struct MutationRoot;
+    
+    #[Object]
+    impl MutationRoot {
+        async fn create_entity(&self, ctx: &Context<'_>, input: CreateEntityInput) -> Result<EntityType> {
+            let pool = ctx.data::<Pool>()?;
+            let client = pool.get().await?;
+            
+            let now = Utc::now();
+            let id = Uuid::new_v4();
+            
+            let row = client
+                .query_one(
+                    "INSERT INTO entities (id, name, created_at, updated_at) 
+                     VALUES ($1, $2, $3, $4) 
+                     RETURNING id, name, created_at, updated_at",
+                    &[&id, &input.name, &now, &now],
+                )
+                .await?;
+            
+            Ok(EntityType {
+                id: row.get("id"),
+                name: row.get("name"),
+                created_at: row.get("created_at"),
+                updated_at: row.get("updated_at"),
+            })
+        }
+    }
+  
+  typescript-graphql-query: |
+    import { gql } from '@apollo/client';
+    
+    export const GET_ENTITY = gql`
+      query GetEntity($id: UUID!) {
+        entity(id: $id) {
+          id
+          name
+          createdAt
+          relatedItems {
+            id
+            name
+          }
+        }
+      }
+    `;
+  
+  typescript-react-component: |
+    import React from 'react';
+    import { useGetEntityQuery } from '../generated/graphql';
+    
+    interface EntityDetailProps {
+      id: string;
+    }
+    
+    export const EntityDetail: React.FC<EntityDetailProps> = ({ id }) => {
+      const { loading, error, data } = useGetEntityQuery({
+        variables: { id },
+      });
+    
+      if (loading) return <p>Loading...</p>;
+      if (error) return <p>Error: {error.message}</p>;
+      if (!data?.entity) return <p>Entity not found</p>;
+    
+      return (
+        <div>
+          <h1>{data.entity.name}</h1>
+          {/* Render entity details */}
+        </div>
+      );
+    };
+
+# Example Cargo.toml
+cargo-toml: |
+  [package]
+  name = "graphql-server"
+  version = "0.1.0"
+  edition = "2021"
+  
+  [dependencies]
+  async-graphql = "5.0.9"
+  async-graphql-axum = "5.0.9"
+  axum = "0.6.18"
+  tokio = { version = "1.28.2", features = ["full"] }
+  tokio-postgres = { version = "0.7.8", features = ["with-uuid-1", "with-chrono-0_4"] }
+  deadpool-postgres = "0.10.5"
+  serde = { version = "1.0", features = ["derive"] }
+  serde_json = "1.0"
+  chrono = { version = "0.4", features = ["serde"] }
+  uuid = { version = "1.3.3", features = ["serde", "v4"] }
+  thiserror = "1.0"
+  anyhow = "1.0"
+  tracing = "0.1"
+  tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+  dotenv = "0.15"
+
+# SQL Schema Examples
+sql-schema: |
+  CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  
+  CREATE TABLE users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE TABLE tasks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'TODO',
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+  
+  CREATE INDEX tasks_user_id_idx ON tasks(user_id);
+  CREATE INDEX tasks_status_idx ON tasks(status);
+
+# GraphQL Schema Example
+graphql-schema: |
+  type User {
+    id: ID!
+    username: String!
+    email: String!
+    tasks: [Task!]!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+  
+  type Task {
+    id: ID!
+    title: String!
+    description: String
+    status: TaskStatus!
+    user: User!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+  
+  enum TaskStatus {
+    TODO
+    IN_PROGRESS
+    DONE
+  }
+  
+  input CreateUserInput {
+    username: String!
+    email: String!
+  }
+  
+  input CreateTaskInput {
+    title: String!
+    description: String
+    userId: ID!
+  }
+  
+  input UpdateTaskInput {
+    id: ID!
+    title: String
+    description: String
+    status: TaskStatus
+  }
+  
+  type Query {
+    users: [User!]!
+    user(id: ID!): User
+    tasks: [Task!]!
+    task(id: ID!): Task
+  }
+  
+  type Mutation {
+    createUser(input: CreateUserInput!): User!
+    createTask(input: CreateTaskInput!): Task!
+    updateTask(input: UpdateTaskInput!): Task!
+    deleteTask(id: ID!): Boolean!
+  }
+
+# LLM Usage Instructions
+usage:
+  - "Copy this entire YAML file when generating Rust code using an LLM"
+  - "Specify which part of the architecture you need code for"
+  - "Reference the templates and instructions sections for guidance"
+  - "Use the examples as a starting point but customize as needed"
+  - "Include this header with your LLM prompt:"
+    
+prompt-examples:
+  general: |
+    Using the provided project specifications in the YAML file,
+    please generate [SPECIFIC CODE COMPONENT] following the project
+    architecture and code style preferences.
+    
+  specific: |
+    Using the provided YAML file as reference, 
+    please generate a complete Rust GraphQL resolver for a User entity
+    that includes queries for fetching a single user and a list of users,
+    following the architecture patterns and code style preferences.

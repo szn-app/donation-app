@@ -1,0 +1,32 @@
+project:
+  properties: 
+  - monorepo
+  - self-hosted
+
+  tech-stack:
+  - rust
+  - typescript
+  - postgresql
+  - graphql
+  - react
+  - kubernetes
+  - ory-stack
+  - github
+  - vscode
+
+  libraries: 
+  - tokio
+  - axum
+  - tokio-postgres
+  - deadpool-postgres
+  - async_graphql
+  - apollo-client
+  - graphql-codegen
+  - terraform
+  - skaffold
+
+  patterns: 
+  - functional
+  - test-driven
+  - modular
+  - microservices
