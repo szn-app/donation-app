@@ -1,7 +1,7 @@
 use crate::database::query::user;
 use crate::server::connection::PostgresPool;
 use log;
-use shared_proto::proto::{self, user_sync::UserSync};
+use shared_protobuf_webhook::proto::{self, user_sync::UserSync};
 use tonic::{Request as TonicRequest, Response as TonicResponse, Status};
 use uuid::Uuid;
 

@@ -5,7 +5,7 @@ edition = "2021"
 
 
 [workspace]
-members = ["shared/protobuf"]
+members = ["shared/protobuf-webhook", "shared/protobuf-keto"]
 exclude = [
     "service/auth-ory-stack/ory-hydra",
     "service/auth-ory-stack/ory-keto",

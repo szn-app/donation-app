@@ -7,11 +7,6 @@ mod proto_user_sync {
     tonic::include_proto!("user_sync");
 }
 
-// import generated gRPC proto-rust file into module
-mod proto_test {
-    tonic::include_proto!("test");
-}
-
 pub mod proto {
     pub mod user_sync {
         use super::super::*;
@@ -28,6 +23,10 @@ pub mod proto {
 
     pub mod test {
         use super::super::*;
+        // import generated gRPC proto-rust file into module
+        mod proto_test {
+            tonic::include_proto!("test");
+        }
 
         pub use super::super::proto_test::{
             greeter_server::{Greeter, GreeterServer},

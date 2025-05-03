@@ -8,7 +8,7 @@ use axum::{
 use rdkafka::producer::{FutureProducer, FutureRecord};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use shared_proto::proto::user_sync::{AddUserRequest, AddUserResponse, UserSyncClient};
+use shared_protobuf_webhook::proto::user_sync::{AddUserRequest, AddUserResponse, UserSyncClient};
 use std::net::SocketAddr;
 use std::time::Duration;
 use tonic::transport::Channel;

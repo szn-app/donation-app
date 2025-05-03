@@ -1,6 +1,6 @@
 use crate::server::connection::PostgresPool;
 use axum::Router;
-use shared_proto::proto;
+use shared_protobuf_webhook::proto;
 use std::error::Error;
 use tonic::transport::{server::Router as TonicRouter, Server as TonicServer};
 use tonic_reflection::server::Builder as ReflectionBuilder;
