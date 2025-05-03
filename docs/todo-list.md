@@ -18,3 +18,5 @@
 - restruture init.sql to use migration tool that manages migration changes over time and dump a current schema state of the database. 
 - In rust use crate to define custom app errors which encompass generic and crate specific errors
 - GraphQL optimization using Dataloader (N+1 problem)
+- for a decoupled microservices api, use GraphQL federation as the gateway entrypoint for all the other microsrevices exposed GraphQL endpoints. 
+- 

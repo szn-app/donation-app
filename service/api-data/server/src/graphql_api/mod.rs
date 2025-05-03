@@ -13,6 +13,9 @@ use mutation_resolver::MutationResolver;
 use query_resolver::QueryResolver;
 use std::{convert::Infallible, sync::Arc};
 
+// - wrappers over schema components: mechanisms provided for permission checks, input validation, etc. https://async-graphql.github.io/async-graphql/en/utilities.html
+// - graphql middlewares: https://async-graphql.github.io/async-graphql/en/extensions.html
+
 // context-based appraoch to share data with resolvers
 #[derive(Clone)]
 pub struct Context {}

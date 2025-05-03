@@ -1,7 +1,14 @@
+# align responses with the following project context:
 project:
   properties: 
   - monorepo
   - self-hosted
+
+  patterns: 
+  - functional
+  - test-driven
+  - modular
+  - microservices
 
   tech-stack:
   - rust
@@ -10,7 +17,8 @@ project:
   - graphql
   - react
   - kubernetes
-  - ory-stack
+  - oidc
+  - zanzibar-implementation
   - github
   - vscode
 
@@ -24,9 +32,8 @@ project:
   - graphql-codegen
   - terraform
   - skaffold
+  - ory-kratos
+  - ory-hydra
+  - ory-keto
+  - ory-aothkeeper
 
-  patterns: 
-  - functional
-  - test-driven
-  - modular
-  - microservices
