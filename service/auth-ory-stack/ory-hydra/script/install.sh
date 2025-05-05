@@ -106,13 +106,13 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
     "client_secret": "${client_secret}",
     "grant_types": ["authorization_code", "refresh_token"],
     "response_types": ["code", "code id_token"],
-    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback"], 
+    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/login", "${APP_URL}/callback/logout"], 
     "audience": ["${APP_URL}"],    
     "scope": "offline_access openid email profile",
     "token_endpoint_auth_method": "client_secret_post",
     "skip_consent": true,
     "skip_logout_consent": true,
-    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback"]
+    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/logout"]
 }'
 
 EOF
@@ -144,13 +144,13 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
     "client_secret": "${client_secret}",
     "grant_types": ["authorization_code", "refresh_token"],
     "response_types": ["code"],
-    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback"], 
+    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/login", "${APP_URL}/callback/logout"], 
     "audience": ["${APP_URL}"],    
     "scope": "offline_access openid",
     "token_endpoint_auth_method": "client_secret_post",
     "skip_consent": true,
     "skip_logout_consent": true,
-    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback"]
+    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/logout"]
 }'
 EOF
             kubectl cp $t setup-pod:$t --namespace auth
@@ -180,13 +180,13 @@ curl -X POST 'http://hydra-admin/admin/clients' -H 'Content-Type: application/js
     "client_secret": "${client_secret}",
     "grant_types": ["authorization_code", "refresh_token"],
     "response_types": ["code id_token"],
-    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback"], 
+    "redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/login", "${APP_URL}/callback/logout"], 
     "audience": ["${APP_URL}"],    
     "scope": "offline_access openid",
     "token_endpoint_auth_method": "client_secret_post",
     "skip_consent": false,
     "skip_logout_consent": true,
-    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback"]
+    "post_logout_redirect_uris": ["${APP_URL}", "${APP_URL}/callback", "${APP_URL}/callback/logout"]
 }'
 EOF
             kubectl cp $t setup-pod:$t --namespace auth

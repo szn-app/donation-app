@@ -22,8 +22,9 @@ use std::io::Read;
 use tera::{Context, Tera};
 
 // defines the structure of the environment variables file
-const env_file_required_fields: [&str; 5] = [
+const env_file_required_fields: [&str; 6] = [
     "AUTHENTICATION_URL",
+    "AUTHORIZATION_URL",
     "APP_URL",
     "AUTH_BASE_URL",
     "DOMAIN_NAME",

@@ -13,7 +13,9 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as CallbackImport } from './routes/callback'
+import { Route as CallbackIndexImport } from './routes/callback/index'
+import { Route as CallbackLogoutImport } from './routes/callback/logout'
+import { Route as CallbackLoginImport } from './routes/callback/login'
 
 // Create Virtual Routes
 
@@ -39,17 +41,17 @@ const AppLazyRoute = AppLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/_app.lazy').then((d) => d.Route))
 
-const CallbackRoute = CallbackImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const AppIndexLazyRoute = AppIndexLazyImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppLazyRoute,
 } as any).lazy(() => import('./routes/_app/index.lazy').then((d) => d.Route))
+
+const CallbackIndexRoute = CallbackIndexImport.update({
+  id: '/callback/',
+  path: '/callback/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AppRetailerLazyRoute = AppRetailerLazyImport.update({
   id: '/retailer',
@@ -83,17 +85,22 @@ const AppDonationLazyRoute = AppDonationLazyImport.update({
   getParentRoute: () => AppLazyRoute,
 } as any).lazy(() => import('./routes/_app/donation.lazy').then((d) => d.Route))
 
+const CallbackLogoutRoute = CallbackLogoutImport.update({
+  id: '/callback/logout',
+  path: '/callback/logout',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CallbackLoginRoute = CallbackLoginImport.update({
+  id: '/callback/login',
+  path: '/callback/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/callback': {
-      id: '/callback'
-      path: '/callback'
-      fullPath: '/callback'
-      preLoaderRoute: typeof CallbackImport
-      parentRoute: typeof rootRoute
-    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -106,6 +113,20 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/callback/login': {
+      id: '/callback/login'
+      path: '/callback/login'
+      fullPath: '/callback/login'
+      preLoaderRoute: typeof CallbackLoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/callback/logout': {
+      id: '/callback/logout'
+      path: '/callback/logout'
+      fullPath: '/callback/logout'
+      preLoaderRoute: typeof CallbackLogoutImport
       parentRoute: typeof rootRoute
     }
     '/_app/donation': {
@@ -143,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRetailerLazyImport
       parentRoute: typeof AppLazyImport
     }
+    '/callback/': {
+      id: '/callback/'
+      path: '/callback'
+      fullPath: '/callback'
+      preLoaderRoute: typeof CallbackIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_app/': {
       id: '/_app/'
       path: '/'
@@ -177,87 +205,103 @@ const AppLazyRouteWithChildren =
   AppLazyRoute._addFileChildren(AppLazyRouteChildren)
 
 export interface FileRoutesByFullPath {
-  '/callback': typeof CallbackRoute
   '': typeof AppLazyRouteWithChildren
   '/about': typeof AboutLazyRoute
+  '/callback/login': typeof CallbackLoginRoute
+  '/callback/logout': typeof CallbackLogoutRoute
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
   '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
+  '/callback': typeof CallbackIndexRoute
   '/': typeof AppIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
-  '/callback': typeof CallbackRoute
   '/about': typeof AboutLazyRoute
+  '/callback/login': typeof CallbackLoginRoute
+  '/callback/logout': typeof CallbackLogoutRoute
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
   '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
+  '/callback': typeof CallbackIndexRoute
   '/': typeof AppIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/callback': typeof CallbackRoute
   '/_app': typeof AppLazyRouteWithChildren
   '/about': typeof AboutLazyRoute
+  '/callback/login': typeof CallbackLoginRoute
+  '/callback/logout': typeof CallbackLogoutRoute
   '/_app/donation': typeof AppDonationLazyRoute
   '/_app/luxury': typeof AppLuxuryLazyRoute
   '/_app/market': typeof AppMarketLazyRoute
   '/_app/protected': typeof AppProtectedLazyRoute
   '/_app/retailer': typeof AppRetailerLazyRoute
+  '/callback/': typeof CallbackIndexRoute
   '/_app/': typeof AppIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/callback'
     | ''
     | '/about'
+    | '/callback/login'
+    | '/callback/logout'
     | '/donation'
     | '/luxury'
     | '/market'
     | '/protected'
     | '/retailer'
+    | '/callback'
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/callback'
     | '/about'
+    | '/callback/login'
+    | '/callback/logout'
     | '/donation'
     | '/luxury'
     | '/market'
     | '/protected'
     | '/retailer'
+    | '/callback'
     | '/'
   id:
     | '__root__'
-    | '/callback'
     | '/_app'
     | '/about'
+    | '/callback/login'
+    | '/callback/logout'
     | '/_app/donation'
     | '/_app/luxury'
     | '/_app/market'
     | '/_app/protected'
     | '/_app/retailer'
+    | '/callback/'
     | '/_app/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  CallbackRoute: typeof CallbackRoute
   AppLazyRoute: typeof AppLazyRouteWithChildren
   AboutLazyRoute: typeof AboutLazyRoute
+  CallbackLoginRoute: typeof CallbackLoginRoute
+  CallbackLogoutRoute: typeof CallbackLogoutRoute
+  CallbackIndexRoute: typeof CallbackIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  CallbackRoute: CallbackRoute,
   AppLazyRoute: AppLazyRouteWithChildren,
   AboutLazyRoute: AboutLazyRoute,
+  CallbackLoginRoute: CallbackLoginRoute,
+  CallbackLogoutRoute: CallbackLogoutRoute,
+  CallbackIndexRoute: CallbackIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -270,13 +314,12 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/callback",
         "/_app",
-        "/about"
+        "/about",
+        "/callback/login",
+        "/callback/logout",
+        "/callback/"
       ]
-    },
-    "/callback": {
-      "filePath": "callback.tsx"
     },
     "/_app": {
       "filePath": "_app.lazy.tsx",
@@ -291,6 +334,12 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/callback/login": {
+      "filePath": "callback/login.tsx"
+    },
+    "/callback/logout": {
+      "filePath": "callback/logout.tsx"
     },
     "/_app/donation": {
       "filePath": "_app/donation.lazy.tsx",
@@ -311,6 +360,9 @@ export const routeTree = rootRoute
     "/_app/retailer": {
       "filePath": "_app/retailer.lazy.tsx",
       "parent": "/_app"
+    },
+    "/callback/": {
+      "filePath": "callback/index.tsx"
     },
     "/_app/": {
       "filePath": "_app/index.lazy.tsx",

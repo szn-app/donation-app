@@ -1,5 +1,6 @@
 # yaml config options passed to Kratos
 # https://www.ory.sh/docs/kratos/reference/configuration
+# https://raw.githubusercontent.com/ory/kratos/master/.schemastore/config.schema.json
 # https://github.com/ory/kratos/blob/91145e113fb2e64bea44c98ae192d85ccf6ed948/.schemastore/config.schema.json
 
 kratos:
@@ -49,27 +50,37 @@ kratos:
           allowed_origins:
             # - "*" # NOTE: use for debug only
             - {{ APP_URL }}
-            - {{ APP_URL }}/callback
             - {{ AUTH_BASE_URL }}
             - {{ WILDCARD_SUBDOMAIN_APP_URL }}
           allowed_methods:
             - GET
+            - POST
             - OPTIONS
             - PUT
             - PATCH
             - DELETE
+          allowed_headers:
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - Content-Type
+          allow_credentials: true
       admin:
         base_url: http://kratos-admin/
         port: 4434
 
     selfservice:
       # links to generate for kratos ui pages
-      default_browser_return_url: {{ APP_URL }}/callback # default callback checks for access tokens, if non-exist redirect to Oauth2 to complete the authorization step (in case initiated authentication directly with SSO "/login" interface)
+      default_browser_return_url: {{ AUTH_BASE_URL }} 
+      # NOTE: `/oauth2/sessions/logout` is set by the client requester for creating a logout flow involving Kratos and Hydra
       allowed_return_urls: # redirect uri
         - {{ APP_URL }}
         - {{ AUTH_BASE_URL }}
         - {{ WILDCARD_SUBDOMAIN_APP_URL }}
         - {{ APP_URL }}/callback
+        - {{ APP_URL }}/callback/login
+        - {{ APP_URL }}/callback/logout
+        - {{ AUTHORIZATION_URL }}/oauth2/sessions/logout
 
       methods:
         password: # email/password authentication (SSO)
@@ -131,6 +142,7 @@ kratos:
           ui_url: {{ AUTH_BASE_URL }}/login
           lifespan: 10m
           after:
+            default_browser_return_url: {{ APP_URL }}/callback/login # default callback checks for access tokens, if non-exist redirect to Oauth2 to complete the authorization step (in case initiated authentication directly with SSO "/login" interface)
             # general hooks that always get run (non-method specific)
             hooks:
             - hook: web_hook
@@ -146,7 +158,8 @@ kratos:
 
         logout:
           after:
-            default_browser_return_url: {{ APP_URL }}
+            # by default if no return_to param is provided in the request then assume the IdP auth UI initiated the logout flow
+            default_browser_return_url: {{ AUTH_BASE_URL }}
 
         registration:
           ui_url: {{ AUTH_BASE_URL }}/registration
@@ -196,11 +209,15 @@ kratos:
           ui_url: {{ AUTH_BASE_URL }}/settings
           privileged_session_max_age: 15m
           # required_aal: highest_available
+          after: 
+            default_browser_return_url: {{ APP_URL }}
 
         recovery:
           enabled: true
           ui_url: {{ AUTH_BASE_URL }}/recovery
           # use: code
+          after:
+            default_browser_return_url: {{ APP_URL }}
 
         error:
           ui_url: {{ AUTH_BASE_URL }}/error
@@ -224,7 +241,7 @@ kratos:
     cookies:
       domain: ".{{ DOMAIN_NAME }}" # allow cookie for root and subdomains
       path: "/"
-      same_site: Strict
+      same_site: Lax  # Use Lax for better user experience with redirects
 
     feature_flags:
       use_continue_with_transitions: true # allow flexible flows (e.g. agree on terms in the registration flow, etc.)

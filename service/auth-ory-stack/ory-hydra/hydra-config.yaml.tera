@@ -1,5 +1,6 @@
 # manifest config for the actual app configuration
 # https://www.ory.sh/docs/hydra/reference/configuration
+# https://raw.githubusercontent.com/ory/hydra/master/.schema/config.schema.json
 
 hydra:
   config:
@@ -22,8 +23,15 @@ hydra:
           enabled: true
           allow_credentials: true
           allowed_origins:
-          - https://donation-app.local
+          # - "*" # NOTE: use for debug only
+          - {{ APP_URL }}
           - {{ AUTH_BASE_URL }}
+          - {{ WILDCARD_SUBDOMAIN_APP_URL }}
+          allowed_headers:
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - Content-Type
         {% endif %}
         
       admin:
@@ -52,6 +60,8 @@ hydra:
         public: {{ AUTHORIZATION_URL }}
       login: {{ AUTH_BASE_URL }}/login
       logout: {{ AUTH_BASE_URL }}/logout
+      # NOTE: this value could be overriden by the requester
+      post_logout_redirect: {{ AUTHENTICATION_URL }}/callback/logout
       consent: {{ AUTH_BASE_URL }}/consent # Must matche auth_ui consent endpoint
       identity_provider:
         url: http://kratos-admin

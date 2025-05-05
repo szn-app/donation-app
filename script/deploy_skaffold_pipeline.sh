@@ -69,6 +69,7 @@ start.minikube#bootstrap#task@monorepo() {
     start.tunnel.minikube#task@monorepo -v
 }
 
+# remove docker images and cleanup disk space
 freeup_space.minikube#cleanup#task@monorepo() {
     minikube ssh df
     minikube ssh 'docker image prune -a -f'

@@ -1,4 +1,5 @@
 # https://www.ory.sh/docs/oathkeeper/reference/configuration
+# https://github.com/ory/oathkeeper/blob/master/internal/config/.oathkeeper.yaml
 # https://www.ory.sh/docs/oathkeeper#decision-engine
 oathkeeper:
   config:

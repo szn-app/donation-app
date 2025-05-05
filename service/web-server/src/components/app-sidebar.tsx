@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useContext, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 import { NavUser } from "@/components/nav-user";
 import { SectionSwitcher, type Section } from "@/components/section-switcher";
@@ -21,6 +22,7 @@ import { useAuth } from "react-oidc-context";
 import { Button } from "@/components/ui/button";
 import { LogIn, User2 } from "lucide-react";
 import { type User } from "@/types/user";
+import { handleLogin } from "@/utility/auth";
 
 export type { Section };
 
@@ -33,6 +35,15 @@ export function AppSidebar({
   const { activeSection } = useContext(SectionContext);
   const { user, setUser } = useContext(UserContext);
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  const onLogin = async () => {
+    try {
+      await handleLogin(auth, navigate);
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
 
   useEffect(() => {
     if (auth.isAuthenticated && auth.user) {
@@ -65,10 +76,7 @@ export function AppSidebar({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => {
-                  localStorage.setItem("redirectUrl", window.location.pathname);
-                  auth.signinRedirect();
-                }}
+                onClick={onLogin}
                 tooltip="Log in"
                 variant="outline_colored"
               >

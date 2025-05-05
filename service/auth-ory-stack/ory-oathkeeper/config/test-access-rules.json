@@ -2,7 +2,7 @@
   {
     "id": "test-keto-parse-token",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/keto-token</?>",
+      "url": "http://test.donation-app.local/keto-token",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -46,7 +46,7 @@
   {
     "id": "test-keto-parse-session",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/keto-session</?>",
+      "url": "http://test.donation-app.local/keto-session",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -92,7 +92,7 @@
   {
     "id": "test-keto-policy-static",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/keto-static</?>",
+      "url": "http://test.donation-app.local/keto-static",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -124,9 +124,81 @@
   },
 
   {
-    "id": "test-multiple-authenticators-example",
+    "id": "test-fallback-authenticator-example",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/multiple-authenticators</?>",
+      "url": "http://test.donation-app.local/fallback-authenticator",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
+    },
+    "authenticators": [
+      {
+        "handler": "oauth2_introspection",
+        "config": {
+          "scope_strategy": "none",
+          "token_from": {
+            "cookie": "access_token"
+          }
+        }
+      },
+      {
+        "handler": "oauth2_introspection",
+        "config": {
+          "scope_strategy": "none",
+          "token_from": {
+            "header": "Authorization"
+          }
+        }
+      },
+      {
+        "handler": "jwt",
+        "config": {
+          "token_from": {
+            "header": "Authorization"
+          }
+        }
+      },
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "preserve_path": true,
+          "only": ["ory_kratos_session"]
+        }
+      }, 
+      {
+        "handler": "anonymous", 
+        "config": {
+          "subject": "anonymous"
+        }
+      }
+    ],
+    "authorizer": {
+      "handler": "allow"
+    },
+    "mutators": [
+      {
+        "handler": "header",
+        "config": {
+          "headers": {
+            "X-User": "{{ print .Subject }}"
+          }
+        }
+      }
+    ],
+    "errors": [
+      {
+        "handler": "json",
+        "config": { 
+          "verbose": true
+        }
+
+      }
+    ]
+  },
+
+  {
+    "id": "test-multiple-authenticator-example",
+    "match": {
+      "url": "http://test.donation-app.local/multiple-authenticator",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -188,7 +260,7 @@
   {
     "id": "test-session-cookie",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/session-cookie</?>",
+      "url": "http://test.donation-app.local/session-cookie",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -232,7 +304,7 @@
   {
     "id": "test-oauth-header",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/oauth-header</?>",
+      "url": "http://test.donation-app.local/oauth-header",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -269,7 +341,7 @@
   {
     "id": "test-jwt",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/jwt</?>",
+      "url": "http://test.donation-app.local/jwt",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -305,7 +377,7 @@
   {
     "id": "test-anonymous",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/anonymous</?>",
+      "url": "http://test.donation-app.local/anonymous",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -336,7 +408,7 @@
   {
     "id": "test-anonymous-forbidden",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/deny</?><.*>",
+      "url": "http://test.donation-app.local/deny",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -367,7 +439,7 @@
   {
     "id": "test-favicon",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/favicon.ico",
+      "url": "http://test.donation-app.local/favicon.ico",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -398,7 +470,7 @@
   {
     "id": "test-anonymous-allow",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://test.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/allow</?><.*>",
+      "url": "http://test.donation-app.local/allow",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [

@@ -5,9 +5,10 @@ import React, {
   useEffect,
 } from "react";
 import { AuthProviderProps, AuthProvider, useAuth } from "react-oidc-context";
-import { Log, WebStorageStateStore } from "oidc-client-ts";
+import { Log, WebStorageStateStore, UserManagerSettings } from "oidc-client-ts";
 import { User } from "@/types/user";
 import { useNavigate } from "@tanstack/react-router";
+import { handleSigninCallback, handleSignoutCallback } from "@/utility/auth";
 
 interface UserContextType {
   user: User;
@@ -38,19 +39,21 @@ export function UserProvider({ children }: PropsWithChildren<{}>) {
 // NOTE: implicit OIDC config added: https://auth.donation-app.local/authorize/.well-known/openid-configuration
 // https://auth.donation-app.local/authorize/.well-known/jwks.json
 // https://github.com/authts/oidc-client-ts/blob/main/docs/protocols/authorization-code-grant-with-pkce.md
+// https://github.com/authts/react-oidc-context/blob/main/src/AuthProvider.tsx
+// https://github.com/authts/react-oidc-context/blob/fba9a553ed3b24c45d5b03c0bedc6a94d73b7fb6/docs/react-oidc-context.api.md?plain=1#L88
 export const oidcConfig: AuthProviderProps = {
   userStore: new WebStorageStateStore({ store: window.localStorage }), // persist user session in localStorage to enable silently re-establishing session on reload or new tab
   authority: import.meta.env.VITE_AUTHORIZATION_URL, // Ory Hydra server URL
   client_id: "frontend-client", // OIDC client ID
-  redirect_uri: `${import.meta.env.VITE_APP_URL}/callback`, // redirect URI
+  redirect_uri: `${import.meta.env.VITE_APP_URL}/callback/login`, // redirect URI
   response_type: "code", // NOTE: "code id_token" response type doesn't seem to be supported by react-oidc-context (thus id_token can be fetched from userinfo endpoint with additional request instead)
   scope: "offline_access openid email profile", // OIDC scopes
   loadUserInfo: true,
   filterProtocolClaims: true,
-  revokeTokensOnSignout: false, // TODO: error is thrown when set to true after logout
+  revokeTokensOnSignout: false, // NOTE: revokation requires server modification to expose endpoint for revoking the token
   automaticSilentRenew: true,
   silent_redirect_uri: "${import.meta.env.VITE_APP_URL}/api/oauth2_token",
-  post_logout_redirect_uri: `${import.meta.env.VITE_APP_URL}`,
+  post_logout_redirect_uri: `${import.meta.env.VITE_APP_URL}/callback/logout`,
   disablePKCE: false,
   // customize token endpoint to pass code for app backend exchange
   metadata: {
@@ -64,36 +67,30 @@ export const oidcConfig: AuthProviderProps = {
     revocation_endpoint: `${import.meta.env.VITE_APP_URL}/api/oauth2_revoke`, // token revocation endpoint
   },
   extraQueryParams: {},
+  // Enable storage events to synchronize between tabs
+  monitorSession: true,
 
   /**
-   * removes code and state from url after signin
-   * see https://github.com/authts/react-oidc-context/blob/f175dcba6ab09871b027d6a2f2224a17712b67c5/src/AuthProvider.tsx#L20-L30
+   * gets execute every time when react-oidc-context gets loaded
+   *
+   * Determines if the current URL matches the post_logout_redirect redirect URI, then calls handleSignoutCallback accordingly
+   * @param args - The UserManagerSettings containing configuration
+   * @returns boolean indicating if current URL matches logout redirect URI
    */
-  onSigninCallback: () => {
-    if (import.meta.env.DEV) {
-      console.log("onSigninCallback");
-    }
-
-    window.history.replaceState({}, document.title, window.location.pathname);
+  matchSignoutCallback: (args: UserManagerSettings): boolean => {
+    return !!(
+      window &&
+      args.post_logout_redirect_uri &&
+      window.location.href === args.post_logout_redirect_uri
+    );
   },
 
-  matchSignoutCallback: (args) => {
-    return window && window.location.href === args.post_logout_redirect_uri;
-  },
-  onSignoutCallback: () => {
-    if (import.meta.env.DEV) {
-      console.log("onSignoutCallback");
-    }
-
-    const auth = useAuth();
-
-    Object.keys(window.localStorage).forEach((key) => {
-      if (key.startsWith("oidc.user:")) {
-        window.localStorage.removeItem(key);
-      }
-    });
-
-    auth.removeUser();
+  onSignoutCallback: handleSignoutCallback,
+  // executed when react-oidc-context finishes a signin and user is now authenticated
+  onSigninCallback: handleSigninCallback,
+  onRemoveUser: () => {
+    console.log("OIDC user removed from storage");
+    return Promise.resolve();
   },
 };
 

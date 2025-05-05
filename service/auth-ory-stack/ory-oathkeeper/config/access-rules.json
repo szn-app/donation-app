@@ -2,7 +2,7 @@
   {
     "id": "api-private",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/rest/private</?><.*>",
+      "url": "http://api.donation-app.local/rest/private",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -28,7 +28,11 @@
     "mutators": [
       {
         "handler": "header",
-        "config": null
+        "config": {
+          "headers": {
+            "X-User": "{{ print .Subject }}"
+          }
+        }
       }
     ],
     "errors": [
@@ -41,7 +45,7 @@
   {
     "id": "api-allow-public",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/rest/public</?><.*>",
+      "url": "http://api.donation-app.local/rest/public",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -68,7 +72,7 @@
   {
     "id": "api-allow-graphql",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://api.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}>/graphql</?><.*>",
+      "url": "http://api.donation-app.local/graphql",
       "methods": ["GET", "POST"]
     },
     "authenticators": [
@@ -95,7 +99,7 @@
   {
     "id": "k8s-hubble",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://hubble.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://hubble.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -134,7 +138,7 @@
   {
     "id": "k8s-dashboard",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://dashboard.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://dashboard.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -173,7 +177,7 @@
   {
     "id": "k8s-longhorn",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://longhorn.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://longhorn.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -212,7 +216,7 @@
   {
     "id": "k8s-ory-admin",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://ory-admin.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://ory-admin.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -251,7 +255,7 @@
   {
     "id": "k8s-minio",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://minio.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://minio.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -290,7 +294,7 @@
   {
     "id": "k8s-kafka",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://kafka.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://kafka.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -329,7 +333,7 @@
   {
     "id": "k8s-pgadmin4",
     "match": {
-      "url": "<[a-zA-Z][a-zA-Z0-9+.-]*>://pgadmin4.k8s.<([a-zA-Z0-9-]+.)*[a-zA-Z0-9-]+.[a-zA-Z]{2,}></?><.*>",
+      "url": "http://pgadmin4.k8s.donation-app.local",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [

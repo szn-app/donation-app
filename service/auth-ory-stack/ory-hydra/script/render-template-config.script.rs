@@ -22,14 +22,16 @@ use std::io::Read;
 use tera::{Context, Tera};
 
 // defines the structure of the environment variables file
-const env_file_required_fields: [&str; 4] = [
+const ENV_FILE_REQUIRED_FIELDS: [&str; 6] = [
     "AUTHORIZATION_URL",
+    "AUTHENTICATION_URL",
     "AUTH_BASE_URL",
     "APP_URL",
     "TEST_SUBDOMAIN_URL",
+    "WILDCARD_SUBDOMAIN_APP_URL",
 ];
 
-const db_env_file_required_fields: [&str; 4] = ["DB_USER", "DB_PASSWORD", "DB_NAME", "DB_HOST"];
+const DB_ENV_FILE_REQUIRED_FIELDS: [&str; 4] = ["DB_USER", "DB_PASSWORD", "DB_NAME", "DB_HOST"];
 
 #[derive(Serialize, Deserialize)]
 struct Config {
@@ -65,7 +67,7 @@ fn main() {
     };
 
     // Validate that all required fields are present for the database
-    for field in db_env_file_required_fields {
+    for field in DB_ENV_FILE_REQUIRED_FIELDS {
         if env::var(field).is_err() {
             panic!("Required environment variable {} is missing", field);
         }
@@ -147,7 +149,7 @@ fn load_environment_variables(environment: &str) {
     }
     {
         // Validate that all required fields are present
-        for field in env_file_required_fields {
+        for field in ENV_FILE_REQUIRED_FIELDS {
             if env::var(field).is_err() {
                 panic!("Required environment variable {} is missing", field);
             }

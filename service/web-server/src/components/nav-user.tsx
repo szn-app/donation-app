@@ -27,10 +27,21 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/types/user";
 import { useAuth } from "react-oidc-context";
+import { handleLogout } from "@/utility/auth";
+import { useNavigate } from "@tanstack/react-router";
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
   const auth = useAuth();
+  const navigate = useNavigate();
+
+  const onLogout = async () => {
+    try {
+      await handleLogout(auth, navigate);
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -106,10 +117,7 @@ export function NavUser({ user }: { user: User }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <a
-                onClick={() => {
-                  localStorage.setItem("redirectUrl", window.location.pathname);
-                  auth.signoutRedirect();
-                }}
+                onClick={onLogout}
                 target="_blank"
                 rel="noopener"
                 className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-100"
