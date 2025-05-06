@@ -7,14 +7,14 @@ use log;
 use uuid;
 
 /// GraphQL Mutation Root
-pub struct MutationResolver {
+pub struct Mutation {
     pub postgres_pool_group: PostgresPool,
 }
 
 #[async_graphql::Object]
-impl MutationResolver {
+impl Mutation {
     /// Create a new user
-    async fn add_account(
+    async fn addAccount(
         &self,
         ctx: &Context<'_>,
         id: uuid::Uuid,

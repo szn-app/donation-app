@@ -10,6 +10,8 @@ pub async fn start_http_server(
 ) -> Result<(), Box<dyn std::error::Error>> {
     const http_addr: &str = "0.0.0.0:8081";
 
+    // TODO: add tracer for subscribers and observability
+
     let http_app = axum::Router::new()
         .merge(rest_api::routes())
         .layer(axum::Extension(postgres_pool_group.clone()))

@@ -7,13 +7,15 @@ use tokio;
 
 /// Parse environment variables and arguments
 fn parse_args() -> Result<PostgresEndpointConfig, Box<dyn Error>> {
-    // Parse database connection endpoints
+    const DEFAULT_ENDPOINT: &str = "localhost:5432";
+
+    // Parse database connection endpoints with default values
     let postgres_endpoint_rw =
-        env::var("POSTGRESQL_ENDPOINT_RW").expect("POSTGRESQL_ENDPOINT_RW env not set");
+        env::var("POSTGRESQL_ENDPOINT_RW").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
     let postgres_endpoint_ro =
-        env::var("POSTGRESQL_ENDPOINT_RO").expect("POSTGRESQL_ENDPOINT_RO env not set");
+        env::var("POSTGRESQL_ENDPOINT_RO").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
     let postgres_endpoint_r =
-        env::var("POSTGRESQL_ENDPOINT_R").expect("POSTGRESQL_ENDPOINT_R env not set");
+        env::var("POSTGRESQL_ENDPOINT_R").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
 
     Ok(PostgresEndpointConfig {
         rw: postgres_endpoint_rw,

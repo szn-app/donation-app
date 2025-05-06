@@ -2,6 +2,7 @@
 // model examples https://github.com/async-graphql/examples/blob/a08ec5f730cdfb146ae6a662376ce112a189affc/models/starwars/src/model.rs#L108
 
 use async_graphql;
+use async_trait;
 use time;
 use tokio_postgres::Row; // tokio-postgres struct representing values and row columns metadata
 use uuid;
@@ -25,6 +26,16 @@ pub mod user {
     }
 }
 
+pub mod test {
+    use super::*;
+
+    #[derive(Debug, Clone, PartialEq, async_graphql::SimpleObject)]
+    pub struct Test {
+        pub message: String,
+    }
+}
+
+// TODO: use in implementation
 mod example_enums {
     // https://docs.rs/postgres-types/latest/postgres_types/
 

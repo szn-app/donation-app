@@ -49,6 +49,10 @@ log = "0.4.26"
 env_logger = "0.10.1"
 retry = "2.1.0"
 bit-vec = "0.8.0"
+async-trait = "0.1.88"
+
+bytes = { version = "1.10.1", features = ["serde"] }
+futures-util = { version = "0.3.31", default-features = false }
 
 [dev-dependencies]
 anyhow = "1.0.95"

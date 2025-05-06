@@ -114,3 +114,58 @@ verify_grpc@api-data() {
 cargo@api-data() { 
     cargo test -q test_main -- --nocapture
 }
+
+graphql_curl@api-data() {
+    schema_introspect() { 
+        curl -X POST http://localhost:8081/graphql \
+            -H "Content-Type: application/json" \
+            -d '{"query":"{ __schema { types { name } } }"}'
+    }
+
+    query_example() {
+        URL="http://localhost:8081/graphql"
+
+        read -r -d '' QUERY <<EOF
+{
+  "query": "query { dummyTest }"
+}
+EOF
+
+        curl -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY"
+    }
+
+    query_header_example() {
+        URL="http://localhost:8081/graphql"
+
+        read -r -d '' QUERY <<EOF
+{
+  "query": "query { dummyTestRequestHeader }"
+}
+EOF
+
+        curl -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY" -H "X-User: header-content-here"
+    }
+
+    query_secure_example() {
+        URL="http://localhost:8081/graphql"
+
+        read -r -d '' QUERY <<EOF
+{
+  "query": "query { dummyTestSecure { message } }"
+}
+EOF
+
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+    }
+}
+
+
+misc@api-data() {
+
+    display_port_forward (){
+        ps aux | grep 'kubectl port-forward'
+    }
+}
+
+
+

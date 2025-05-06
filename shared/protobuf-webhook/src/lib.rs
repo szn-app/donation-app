@@ -28,7 +28,7 @@ pub mod proto {
             tonic::include_proto!("test");
         }
 
-        pub use super::super::proto_test::{
+        pub use proto_test::{
             greeter_server::{Greeter, GreeterServer},
             HelloRequest, HelloResponse,
         };
