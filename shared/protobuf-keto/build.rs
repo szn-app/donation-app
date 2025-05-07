@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
  */
 fn main() -> Result<(), Box<dyn Error>> {
     // Path to the directory where your .proto files are located
-    let proto_dir = Path::new("src/protobuf");
+    let proto_dir = Path::new("src/protobuf-autogen");
 
     // Get all files in the directory
     let proto_files = fs::read_dir(proto_dir)?
@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         };
 
         tonic_build::configure()
-            .build_server(true) // build both server & client interfaces
+            .build_server(false) // build only client interface
             .file_descriptor_set_path(&descriptor_set_path) // Output the descriptor set for this file
             .compile_protos(&[path], &[proto_dir])?;
     }

@@ -151,10 +151,11 @@ EOF
 
         read -r -d '' QUERY <<EOF
 {
-  "query": "query { dummyTestSecure { message } }"
+  "query": "query { dummyTestSecure { secureMessage } }"
 }
 EOF
 
+        # request should be denied with anonymous user
         curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
     }
 }

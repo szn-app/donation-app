@@ -4,6 +4,9 @@ metadata:
   name: api-data
 
 requires:
+  - path: ../auth-ory-stack/ory-keto
+    configs: [ory-keto]                 
+
   - path: .
     configs: [api-data-generic]
     activeProfiles:                                     

@@ -7,6 +7,10 @@ config#aggregate_setup#task@monorepo() {
     echo 'DONE successfully'
 }
 
+config#post-clone#task@monorepo() {
+    git submodule init
+}
+
 git_submodule#setup@monorepo() {
     clone_with_submodules() { 
         git clone --recursive https://github.com/szn-app/donation-app
@@ -25,6 +29,14 @@ git_submodule#setup@monorepo() {
     }
 
     git submodule init && git submodule update
+}
+
+initalize_keto_sparse_submodule() { 
+    git submodule add https://github.com/ory/keto.git dependency/ory-keto
+    pushd dependency/ory-keto
+        git sparse-checkout init --cone
+        git sparse-checkout set proto/ory/keto
+    popd 
 }
 
 docker_github_container_registry#setup@monorepo() {

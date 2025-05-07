@@ -2,7 +2,8 @@ use super::super::service::DataContext;
 use crate::database::model;
 use crate::database::query;
 use crate::server::connection::PostgresPool;
-use async_graphql::{self, Context, FieldResult, Object};
+
+use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object};
 use deadpool_postgres::Pool;
 use http::HeaderMap;
 use log;
@@ -66,10 +67,42 @@ impl Query {
         log::debug!("--> dummyTestSecure @ graphql resolver");
 
         let c = ctx.data::<DataContext>()?;
-        dbg!(c);
+
+        if let Some(user_id) = &c.user_id {
+            if user_id == "anonymous" {
+                return Err(
+                    async_graphql::Error::new("Unauthorized").extend_with(|_, e| {
+                        e.set("code", "UNAUTHORIZED");
+                        e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
+                    }),
+                );
+            }
+        }
 
         Ok(model::test::Test {
-            message: "secret message here".to_string(),
+            secureMessage: "secret message here".to_string(),
+        })
+    }
+
+    // for debugging purposes
+    async fn dummyTestSecureGuard(&self, ctx: &Context<'_>) -> FieldResult<model::test::Test> {
+        log::debug!("--> dummyTestSecure @ graphql resolver");
+
+        let c = ctx.data::<DataContext>()?;
+
+        if let Some(user_id) = &c.user_id {
+            if user_id == "anonymous" {
+                return Err(
+                    async_graphql::Error::new("Unauthorized").extend_with(|_, e| {
+                        e.set("code", "UNAUTHORIZED");
+                        e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
+                    }),
+                );
+            }
+        }
+
+        Ok(model::test::Test {
+            secureMessage: "secret message here".to_string(),
         })
     }
 }

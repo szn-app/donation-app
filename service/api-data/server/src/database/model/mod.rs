@@ -31,7 +31,7 @@ pub mod test {
 
     #[derive(Debug, Clone, PartialEq, async_graphql::SimpleObject)]
     pub struct Test {
-        pub message: String,
+        pub secureMessage: String,
     }
 }
 

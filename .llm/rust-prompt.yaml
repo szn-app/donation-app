@@ -36,4 +36,14 @@ project:
   - ory-hydra
   - ory-keto
   - ory-aothkeeper
+  - tonic
+
+  other-crates: 
+  - log
+  - env_logger
+  - clap
+  - glob
+  - tower
+
+
 

@@ -4,3 +4,6 @@
 [submodule "dependency/ai-generated"]
 	path = dependency/ai-generated
 	url = https://github.com/szn-app/ai-generated
+[submodule "dependency/ory-keto"]
+	path = dependency/ory-keto
+	url = https://github.com/ory/keto.git
