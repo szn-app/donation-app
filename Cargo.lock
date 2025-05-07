@@ -686,6 +686,7 @@ name = "shared_protobuf_keto"
 version = "0.4.28"
 dependencies = [
  "prost",
+ "prost-types",
  "tonic",
  "tonic-build",
  "tonic-reflection",

@@ -1,4 +1,7 @@
-use api_data::server::{self, connection::PostgresEndpointConfig};
+use api_data::server::{
+    self,
+    connection::{KetoEndpointConfig, PostgresEndpointConfig},
+};
 use env_logger;
 use log;
 use std::env;
@@ -6,22 +9,40 @@ use std::error::Error;
 use tokio;
 
 /// Parse environment variables and arguments
-fn parse_args() -> Result<PostgresEndpointConfig, Box<dyn Error>> {
-    const DEFAULT_ENDPOINT: &str = "localhost:5432";
+fn parse_args() -> Result<(PostgresEndpointConfig, KetoEndpointConfig), Box<dyn Error>> {
+    let k = {
+        const DEFAULT_KETO_ENDPOINT: &str = "localhost:4467";
 
-    // Parse database connection endpoints with default values
-    let postgres_endpoint_rw =
-        env::var("POSTGRESQL_ENDPOINT_RW").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
-    let postgres_endpoint_ro =
-        env::var("POSTGRESQL_ENDPOINT_RO").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
-    let postgres_endpoint_r =
-        env::var("POSTGRESQL_ENDPOINT_R").unwrap_or_else(|_| String::from(DEFAULT_ENDPOINT));
+        let keto_endpoint_read =
+            env::var("KETO_ENDPOINT_READ").unwrap_or_else(|_| String::from(DEFAULT_KETO_ENDPOINT));
+        let keto_endpoint_write =
+            env::var("KETO_ENDPOINT_WRITE").unwrap_or_else(|_| String::from(DEFAULT_KETO_ENDPOINT));
 
-    Ok(PostgresEndpointConfig {
-        rw: postgres_endpoint_rw,
-        ro: postgres_endpoint_ro,
-        r: postgres_endpoint_r,
-    })
+        KetoEndpointConfig {
+            read: keto_endpoint_read,
+            write: keto_endpoint_write,
+        }
+    };
+
+    let p = {
+        const DEFAULT_POSTGRESQL_ENDPOINT: &str = "localhost:5432";
+
+        // Parse database connection endpoints with default values
+        let postgres_endpoint_rw = env::var("POSTGRESQL_ENDPOINT_RW")
+            .unwrap_or_else(|_| String::from(DEFAULT_POSTGRESQL_ENDPOINT));
+        let postgres_endpoint_ro = env::var("POSTGRESQL_ENDPOINT_RO")
+            .unwrap_or_else(|_| String::from(DEFAULT_POSTGRESQL_ENDPOINT));
+        let postgres_endpoint_r = env::var("POSTGRESQL_ENDPOINT_R")
+            .unwrap_or_else(|_| String::from(DEFAULT_POSTGRESQL_ENDPOINT));
+
+        PostgresEndpointConfig {
+            rw: postgres_endpoint_rw,
+            ro: postgres_endpoint_ro,
+            r: postgres_endpoint_r,
+        }
+    };
+
+    Ok((p, k))
 }
 
 #[tokio::main]

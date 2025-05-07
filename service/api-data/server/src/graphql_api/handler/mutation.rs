@@ -1,6 +1,6 @@
 use crate::database::model;
 use crate::database::query;
-use crate::server::connection::PostgresPool;
+use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql::{self, Context, FieldResult, Object};
 use deadpool_postgres::Pool;
 use log;

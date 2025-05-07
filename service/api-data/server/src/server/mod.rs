@@ -5,12 +5,19 @@ pub mod grpc;
 pub mod http;
 
 pub async fn run_server(
-    config: connection::PostgresEndpointConfig,
+    (pg_config, keto_config): (
+        connection::PostgresEndpointConfig,
+        connection::KetoEndpointConfig,
+    ),
 ) -> Result<(), Box<dyn std::error::Error>> {
     let postgres_pool_group = {
-        let db_context = connection::DatabaseContext::new(&config.rw, &config.ro, &config.r)
-            .await
-            .expect("Failed to create database context");
+        let db_context = connection::postgresql::DatabaseContext::new(
+            &pg_config.rw,
+            &pg_config.ro,
+            &pg_config.r,
+        )
+        .await
+        .expect("Failed to create database context");
 
         db_context
             .test_connection()
@@ -20,8 +27,15 @@ pub async fn run_server(
         db_context.postgres_pool_group
     };
 
+    // create keto client grpc connection
+    let keto_channel_group: connection::KetoChannelGroup = {
+        connection::keto::create_grpc_connection(&keto_config.read, &keto_config.write)
+            .await
+            .expect("Failed to create gRPC channel")
+    };
+
     tokio::select! {
-        result = http::start_http_server(postgres_pool_group.clone()) => result,
+        result = http::start_http_server(postgres_pool_group.clone(), keto_channel_group) => result,
         result = grpc::start_grpc_server(postgres_pool_group) => result
     }
 }

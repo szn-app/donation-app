@@ -1,25 +1,13 @@
-use super::super::service::DataContext;
+use super::super::access_constrol::check::check_permission_for_subject;
+use super::super::service::{DataContext, GlobalContext};
 use crate::database::model;
 use crate::database::query;
-use crate::server::connection::PostgresPool;
+use crate::server::connection::{KetoChannelGroup, PostgresPool};
 
 use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object};
 use deadpool_postgres::Pool;
 use http::HeaderMap;
 use log;
-// {
-// directive @auth(rule: Rule) on FIELD_DEFINITION
-
-// enum Rule {
-//   IS_AUTHOR
-// }
-
-// type Post {
-//   authorId: ID!
-//   body: String @auth(rule: IS_AUTHOR)
-// }
-
-// }
 
 /// GraphQL Query Root
 pub struct Query {
@@ -57,7 +45,6 @@ impl Query {
         log::debug!("--> dummyTestRequestHeader @ graphql resolver");
 
         let c = ctx.data::<DataContext>()?;
-        dbg!(c);
 
         Ok("message here".to_string())
     }
@@ -89,17 +76,23 @@ impl Query {
         log::debug!("--> dummyTestSecure @ graphql resolver");
 
         let c = ctx.data::<DataContext>()?;
+        let g = ctx.data::<GlobalContext>()?;
 
-        if let Some(user_id) = &c.user_id {
-            if user_id == "anonymous" {
-                return Err(
-                    async_graphql::Error::new("Unauthorized").extend_with(|_, e| {
-                        e.set("code", "UNAUTHORIZED");
-                        e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
-                    }),
-                );
-            }
-        }
+        let r =
+            check_permission_for_subject(g.keto_channel_group.write.clone(), "n", "o", "r", "s")
+                .await;
+        dbg!(r);
+
+        // if let Some(user_id) = &c.user_id {
+        //     if user_id == "anonymous" {
+        //         return Err(
+        //             async_graphql::Error::new("Unauthorized").extend_with(|_, e| {
+        //                 e.set("code", "UNAUTHORIZED");
+        //                 e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
+        //             }),
+        //         );
+        //     }
+        // }
 
         Ok(model::test::Test {
             secureMessage: "secret message here".to_string(),

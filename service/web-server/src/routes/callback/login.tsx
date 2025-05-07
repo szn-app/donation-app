@@ -28,7 +28,7 @@ export function component() {
       auth.activeNavigator != "signoutRedirect" ||
       !auth.isLoading
     ) {
-      handleRedirectAfterCallback(navigate, 5);
+      handleRedirectAfterCallback(navigate);
     }
   }, [auth, navigate]);
 

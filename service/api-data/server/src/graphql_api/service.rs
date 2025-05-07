@@ -1,3 +1,4 @@
+use crate::server::connection::KetoChannelGroup;
 /**
  * Custom Axum service - modified from async-graphql-context@v7.0.16
  * - Added extractor function to allow for request data propagation to GraphQL context resolvers
@@ -27,7 +28,9 @@ use tower;
 
 // context-based appraoch to share data accross resolvers
 #[derive(Clone)]
-pub struct GlobalContext {}
+pub struct GlobalContext {
+    pub keto_channel_group: KetoChannelGroup,
+}
 
 // request specific context
 #[derive(Clone, Debug)]

@@ -19,6 +19,7 @@ impl UserSyncService {
     }
 }
 
+// implement protobuf interface
 #[tonic::async_trait]
 impl UserSync for UserSyncService {
     async fn add_user(

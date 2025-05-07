@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 shared_protobuf_webhook = { path = "./shared/protobuf-webhook" }
+shared_protobuf_keto = { path = "./shared/protobuf-keto" }
 
 # async runtime
 tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking I/O platform.

@@ -77,7 +77,44 @@
     },
     "authenticators": [
       {
-        "handler": "anonymous"
+        "handler": "oauth2_introspection",
+        "config": {
+          "scope_strategy": "none",
+          "token_from": {
+            "cookie": "access_token"
+          }
+        }
+      },
+      {
+        "handler": "oauth2_introspection",
+        "config": {
+          "scope_strategy": "none",
+          "token_from": {
+            "header": "Authorization"
+          }
+        }
+      },
+      {
+        "handler": "jwt",
+        "config": {
+          "token_from": {
+            "header": "Authorization"
+          }
+        }
+      },
+      {
+        "handler": "cookie_session",
+        "config": {
+          "check_session_url": "http://kratos-public/sessions/whoami",
+          "preserve_path": true,
+          "only": ["ory_kratos_session"]
+        }
+      }, 
+      {
+        "handler": "anonymous", 
+        "config": {
+          "subject": "anonymous"
+        }
       }
     ],
     "authorizer": {

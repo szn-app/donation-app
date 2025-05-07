@@ -162,6 +162,11 @@ EOF
 
 
 misc@api-data() {
+    check_if_grpc_services_listening() { 
+        netstat -tulnp | grep 446 # 4466 and 4467
+        grpcurl -plaintext localhost:4467 list
+    }
+
 
     display_port_forward (){
         ps aux | grep 'kubectl port-forward'
