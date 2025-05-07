@@ -1,5 +1,6 @@
 # manifest config for the actual app configuration
 # https://www.ory.sh/docs/keto/reference/configuration
+# https://raw.githubusercontent.com/ory/keto/master/.schema/config.schema.json
 
 keto:
   config:
@@ -24,8 +25,14 @@ keto:
       metrics:
         port: 4468
         host: 0.0.0.0
+      
+      # syntax endpoint not used
+      # opl: 
+      #   port: 
+      #   host: 
 
     # NOTE: additional namespaces may be defined through the initialization script using Keto API
+    # TODO: can be set through a file, check the json scheme
     namespaces:
       - id: 0
         name: Resource

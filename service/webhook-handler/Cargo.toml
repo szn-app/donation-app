@@ -4,6 +4,8 @@ version = "0.0.3"
 edition = "2021"
 
 [dependencies]
+shared_protobuf_webhook = { path = "./shared/protobuf-webhook" }
+
 axum = "0.8.1" # Web framework that focuses on ergonomics and modularity.
 base64 = "0.22.1" # Encode and decode base64 as bytes or utf8.
 http = "1.2.0" # Types for HTTP requests and responses.
@@ -22,7 +24,6 @@ env_logger = "0.10.1"
 # https://github.com/confluentinc/librdkafka/wiki/Using-SASL-with-librdkafka
 rdkafka = { version = "0.25", features = ["cmake-build", "gssapi"] }
 tonic = "0.13.0"
-shared_protobuf_webhook = { path = "./shared/protobuf-webhook" }
 
 [dev-dependencies]
 anyhow = "1.0.95"

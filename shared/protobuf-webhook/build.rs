@@ -36,5 +36,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             .compile_protos(&[path], &[proto_dir])?;
     }
 
+    // Tell cargo to rerun this build script if the proto files change
+    for proto_file in &proto_files {
+        println!("cargo:rerun-if-changed={}", proto_file.display());
+    }
+
     Ok(())
 }
