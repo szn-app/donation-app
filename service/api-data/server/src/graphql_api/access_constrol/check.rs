@@ -76,12 +76,7 @@ pub async fn check_permission_for_subject(
     let request = tonic::Request::new(CheckRequest {
         tuple: Some(tuple),
         max_depth: 10,
-        namespace: "".to_string(),
-        object: "".to_string(),
-        relation: "".to_string(),
-        latest: false,
-        snaptoken: "".to_string(),
-        subject: None,
+        ..Default::default()
     });
     let mut client = CheckServiceClient::new(keto_grpc_channel);
     let response = client.check(request).await?;
@@ -125,15 +120,9 @@ pub async fn check_permission_for_subject_set(
     };
 
     let request = tonic::Request::new(CheckRequest {
-        namespace: "".to_string(),
-        object: "".to_string(),
-        relation: "".to_string(),
-
         tuple: Some(relation_query),
         max_depth: 10, // maximum depth to search for a relation (default: 10)
-        latest: false,
-        snaptoken: "".to_string(),
-        subject: None,
+        ..Default::default()
     });
 
     let mut client = CheckServiceClient::new(keto_grpc_channel);
@@ -142,3 +131,6 @@ pub async fn check_permission_for_subject_set(
     // Extract the allowed field from the response
     Ok(response.into_inner().allowed)
 }
+
+// TODO: implement batch checks https://github.com/ory/keto/blob/master/proto/buf.md#ory-keto-relation_tuples-v1alpha2-Subject
+pub async fn batch_check_permission() {}

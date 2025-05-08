@@ -1,10 +1,13 @@
-use super::super::access_constrol::check::check_permission_for_subject;
+use super::super::access_constrol::{
+    check::check_permission_for_subject,
+    guard::{auth, AuthorizeUser},
+};
 use super::super::service::{DataContext, GlobalContext};
 use crate::database::model;
 use crate::database::query;
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 
-use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object};
+use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object}; // note: `graphql` attribute is processed by async_graphql macros
 use deadpool_postgres::Pool;
 use http::HeaderMap;
 use log;
@@ -72,15 +75,21 @@ impl Query {
     }
 
     // for debugging purposes
-    async fn dummyTestSecureGuard(&self, ctx: &Context<'_>) -> FieldResult<model::test::Test> {
-        log::debug!("--> dummyTestSecure @ graphql resolver");
+    async fn dummyTestSecurePermissionCheck(
+        &self,
+        ctx: &Context<'_>,
+    ) -> FieldResult<model::test::Test> {
+        log::debug!("--> dummyTestSecurePermissionCheck @ graphql resolver");
 
         let c = ctx.data::<DataContext>()?;
         let g = ctx.data::<GlobalContext>()?;
 
         let keto_client = g.keto_channel_group.write.clone();
 
-        let user_id = c.user_id.as_ref().ok_or("user info not provided")?;
+        let user_id = c
+            .user_id
+            .as_ref()
+            .ok_or("Not authenticated & no user info provided")?;
 
         match check_permission_for_subject(keto_client, "Test", "object", "relation", user_id).await
         {
@@ -102,6 +111,23 @@ impl Query {
                 return Err(async_graphql::Error::new(error_msg));
             }
         };
+
+        Ok(model::test::Test {
+            secureMessage: "secret message here".to_string(),
+        })
+    }
+
+    // for debugging purposes
+    #[graphql(
+        guard = "AuthorizeUser {
+            namespace: \"Endpoint\".to_string(),
+            object: \"k8s\".to_string(),
+            relation: \"access\".to_string()
+        }",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
+    async fn dummyTestSecureGuard(&self, ctx: &Context<'_>) -> FieldResult<model::test::Test> {
+        log::debug!("--> dummyTestSecureGuard @ graphql resolver");
 
         Ok(model::test::Test {
             secureMessage: "secret message here".to_string(),

@@ -157,6 +157,26 @@ EOF
 
         # request should be denied with anonymous user
         curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+
+        read -r -d '' QUERY <<EOF
+{
+  "query": "query { dummyTestSecurePermissionCheck { secureMessage } }"
+}
+EOF
+
+        # request should be denied with anonymous user
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+
+
+        read -r -d '' QUERY <<EOF
+{
+  "query": "query { dummyTestSecureGuard { secureMessage } }"
+}
+EOF
+
+        # request should be denied with anonymous user
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+
     }
 }
 

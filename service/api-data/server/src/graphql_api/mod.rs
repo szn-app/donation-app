@@ -3,12 +3,15 @@ pub mod handler;
 pub mod service;
 
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
-use async_graphql::{http::GraphiQLSource, Schema};
+use async_graphql::{
+    http::{GraphQLPlaygroundConfig, GraphiQLSource},
+    Schema,
+};
 use async_graphql_axum::GraphQL;
 use axum::{
     body, http,
     response::{Html, IntoResponse},
-    routing::get,
+    routing::{get, post_service},
     Router,
 };
 use service::GlobalContext;
@@ -34,15 +37,25 @@ pub fn routes(postgres_pool_group: PostgresPool, keto_channel_group: KetoChannel
 
     let graphql_impl_schema = Schema::build(q, m, s).data(global_context).finish();
 
-    Router::new().route(
-        "/graphql",
-        get(graphiql_handler)
+    Router::new()
+        .route(
+            "/graphql",
             // modified async_graphql_axum default GraphQL Axum service handle
-            .post_service(service::GraphQL::new(graphql_impl_schema)),
-    )
+            post_service(service::GraphQL::new(graphql_impl_schema)),
+        )
+        .route("/graphql-ide-1", get(ide_graphiql_handler))
+        .route("/graphql-ide-2", get(ide_graphql_playground)) // Serve the GraphQL Playground
 }
 
 // GraphiQL UI explorer interface
-async fn graphiql_handler() -> impl IntoResponse {
+// TODO: upgrade to fix loading issue https://github.com/async-graphql/async-graphql/issues
+async fn ide_graphiql_handler() -> impl IntoResponse {
     Html(GraphiQLSource::build().endpoint("/graphql").finish())
+}
+
+/// GraphQL Playground
+async fn ide_graphql_playground() -> impl IntoResponse {
+    Html(async_graphql::http::playground_source(
+        GraphQLPlaygroundConfig::new("/graphql"),
+    ))
 }
