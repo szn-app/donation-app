@@ -78,21 +78,30 @@ impl Query {
         let c = ctx.data::<DataContext>()?;
         let g = ctx.data::<GlobalContext>()?;
 
-        let r =
-            check_permission_for_subject(g.keto_channel_group.write.clone(), "n", "o", "r", "s")
-                .await;
-        dbg!(r);
+        let keto_client = g.keto_channel_group.write.clone();
 
-        // if let Some(user_id) = &c.user_id {
-        //     if user_id == "anonymous" {
-        //         return Err(
-        //             async_graphql::Error::new("Unauthorized").extend_with(|_, e| {
-        //                 e.set("code", "UNAUTHORIZED");
-        //                 e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
-        //             }),
-        //         );
-        //     }
-        // }
+        let user_id = c.user_id.as_ref().ok_or("user info not provided")?;
+
+        match check_permission_for_subject(keto_client, "Test", "object", "relation", user_id).await
+        {
+            Ok(true) => println!("permitted"),
+            Ok(false) => {
+                return Err(async_graphql::Error::new(format!(
+                    "Unauthorized (after keto permission check) for user {}",
+                    user_id
+                ))
+                .extend_with(|_, e| {
+                    e.set("code", "UNAUTHORIZED");
+                    e.set("status", 401); // UNAUTHORIZED 401: didn't provide proper authentication; FORBIDDEN 403: authenticated but not authorized
+                }));
+            }
+
+            Err(e) => {
+                // Convert the error to a string representation
+                let error_msg = format!("Permission check failed: {}", e);
+                return Err(async_graphql::Error::new(error_msg));
+            }
+        };
 
         Ok(model::test::Test {
             secureMessage: "secret message here".to_string(),

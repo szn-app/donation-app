@@ -3,3 +3,4 @@
 
 # Resources: 
 - Ory Keto permission language (Zanzibar-based relation tuples): https://github.com/ory/docs/blob/master/docs/keto/reference/ory-permission-language.mdx
+  - supports Object Permission Language (OPL)

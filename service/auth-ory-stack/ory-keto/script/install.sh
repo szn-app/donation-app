@@ -27,9 +27,9 @@ create_policies@keto() {
             t="$(mktemp).sh" && cat << 'EOF' > $t
 #!/bin/bash
 
-# install keto cli # TODO: update to v0.14.0
+# install keto cli 
 apt update >/dev/null 2>&1 && apt install curl jq -y >/dev/null 2>&1
-bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . keto v0.12.0-alpha.0 >/dev/null 2>&1 && chmod +x ./keto && mv ./keto /usr/bin/
+bash <(curl https://raw.githubusercontent.com/ory/meta/master/install.sh) -d -b . keto v0.14.0 >/dev/null 2>&1 && chmod +x ./keto && mv ./keto /usr/bin/
 
 
 verify() {

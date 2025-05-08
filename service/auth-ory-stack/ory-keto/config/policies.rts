@@ -1,4 +1,9 @@
 Endpoint:test#access@Group:admin
 Endpoint:test#access@(Group:admin#member)
-
 Endpoint:k8s#access@(Group:admin#member)
+
+
+Test:subject#relation@anonymous
+Test:object#relation@subject
+Test:object#relation@(Test:subject#relation)
+

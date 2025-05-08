@@ -35,7 +35,7 @@ keto:
     # TODO: can be set through a file, check the json scheme
     namespaces:
       - id: 0
-        name: Resource
+        name: Test
       - id: 1
         name: User
       - id: 2
@@ -44,3 +44,5 @@ keto:
         name: Endpoint # objects identified by UUIDs
       - id: 4
         name: Post
+      - id: 5
+        name: Resource
