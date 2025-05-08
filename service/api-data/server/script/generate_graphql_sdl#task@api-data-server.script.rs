@@ -5,23 +5,26 @@
 //! async-graphql = {version = "7.0.16", features = ["graphiql", "uuid", "time", "dataloader", "decimal", "url"]}
 //! ```
 
+/**
+ * NOTE: must run script with `--force` flag for `rust-script` to generated latest changes from api-data imported modules
+ */
 use std::fs;
 use std::path::Path;
 
 use api_data::database::model::user::Account;
-use api_data::graphql_api::{mutation_resolver::MutationResolver, query_resolver::QueryResolver};
+use api_data::graphql_api::handler::{EmptySubscription, Mutation, Query};
 use api_data::server::connection::PostgresPool;
-use async_graphql::{EmptySubscription, Schema};
+use async_graphql::Schema;
 
 // generates GraphQL schema SDL from the async_graphql code schema (which serves as origin for definition schema and also implementation of it)
 fn main() {
     let schema = {
         let postgres_pool_group = PostgresPool::new_mock();
 
-        let query_resolver = QueryResolver {
+        let query_resolver = Query {
             postgres_pool_group: postgres_pool_group.clone(), // pass context as instance value
         };
-        let mutation_resolver = MutationResolver {
+        let mutation_resolver = Mutation {
             postgres_pool_group, // pass context as instance value
         };
         let subscription_resolver = EmptySubscription;

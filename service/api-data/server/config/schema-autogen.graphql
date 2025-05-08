@@ -17,20 +17,29 @@ scalar DateTime
 
 
 
-type MutationResolver {
+type Mutation {
 	"""
 	Create a new user
 	"""
 	addAccount(id: UUID!): Account!
 }
 
-type QueryResolver {
+type Query {
 	"""
 	Get all accounts
 	"""
 	accounts: [Account!]!
+	dummyTest: [String!]!
+	dummyTestRequestHeader: String!
+	dummyTestSecure: Test!
+	dummyTestSecurePermissionCheck: Test!
+	dummyTestSecureGuard: Test! @auth(permission: "required_authorization")
 }
 
+
+type Test {
+	secureMessage: String!
+}
 
 """
 A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
@@ -44,10 +53,11 @@ entities without requiring a central allocating authority.
 """
 scalar UUID
 
+directive @auth(permission: String) on FIELD_DEFINITION | OBJECT
 directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 directive @specifiedBy(url: String!) on SCALAR
 schema {
-	query: QueryResolver
-	mutation: MutationResolver
+	query: Query
+	mutation: Mutation
 }

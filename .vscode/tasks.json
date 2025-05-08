@@ -1344,7 +1344,7 @@
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && generate_graphql_sdl#task@api-data-server.script.rs"
+        "source ${workspaceFolder}/script.sh && generate_graphql_sdl#task@api-data-server.script.rs --force"
       ],
       "presentation": {
         "reveal": "always",
