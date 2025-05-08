@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.0.79](https://github.com/szn-app/donation-app/compare/web-server@v0.0.78...web-server@v0.0.79) (2025-05-08)
+
+
+### Features
+
+* **authorize:** permission check funcationality for Keto service with batch relation tuple checks ([da59993](https://github.com/szn-app/donation-app/commit/da599937051698884c8b03e5715aded44bb91482))
+* **frontend:** integrate GraphQL Codegen with Tanstack React Query ([75a09fc](https://github.com/szn-app/donation-app/commit/75a09fcf4e603c5d8ca6fcca42f18dead4a109d9))
+* refine authentication login/logout flow to involve both operations on Hydra & Kratos for managing user state and cookie session appropriately ([011ed36](https://github.com/szn-app/donation-app/commit/011ed369bfe494c2d33ced1f7dd4c24b51dfdf0d))
+
 ## [0.0.78](https://github.com/szn-app/donation-app/compare/web-server@v0.0.77...web-server@v0.0.78) (2025-04-26)
 
 
