@@ -41,6 +41,18 @@ bootstrap@web_server() {
         # https://tanstack.com/router/latest/docs/framework/react/quick-start#using-file-based-route-generation
         echo ''
      }
+
+     install_codegen_tools() {
+        # https://github.com/dotansimha/graphql-code-generator
+        # https://the-guild.dev/graphql/codegen/docs/guides/react-query
+
+        pnpm add --save-dev @graphql-codegen/cli @parcel/watcher
+        pnpm add --save-dev @graphql-codegen/schema-ast
+        pnpm add --save-dev @0no-co/graphqlsp
+
+        # manual setting of cofig files
+        pnpm install
+     }
 }
 
 add_shadcn_components@web-server() { 
@@ -83,4 +95,10 @@ build_app@web-server() {
     NO_STRIP=true cargo tauri build 
     # run application
     WEBKIT_DISABLE_COMPOSITING_MODE=1 ./src-tauri/target/release/bundle/appimage/*.AppImage
+}
+
+generate_graphql_codegen() { 
+    npx graphql-codegen --config codegen.ts
+    # or 
+    pnpm run generate-graphql
 }

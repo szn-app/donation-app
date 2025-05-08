@@ -153,4 +153,6 @@
   "explorer.decorations.colors": true,
   "problems.decorations.enabled": false,
   "problems.visibility": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
