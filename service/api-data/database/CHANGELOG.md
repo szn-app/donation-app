@@ -1,5 +1,13 @@
 # Changelog
 
+## [17.4.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.3.2...api-data-database@v17.4.0) (2025-05-08)
+
+
+### Features
+
+* **api-data:** GraphQL implementation with query and mutation resolvers ([cde1e11](https://github.com/szn-app/donation-app/commit/cde1e11ba7db5370627bf5bf52b1192e397d3d04))
+* custom CNPG image with extensions using trunk package manager ([ebc1d93](https://github.com/szn-app/donation-app/commit/ebc1d93ec7de08c450c63c6fe530150222e55519))
+
 ## [17.3.2](https://github.com/szn-app/donation-app/compare/api-data-database@v17.3.1...api-data-database@v17.3.2) (2025-04-26)
 
 
