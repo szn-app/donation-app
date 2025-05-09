@@ -3,6 +3,7 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { NavProjects } from "@/components/nav-projects";
 import { NavMain } from "@/components/nav-main";
 import { navMainData, projects } from "@/data/donation-navigation";
+import { f } from "@/components/example-grpahql";
 
 export const Route = createLazyFileRoute("/_app/donation")({
   component,
@@ -119,6 +120,8 @@ const products: Product[] = [
 ];
 
 export default function component() {
+  f();
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6 sm:py-10 lg:max-w-7xl lg:px-8">
       <h2 className="sr-only">Products</h2>

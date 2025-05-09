@@ -6,6 +6,8 @@ dev@web-server() {
     pnpm run dev
     pnpm run lint -- --debug
     pnpm run lint -- --fix
+
+    pnpm run generate-graphql
 }
 
 skaffold#task@web-server() {
@@ -45,6 +47,9 @@ bootstrap@web_server() {
      install_codegen_tools() {
         # https://github.com/dotansimha/graphql-code-generator
         # https://the-guild.dev/graphql/codegen/docs/guides/react-query
+
+        pnpm add graphql
+        pnpm add -D typescript @graphql-codegen/cli
 
         pnpm add --save-dev @graphql-codegen/cli @parcel/watcher
         pnpm add --save-dev @graphql-codegen/schema-ast
@@ -97,8 +102,14 @@ build_app@web-server() {
     WEBKIT_DISABLE_COMPOSITING_MODE=1 ./src-tauri/target/release/bundle/appimage/*.AppImage
 }
 
-generate_graphql_codegen() { 
+generate_graphql_codegen#task@web-server() { 
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+
     npx graphql-codegen --config codegen.ts
-    # or 
-    pnpm run generate-graphql
+    
+    watch_mode() { 
+        npx graphql-codegen --config codegen.ts --watch
+    }
+
+    popd
 }

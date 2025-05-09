@@ -1,8 +1,11 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
- 
+
+import { loadConfig } from 'graphql-config';
+const c = await loadConfig();
+
 const config: CodegenConfig = {
-  schema: "../api-data/server/config/schema-autogen.graphql",
-  documents: ['src/**/*.tsx'],
+  schema: c?.getDefault().schema,
+  documents: c?.getDefault().documents,
   overwrite: true,
   ignoreNoDocuments: true,
   generates: {

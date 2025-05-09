@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -68,6 +69,16 @@ export type Test = {
   secureMessage: Scalars['String']['output'];
 };
 
+export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAccountListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: any, createdAt: any }> };
+
+export type GetAccountsListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAccountsListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: any }> };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -86,3 +97,19 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
+
+export const GetAccountListDocument = new TypedDocumentString(`
+    query GetAccountList {
+  accounts {
+    id
+    createdAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetAccountListQuery, GetAccountListQueryVariables>;
+export const GetAccountsListDocument = new TypedDocumentString(`
+    query GetAccountsList {
+  accounts {
+    id
+  }
+}
+    `) as unknown as TypedDocumentString<GetAccountsListQuery, GetAccountsListQueryVariables>;

@@ -1,0 +1,4 @@
+ignoredBuiltDependencies:
+  - '@heroui/shared-utils'
+  - '@parcel/watcher'
+  - esbuild
