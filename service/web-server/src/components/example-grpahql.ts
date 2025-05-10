@@ -1,19 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
-import { execute } from "graphql";
-import {graphql} from "@/graphql-generated"
+import {graphql} from "@/graphql-generated/gql"
 
-const a = graphql(`query GetAccountList { 
-    accounts { 
-        id
-        createdAt
+const allFilmsWithVariablesQueryDocument = graphql(/* GraphQL */ `
+    query Dummy1 {
+      __typename
     }
-}`);
+  `);
+  
 
+  // TODO: 
 export function f() {
-  const { data } = useQuery({
-    queryKey: ['films'],
-    queryFn: () => execute(GetAccountList)
-  })
+    // example https://studio.apollographql.com/public/SpaceX-pxxbxen/variant/current/home
+
+  // const { data } = useQuery({
+  //   queryKey: ['films'],
+  //   queryFn: () => execute(GetAccountList)
+  // })
  
-  console.log(data);
+  console.log('data');
 }

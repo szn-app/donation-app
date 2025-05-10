@@ -30,3 +30,4 @@ Development PRs can be automerged (`gh merge ... --auto`), while release PRs sho
 
 # API endpoints: 
 - write SQL ⟶ Resolvers -(manually using a script)⟶ DSL ⟶ Client call wrappers
+  - Implement common limit, filter, sort and pagination arguments for resolvers with SQL modification (otherwise, the default arguments supported by the server tool will be handled in Rust instead of optimized DB queries).

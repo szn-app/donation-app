@@ -17,3 +17,4 @@
 - Manual Google OIDC client registration.
 - Browser dev tools: React Developer Tools extension
 - repository: settings > secrets and variables > actions; add repository secret for ACTIONS_STEP_DEBUG = true and ACTIONS_RUNNER_DEBUG = true
+- change docker data location to avoid storage limitations: modify /etc/docker/daemon.json with "data-root" field.

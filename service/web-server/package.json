@@ -60,6 +60,7 @@
     "@graphql-codegen/client-preset": "4.8.1",
     "@graphql-codegen/introspection": "4.0.3",
     "@graphql-codegen/schema-ast": "^4.1.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@parcel/watcher": "^2.5.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/container-queries": "^0.1.1",

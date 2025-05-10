@@ -15,22 +15,28 @@ import * as types from './graphql';
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "query GetAccountList { \n    accounts { \n        id\n        createdAt\n    }\n}": typeof types.GetAccountListDocument,
-    "query GetAccountsList {\n  accounts {\n    id\n  }\n}": typeof types.GetAccountsListDocument,
+    "\n    query Dummy1 {\n      __typename\n    }\n  ": typeof types.Dummy1Document,
+    "query Dummy2 {\n  __typename\n}": typeof types.Dummy2Document,
+    "query Dummy {\n  __typename\n}": typeof types.DummyDocument,
 };
 const documents: Documents = {
-    "query GetAccountList { \n    accounts { \n        id\n        createdAt\n    }\n}": types.GetAccountListDocument,
-    "query GetAccountsList {\n  accounts {\n    id\n  }\n}": types.GetAccountsListDocument,
+    "\n    query Dummy1 {\n      __typename\n    }\n  ": types.Dummy1Document,
+    "query Dummy2 {\n  __typename\n}": types.Dummy2Document,
+    "query Dummy {\n  __typename\n}": types.DummyDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query GetAccountList { \n    accounts { \n        id\n        createdAt\n    }\n}"): typeof import('./graphql').GetAccountListDocument;
+export function graphql(source: "\n    query Dummy1 {\n      __typename\n    }\n  "): typeof import('./graphql').Dummy1Document;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query GetAccountsList {\n  accounts {\n    id\n  }\n}"): typeof import('./graphql').GetAccountsListDocument;
+export function graphql(source: "query Dummy2 {\n  __typename\n}"): typeof import('./graphql').Dummy2Document;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query Dummy {\n  __typename\n}"): typeof import('./graphql').DummyDocument;
 
 
 export function graphql(source: string) {

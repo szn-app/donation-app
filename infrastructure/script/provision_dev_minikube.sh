@@ -173,3 +173,10 @@ ABANDONED_bootstrap_minikube_baremetal() {
 
     minikube status
 }
+
+OBSOLETE_docker_app_data_path_change() {
+    # NOTE: after installation set root directory field to a large partition in order to prevent disk space /etc/docker/daemon.json (consult LLM instructions)
+    
+    docker info | grep "Docker Root Dir"
+    echo ''
+}

@@ -1,5 +1,3 @@
-query GetAccountsList {
-  accounts {
-    id
-  }
+query Dummy {
+  __typename
 }

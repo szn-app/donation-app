@@ -1,6 +1,6 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
-
 import { loadConfig } from 'graphql-config';
+
 const c = await loadConfig();
 
 const config: CodegenConfig = {

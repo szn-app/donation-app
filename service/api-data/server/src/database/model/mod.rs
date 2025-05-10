@@ -12,7 +12,8 @@ pub mod user {
 
     #[derive(Debug, Clone, PartialEq, async_graphql::SimpleObject)]
     pub struct Account {
-        pub id: uuid::Uuid,                   // uuid, NOT NULL
+        /// kratos id value
+        pub id: uuid::Uuid, // uuid, NOT NULL
         pub created_at: time::OffsetDateTime, // timestamp with time zone, NOT NULL
     }
 
@@ -31,6 +32,7 @@ pub mod test {
 
     #[derive(Debug, Clone, PartialEq, async_graphql::SimpleObject)]
     pub struct Test {
+        /// example graphql comments (should appear in graphql IDE)
         pub secureMessage: String,
     }
 }

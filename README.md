@@ -35,7 +35,7 @@ cilium image (stable): v1.17.3
 
 Skaffold version: v2.15.0
 Conntrack version: v1.4.7
-PostgreSQL version: 17.4
+PostgreSQL version: 17.5
 yq (https://github.com/mikefarah/yq/) version v4.45.1
 mc version RELEASE.2024-11-21T17-21-54Z (commit-id=1681e4497c09d7438a34e846f76dbde972ab7daf)
 Runtime: go1.23.4 linux/amd64

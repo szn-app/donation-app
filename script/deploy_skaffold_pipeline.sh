@@ -9,7 +9,7 @@ stop_minikube#task() {
     sudo systemctl status docker
 }
 
-start_minikube#task() {
+start_minikube_services_only#task() {
     minikube start --profile minikube
     minikube status
 
@@ -73,11 +73,14 @@ start.minikube#bootstrap#task@monorepo() {
 freeup_space.minikube#cleanup#task@monorepo() {
     minikube ssh df
     minikube ssh 'docker image prune -a -f'
+    minikube ssh -- docker system prune
     docker system prune --all --force
+    sudo docker system prune --volumes
 
     verify() {
         minikube ssh -- df -h
         df -h
+        df -h /var
     }
 }
 

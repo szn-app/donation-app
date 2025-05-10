@@ -17,6 +17,8 @@ pub struct Query {
     pub postgres_pool_group: PostgresPool,
 }
 
+// TODO: implement limit, filter, sort and pagination arguments.
+
 #[async_graphql::Object]
 impl Query {
     /// Get all accounts

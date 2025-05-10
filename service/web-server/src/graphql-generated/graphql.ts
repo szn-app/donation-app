@@ -69,15 +69,20 @@ export type Test = {
   secureMessage: Scalars['String']['output'];
 };
 
-export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
+export type Dummy1QueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAccountListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: any, createdAt: any }> };
+export type Dummy1Query = { __typename: 'Query' };
 
-export type GetAccountsListQueryVariables = Exact<{ [key: string]: never; }>;
+export type Dummy2QueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAccountsListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: any }> };
+export type Dummy2Query = { __typename: 'Query' };
+
+export type DummyQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DummyQuery = { __typename: 'Query' };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -98,18 +103,18 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
-export const GetAccountListDocument = new TypedDocumentString(`
-    query GetAccountList {
-  accounts {
-    id
-    createdAt
-  }
+export const Dummy1Document = new TypedDocumentString(`
+    query Dummy1 {
+  __typename
 }
-    `) as unknown as TypedDocumentString<GetAccountListQuery, GetAccountListQueryVariables>;
-export const GetAccountsListDocument = new TypedDocumentString(`
-    query GetAccountsList {
-  accounts {
-    id
-  }
+    `) as unknown as TypedDocumentString<Dummy1Query, Dummy1QueryVariables>;
+export const Dummy2Document = new TypedDocumentString(`
+    query Dummy2 {
+  __typename
 }
-    `) as unknown as TypedDocumentString<GetAccountsListQuery, GetAccountsListQueryVariables>;
+    `) as unknown as TypedDocumentString<Dummy2Query, Dummy2QueryVariables>;
+export const DummyDocument = new TypedDocumentString(`
+    query Dummy {
+  __typename
+}
+    `) as unknown as TypedDocumentString<DummyQuery, DummyQueryVariables>;
