@@ -20,7 +20,13 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const query_client = new QueryClient();
+const query_client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 3,
+    },
+  },
+});
 
 const rootElement = (document.getElementById("root") as HTMLElement)!;
 if (!rootElement.innerHTML) {

@@ -155,5 +155,14 @@
   "problems.visibility": false,
   "typescript.tsdk": "service/web-server/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "graphql-config.load.rootDir": "service/web-server/"
+  "graphql-config.load.rootDir": "service/web-server/",
+  "[sql]": {
+    "editor.formatOnSave": false
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

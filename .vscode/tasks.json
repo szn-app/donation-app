@@ -1243,30 +1243,6 @@
       "runOptions": {}
     },
     {
-      "label": "start_minikube#task",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && start_minikube#task"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) start_minikube#task"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": [],
-      "runOptions": {}
-    },
-    {
       "label": "stop_minikube#task",
       "type": "shell",
       "command": "bash",
@@ -1427,6 +1403,54 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) generate_graphql_codegen#task@web-server"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "start_minikube_services_only#task",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && start_minikube_services_only#task"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) start_minikube_services_only#task"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "watch.generate_graphql_codegen#task@web-server",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && watch.generate_graphql_codegen#task@web-server"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) watch.generate_graphql_codegen#task@web-server"
         }
       },
       "dependsOrder": "parallel",

@@ -107,9 +107,13 @@ generate_graphql_codegen#task@web-server() {
 
     npx graphql-codegen --config codegen.ts
     
-    watch_mode() { 
-        npx graphql-codegen --config codegen.ts --watch
-    }
+    popd
+}
 
+watch.generate_graphql_codegen#task@web-server() { 
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
+
+        npx graphql-codegen --config codegen.ts --watch
+    
     popd
 }

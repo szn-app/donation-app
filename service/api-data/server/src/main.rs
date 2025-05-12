@@ -9,7 +9,7 @@ use std::error::Error;
 use tokio;
 
 /// Parse environment variables and arguments
-fn parse_args() -> Result<(PostgresEndpointConfig, KetoEndpointConfig), Box<dyn Error>> {
+fn parse_args() -> Result<(PostgresEndpointConfig, KetoEndpointConfig, String), Box<dyn Error>> {
     let k = {
         const DEFAULT_KETO_ENDPOINT: &str = "localhost:4467";
 
@@ -42,7 +42,10 @@ fn parse_args() -> Result<(PostgresEndpointConfig, KetoEndpointConfig), Box<dyn 
         }
     };
 
-    Ok((p, k))
+    let app_endpoint =
+        env::var("APP_ENDPOINT").unwrap_or_else(|_| String::from("https://donation-app.local"));
+
+    Ok((p, k, app_endpoint))
 }
 
 #[tokio::main]

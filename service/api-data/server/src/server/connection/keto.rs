@@ -15,14 +15,34 @@ pub struct KetoChannelGroup {
     pub write: Channel,
 }
 
-pub async fn create_grpc_connection(
-    read: &str,
-    write: &str,
-) -> Result<KetoChannelGroup, Box<dyn Error + Send + Sync>> {
-    let read = connect(read).await?;
-    let write = connect(write).await?;
+impl KetoChannelGroup {
+    // NOTE: ASYNC consrtuctor may fail // TODO: switch to connect_lazy with connection validation method
+    pub async fn new(
+        read: &str,
+        write: &str,
+    ) -> Result<KetoChannelGroup, Box<dyn Error + Send + Sync>> {
+        let read = connect(read).await?;
+        let write = connect(write).await?;
 
-    Ok(KetoChannelGroup { read, write })
+        Ok(KetoChannelGroup { read, write })
+    }
+
+    /// Creates a mock KetoChannelGroup for testing purposes
+    pub fn new_mock() -> KetoChannelGroup {
+        // Create an endpoint that will never actually be used
+        // but will provide a Channel instance for testing
+        let mock_endpoint = "http://localhost:0";
+
+        // Using Channel::from_static which doesn't actually connect until used
+        let read_channel = Channel::from_static(mock_endpoint).connect_lazy();
+
+        let write_channel = Channel::from_static(mock_endpoint).connect_lazy();
+
+        KetoChannelGroup {
+            read: read_channel,
+            write: write_channel,
+        }
+    }
 }
 
 async fn connect(address: &str) -> Result<Channel, Box<dyn Error + Send + Sync>> {

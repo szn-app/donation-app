@@ -8,8 +8,10 @@ test@api-data() {
 
 test_watch@api-data() {
     export RUST_LOG=debug
-    cargo watch -q -c -w src/ -x run
     cargo watch -q -c -w tests/ -x "test -q test_main -- --nocapture" 
+
+    cargo watch -q -c -w src/ -x run
+    cargo watch -q -c -w src/ -x "run --bin mocked_isolated_graphql"
 }
 
 single_test@api-data() {
@@ -19,6 +21,11 @@ single_test@api-data() {
     sleep 1s
     cargo test -q test_main -- --nocapture 
     kill $(jobs -p)
+}
+
+run_specific_binary@api-data() { 
+    cargo run # main.rs
+    cargo run --bin mocked_isolated_graphql
 }
 
 # NOTE: used for docker command

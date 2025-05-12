@@ -1,22 +1,11 @@
 import React, { Suspense, useState } from "react";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GlobalProvider } from "../contexts/GlobalContext";
 import { HeroUIProvider } from "@heroui/react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-
-const TanStackRouterDevtools =
-  process.env.NODE_ENV === "production"
-    ? () => null // Render nothing in production
-    : React.lazy(() =>
-        // Lazy load in development
-        import("@tanstack/router-devtools").then((res) => ({
-          default: res.TanStackRouterDevtools,
-          // For Embedded Mode
-          // default: res.TanStackRouterDevtoolsPanel
-        })),
-      );
+import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 if (import.meta.env.DEV) {
   console.log("--> development mode");
@@ -30,9 +19,15 @@ export const Route = createRootRoute({
           <Outlet />
         </HeroUIProvider>
       </GlobalProvider>
-      <ReactQueryDevtools />
+
       <Suspense>
-        <TanStackRouterDevtools />
+        {/* https://tanstack.com/query/latest/docs/framework/react/devtools */}
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          buttonPosition="bottom-left"
+        />
+        {/* https://tanstack.com/router/latest/docs/framework/react/devtools#using-devtools-in-production */}
+        <TanStackRouterDevtools initialIsOpen={false} />
       </Suspense>
     </>
   ),

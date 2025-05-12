@@ -1,0 +1,15 @@
+tech-stack: 
+- react
+- tanstack router
+- graphQL codegen
+- tanstack react query
+- graphql-request
+- tailwindcss
+- radix-ui
+- shadcn-ui
+- origin-ui
+- tailwindcss plus components/templates
+
+others: 
+- eslint linter
+- prettier formatter

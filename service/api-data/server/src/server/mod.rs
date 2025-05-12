@@ -5,9 +5,10 @@ pub mod grpc;
 pub mod http;
 
 pub async fn run_server(
-    (pg_config, keto_config): (
+    (pg_config, keto_config, app_endpoint): (
         connection::PostgresEndpointConfig,
         connection::KetoEndpointConfig,
+        String,
     ),
 ) -> Result<(), Box<dyn std::error::Error>> {
     let postgres_pool_group = {
@@ -28,14 +29,14 @@ pub async fn run_server(
     };
 
     // create keto client grpc connection
-    let keto_channel_group: connection::KetoChannelGroup = {
-        connection::keto::create_grpc_connection(&keto_config.read, &keto_config.write)
+    let keto_channel_group = {
+        connection::keto::KetoChannelGroup::new(&keto_config.read, &keto_config.write)
             .await
             .expect("Failed to create gRPC channel")
     };
 
     tokio::select! {
-        result = http::start_http_server(postgres_pool_group.clone(), keto_channel_group) => result,
+        result = http::start_http_server(postgres_pool_group.clone(), keto_channel_group, &app_endpoint) => result,
         result = grpc::start_grpc_server(postgres_pool_group) => result
     }
 }

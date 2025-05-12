@@ -2,7 +2,7 @@
   {
     "id": "api-private",
     "match": {
-      "url": "http://api.donation-app.local/rest/private",
+      "url": "http://api.donation-app.local/rest/private<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -45,7 +45,7 @@
   {
     "id": "api-allow-public",
     "match": {
-      "url": "http://api.donation-app.local/rest/public",
+      "url": "http://api.donation-app.local/rest/public<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -72,8 +72,8 @@
   {
     "id": "api-allow-graphql",
     "match": {
-      "url": "http://api.donation-app.local/graphql",
-      "methods": ["GET", "POST"]
+      "url": "http://api.donation-app.local/graphql<(?:/.*)?>",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
       {
@@ -136,7 +136,7 @@
   {
     "id": "k8s-hubble",
     "match": {
-      "url": "http://hubble.k8s.donation-app.local",
+      "url": "http://hubble.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -175,7 +175,7 @@
   {
     "id": "k8s-dashboard",
     "match": {
-      "url": "http://dashboard.k8s.donation-app.local",
+      "url": "http://dashboard.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -214,7 +214,7 @@
   {
     "id": "k8s-longhorn",
     "match": {
-      "url": "http://longhorn.k8s.donation-app.local",
+      "url": "http://longhorn.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -253,7 +253,7 @@
   {
     "id": "k8s-ory-admin",
     "match": {
-      "url": "http://ory-admin.k8s.donation-app.local",
+      "url": "http://ory-admin.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -292,7 +292,7 @@
   {
     "id": "k8s-minio",
     "match": {
-      "url": "http://minio.k8s.donation-app.local",
+      "url": "http://minio.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -331,7 +331,7 @@
   {
     "id": "k8s-kafka",
     "match": {
-      "url": "http://kafka.k8s.donation-app.local",
+      "url": "http://kafka.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [
@@ -370,7 +370,7 @@
   {
     "id": "k8s-pgadmin4",
     "match": {
-      "url": "http://pgadmin4.k8s.donation-app.local",
+      "url": "http://pgadmin4.k8s.donation-app.local<(?:/.*)?>",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "PATCH", "HEAD", "DELETE"]
     },
     "authenticators": [

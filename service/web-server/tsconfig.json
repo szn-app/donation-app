@@ -30,6 +30,7 @@
       ]
     },
     "plugins": [
+      // allow autocompletion in graphql documents
       {
         "name": "@0no-co/graphqlsp",
         "schema": "./config/schema-autogen.graphql"
@@ -39,8 +40,9 @@
     // "noUnusedLocals": false
   },
   "include": [
-    "src",
-    //  "../../tmp/example"
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
   ],
   "references": [
     {
