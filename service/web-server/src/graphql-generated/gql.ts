@@ -16,10 +16,12 @@ import * as types from './graphql';
  */
 type Documents = {
     "\n  query Dummy {\n    accounts {\n      id\n      createdAt\n    }\n  }\n": typeof types.DummyDocument,
+    "query GetAccountList {\n  accounts {\n    id\n    createdAt\n  }\n}": typeof types.GetAccountListDocument,
     "query Dummy2 {\n  __typename\n}": typeof types.Dummy2Document,
 };
 const documents: Documents = {
     "\n  query Dummy {\n    accounts {\n      id\n      createdAt\n    }\n  }\n": types.DummyDocument,
+    "query GetAccountList {\n  accounts {\n    id\n    createdAt\n  }\n}": types.GetAccountListDocument,
     "query Dummy2 {\n  __typename\n}": types.Dummy2Document,
 };
 
@@ -27,6 +29,10 @@ const documents: Documents = {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Dummy {\n    accounts {\n      id\n      createdAt\n    }\n  }\n"): typeof import('./graphql').DummyDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "query GetAccountList {\n  accounts {\n    id\n    createdAt\n  }\n}"): typeof import('./graphql').GetAccountListDocument;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

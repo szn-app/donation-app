@@ -1,0 +1,6 @@
+query GetAccountList {
+  accounts {
+    id
+    createdAt
+  }
+}

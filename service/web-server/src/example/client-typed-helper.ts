@@ -30,6 +30,7 @@ export function createGraphQLClient(token?: string): GraphQLClient {
 /**
  * Type-safe wrapper for useQuery with GraphQL
  * https://github.com/dotansimha/graphql-code-generator/blob/master/examples/react/tanstack-react-query/src/use-graphql.ts
+ * https://the-guild.dev/graphql/codegen/docs/guides/react-query#type-safe-graphql-operation-execution
  *
  * @param document - GraphQL typed document string
  * @param variables - Query variables (optional if no variables needed)
