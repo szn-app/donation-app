@@ -16,8 +16,8 @@ const config: CodegenConfig = {
       UUID: "string",
       ID: "string",
       DateTime: {
-        input: "string",
-        output: "Date",
+        input: "string", // GraphQL input expects a string (e.g., "2023-01-01T00:00:00Z")
+        output: "Date", // TypeScript output is a Date object
       },
       JSON: "{ [key: string]: any }",
       Decimal: "number", // If you have decimals in your schema
@@ -58,30 +58,26 @@ const config: CodegenConfig = {
     // https://github.com/colinhacks/zod
     //
     // issue: not generating schemas for queries only inputs and data object models https://github.com/Code-Hex/graphql-codegen-typescript-validation-schema/issues/472
-    // TODO: fix zod Date generation
-    // "src/graphql-generated/runtime-validate.ts": {
-    //   plugins: [
-    //     // "typescript", // not needed because already taken care of by preset-client
-    //     "typescript-validation-schema",
-    //   ],
-    //   config: {
-    //     schema: "zod",
-    //     importFrom: "src/graphql-generated/graphql.ts",
-    //     withObjectType: true,
-    //     // see: https://www.graphql-code-generator.com/plugins/typescript
-    //     strictScalars: true,
-    //     // Overrides built-in ID scalar to both input and output types as string.
-    //     // see: https://the-guild.dev/graphql/codegen/plugins/typescript/typescript#scalars
-    //     // You can also write the config for this plugin together
-    //     scalarSchemas: {
-    //       // DateTime: {
-    //       //   schema: "z.string().datetime().transform((val) => new Date(val))",
-    //       //   input: "z.date()",
-    //       //   output: "z.date()",
-    //       // },
-    //     },
-    //   },
-    // },
+    "src/graphql-generated/runtime-validate.ts": {
+      plugins: [
+        // "typescript", // not needed because already taken care of by preset-client
+        "typescript-validation-schema",
+      ],
+      config: {
+        schema: "zod",
+        importFrom: "src/graphql-generated/graphql.ts",
+        withObjectType: true,
+        // see: https://www.graphql-code-generator.com/plugins/typescript
+        strictScalars: true,
+        // parse and validate
+        scalarSchemas: {
+          // Overrides built-in ID scalar to both input and output types as string.
+          // see: https://the-guild.dev/graphql/codegen/plugins/typescript/typescript#scalars
+          ID: "string",
+          DateTime: "z.preprocess((arg) => new Date(arg), z.date())", // Coerce ISO strings to Date objects
+        },
+      },
+    },
 
     /*
     // older approach - using preset client is now recommended instead;

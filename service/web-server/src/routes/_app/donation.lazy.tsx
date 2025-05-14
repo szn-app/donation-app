@@ -4,7 +4,7 @@ import { NavProjects } from "@/components/nav-projects";
 import { NavMain } from "@/components/nav-main";
 import { navMainData, projects } from "@/data/donation-navigation";
 import { Product, products } from "@/data/dummy_products";
-import { ExampleGraphql } from "@/example/example-grpahql";
+import { E } from "@/example/example-grpahql";
 
 export const Route = createLazyFileRoute("/_app/donation")({
   component,
@@ -17,7 +17,7 @@ export default function component() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-5 sm:px-6 sm:py-10 lg:max-w-7xl lg:px-8">
       <h2 className="sr-only">Products</h2>
-      <ExampleGraphql />
+      <E />
 
       <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8">
         {products.map((product) => (

@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { useAuth } from "react-oidc-context";
-import { useQuery } from "@tanstack/react-query";
-import { request } from "graphql-request";
-import { graphql } from "@/graphql-generated/gql";
-// import { AccountSchema } from "@/graphql-generated/runtime-validate";
 import { z } from "zod";
+import { useAuth } from "react-oidc-context";
+import { request } from "graphql-request";
+import { useQuery } from "@tanstack/react-query";
+import { graphql } from "@/graphql-generated/gql";
 
+import { AccountSchema } from "@/graphql-generated/runtime-validate";
 import {
   DummyQuery,
   Account,
@@ -22,23 +22,28 @@ const DUMMY_QUERY = graphql(`
   }
 `);
 
-export function ExampleGraphql() {
+export const E = ExampleGraphqlZodParsing;
+
+export function ExampleGraphqlZodParsing() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["cache-key-1"],
-    queryFn: async () => {
-      const response = await request<GetAccountListQuery>(
+    queryFn: async () =>
+      await request<GetAccountListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         GetAccountListDocument.toString(),
-      );
-
-      return response;
-    },
+      ),
     // parsing setp to match expected types to returned values on runtime
-    // select: (raw) => ({
-    //   accounts: raw.accounts.map((account) => {
-    //     return AccountSchema.parse(account);
-    //   }),
-    // }),
+    select: (raw) => ({
+      accounts: raw.accounts.map((account) => {
+        const { data, error, success } = AccountSchema().safeParse(account);
+        if (!success) {
+          console.error("Validation failed for account:", error);
+          // Optionally return a fallback value or rethrow the error
+          throw error;
+        }
+        return data;
+      }),
+    }),
   });
 
   if (isLoading) return <p>Loading...</p>;
@@ -58,7 +63,7 @@ export function ExampleGraphql() {
       </ul>
     </div>
   ) : (
-    <>Loading ...</>
+    <>No items present.</>
   );
 }
 

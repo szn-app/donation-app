@@ -74,15 +74,15 @@ export type DummyQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type DummyQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
 
-export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAccountListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
-
 export type Dummy2QueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type Dummy2Query = { __typename: 'Query' };
+
+export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAccountListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -111,6 +111,11 @@ export const DummyDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<DummyQuery, DummyQueryVariables>;
+export const Dummy2Document = new TypedDocumentString(`
+    query Dummy2 {
+  __typename
+}
+    `) as unknown as TypedDocumentString<Dummy2Query, Dummy2QueryVariables>;
 export const GetAccountListDocument = new TypedDocumentString(`
     query GetAccountList {
   accounts {
@@ -119,8 +124,3 @@ export const GetAccountListDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetAccountListQuery, GetAccountListQueryVariables>;
-export const Dummy2Document = new TypedDocumentString(`
-    query Dummy2 {
-  __typename
-}
-    `) as unknown as TypedDocumentString<Dummy2Query, Dummy2QueryVariables>;
