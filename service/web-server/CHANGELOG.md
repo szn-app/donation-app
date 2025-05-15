@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.79](https://github.com/szn-app/donation-app/compare/web-server@v0.0.78...web-server@v0.0.79) (2025-05-15)
+
+
+### Features
+
+* **authorize:** permission check funcationality for Keto service with batch relation tuple checks ([da59993](https://github.com/szn-app/donation-app/commit/da599937051698884c8b03e5715aded44bb91482))
+* autogenerate tanstack query type-safe hooks with graphql-request; Support additional custom types; Handle CORS for api ([3f36cd4](https://github.com/szn-app/donation-app/commit/3f36cd481b05dffa9057ad2eb03166079c0330f4))
+* **frontend:** integrate GraphQL Codegen with Tanstack React Query ([75a09fc](https://github.com/szn-app/donation-app/commit/75a09fcf4e603c5d8ca6fcca42f18dead4a109d9))
+* parse & validate json data from external API using codegen zod tool ([e4ff6bb](https://github.com/szn-app/donation-app/commit/e4ff6bb92dcbde830a87464d16e27d7bb0df2335))
+* refine authentication login/logout flow to involve both operations on Hydra & Kratos for managing user state and cookie session appropriately ([011ed36](https://github.com/szn-app/donation-app/commit/011ed369bfe494c2d33ced1f7dd4c24b51dfdf0d))
+* support partial queries with validation/parsing; ([e9d9173](https://github.com/szn-app/donation-app/commit/e9d9173f29c8f773a904795e167850285a614bdb))
+
+
+### Bug Fixes
+
+* graphql configuration with codegen and react query; + example ([d9ab9b1](https://github.com/szn-app/donation-app/commit/d9ab9b15f25dfdab3a9069cbef3928866c856db9))
+* zod validation/parsing of Date fields ([a1a0e41](https://github.com/szn-app/donation-app/commit/a1a0e415a111cdfa7948e238d72e859a188e0a52))
+
 ## [0.0.78](https://github.com/szn-app/donation-app/compare/web-server@v0.0.77...web-server@v0.0.78) (2025-04-26)
 
 
