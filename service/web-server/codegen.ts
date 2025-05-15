@@ -70,11 +70,19 @@ const config: CodegenConfig = {
         // see: https://www.graphql-code-generator.com/plugins/typescript
         strictScalars: true,
         // parse and validate
+        // NOTE to achieve non-strict validation/parsing: by making all types optional with .optional() zod in mapping, it permits to use partial queries (that do not cover all Graphql requited fields); Another apporach to make validation lenient is to use .partial() or .deepPartial() methods on runtime
         scalarSchemas: {
           // Overrides built-in ID scalar to both input and output types as string.
           // see: https://the-guild.dev/graphql/codegen/plugins/typescript/typescript#scalars
-          ID: "string",
-          DateTime: "z.preprocess((arg) => new Date(arg), z.date())", // Coerce ISO strings to Date objects
+          ID: "z.string()",
+          DateTime: "z.coerce.date()", // Coerce ISO strings to Date objects
+          UUID: "z.string()",
+          JSON: "z.record(z.any())",
+          Decimal: "z.number()",
+          BigInt: "z.number()", // or can be set to  z.string()
+          URL: "z.string().url()",
+          String: "z.string()",
+          Int: "z.number()",
         },
       },
     },

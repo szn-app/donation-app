@@ -5,39 +5,42 @@ import { request } from "graphql-request";
 import { useQuery } from "@tanstack/react-query";
 import { graphql } from "@/graphql-generated/gql";
 
-import { AccountSchema } from "@/graphql-generated/runtime-validate";
+import { TestSchema } from "@/graphql-generated/runtime-validate";
 import {
+  Test,
+  GetTestListQuery,
+  GetTestListDocument,
+  GetTestListPartialQuery,
+  DummyDocument,
   DummyQuery,
-  Account,
-  GetAccountListQuery,
-  GetAccountListDocument,
 } from "@/graphql-generated/graphql";
 
-const DUMMY_QUERY = graphql(`
-  query Dummy {
-    accounts {
-      id
-      createdAt
+// do not query `s` field
+const GET_TEST_LIST_PARTIAL_DOCUMENT = graphql(`
+  query GetTestListPartial {
+    tests {
+      i
+      d
     }
   }
 `);
 
-export const E = ExampleGraphqlZodParsing;
+export const E = ExampleGraphqlPartial;
 
-export function ExampleGraphqlZodParsing() {
+export function ExampleGraphqlPartial() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["cache-key-1"],
     queryFn: async () =>
-      await request<GetAccountListQuery>(
+      await request<GetTestListPartialQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
-        GetAccountListDocument.toString(),
+        GET_TEST_LIST_PARTIAL_DOCUMENT.toString(),
       ),
     // parsing setp to match expected types to returned values on runtime
     select: (raw) => ({
-      accounts: raw.accounts.map((account) => {
-        const { data, error, success } = AccountSchema().safeParse(account);
+      tests: raw.tests.map((test) => {
+        const { data, error, success } = TestSchema().partial().safeParse(test);
         if (!success) {
-          console.error("Validation failed for account:", error);
+          console.error("Validation failed for test:", error);
           // Optionally return a fallback value or rethrow the error
           throw error;
         }
@@ -49,15 +52,58 @@ export function ExampleGraphqlZodParsing() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const accounts = data?.accounts;
+  const tests = data?.tests;
 
-  return accounts ? (
+  return tests ? (
     <div>
-      <h1>Accounts list:</h1>
+      <h1>Tests list:</h1>
       <ul>
-        {accounts.map((account, i) => (
-          <li key={i}>
-            <strong>{account.id}</strong> — {account.createdAt.toISOString()}
+        {tests.map((test, index) => (
+          <li key={index}>
+            <strong>{test.i}</strong> — {test.d?.toISOString()}
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+    <>No items present.</>
+  );
+}
+
+export function ExampleGraphqlZodParsing() {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["cache-key-1"],
+    queryFn: async () =>
+      await request<GetTestListQuery>(
+        import.meta.env.VITE_GRAPHQL_ENDPOINT,
+        GetTestListDocument.toString(),
+      ),
+    // parsing setp to match expected types to returned values on runtime
+    select: (raw) => ({
+      tests: raw.tests.map((test) => {
+        const { data, error, success } = TestSchema().safeParse(test);
+        if (!success) {
+          console.error("Validation failed for test:", error);
+          // Optionally return a fallback value or rethrow the error
+          throw error;
+        }
+        return data;
+      }),
+    }),
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error: {error.message} </p>;
+
+  const tests = data?.tests;
+
+  return tests ? (
+    <div>
+      <h1>Tests list:</h1>
+      <ul>
+        {tests.map((test, _index) => (
+          <li key={test.i}>
+            <strong>{test.s}</strong> — {test.d.toISOString()}
           </li>
         ))}
       </ul>
@@ -68,21 +114,21 @@ export function ExampleGraphqlZodParsing() {
 }
 
 export function ExampleGraphqlQueryIntegratedParsing() {
-  const { data, isLoading, isError, error } = useQuery<DummyQuery>({
+  const { data, isLoading, isError, error } = useQuery<GetTestListQuery>({
     queryKey: ["dummy"],
     queryFn: async () => {
-      const response = await request<DummyQuery>(
+      const response = await request<GetTestListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
-        DUMMY_QUERY.toString(),
+        GetTestListDocument.toString(),
       );
 
       return response;
     },
     // parsing setp to match types on runtime
     select: (data) => ({
-      accounts: data.accounts.map((account) => ({
-        ...account,
-        createdAt: new Date(account.createdAt),
+      tests: data.tests.map((test) => ({
+        ...test,
+        d: new Date(test.d),
       })),
     }),
   });
@@ -90,15 +136,15 @@ export function ExampleGraphqlQueryIntegratedParsing() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const accounts = data?.accounts;
+  const tests = data?.tests;
 
-  return accounts ? (
+  return tests ? (
     <div>
-      <h1>Accounts list:</h1>
+      <h1>Tests list:</h1>
       <ul>
-        {accounts.map((account, i) => (
+        {tests.map((test, i) => (
           <li key={i}>
-            <strong>{account.id}</strong> — {account.createdAt.toISOString()}
+            <strong>{test.i}</strong> — {test.d.toISOString()}
           </li>
         ))}
       </ul>
@@ -111,24 +157,22 @@ export function ExampleGraphqlQueryIntegratedParsing() {
 export function ExampleGraphqlFetchManualParsing() {
   useEffect(() => {
     async function fetch_data() {
-      const { accounts } = await request<DummyQuery>(
+      const { tests } = await request<GetTestListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
-        DUMMY_QUERY.toString(),
+        GetTestListDocument.toString(),
       );
 
-      return accounts as Account[];
+      return tests as Test[];
     }
 
     try {
-      fetch_data().then((accounts) => {
+      fetch_data().then((tests) => {
         // NOTE: response still requires parsing on runtime;
 
-        console.log(typeof accounts[0].createdAt);
-        console.log(
-          typeof new Date(accounts[0].createdAt as unknown as string),
-        );
+        console.log(typeof tests[0].d);
+        console.log(typeof new Date(tests[0].d as unknown as string));
 
-        let d = new Date(accounts[0].createdAt as unknown as string);
+        let d = new Date(tests[0].d as unknown as string);
         console.log(d.toISOString());
       });
     } catch (e) {
@@ -144,12 +188,12 @@ export function ExampleGraphqlFetchManualParsing() {
 // usage example query
 export function ExampleGraphqlWithoutAuth() {
   // NOTE: typescipt doesn't enforce types at runtime, thus parsing is required
-  const { data, isLoading, isError, error } = useQuery<DummyQuery>({
+  const { data, isLoading, isError, error } = useQuery<GetTestListQuery>({
     queryKey: ["dummy"],
-    queryFn: async (): Promise<DummyQuery> => {
-      const r = await request<DummyQuery>(
+    queryFn: async (): Promise<GetTestListQuery> => {
+      const r = await request<GetTestListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
-        DUMMY_QUERY.toString(),
+        GetTestListDocument.toString(),
       );
 
       return r;
@@ -159,15 +203,15 @@ export function ExampleGraphqlWithoutAuth() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const accounts = data?.accounts;
+  const tests = data?.tests;
 
-  return accounts ? (
+  return tests ? (
     <div>
-      <h1>Accounts list:</h1>
+      <h1>Tests list:</h1>
       <ul>
-        {accounts.map((account, i) => (
+        {tests.map((test, i) => (
           <li key={i}>
-            <strong>{account.id}</strong> — {account.createdAt.toISOString()}
+            <strong>{test.i}</strong> — {test.d.toISOString()}
           </li>
         ))}
       </ul>
@@ -186,12 +230,12 @@ export function ExampleGraphqlWIthAuth() {
     ? { Authorization: `Bearer ${token}` }
     : undefined;
 
-  const { data, isLoading, isError, error } = useQuery<DummyQuery>({
+  const { data, isLoading, isError, error } = useQuery<GetTestListQuery>({
     queryKey: ["dummy"],
     queryFn: async () =>
-      request<DummyQuery>(
+      request<GetTestListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
-        DUMMY_QUERY.toString(),
+        GetTestListDocument.toString(),
         undefined,
         headers,
       ),
@@ -200,15 +244,15 @@ export function ExampleGraphqlWIthAuth() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const accounts = data?.accounts;
+  const tests = data?.tests;
 
-  return accounts ? (
+  return tests ? (
     <div>
-      <h1>Accounts list:</h1>
+      <h1>Tests list:</h1>
       <ul>
-        {accounts.map((account, i) => (
+        {tests.map((test, i) => (
           <li key={i}>
-            <strong>{account.id}</strong> — {account.createdAt.toISOString()}
+            <strong>{test.i}</strong> — {test.d.toISOString()}
           </li>
         ))}
       </ul>

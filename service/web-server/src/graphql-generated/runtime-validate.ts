@@ -14,7 +14,7 @@ export const definedNonNullAnySchema = z.any().refine((v) => isDefinedNonNullAny
 export function AccountSchema(): z.ZodObject<Properties<Account>> {
   return z.object({
     __typename: z.literal('Account').optional(),
-    createdAt: z.preprocess((arg) => new Date(arg), z.date()),
+    createdAt: z.coerce.date(),
     id: z.string()
   })
 }
@@ -22,6 +22,8 @@ export function AccountSchema(): z.ZodObject<Properties<Account>> {
 export function TestSchema(): z.ZodObject<Properties<Test>> {
   return z.object({
     __typename: z.literal('Test').optional(),
-    secureMessage: z.string()
+    d: z.coerce.date(),
+    i: z.number(),
+    s: z.string()
   })
 }

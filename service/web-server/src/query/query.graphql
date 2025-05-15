@@ -4,3 +4,11 @@ query GetAccountList {
     createdAt
   }
 }
+
+query GetTestList {
+  tests {
+    i
+    s
+    d
+  }
+}

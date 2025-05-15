@@ -39,6 +39,7 @@ export type Scalars = {
 export type Account = {
   __typename?: 'Account';
   createdAt: Scalars['DateTime']['output'];
+  /** kratos id value */
   id: Scalars['UUID']['output'];
 };
 
@@ -62,27 +63,36 @@ export type Query = {
   dummyTestSecure: Test;
   dummyTestSecureGuard: Test;
   dummyTestSecurePermissionCheck: Test;
+  tests: Array<Test>;
 };
 
 export type Test = {
   __typename?: 'Test';
-  secureMessage: Scalars['String']['output'];
+  d: Scalars['DateTime']['output'];
+  /** example graphql comments (should appear in graphql IDE) */
+  i: Scalars['Int']['output'];
+  s: Scalars['String']['output'];
 };
+
+export type GetTestListPartialQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTestListPartialQuery = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, d: Date }> };
 
 export type DummyQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DummyQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
-
-export type Dummy2QueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type Dummy2Query = { __typename: 'Query' };
+export type DummyQuery = { __typename: 'Query' };
 
 export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAccountListQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
+
+export type GetTestListQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTestListQuery = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, s: string, d: Date }> };
 
 export class TypedDocumentString<TResult, TVariables>
   extends String
@@ -103,19 +113,19 @@ export class TypedDocumentString<TResult, TVariables>
   }
 }
 
-export const DummyDocument = new TypedDocumentString(`
-    query Dummy {
-  accounts {
-    id
-    createdAt
+export const GetTestListPartialDocument = new TypedDocumentString(`
+    query GetTestListPartial {
+  tests {
+    i
+    d
   }
 }
-    `) as unknown as TypedDocumentString<DummyQuery, DummyQueryVariables>;
-export const Dummy2Document = new TypedDocumentString(`
-    query Dummy2 {
+    `) as unknown as TypedDocumentString<GetTestListPartialQuery, GetTestListPartialQueryVariables>;
+export const DummyDocument = new TypedDocumentString(`
+    query Dummy {
   __typename
 }
-    `) as unknown as TypedDocumentString<Dummy2Query, Dummy2QueryVariables>;
+    `) as unknown as TypedDocumentString<DummyQuery, DummyQueryVariables>;
 export const GetAccountListDocument = new TypedDocumentString(`
     query GetAccountList {
   accounts {
@@ -124,3 +134,12 @@ export const GetAccountListDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetAccountListQuery, GetAccountListQueryVariables>;
+export const GetTestListDocument = new TypedDocumentString(`
+    query GetTestList {
+  tests {
+    i
+    s
+    d
+  }
+}
+    `) as unknown as TypedDocumentString<GetTestListQuery, GetTestListQueryVariables>;

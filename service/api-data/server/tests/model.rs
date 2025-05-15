@@ -1,5 +1,5 @@
 use api_data::database::query;
-use api_data::database::sql::SQL_GET_ACCOUNTS;
+use api_data::database::sql::GET_ACCOUNTS;
 use std::error::Error;
 use tokio_postgres::{self, NoTls};
 
@@ -95,7 +95,7 @@ mod tests {
             }
         });
 
-        let rows = client.query(SQL_GET_ACCOUNTS, &[]).await?;
+        let rows = client.query(GET_ACCOUNTS, &[]).await?;
 
         if !rows.is_empty() {
             let value: i32 = rows[0].get("id");

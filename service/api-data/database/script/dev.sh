@@ -44,7 +44,7 @@ bootstrap@api-data-database() {
 
 generate_dbml_from_sql_migration#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
-    sql2dbml ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
+    sql2dbml --postgres ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
     popd
 )}
 
@@ -59,13 +59,13 @@ generate_ddl_live_database#task@api-data-database() {(
 ### option 1.
 # manual load sql to .drawio.svg
 ### option 2: 
-view-db-diagram#task@api-data-database() {(
+view-db-diagram-chartdb#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
     install() {
         pnpm add -g @dbml/cli # fails for sql with extension syntex it seems.
     }
     
-    sql2dbml ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
+    sql2dbml --postgres ./k8s/base/init.sql -o ./k8s/base/init-sql-autogen.dbml
 
     ### [option 2]
     docker run -p 8080:80 ghcr.io/chartdb/chartdb:latest

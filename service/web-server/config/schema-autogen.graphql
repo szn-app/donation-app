@@ -7,6 +7,7 @@ directive @auth(permission: String) on FIELD_DEFINITION | OBJECT
 
 type Account {
   createdAt: DateTime!
+  """kratos id value"""
   id: UUID!
 }
 
@@ -33,10 +34,14 @@ type Query {
   dummyTestSecure: Test!
   dummyTestSecureGuard: Test! @auth(permission: "required_authorization")
   dummyTestSecurePermissionCheck: Test!
+  tests: [Test!]!
 }
 
 type Test {
-  secureMessage: String!
+  d: DateTime!
+  """example graphql comments (should appear in graphql IDE)"""
+  i: Int!
+  s: String!
 }
 
 """

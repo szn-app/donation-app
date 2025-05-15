@@ -11,6 +11,7 @@ use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object};
 use deadpool_postgres::Pool;
 use http::HeaderMap;
 use log;
+use time;
 
 /// GraphQL Query Root
 pub struct Query {
@@ -31,6 +32,17 @@ impl Query {
             .map_err(|e| e.to_string())?;
 
         Ok(account_list)
+    }
+
+    async fn tests(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::test::Test>> {
+        log::debug!("--> tests @ graphql resolver");
+        // let c = ctx.data::<super::Context>()?; // EXMAPLE
+
+        let test_list = query::test::TestRepository::get_tests(&self.postgres_pool_group)
+            .await
+            .map_err(|e| e.to_string())?;
+
+        Ok(test_list)
     }
 
     // for debugging purposes
@@ -72,7 +84,9 @@ impl Query {
         }
 
         Ok(model::test::Test {
-            secureMessage: "secret message here".to_string(),
+            i: 1,
+            s: "secret message here".to_string(),
+            d: time::OffsetDateTime::now_local()?,
         })
     }
 
@@ -115,7 +129,9 @@ impl Query {
         };
 
         Ok(model::test::Test {
-            secureMessage: "secret message here".to_string(),
+            i: 1,
+            s: "secret message here".to_string(),
+            d: time::OffsetDateTime::now_local()?,
         })
     }
 
@@ -132,7 +148,9 @@ impl Query {
         log::debug!("--> dummyTestSecureGuard @ graphql resolver");
 
         Ok(model::test::Test {
-            secureMessage: "secret message here".to_string(),
+            i: 1,
+            s: "secret message here".to_string(),
+            d: time::OffsetDateTime::now_local()?,
         })
     }
 }

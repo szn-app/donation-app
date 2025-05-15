@@ -1,0 +1,1 @@
+SELECT i, s, d FROM "test"."test";

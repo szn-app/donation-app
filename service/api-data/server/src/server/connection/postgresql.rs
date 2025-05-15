@@ -293,14 +293,53 @@ impl DatabaseContext {
             }
         }?;
 
-        let row: Vec<Row> = c
-            .query("SELECT * FROM test LIMIT 10", &[])
+        if let Ok(_) = c
+            .query("SELECT * FROM \"test\".\"test\" LIMIT 1", &[])
             .await
-            .expect("Query failed");
-
-        // dbg!(row);
+        {
+            // do nothing
+        };
 
         Ok(())
+    }
+}
+
+pub mod client {
+    // get connection from pool (single attempt)
+    pub async fn db_client(
+        postgres_pool: &deadpool_postgres::Pool,
+    ) -> Result<deadpool_postgres::Client, Box<dyn std::error::Error>> {
+        Ok(postgres_pool
+            .get()
+            .await
+            .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?)
+    }
+
+    /// get connection from pool (multiple attempts with retries)
+    pub async fn db_client_with_retry(
+        postgres_pool: &deadpool_postgres::Pool,
+    ) -> Result<deadpool_postgres::Object, String> {
+        use retry::{delay::Exponential, retry};
+        use std::time::Duration;
+        use tokio::time::sleep;
+
+        let delay = Exponential::from_millis(100).take(3);
+        let mut last_error = None;
+
+        for delay_duration in delay {
+            match postgres_pool.get().await {
+                Ok(client) => return Ok(client),
+                Err(e) => {
+                    let error_msg = format!("Failed to get DB connection: {}", e);
+                    log::debug!("{}", error_msg);
+                    last_error = Some(error_msg);
+                    sleep(delay_duration).await;
+                }
+            }
+        }
+
+        Err(last_error
+            .unwrap_or_else(|| "Maximum retries exceeded when connecting to database".to_string()))
     }
 }
 

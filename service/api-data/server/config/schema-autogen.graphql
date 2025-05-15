@@ -1,4 +1,7 @@
 type Account {
+	"""
+	kratos id value
+	"""
 	id: UUID!
 	createdAt: DateTime!
 }
@@ -29,6 +32,7 @@ type Query {
 	Get all accounts
 	"""
 	accounts: [Account!]!
+	tests: [Test!]!
 	dummyTest: [String!]!
 	dummyTestRequestHeader: String!
 	dummyTestSecure: Test!
@@ -38,7 +42,12 @@ type Query {
 
 
 type Test {
-	secureMessage: String!
+	"""
+	example graphql comments (should appear in graphql IDE)
+	"""
+	i: Int!
+	s: String!
+	d: DateTime!
 }
 
 """

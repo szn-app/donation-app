@@ -1,174 +1,300 @@
+Enum "profile_type" {
+  "individual"
+  "organization"
+  "company"
+}
+
+Enum "community_type" {
+  "solo"
+  "organized"
+}
+
+Enum "committee_role" {
+  "organizer"
+  "member"
+}
+
+Enum "item_type" {
+  "in-kind"
+  "inquiry"
+  "monetary"
+  "service"
+}
+
+Enum "item_intent_action" {
+  "request"
+  "offer"
+}
+
+Enum "item_status" {
+  "draft"
+  "active"
+  "disabled"
+  "archived"
+}
+
+Enum "item_condition" {
+  "brand_new"
+  "pre_owned_barely_used"
+  "pre_owned_usable"
+  "pre_owned_damaged"
+}
+
+Enum "collection_visibility" {
+  "public"
+  "restricted"
+}
+
+Enum "collection_type" {
+  "featured"
+  "regular"
+}
+
+Enum "media_type" {
+  "image"
+  "video"
+}
+
+Enum "pledge_intent_action" {
+  "give"
+  "receive"
+}
+
+Enum "pledge_status" {
+  "pending"
+  "approved"
+  "declined"
+}
+
+Enum "transaction_status" {
+  "in-progress"
+  "completed"
+  "cancelled"
+}
+
+Enum "message_type" {
+  "text"
+  "schedule_opportunity"
+}
+
+Table "test" {
+  "i" integer
+}
+
+Ref:"user"."account"."id" < "user"."profile"."owner"
+
+Ref:"user"."account"."id" < "user"."profile"."created_by"
+
+Ref:"user"."account"."id" < "user"."community"."owner"
+
+Ref:"user"."account"."id" < "user"."community"."created_by"
+
+Ref:"user"."profile"."id" < "user"."committee"."id_profile"
+
+Ref:"user"."community"."id" < "user"."committee"."id_community"
+
+Ref:"listing"."category"."id" < "listing"."category"."category_parent" [delete: set null]
+
+Ref:"listing"."category"."id" < "listing"."item"."category" [delete: set null]
+
+Ref:"listing"."location"."id" < "listing"."item"."location" [delete: set null]
+
+Ref:"user"."account"."id" < "listing"."item"."created_by" [delete: set null]
+
+Ref:"user"."community"."id" < "listing"."collection"."id_community" [delete: set null]
+
+Ref:"listing"."item"."id" < "listing"."media"."id_item" [delete: cascade]
+
+Ref:"listing"."item"."id" < "listing"."publish"."id_item" [delete: cascade]
+
+Ref:"listing"."collection"."id" < "listing"."publish"."id_collection" [delete: cascade]
+
+Ref:"user"."account"."id" < "listing"."publish"."added_by" [delete: set null]
+
+Ref:"user"."profile"."id" < "interaction"."pledge"."id_profile" [delete: cascade]
+
+Ref:"listing"."item"."id" < "interaction"."pledge"."id_item" [delete: cascade]
+
+Ref:"user"."account"."id" < "interaction"."pledge"."updated_by" [delete: set null]
+
+Ref:"interaction"."pledge"."id" < "interaction"."transaction"."id_pledge" [delete: cascade]
+
+Ref:"interaction"."schedule"."id" < "interaction"."transaction"."id_schedule" [delete: set null]
+
+Ref:"listing"."location"."id" < "interaction"."transaction"."id_location" [delete: set null]
+
+Ref:"user"."profile"."id" < "interaction"."message"."id_sender" [delete: set null]
+
+Ref:"interaction"."transaction"."id" < "interaction"."message"."id_transaction" [delete: cascade]
+
+Ref:"interaction"."transaction"."id" < "interaction"."review"."id_transaction" [delete: set null]
+
+Ref:"user"."profile"."id" < "interaction"."review"."id_subject_profile" [delete: set null]
+
+Ref:"user"."profile"."id" < "interaction"."review"."reviewer"
+
+Ref:"interaction"."message"."id" < "interaction"."schedule_opportunity"."id"
+
 Table "user"."account" {
   "id" UUID [pk]
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table "user"."profile" {
+  "id" BIGINT [pk, increment]
+  "name" VARCHAR(100)
+  "description" TEXT
+  "type" profile_type
+  "owner" UUID [not null]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
+  "created_by" UUID [not null]
 }
 
 Table "user"."community" {
-  "id" BIGINT [pk]
-  "organizer" UUID
-  "title" VARCHAR(255)
+  "id" BIGINT [pk, increment]
+  "title" VARCHAR(150)
   "description" TEXT
-  "type" ENUM('individual','organization','other')
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "created_by" UUID
+  "type" community_type [not null, default: 'solo']
+  "owner" UUID [not null]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
+  "created_by" UUID [not null]
 }
 
 Table "user"."committee" {
   "id_profile" BIGINT
   "id_community" BIGINT
-  "role" ENUM('organizer','moderator','member')
-  "joined_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "member_role" committee_role [not null]
+  "joined_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 
   Indexes {
     (id_profile, id_community) [pk]
   }
 }
 
-Table "user"."profile" {
-  "id" BIGINT [pk]
-  "owner" UUID
-  "name" VARCHAR(255)
+Table "listing"."category" {
+  "id" BIGINT [pk, increment]
+  "title" VARCHAR(150) [not null]
   "description" TEXT
-  "type" ENUM('individual','organization','other')
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "created_by" UUID
+  "category_parent" BIGINT
+}
+
+Table "listing"."location" {
+  "id" BIGINT [pk, increment]
+  "address_line1" VARCHAR(64) [not null]
+  "address_line2" VARCHAR(64)
+  "city" VARCHAR(50) [not null]
+  "state" VARCHAR(50)
+  "district" BIGINT
+  "country" VARCHAR(50) [not null]
+  "geom" extension.extension.GEOGRAPHY
+  "entrance_note" TEXT
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 }
 
 Table "listing"."item" {
-  "id" BIGINT [pk]
-  "type" ENUM('sale','request','inquiry')
-  "intent_action" ENUM('request','offer')
-  "status" ENUM('active','completed','closed')
-  "title" VARCHAR(255)
+  "id" BIGINT [pk, increment]
+  "type" item_type [not null]
+  "intent_action" item_intent_action [not null]
+  "status" item_status [not null, default: 'draft']
+  "title" VARCHAR(150)
   "description" TEXT
-  "id_category" BIGINT
-  "condition" ENUM('new','used','refurbished')
-  "id_location" BIGINT
-  "views_count" BIGINT [default: 0]
-  "is_reported" BOOLEAN [default: FALSE]
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "category" BIGINT
+  "condition" item_condition [not null]
+  "location" BIGINT
+  "views_count" BIGINT [not null, default: 0]
+  "is_reported" BOOLEAN [not null, default: FALSE]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
   "created_by" UUID
 }
 
 Table "listing"."collection" {
-  "id" BIGINT [pk]
+  "id" BIGINT [pk, increment]
   "id_community" BIGINT
-  "title" VARCHAR(255)
-  "visibility" ENUM('public','private')
-  "type" ENUM('featured','special_interest')
-}
-
-Table "listing"."category" {
-  "id" BIGINT [pk]
-  "title" VARCHAR(255)
-  "description" TEXT
-  "id_category_parent" BIGINT
+  "title" VARCHAR(150)
+  "visibility" collection_visibility [not null]
+  "type" collection_type
+  "position" INT4 [not null, default: 0]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
 }
 
 Table "listing"."media" {
-  "id" BIGINT [pk]
+  "id" BIGINT [pk, increment]
   "id_item" BIGINT
-  "url" VARCHAR(255)
-  "type" ENUM('image','video')
+  "caption" VARCHAR(150)
+  "url" VARCHAR(2048) [not null]
+  "type" media_type [not null]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 }
 
-Table "listing"."location" {
-  "id" BIGINT [pk]
-  "address_line1" VARCHAR(255)
-  "address_line2" VARCHAR(255)
-  "city" VARCHAR(255)
-  "state" VARCHAR(255)
-  "district" BIGINT
-  "country" VARCHAR(255)
-  "latitude" DECIMAL
-  "longitude" DECIMAL
-  "entrance_note" TEXT
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-}
+Table "listing"."publish" {
+  "id_item" bigint [not null]
+  "id_collection" bigint [not null]
+  "note" text
+  "position" INT4 [not null, default: 0]
+  "added_by" UUID
+  "posted_on" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 
-Table "interaction"."pledge" {
-  "id" BIGINT [pk]
-  "id_profile" BIGINT
-  "id_item" BIGINT
-  "intent_action" ENUM('donate','receive')
-  "message" TEXT
-  "status" ENUM('pending','approved','declined')
-  "pledged_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "updated_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-}
-
-Table "interaction"."transaction" {
-  "id" BIGINT [pk]
-  "id_pledge" BIGINT
-  "status" ENUM('completed','in-progress','failed')
-  "id_schedule" BIGINT
-  "id_location" BIGINT
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
-  "completed_at" TIMESTAMP
-}
-
-Table "interaction"."message" {
-  "id" BIGINT [pk]
-  "id_sender" BIGINT
-  "id_transaction" BIGINT
-  "type" ENUM('schedule_opportunity','message')
-  "content" TEXT
-  "sent_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  Indexes {
+    (id_item, id_collection) [pk]
+  }
 }
 
 Table "interaction"."schedule" {
-  "id" BIGINT [pk]
-  "scheduled_for" TIMESTAMP
+  "id" BIGINT [pk, increment]
+  "scheduled_for" TIMESTAMPTZ [not null]
 }
 
-Table "interaction"."schedule_opportunity" {
-  "id" BIGINT [pk]
-  "window_start" TIMESTAMP
-  "window_end" TIMESTAMP
+Table "interaction"."pledge" {
+  "id" BIGINT [pk, increment]
+  "id_profile" BIGINT
+  "id_item" BIGINT
+  "intent_action" pledge_intent_action [not null]
+  "message" TEXT
+  "status" pledge_status [not null, default: 'pending']
+  "pledged_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
+  "updated_by" UUID
+}
+
+Table "interaction"."transaction" {
+  "id" BIGINT [pk, increment]
+  "id_pledge" BIGINT
+  "status" transaction_status [not null, default: 'in-progress']
+  "id_schedule" BIGINT
+  "id_location" BIGINT
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
+}
+
+Table "interaction"."message" {
+  "id" BIGINT [pk, increment]
+  "id_sender" BIGINT
+  "id_transaction" BIGINT
+  "type" message_type
+  "content" TEXT [not null]
+  "sent_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" TIMESTAMPTZ
 }
 
 Table "interaction"."review" {
   "id_transaction" BIGINT
-  "id_profile" BIGINT
-  "id_reviewer_profile" BIGINT
+  "id_subject_profile" BIGINT
+  "reviewer" BIGINT
   "comment" TEXT
-  "score" INT
-  "created_at" TIMESTAMP [default: `CURRENT_TIMESTAMP`]
+  "score" INT2 [not null, default: 0]
+  "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 
   Indexes {
-    (id_transaction, id_profile) [pk]
+    (id_transaction, id_subject_profile) [pk]
   }
 }
 
-Ref "fk_committee_community":"user"."community"."id" < "user"."committee"."id_community"
-
-Ref "fk_committee_profile":"user"."profile"."id" < "user"."committee"."id_profile"
-
-Ref "fk_item_category":"listing"."category"."id" < "listing"."item"."id_category"
-
-Ref "fk_item_location":"listing"."location"."id" < "listing"."item"."id_location"
-
-Ref "fk_media_item":"listing"."item"."id" < "listing"."media"."id_item"
-
-Ref "fk_pledge_profile":"user"."profile"."id" < "interaction"."pledge"."id_profile"
-
-Ref "fk_pledge_item":"listing"."item"."id" < "interaction"."pledge"."id_item"
-
-Ref "fk_transaction_pledge":"interaction"."pledge"."id" < "interaction"."transaction"."id_pledge"
-
-Ref "fk_transaction_location":"listing"."location"."id" < "interaction"."transaction"."id_location"
-
-Ref "fk_transaction_schedule":"interaction"."schedule"."id" < "interaction"."transaction"."id_schedule"
-
-Ref "fk_message_sender":"user"."profile"."id" < "interaction"."message"."id_sender"
-
-Ref "fk_message_transaction":"interaction"."transaction"."id" < "interaction"."message"."id_transaction"
-
-Ref "fk_review_transaction":"interaction"."transaction"."id" < "interaction"."review"."id_transaction"
-
-Ref "fk_review_profile":"user"."profile"."id" < "interaction"."review"."id_profile"
-
-Ref "fk_review_reviewer_profile":"user"."profile"."id" < "interaction"."review"."id_reviewer_profile"
+Table "interaction"."schedule_opportunity" {
+  "id" BIGINT
+  "window_start" TIMESTAMPTZ
+  "window_end" TIMESTAMPTZ
+}

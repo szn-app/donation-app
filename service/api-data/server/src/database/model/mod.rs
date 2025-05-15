@@ -28,12 +28,26 @@ pub mod user {
 }
 
 pub mod test {
+    use std::string;
+
     use super::*;
 
     #[derive(Debug, Clone, PartialEq, async_graphql::SimpleObject)]
     pub struct Test {
         /// example graphql comments (should appear in graphql IDE)
-        pub secureMessage: String,
+        pub i: i32,
+        pub s: String,
+        pub d: time::OffsetDateTime,
+    }
+
+    impl From<Row> for Test {
+        fn from(row: Row) -> Self {
+            Self {
+                i: row.get::<_, i32>("i"),
+                s: row.get::<_, String>("s"),
+                d: row.get::<_, time::OffsetDateTime>("d"),
+            }
+        }
     }
 }
 
