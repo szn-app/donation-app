@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.4](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.3...webhook-handler@v0.0.4) (2025-05-15)
+
+
+### Features
+
+* refine authentication login/logout flow to involve both operations on Hydra & Kratos for managing user state and cookie session appropriately ([011ed36](https://github.com/szn-app/donation-app/commit/011ed369bfe494c2d33ced1f7dd4c24b51dfdf0d))
+
+
+### Bug Fixes
+
+* protobuf group build of .proto files of same package; ([8ae3f1e](https://github.com/szn-app/donation-app/commit/8ae3f1e8f7f149f9a0d4479ea5cf303bc77de127))
+
 ## [0.0.3](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.2...webhook-handler@v0.0.3) (2025-04-26)
 
 

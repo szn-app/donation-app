@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.4.29](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.28...donation-app@v0.4.29) (2025-05-15)
+
+
+### Features
+
+* add initial sql, access query functions, and models ([c4a4a3e](https://github.com/szn-app/donation-app/commit/c4a4a3e320f156dfac55a973c7d4a47adf55c10d))
+* **api-data:** GraphQL implementation with query and mutation resolvers ([cde1e11](https://github.com/szn-app/donation-app/commit/cde1e11ba7db5370627bf5bf52b1192e397d3d04))
+* **authorize:** permission check funcationality for Keto service with batch relation tuple checks ([da59993](https://github.com/szn-app/donation-app/commit/da599937051698884c8b03e5715aded44bb91482))
+* autogenerate tanstack query type-safe hooks with graphql-request; Support additional custom types; Handle CORS for api ([3f36cd4](https://github.com/szn-app/donation-app/commit/3f36cd481b05dffa9057ad2eb03166079c0330f4))
+* **frontend:** integrate GraphQL Codegen with Tanstack React Query ([75a09fc](https://github.com/szn-app/donation-app/commit/75a09fcf4e603c5d8ca6fcca42f18dead4a109d9))
+* **graphql:** autogenerate graphql SDL from code schema ([d37a433](https://github.com/szn-app/donation-app/commit/d37a433c27cf8c1623ee091ca89a26438f95b653))
+* parse & validate json data from external API using codegen zod tool ([e4ff6bb](https://github.com/szn-app/donation-app/commit/e4ff6bb92dcbde830a87464d16e27d7bb0df2335))
+* parse request with custom extrator and pass values to graphql resolvers ([eee650f](https://github.com/szn-app/donation-app/commit/eee650f9e80bd808193f5052a06e7bdc5f87d9a1))
+* **protobuf:** compile Ory Keto client protobuf services ([5191fff](https://github.com/szn-app/donation-app/commit/5191fff605bbd21ea7aa78a43dd254a602276171))
+* refine authentication login/logout flow to involve both operations on Hydra & Kratos for managing user state and cookie session appropriately ([011ed36](https://github.com/szn-app/donation-app/commit/011ed369bfe494c2d33ced1f7dd4c24b51dfdf0d))
+* support partial queries with validation/parsing; ([e9d9173](https://github.com/szn-app/donation-app/commit/e9d9173f29c8f773a904795e167850285a614bdb))
+
+
+### Bug Fixes
+
+* graphql configuration with codegen and react query; + example ([d9ab9b1](https://github.com/szn-app/donation-app/commit/d9ab9b15f25dfdab3a9069cbef3928866c856db9))
+* protobuf group build of .proto files of same package; ([8ae3f1e](https://github.com/szn-app/donation-app/commit/8ae3f1e8f7f149f9a0d4479ea5cf303bc77de127))
+
 ## [0.4.28](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.27...donation-app@v0.4.28) (2025-04-26)
 
 
