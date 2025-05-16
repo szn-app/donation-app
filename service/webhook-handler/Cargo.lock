@@ -1770,7 +1770,7 @@ dependencies = [
 
 [[package]]
 name = "shared_protobuf_webhook"
-version = "0.4.28"
+version = "0.4.29"
 dependencies = [
  "prost",
  "prost-types",

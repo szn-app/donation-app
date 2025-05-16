@@ -15,6 +15,7 @@ tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking
 tokio-postgres = {version = "0.7.13", features = ["with-uuid-1", "with-time-0_3", "with-bit-vec-0_6", "array-impls"]}
 deadpool-postgres = "0.14.1"
 postgres-types = { version = "0.2.9", features = ["derive"] }
+refinery = "0.8.16" # database migrations management
 
 # web server
 axum = "0.8.1" # Web framework that focuses on ergonomics and modularity.

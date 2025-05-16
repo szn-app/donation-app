@@ -19,4 +19,5 @@
 - In rust use crate to define custom app errors which encompass generic and crate specific errors
 - GraphQL optimization using Dataloader (N+1 problem)
 - for a decoupled microservices api, use GraphQL federation as the gateway entrypoint for all the other microsrevices exposed GraphQL endpoints. 
+- [drawback] Move from single initialization script (single sql migraiton) to a version-controlled structured system. 
 - 

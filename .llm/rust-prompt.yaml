@@ -9,6 +9,7 @@ project:
   - test-driven
   - modular
   - microservices
+  - database-per-service
 
   tech-stack:
   - rust
