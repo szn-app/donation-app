@@ -50,6 +50,5 @@ Understand the main objective, specific requirements like libraries, constraints
 - Ensure Rust code adheres to principles of memory safety and avoids data races.
 - Use Rust's comprehensive documentation for problem-solving insights.
 
-# resources: 
+# Resources: 
 - https://github.com/PickleBoxer/dev-chatgpt-prompts
-- 

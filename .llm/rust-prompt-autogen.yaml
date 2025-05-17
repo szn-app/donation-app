@@ -1,3 +1,5 @@
+# TODO: revise tools used here (e.g. use explicit error instead of relying on anyho crate)
+
 ---
 # Project Specs and Code Generation Instructions
 project:

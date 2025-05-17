@@ -2,7 +2,6 @@ use crate::database::model;
 use crate::database::query;
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql::{self, Context, FieldResult, Object};
-use deadpool_postgres::Pool;
 use log;
 use uuid;
 
@@ -21,7 +20,9 @@ impl Mutation {
     ) -> FieldResult<model::user::Account> {
         log::debug!("--> add_account @ graphql resolver");
 
-        let account = query::user::AccountRepository::add_account(&self.postgres_pool_group, id)
+        let repository = query::user::AccountRepository::new(self.postgres_pool_group.clone());
+        let account = repository
+            .add_account(id)
             .await
             .map_err(|e| e.to_string())?;
 

@@ -14,7 +14,7 @@ tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking
 # database
 tokio-postgres = {version = "0.7.13", features = ["with-uuid-1", "with-time-0_3", "with-bit-vec-0_6", "array-impls"]}
 deadpool-postgres = "0.14.1"
-postgres-types = { version = "0.2.9", features = ["derive"] }
+postgres-types = { version = "0.2.9", features = ["derive", "time-03"] }
 refinery = "0.8.16" # database migrations management
 
 # web server
@@ -35,7 +35,7 @@ prost = "0.13.5"
 reqwest = { version = "0.11", features = ["json"] }
 
 # types
-time = { version = "0.3.41", features = ["formatting", "parsing", "std", "local-offset"] }
+time = { version = "0.3.41", features = ["formatting", "parsing", "std", "local-offset", "serde"] }
 uuid = { version = "1.16.0", features = ["v4", "serde"] }
 rust_decimal = "1.37.1"
 geo-types = {version = "0.7.16", features = []}

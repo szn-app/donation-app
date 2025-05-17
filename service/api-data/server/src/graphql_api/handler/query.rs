@@ -27,9 +27,8 @@ impl Query {
         log::debug!("--> accounts @ graphql resolver");
         // let c = ctx.data::<super::Context>()?; // EXMAPLE
 
-        let account_list = query::user::AccountRepository::get_accounts(&self.postgres_pool_group)
-            .await
-            .map_err(|e| e.to_string())?;
+        let repository = query::user::AccountRepository::new(self.postgres_pool_group.clone());
+        let account_list = repository.get_accounts().await.map_err(|e| e.to_string())?;
 
         Ok(account_list)
     }
@@ -38,9 +37,8 @@ impl Query {
         log::debug!("--> tests @ graphql resolver");
         // let c = ctx.data::<super::Context>()?; // EXMAPLE
 
-        let test_list = query::test::TestRepository::get_tests(&self.postgres_pool_group)
-            .await
-            .map_err(|e| e.to_string())?;
+        let repository = query::test::TestRepository::new(self.postgres_pool_group.clone());
+        let test_list = repository.get_tests().await.map_err(|e| e.to_string())?;
 
         Ok(test_list)
     }

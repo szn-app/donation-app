@@ -2,6 +2,7 @@ use crate::database::query::user;
 use crate::server::connection::PostgresPool;
 use log;
 use shared_protobuf_webhook::proto::{self, user_sync::UserSync};
+use std::error::Error;
 use tonic::{Request as TonicRequest, Response as TonicResponse, Status};
 use uuid::Uuid;
 
@@ -39,9 +40,11 @@ impl UserSync for UserSyncService {
 
         log::debug!("Adding user with ID: {}", user_id);
 
-        user::AccountRepository::add_account(&self.postgres_pool_group, user_uuid)
+        let repository = user::AccountRepository::new(self.postgres_pool_group.clone());
+        repository
+            .add_account(user_uuid)
             .await
-            .map_err(|e| Status::internal(format!("Database error: {}", e)))?;
+            .map_err(|e| Status::internal(e.to_string()))?;
 
         // Return success response
         Ok(TonicResponse::new(proto::user_sync::AddUserResponse {}))
