@@ -1,1 +1,0 @@
-INSERT INTO "user"."account" (id) VALUES ($1) RETURNING *;
