@@ -1,7 +1,7 @@
 use crate::database::model;
 use crate::database::sql;
-use crate::server::connection::{self, postgresql::client};
-use deadpool_postgres::{Client, Pool};
+use crate::server::connection::{self, postgresql::client, PostgresPool};
+use deadpool_postgres::{Client, PoolError};
 use log;
 use std::error::Error;
 use tokio_postgres;
@@ -16,6 +16,7 @@ pub use interaction::*;
 pub use listing::*;
 pub use test::*;
 pub use user::*;
+
 mod util {
     use super::*;
 

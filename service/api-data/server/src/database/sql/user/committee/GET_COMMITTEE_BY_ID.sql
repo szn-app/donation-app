@@ -1,0 +1,1 @@
+SELECT * FROM committee WHERE id = $1 

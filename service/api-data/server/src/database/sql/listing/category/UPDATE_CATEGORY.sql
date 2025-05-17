@@ -1,4 +1,6 @@
-UPDATE "listing"."category"
-SET title = $2, description = $3, category_parent = $4
+UPDATE category
+SET name = COALESCE($2, name),
+    description = COALESCE($3, description),
+    parent_id = COALESCE($4, parent_id)
 WHERE id = $1
-RETURNING id, title, description, category_parent; 
+RETURNING * 

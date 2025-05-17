@@ -1,10 +1,14 @@
 use crate::database::model::listing::Item;
-use crate::database::sql::{GET_ITEMS, GET_ITEM_BY_ID};
+use crate::database::sql::listing::item::{
+    ADD_ITEM, DELETE_ITEM, GET_ITEMS, GET_ITEMS_BY_CATEGORY, GET_ITEMS_BY_PROFILE, GET_ITEM_BY_ID,
+    UPDATE_ITEM,
+};
 use crate::server::connection::PostgresPool;
 use deadpool_postgres::PoolError;
 use std::error::Error;
 use tokio_postgres::Row;
 use tracing::debug;
+use uuid::Uuid;
 
 pub struct ItemRepository {
     pool: PostgresPool,
@@ -27,5 +31,90 @@ impl ItemRepository {
         let client = self.pool.r.get().await?;
         let row = client.query_opt(GET_ITEM_BY_ID, &[&id]).await?;
         Ok(row.map(Item::from))
+    }
+
+    pub async fn get_items_by_profile(
+        &self,
+        id_profile: Uuid,
+    ) -> Result<Vec<Item>, Box<dyn Error>> {
+        debug!("Getting items by profile: {}", id_profile);
+        let client = self.pool.r.get().await?;
+        let rows = client.query(GET_ITEMS_BY_PROFILE, &[&id_profile]).await?;
+        Ok(rows.into_iter().map(Item::from).collect())
+    }
+
+    pub async fn get_items_by_category(
+        &self,
+        id_category: i64,
+    ) -> Result<Vec<Item>, Box<dyn Error>> {
+        debug!("Getting items by category: {}", id_category);
+        let client = self.pool.r.get().await?;
+        let rows = client.query(GET_ITEMS_BY_CATEGORY, &[&id_category]).await?;
+        Ok(rows.into_iter().map(Item::from).collect())
+    }
+
+    pub async fn add_item(
+        &self,
+        title: &str,
+        description: &str,
+        id_category: i64,
+        id_profile: Uuid,
+        id_location: Option<i64>,
+        price: Option<f64>,
+        currency: Option<String>,
+    ) -> Result<Item, Box<dyn Error>> {
+        debug!("Adding item: {}", title);
+        let client = self.pool.rw.get().await?;
+        let row = client
+            .query_one(
+                ADD_ITEM,
+                &[
+                    &title,
+                    &description,
+                    &id_category,
+                    &id_profile,
+                    &id_location,
+                    &price,
+                    &currency,
+                ],
+            )
+            .await?;
+        Ok(Item::from(row))
+    }
+
+    pub async fn update_item(
+        &self,
+        id: i64,
+        title: Option<String>,
+        description: Option<String>,
+        id_category: Option<i64>,
+        id_location: Option<i64>,
+        price: Option<f64>,
+        currency: Option<String>,
+    ) -> Result<Item, Box<dyn Error>> {
+        debug!("Updating item: {}", id);
+        let client = self.pool.rw.get().await?;
+        let row = client
+            .query_one(
+                UPDATE_ITEM,
+                &[
+                    &id,
+                    &title,
+                    &description,
+                    &id_category,
+                    &id_location,
+                    &price,
+                    &currency,
+                ],
+            )
+            .await?;
+        Ok(Item::from(row))
+    }
+
+    pub async fn delete_item(&self, id: i64) -> Result<(), Box<dyn Error>> {
+        debug!("Deleting item: {}", id);
+        let client = self.pool.rw.get().await?;
+        client.execute(DELETE_ITEM, &[&id]).await?;
+        Ok(())
     }
 }
