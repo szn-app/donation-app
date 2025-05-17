@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/szn-app/donation-app/compare/api-data@v0.0.6...api-data@v0.0.7) (2025-05-17)
+
+
+### Features
+
+* add query sql, models, repository for rest of tables. ([972406c](https://github.com/szn-app/donation-app/commit/972406c88ee4f338971987d977df1bedb6d84737))
+
 ## [0.0.6](https://github.com/szn-app/donation-app/compare/api-data@v0.0.5...api-data@v0.0.6) (2025-05-15)
 
 
