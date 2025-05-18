@@ -3,7 +3,7 @@ use crate::server::connection::PostgresPool;
 use log;
 use shared_protobuf_webhook::proto::{self, user_sync::UserSync};
 use std::error::Error;
-use tonic::{Request as TonicRequest, Response as TonicResponse, Status};
+use tonic::{Request, Response, Status};
 use uuid::Uuid;
 
 /// gRPC service implementation for user synchronization
@@ -25,8 +25,8 @@ impl UserSyncService {
 impl UserSync for UserSyncService {
     async fn add_user(
         &self,
-        request: TonicRequest<proto::user_sync::AddUserRequest>,
-    ) -> Result<TonicResponse<proto::user_sync::AddUserResponse>, Status> {
+        request: Request<proto::user_sync::AddUserRequest>,
+    ) -> Result<Response<proto::user_sync::AddUserResponse>, Status> {
         let user_id = request.into_inner().user_id;
 
         // Validate user ID
@@ -42,11 +42,15 @@ impl UserSync for UserSyncService {
 
         let repository = user::AccountRepository::new(self.postgres_pool_group.clone());
         repository
-            .add_account(user_uuid)
+            .add_account(
+                &user_id, // email
+                &"",      // password_hash
+                true,     // is_active
+            )
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
 
         // Return success response
-        Ok(TonicResponse::new(proto::user_sync::AddUserResponse {}))
+        Ok(Response::new(proto::user_sync::AddUserResponse {}))
     }
 }

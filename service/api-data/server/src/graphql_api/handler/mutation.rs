@@ -17,12 +17,18 @@ impl Mutation {
         &self,
         ctx: &Context<'_>,
         id: uuid::Uuid,
+        email: String,
+        password_hash: String,
     ) -> FieldResult<model::user::Account> {
         log::debug!("--> add_account @ graphql resolver");
 
         let repository = query::user::AccountRepository::new(self.postgres_pool_group.clone());
         let account = repository
-            .add_account(id)
+            .add_account(
+                &email,
+                &password_hash,
+                true, // is_active
+            )
             .await
             .map_err(|e| e.to_string())?;
 
