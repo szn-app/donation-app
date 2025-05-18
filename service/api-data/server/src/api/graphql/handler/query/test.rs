@@ -1,10 +1,10 @@
-use super::super::access_constrol::{
+use crate::api::graphql::access_constrol::{
     check::check_permission_for_subject,
     guard::{auth, AuthorizeUser},
 };
-use super::super::service::{DataContext, GlobalContext};
+use crate::api::graphql::service::{DataContext, GlobalContext};
 use crate::database::model;
-use crate::database::query;
+use crate::database::repository;
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 
 use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object}; // note: `graphql` attribute is processed by async_graphql macros
@@ -12,32 +12,19 @@ use deadpool_postgres::Pool;
 use http::HeaderMap;
 use log;
 use time;
+use uuid;
 
-/// GraphQL Query Root
-pub struct Query {
+pub struct TestQuery {
     pub postgres_pool_group: PostgresPool,
 }
 
-// TODO: implement limit, filter, sort and pagination arguments.
-
 #[async_graphql::Object]
-impl Query {
-    /// Get all accounts
-    async fn accounts(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::user::Account>> {
-        log::debug!("--> accounts @ graphql resolver");
-        // let c = ctx.data::<super::Context>()?; // EXMAPLE
-
-        let repository = query::user::AccountRepository::new(self.postgres_pool_group.clone());
-        let account_list = repository.get_accounts().await.map_err(|e| e.to_string())?;
-
-        Ok(account_list)
-    }
-
+impl TestQuery {
     async fn tests(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::test::Test>> {
         log::debug!("--> tests @ graphql resolver");
         // let c = ctx.data::<super::Context>()?; // EXMAPLE
 
-        let repository = query::test::TestRepository::new(self.postgres_pool_group.clone());
+        let repository = repository::test::TestRepository::new(self.postgres_pool_group.clone());
         let test_list = repository.get_tests().await.map_err(|e| e.to_string())?;
 
         Ok(test_list)

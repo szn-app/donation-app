@@ -1,1 +1,1 @@
-INSERT INTO "user"."account" (id) VALUES ($1) RETURNING id, created_at;
+INSERT INTO "user"."account" (id) VALUES ($1) RETURNING id, remarks, created_at;

@@ -1,6 +1,6 @@
 pub mod handler;
 
-use super::server::http::handle_not_found;
+use crate::server::http::handle_not_found;
 use axum::{
     routing::{get, post},
     Router,

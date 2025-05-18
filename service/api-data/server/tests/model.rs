@@ -1,4 +1,4 @@
-use api_data::database::query;
+use api_data::database::repository;
 use api_data::database::sql::GET_ACCOUNTS;
 use std::error::Error;
 use tokio_postgres::{self, NoTls};
@@ -41,7 +41,7 @@ mod tests {
             }
         });
 
-        let rows = client.query(query, &[]).await?;
+        let rows = client.query(repository, &[]).await?;
         let results: Vec<i32> = rows.into_iter().map(|row| row.get(0)).collect();
 
         dbg!(results);
@@ -118,7 +118,8 @@ mod tests {
     async fn test_query_2() -> Result<(), Box<dyn Error>> {
         let postgres_pool_group = PostgresPool::new_single_point_pool(Option::Some(5432)).await;
 
-        let result = query::user::AccountRepository::get_accounts(&postgres_pool_group).await?;
+        let result =
+            repository::user::AccountRepository::get_accounts(&postgres_pool_group).await?;
 
         if !result.is_empty() {
             println!(

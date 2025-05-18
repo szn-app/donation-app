@@ -1,6 +1,6 @@
 use super::connection::{KetoChannelGroup, PostgresPool};
-use crate::graphql_api;
-use crate::rest_api;
+use crate::api::graphql;
+use crate::api::rest;
 use axum;
 use http;
 use serde_json;
@@ -29,9 +29,9 @@ pub async fn start_http_server(
         .layer(cors_layer);
 
     let rest_routes =
-        rest_api::routes(app_endpoint).layer(axum::Extension(postgres_pool_group.clone()));
+        rest::routes(app_endpoint).layer(axum::Extension(postgres_pool_group.clone()));
 
-    let graphql_routes = graphql_api::routes(app_endpoint, postgres_pool_group, keto_channel_group);
+    let graphql_routes = graphql::routes(app_endpoint, postgres_pool_group, keto_channel_group);
 
     let http_app = axum::Router::new()
         .nest("/rest", rest_routes)

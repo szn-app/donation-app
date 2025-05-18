@@ -1,4 +1,4 @@
-use api_data::graphql_api;
+use api_data::api::graphql;
 use api_data::server::{
     self,
     connection::{KetoChannelGroup, PostgresPool},

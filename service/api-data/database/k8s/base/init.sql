@@ -41,6 +41,7 @@ GRANT ALL ON TABLES TO "postgres-user";
 -- user.account Table
 CREATE TABLE IF NOT EXISTS "user"."account" (
     id UUID PRIMARY KEY,
+    remarks TEXT NULL, 
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 

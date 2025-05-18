@@ -14,7 +14,7 @@ use axum::{
     Router,
 };
 // use async_graphql_axum::GraphQL; // custom GraphQL builder is used instead.
-use super::server::http::handle_not_found;
+use crate::server::http::handle_not_found;
 use http;
 use service::{GlobalContext, GraphQL};
 use std::{convert::Infallible, sync::Arc};
@@ -66,14 +66,8 @@ fn create_graphql_router(
         keto_channel_group: keto_channel_group.clone(),
     };
 
-    let q = handler::Query {
-        postgres_pool_group: postgres_pool_group.clone(),
-    };
-
-    let m = handler::Mutation {
-        postgres_pool_group,
-    };
-
+    let q = handler::Query::new(postgres_pool_group.clone());
+    let m = handler::Mutation::new(postgres_pool_group);
     let s = handler::EmptySubscription;
 
     let graphql_impl_schema = Schema::build(q, m, s).data(global_context).finish();

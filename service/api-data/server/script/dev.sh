@@ -28,6 +28,14 @@ run_specific_binary@api-data() {
     cargo run --bin mocked_isolated_graphql
 }
 
+check@api-data(){ 
+    check_without_warnings() {
+        RUSTFLAGS="-A warnings" cargo check
+    }
+
+    echo ''
+}
+
 # NOTE: used for docker command
 hot_reload@api-data() {
     cargo +nightly watch -q -c -w src/ -x run

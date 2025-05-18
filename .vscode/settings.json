@@ -151,8 +151,7 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "explorer.decorations.colors": true,
-  "problems.decorations.enabled": false,
-  "problems.visibility": false,
+  "problems.decorations.enabled": true,
   "typescript.tsdk": "service/web-server/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "graphql-config.load.rootDir": "service/web-server/",
@@ -164,5 +163,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "rust-analyzer.checkOnSave": true
 }

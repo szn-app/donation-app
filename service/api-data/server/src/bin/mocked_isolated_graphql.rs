@@ -1,4 +1,4 @@
-use api_data::graphql_api;
+use api_data::api::graphql;
 use api_data::server::{
     self,
     connection::{KetoChannelGroup, PostgresPool},
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let postgres_pool_group = PostgresPool::new_mock();
     let keto_channel_group = KetoChannelGroup::new_mock();
 
-    let graphql_routes = graphql_api::routes(
+    let graphql_routes = graphql::routes(
         "https://donation-app.local",
         postgres_pool_group,
         keto_channel_group,

@@ -1,7 +1,6 @@
 use crate::database::model::user::Account;
 use crate::database::sql::user::account::{
-    ADD_ACCOUNT, DELETE_ACCOUNT, GET_ACCOUNTS, GET_ACCOUNT_BY_EMAIL, GET_ACCOUNT_BY_ID,
-    UPDATE_ACCOUNT,
+    ADD_ACCOUNT, DELETE_ACCOUNT, GET_ACCOUNTS, GET_ACCOUNT_BY_ID,
 };
 use crate::server::connection::PostgresPool;
 use deadpool_postgres::PoolError;
@@ -33,42 +32,10 @@ impl AccountRepository {
         Ok(row.map(Account::from))
     }
 
-    pub async fn get_account_by_email(
-        &self,
-        email: &str,
-    ) -> Result<Option<Account>, Box<dyn Error>> {
-        debug!("Getting account by email: {}", email);
-        let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_ACCOUNT_BY_EMAIL, &[&email]).await?;
-        Ok(row.map(Account::from))
-    }
-
-    pub async fn add_account(
-        &self,
-        email: &str,
-        password_hash: &str,
-        is_active: bool,
-    ) -> Result<Account, Box<dyn Error>> {
-        debug!("Adding account for email: {}", email);
+    pub async fn add_account(&self, id: Uuid) -> Result<Account, Box<dyn Error>> {
+        debug!("Adding account with id: {}", id);
         let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(ADD_ACCOUNT, &[&email, &password_hash, &is_active])
-            .await?;
-        Ok(Account::from(row))
-    }
-
-    pub async fn update_account(
-        &self,
-        id: Uuid,
-        email: Option<String>,
-        password_hash: Option<String>,
-        is_active: Option<bool>,
-    ) -> Result<Account, Box<dyn Error>> {
-        debug!("Updating account: {}", id);
-        let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(UPDATE_ACCOUNT, &[&id, &email, &password_hash, &is_active])
-            .await?;
+        let row = client.query_one(ADD_ACCOUNT, &[&id]).await?;
         Ok(Account::from(row))
     }
 

@@ -1,10 +1,5 @@
 use crate::server::connection::KetoChannelGroup;
-/**
- * Custom Axum service - modified from async-graphql-context@v7.0.16
- * - Added extractor function to allow for request data propagation to GraphQL context resolvers
- *
- * https://github.com/async-graphql/async-graphql/blob/75a9d14e8f45176a32bac7f458534c05cabd10cc/integrations/axum/src/query.rs
- */
+
 use async_graphql::{
     http::{create_multipart_mixed_stream, is_accept_multipart_mixed},
     Data, Executor,
@@ -21,7 +16,7 @@ use bytes::Bytes;
 use futures_util::{future::BoxFuture, StreamExt};
 use std::{
     convert::Infallible,
-    task::{Context, Poll},
+    task::{Context as StdContext, Poll},
     time::Duration,
 };
 use tower;
@@ -51,6 +46,12 @@ impl DataContext {
     }
 }
 
+/**
+ * Custom Axum service - modified from async-graphql-context@v7.0.16
+ * - Added extractor function to allow for request data propagation to GraphQL context resolvers
+ *
+ * https://github.com/async-graphql/async-graphql/blob/75a9d14e8f45176a32bac7f458534c05cabd10cc/integrations/axum/src/query.rs
+ */
 /// A GraphQL service.
 #[derive(Clone)]
 pub struct GraphQL<E> {
@@ -77,7 +78,7 @@ where
     type Error = Infallible;
     type Future = BoxFuture<'static, Result<Self::Response, Self::Error>>;
 
-    fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&mut self, _cx: &mut StdContext<'_>) -> Poll<Result<(), Self::Error>> {
         Poll::Ready(Ok(()))
     }
 

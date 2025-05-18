@@ -1,1 +1,1 @@
-SELECT id, created_at FROM "user"."account" WHERE id = $1;
+SELECT id, remarks, created_at FROM "user"."account" WHERE id = $1;
