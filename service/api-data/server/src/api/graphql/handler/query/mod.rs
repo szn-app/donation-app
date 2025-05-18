@@ -1,3 +1,4 @@
+pub mod listing;
 pub mod test;
 pub mod user;
 
@@ -13,6 +14,12 @@ pub struct Query(
     user::CommitteeQuery,
     user::CommunityQuery,
     user::ProfileQuery,
+    listing::CategoryQuery,
+    listing::LocationQuery,
+    listing::ItemQuery,
+    listing::CollectionQuery,
+    listing::MediaQuery,
+    listing::PublishQuery,
     test::TestQuery,
 );
 
@@ -29,6 +36,24 @@ impl Query {
                 postgres_pool_group: postgres_pool_group.clone(),
             },
             user::ProfileQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::CategoryQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::LocationQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::ItemQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::CollectionQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::MediaQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            listing::PublishQuery {
                 postgres_pool_group: postgres_pool_group.clone(),
             },
             test::TestQuery {
