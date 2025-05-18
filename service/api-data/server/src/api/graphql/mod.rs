@@ -1,4 +1,4 @@
-pub mod access_constrol;
+pub mod access_control;
 pub mod handler;
 pub mod service;
 

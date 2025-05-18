@@ -1,4 +1,4 @@
-use crate::api::graphql::access_constrol::{
+use crate::api::graphql::access_control::{
     check::check_permission_for_subject,
     guard::{auth, AuthorizeUser},
 };

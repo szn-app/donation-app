@@ -1,3 +1,4 @@
+pub mod interaction;
 pub mod listing;
 pub mod test;
 pub mod user;
@@ -20,6 +21,12 @@ pub struct Query(
     listing::CollectionQuery,
     listing::MediaQuery,
     listing::PublishQuery,
+    interaction::ReviewQuery,
+    interaction::PledgeQuery,
+    interaction::ScheduleOpportunityQuery,
+    interaction::ScheduleQuery,
+    interaction::TransactionQuery,
+    interaction::MessageQuery,
     test::TestQuery,
 );
 
@@ -54,6 +61,24 @@ impl Query {
                 postgres_pool_group: postgres_pool_group.clone(),
             },
             listing::PublishQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ReviewQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::PledgeQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ScheduleOpportunityQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ScheduleQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::TransactionQuery {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::MessageQuery {
                 postgres_pool_group: postgres_pool_group.clone(),
             },
             test::TestQuery {

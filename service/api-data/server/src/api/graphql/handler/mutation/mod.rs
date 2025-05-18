@@ -1,3 +1,4 @@
+pub mod interaction;
 pub mod listing;
 pub mod user;
 
@@ -17,6 +18,12 @@ pub struct Mutation(
     listing::CollectionMutation,
     listing::MediaMutation,
     listing::PublishMutation,
+    interaction::ReviewMutation,
+    interaction::PledgeMutation,
+    interaction::ScheduleOpportunityMutation,
+    interaction::ScheduleMutation,
+    interaction::TransactionMutation,
+    interaction::MessageMutation,
 );
 
 impl Mutation {
@@ -50,6 +57,24 @@ impl Mutation {
                 postgres_pool_group: postgres_pool_group.clone(),
             },
             listing::PublishMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ReviewMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::PledgeMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ScheduleOpportunityMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::ScheduleMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::TransactionMutation {
+                postgres_pool_group: postgres_pool_group.clone(),
+            },
+            interaction::MessageMutation {
                 postgres_pool_group,
             },
         )
