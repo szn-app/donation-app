@@ -944,15 +944,15 @@ export type GetTestListPartialQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTestListPartialQuery = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, d: Date }> };
 
-export type DummyQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetTestList2QueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type DummyQuery = { __typename: 'Query' };
+export type GetTestList2Query = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, s: string, d: Date }> };
 
-export type Dummy2QueryVariables = Exact<{ [key: string]: never; }>;
+export type GetTestList1QueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Dummy2Query = { __typename: 'Query' };
+export type GetTestList1Query = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, s: string, d: Date }> };
 
 export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -991,16 +991,24 @@ export const GetTestListPartialDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetTestListPartialQuery, GetTestListPartialQueryVariables>;
-export const DummyDocument = new TypedDocumentString(`
-    query Dummy {
-  __typename
+export const GetTestList2Document = new TypedDocumentString(`
+    query GetTestList2 {
+  tests {
+    i
+    s
+    d
+  }
 }
-    `) as unknown as TypedDocumentString<DummyQuery, DummyQueryVariables>;
-export const Dummy2Document = new TypedDocumentString(`
-    query Dummy2 {
-  __typename
+    `) as unknown as TypedDocumentString<GetTestList2Query, GetTestList2QueryVariables>;
+export const GetTestList1Document = new TypedDocumentString(`
+    query GetTestList1 {
+  tests {
+    i
+    s
+    d
+  }
 }
-    `) as unknown as TypedDocumentString<Dummy2Query, Dummy2QueryVariables>;
+    `) as unknown as TypedDocumentString<GetTestList1Query, GetTestList1QueryVariables>;
 export const GetAccountListDocument = new TypedDocumentString(`
     query GetAccountList {
   accounts {

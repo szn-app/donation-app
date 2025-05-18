@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { NavProjects } from "@/components/nav-projects";
 import { NavMain } from "@/components/nav-main";
-import { navMainData, projects } from "@/data/luxury-navigation";
+import { navMainData, projects } from "@/services/local-data/luxury-navigation";
 import React from "react";
 
 export const Route = createLazyFileRoute("/_app/luxury")({

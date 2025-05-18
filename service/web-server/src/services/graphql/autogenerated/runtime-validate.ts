@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from 'src/graphql-generated/graphql.ts'
+import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from './graphql.ts'
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;

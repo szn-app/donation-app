@@ -16,14 +16,14 @@ import * as types from './graphql';
  */
 type Documents = {
     "\n  query GetTestListPartial {\n    tests {\n      i\n      d\n    }\n  }\n": typeof types.GetTestListPartialDocument,
-    "query Dummy {\n  __typename\n}": typeof types.DummyDocument,
-    "query Dummy2 {\n  __typename\n}": typeof types.Dummy2Document,
+    "query GetTestList2 {\n  tests {\n    i\n    s\n    d\n  }\n}": typeof types.GetTestList2Document,
+    "query GetTestList1 {\n  tests {\n    i\n    s\n    d\n  }\n}": typeof types.GetTestList1Document,
     "query GetAccountList {\n  accounts {\n    id\n    createdAt\n  }\n}\n\nquery GetTestList {\n  tests {\n    i\n    s\n    d\n  }\n}": typeof types.GetAccountListDocument,
 };
 const documents: Documents = {
     "\n  query GetTestListPartial {\n    tests {\n      i\n      d\n    }\n  }\n": types.GetTestListPartialDocument,
-    "query Dummy {\n  __typename\n}": types.DummyDocument,
-    "query Dummy2 {\n  __typename\n}": types.Dummy2Document,
+    "query GetTestList2 {\n  tests {\n    i\n    s\n    d\n  }\n}": types.GetTestList2Document,
+    "query GetTestList1 {\n  tests {\n    i\n    s\n    d\n  }\n}": types.GetTestList1Document,
     "query GetAccountList {\n  accounts {\n    id\n    createdAt\n  }\n}\n\nquery GetTestList {\n  tests {\n    i\n    s\n    d\n  }\n}": types.GetAccountListDocument,
 };
 
@@ -34,11 +34,11 @@ export function graphql(source: "\n  query GetTestListPartial {\n    tests {\n  
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query Dummy {\n  __typename\n}"): typeof import('./graphql').DummyDocument;
+export function graphql(source: "query GetTestList2 {\n  tests {\n    i\n    s\n    d\n  }\n}"): typeof import('./graphql').GetTestList2Document;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "query Dummy2 {\n  __typename\n}"): typeof import('./graphql').Dummy2Document;
+export function graphql(source: "query GetTestList1 {\n  tests {\n    i\n    s\n    d\n  }\n}"): typeof import('./graphql').GetTestList1Document;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

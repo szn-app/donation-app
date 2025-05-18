@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/sidebar";
 import { SectionContext } from "@/contexts/SectionContext";
 import { defaultUser, UserContext } from "@/contexts/UserContext";
-import { sections } from "@/data/sections";
+import { sections } from "@/services/local-data/sections";
 import { useAuth } from "react-oidc-context";
 
 import { Button } from "@/components/ui/button";
 import { LogIn, User2 } from "lucide-react";
 import { type User } from "@/types/user";
-import { handleLogin } from "@/utility/auth";
+import { handleLogin } from "@/lib/auth";
 
 export type { Section };
 

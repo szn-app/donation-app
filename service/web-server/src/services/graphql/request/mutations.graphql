@@ -1,0 +1,7 @@
+query GetTestList2 {
+  tests {
+    i
+    s
+    d
+  }
+}

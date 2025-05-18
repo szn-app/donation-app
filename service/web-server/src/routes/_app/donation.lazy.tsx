@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { NavProjects } from "@/components/nav-projects";
 import { NavMain } from "@/components/nav-main";
-import { navMainData, projects } from "@/data/donation-navigation";
-import { Product, products } from "@/data/dummy_products";
-import { E } from "@/example/example-grpahql";
+import {
+  navMainData,
+  projects,
+} from "@/services/local-data/donation-navigation";
+import { Product, products } from "@/services/local-data/dummy_products";
+import { E } from "@/lib/example/example-grpahql";
 
 export const Route = createLazyFileRoute("/_app/donation")({
   component,
