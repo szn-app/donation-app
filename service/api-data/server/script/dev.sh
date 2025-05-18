@@ -36,6 +36,14 @@ check@api-data(){
     echo ''
 }
 
+force.generate_graphql_sdl_schema#task@api-data-server(){
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+
+    rust-script --force ./script/generate_graphql_sdl_schema#task@api-data-server.script.rs
+
+    popd
+}
+
 # NOTE: used for docker command
 hot_reload@api-data() {
     cargo +nightly watch -q -c -w src/ -x run

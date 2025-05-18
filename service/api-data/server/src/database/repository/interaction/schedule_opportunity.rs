@@ -6,7 +6,7 @@ use crate::database::sql::{
 use crate::server::connection::PostgresPool;
 use deadpool_postgres::PoolError;
 use std::error::Error;
-use time::PrimitiveDateTime;
+use time;
 use tokio_postgres::Row;
 use tracing::debug;
 
@@ -59,8 +59,8 @@ impl ScheduleOpportunityRepository {
     pub async fn update_schedule_opportunity(
         &self,
         id: i64,
-        window_start: PrimitiveDateTime,
-        window_end: PrimitiveDateTime,
+        window_start: time::OffsetDateTime,
+        window_end: time::OffsetDateTime,
     ) -> Result<ScheduleOpportunity, Box<dyn Error>> {
         debug!("Updating schedule opportunity: {}", id);
         let client = self.pool.rw.get().await?;

@@ -102,7 +102,7 @@ build_app@web-server() {
     WEBKIT_DISABLE_COMPOSITING_MODE=1 ./src-tauri/target/release/bundle/appimage/*.AppImage
 }
 
-generate_graphql_codegen#task@web-server() { 
+generate_graphql_codegen#task@web-server() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
 
     npx graphql-codegen --config codegen.ts

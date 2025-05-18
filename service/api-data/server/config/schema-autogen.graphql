@@ -117,14 +117,6 @@ enum ItemType {
 	SERVICE
 }
 
-"""
-A local datetime without timezone offset.
-
-The input/output is a string in ISO 8601 format without timezone, including
-subseconds. E.g. "2022-01-12T07:30:19.12345".
-"""
-scalar LocalDateTime
-
 type Location {
 	id: Int!
 	addressLine1: String!
@@ -236,7 +228,7 @@ type Mutation {
 	addPledge(idProfile: UUID!, idItem: Int!, intentAction: ItemIntentAction!, message: String, status: PledgeStatus!): Pledge!
 	updatePledge(id: Int!, status: PledgeStatus!): Pledge!
 	addScheduleOpportunity(idSchedule: Int!, idOpportunity: Int!): ScheduleOpportunity!
-	updateScheduleOpportunity(id: Int!, windowStart: LocalDateTime!, windowEnd: LocalDateTime!): ScheduleOpportunity!
+	updateScheduleOpportunity(id: Int!, windowStart: DateTime!, windowEnd: DateTime!): ScheduleOpportunity!
 	addSchedule(scheduledFor: DateTime!): Schedule!
 	addTransaction(idPledge: Int!, status: TransactionStatus!): Transaction!
 	updateTransaction(id: Int!, status: TransactionStatus!): Transaction!

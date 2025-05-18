@@ -128,8 +128,8 @@ impl ScheduleOpportunityMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        window_start: time::PrimitiveDateTime,
-        window_end: time::PrimitiveDateTime,
+        window_start: time::OffsetDateTime,
+        window_end: time::OffsetDateTime,
     ) -> FieldResult<model::interaction::ScheduleOpportunity> {
         log::debug!("--> update_schedule_opportunity @ graphql resolver");
         let repository = repository::interaction::ScheduleOpportunityRepository::new(

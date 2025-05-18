@@ -1,0 +1,14 @@
+query GetAccountList {
+  accounts {
+    id
+    createdAt
+  }
+}
+
+query GetTestList {
+  tests {
+    i
+    s
+    d
+  }
+}
