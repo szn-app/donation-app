@@ -1,6 +1,10 @@
-use super::super::service::{DataContext, GlobalContext};
-use super::check::check_permission_for_subject;
+use crate::access_control::check_permission_for_subject;
+use crate::api::graphql::service::{DataContext, GlobalContext};
 use async_graphql::{Context, ErrorExtensions, Guard, ResultExt, TypeDirective};
+
+/**
+ * Using async_graphql guards to enforce authorization, while using type system directives for metadata to mark graphql objects which require authentication
+ */
 
 /// Authorization directive for marking fields or objects that require authorization.
 /// This directive only adds metadata and does not enforce authorization.

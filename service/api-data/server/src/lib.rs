@@ -1,3 +1,4 @@
+pub mod access_control;
 pub mod api;
 pub mod database;
 pub mod domain;
