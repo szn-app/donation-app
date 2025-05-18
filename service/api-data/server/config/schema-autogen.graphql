@@ -1,11 +1,67 @@
 type Account {
-	"""
-	kratos id value
-	"""
 	id: UUID!
+	remarks: String
 	createdAt: DateTime!
 }
 
+
+type Category {
+	id: Int!
+	title: String!
+	description: String
+	categoryParent: Int
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type Collection {
+	id: Int!
+	idCommunity: Int!
+	title: String!
+	visibility: CollectionVisibility!
+	type: CollectionType!
+	position: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+enum CollectionType {
+	FEATURED
+	REGULAR
+}
+
+enum CollectionVisibility {
+	PUBLIC
+	RESTRICTED
+}
+
+type Committee {
+	idProfile: Int!
+	idCommunity: Int!
+	memberRole: CommitteeRole!
+	joinedAt: DateTime!
+}
+
+enum CommitteeRole {
+	ORGANIZER
+	MEMBER
+}
+
+type Community {
+	id: Int!
+	title: String
+	description: String
+	type: CommunityType!
+	owner: UUID!
+	createdAt: DateTime!
+	updatedAt: DateTime
+	createdBy: UUID!
+}
+
+enum CommunityType {
+	SOLO
+	ORGANIZED
+}
 
 """
 A datetime with timezone offset.
@@ -20,18 +76,312 @@ scalar DateTime
 
 
 
-type Mutation {
-	"""
-	Create a new user
-	"""
-	addAccount(id: UUID!): Account!
+type Item {
+	id: Int!
+	idCategory: Int!
+	idLocation: Int!
+	title: String!
+	description: String
+	type: ItemType!
+	intentAction: ItemIntentAction!
+	status: ItemStatus!
+	condition: ItemCondition!
+	quantity: Int!
+	createdAt: DateTime!
+	updatedAt: DateTime!
 }
 
+enum ItemCondition {
+	BRAND_NEW
+	PRE_OWNED_BARELY_USED
+	PRE_OWNED_USABLE
+	PRE_OWNED_DAMAGED
+}
+
+enum ItemIntentAction {
+	REQUEST
+	OFFER
+}
+
+enum ItemStatus {
+	DRAFT
+	ACTIVE
+	DISABLED
+	ARCHIVED
+}
+
+enum ItemType {
+	IN_KIND
+	INQUIRY
+	MONETARY
+	SERVICE
+}
+
+"""
+A local datetime without timezone offset.
+
+The input/output is a string in ISO 8601 format without timezone, including
+subseconds. E.g. "2022-01-12T07:30:19.12345".
+"""
+scalar LocalDateTime
+
+type Location {
+	id: Int!
+	addressLine1: String!
+	addressLine2: String
+	city: String!
+	state: String!
+	district: String
+	country: String!
+	geom: String
+	entranceNote: String
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type Media {
+	id: Int!
+	idItem: Int!
+	caption: String
+	url: String!
+	type: MediaType!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+enum MediaType {
+	IMAGE
+	VIDEO
+}
+
+type Message {
+	id: Int!
+	idSender: UUID!
+	idTransaction: Int!
+	type: MessageType!
+	content: String!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+enum MessageType {
+	TEXT
+	IMAGE
+	VIDEO
+}
+
+"""
+GraphQL Mutation Root
+"""
+type Mutation {
+	"""
+	Create a new account
+	"""
+	addAccount(id: UUID!): Account!
+	"""
+	Delete an account
+	"""
+	deleteAccount(id: UUID!): Boolean!
+	"""
+	Add a new committee
+	"""
+	addCommittee(idProfile: UUID!, idCommunity: Int!, role: String!): Committee!
+	"""
+	Update committee role
+	"""
+	updateCommitteeRole(idProfile: UUID!, idCommunity: Int!, role: String!): Committee!
+	"""
+	Delete a committee
+	"""
+	deleteCommittee(idProfile: UUID!, idCommunity: Int!): Boolean!
+	"""
+	Add a new community
+	"""
+	addCommunity(name: String!, description: String!, createdBy: UUID!): Community!
+	"""
+	Update a community
+	"""
+	updateCommunity(id: Int!, name: String, description: String): Community!
+	"""
+	Delete a community
+	"""
+	deleteCommunity(id: Int!): Boolean!
+	"""
+	Add a new profile
+	"""
+	addProfile(idAccount: UUID!, name: String!, bio: String, avatarUrl: String): Profile!
+	"""
+	Update a profile
+	"""
+	updateProfile(id: UUID!, name: String, bio: String, avatarUrl: String): Profile!
+	addCategory(name: String!, description: String!, parentId: Int): Category!
+	updateCategory(id: Int!, name: String, description: String, parentId: Int): Category!
+	deleteCategory(id: Int!): Boolean!
+	addLocation(name: String!, address: String!, city: String!, state: String!, country: String!, postalCode: String!, idProfile: UUID!): Location!
+	updateLocation(id: Int!, name: String, address: String, city: String, state: String, country: String, postalCode: String): Location!
+	deleteLocation(id: Int!): Boolean!
+	addItem(title: String!, description: String!, idCategory: Int!, idProfile: UUID!, idLocation: Int, price: Float, currency: String): Item!
+	updateItem(id: Int!, title: String, description: String, idCategory: Int, idLocation: Int, price: Float, currency: String): Item!
+	deleteItem(id: Int!): Boolean!
+	addCollection(name: String!, description: String!, idProfile: UUID!, isPublic: Boolean!): Collection!
+	updateCollection(id: Int!, name: String, description: String, isPublic: Boolean): Collection!
+	deleteCollection(id: Int!): Boolean!
+	addMedia(idItem: Int!, url: String!, mediaType: String!, position: Int!): Media!
+	updateMedia(id: Int!, url: String, mediaType: String, position: Int): Media!
+	deleteMedia(id: Int!): Boolean!
+	addPublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, createdBy: UUID!): Publish!
+	updatePublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, updatedBy: UUID!): Publish!
+	deletePublish(idItem: Int!, idCollection: Int!): Boolean!
+	addReview(idTransaction: Int!, idSubject: Int!, rating: Int!, comment: String): Review!
+	addPledge(idProfile: UUID!, idItem: Int!, intentAction: ItemIntentAction!, message: String, status: PledgeStatus!): Pledge!
+	updatePledge(id: Int!, status: PledgeStatus!): Pledge!
+	addScheduleOpportunity(idSchedule: Int!, idOpportunity: Int!): ScheduleOpportunity!
+	updateScheduleOpportunity(id: Int!, windowStart: LocalDateTime!, windowEnd: LocalDateTime!): ScheduleOpportunity!
+	addSchedule(scheduledFor: DateTime!): Schedule!
+	addTransaction(idPledge: Int!, status: TransactionStatus!): Transaction!
+	updateTransaction(id: Int!, status: TransactionStatus!): Transaction!
+	addMessage(idTransaction: Int!, idSender: UUID!, type: MessageType!, content: String!): Message!
+}
+
+type Pledge {
+	id: Int!
+	idProfile: UUID!
+	idItem: Int!
+	intentAction: ItemIntentAction!
+	message: String
+	status: PledgeStatus!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+enum PledgeStatus {
+	PENDING
+	ACCEPTED
+	REJECTED
+	CANCELLED
+}
+
+type Profile {
+	id: Int!
+	name: String
+	description: String
+	type: ProfileType
+	owner: UUID!
+	createdAt: DateTime!
+	updatedAt: DateTime
+	createdBy: UUID!
+}
+
+enum ProfileType {
+	INDIVIDUAL
+	ORGANIZATION
+	COMPANY
+}
+
+type Publish {
+	idItem: Int!
+	idCollection: Int!
+	note: String
+	position: Int!
+	addedBy: UUID!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+"""
+GraphQL Query Root
+"""
 type Query {
 	"""
 	Get all accounts
 	"""
 	accounts: [Account!]!
+	"""
+	Get account by ID
+	"""
+	accountById(id: UUID!): Account
+	"""
+	Get all committees
+	"""
+	committees: [Committee!]!
+	"""
+	Get committee by ID
+	"""
+	committeeById(idProfile: UUID!, idCommunity: Int!): Committee
+	"""
+	Get committee by profile and community
+	"""
+	committeeByProfileAndCommunity(idProfile: UUID!, idCommunity: Int!): Committee
+	"""
+	Get committees by community
+	"""
+	committeesByCommunity(idCommunity: Int!): [Committee!]!
+	"""
+	Get committees by profile
+	"""
+	committeesByProfile(idProfile: UUID!): [Committee!]!
+	"""
+	Get all communities
+	"""
+	communities: [Community!]!
+	"""
+	Get community by ID
+	"""
+	communityById(id: Int!): Community
+	"""
+	Get communities by profile
+	"""
+	communitiesByProfile(idProfile: UUID!): [Community!]!
+	"""
+	Get all profiles
+	"""
+	profiles: [Profile!]!
+	"""
+	Get profile by ID
+	"""
+	profileById(id: UUID!): Profile
+	"""
+	Get profile by account
+	"""
+	profileByAccount(idAccount: UUID!): Profile
+	getCategories: [Category!]!
+	getCategoryById(id: Int!): Category
+	getCategoriesByParent(parentId: Int): [Category!]!
+	getLocations: [Location!]!
+	getLocationById(id: Int!): Location
+	getLocationsByProfile(profileId: UUID!): [Location!]!
+	getItems: [Item!]!
+	getItemById(id: Int!): Item
+	getItemsByProfile(profileId: UUID!): [Item!]!
+	getItemsByCategory(categoryId: Int!): [Item!]!
+	getCollections: [Collection!]!
+	getCollectionById(id: Int!): Collection
+	getCollectionsByProfile(profileId: UUID!): [Collection!]!
+	getMedia: [Media!]!
+	getMediaById(id: Int!): Media
+	getMediaByItem(itemId: Int!): [Media!]!
+	getPublishes: [Publish!]!
+	getPublishById(id: Int!): Publish
+	getPublishByItemAndCollection(itemId: Int!, collectionId: Int!): Publish
+	getPublishesByCollection(collectionId: Int!): [Publish!]!
+	getPublishesByItem(itemId: Int!): [Publish!]!
+	getReviews: [Review!]!
+	getReviewById(idTransaction: Int!, idSubject: Int!): Review
+	getReviewByTransactionAndSubject(idTransaction: Int!, idSubject: Int!): Review
+	getPledges: [Pledge!]!
+	getPledgeById(id: Int!): Pledge
+	getPledgesByItem(idItem: Int!): [Pledge!]!
+	getPledgesByProfile(idProfile: UUID!): [Pledge!]!
+	getScheduleOpportunities: [ScheduleOpportunity!]!
+	getScheduleOpportunityById(id: Int!): ScheduleOpportunity
+	getSchedules: [Schedule!]!
+	getScheduleById(id: Int!): Schedule
+	getTransactions: [Transaction!]!
+	getTransactionById(id: Int!): Transaction
+	getTransactionsByPledge(idPledge: Int!): [Transaction!]!
+	getMessages: [Message!]!
+	getMessageById(id: Int!): Message
+	getMessagesByTransaction(idTransaction: Int!): [Message!]!
 	tests: [Test!]!
 	dummyTest: [String!]!
 	dummyTestRequestHeader: String!
@@ -40,14 +390,51 @@ type Query {
 	dummyTestSecureGuard: Test! @auth(permission: "required_authorization")
 }
 
+type Review {
+	idTransaction: Int!
+	idSubjectProfile: UUID!
+	rating: Int!
+	comment: String
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type Schedule {
+	id: Int!
+	scheduledFor: DateTime!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+type ScheduleOpportunity {
+	id: Int!
+	windowStart: DateTime!
+	windowEnd: DateTime!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
 
 type Test {
-	"""
-	example graphql comments (should appear in graphql IDE)
-	"""
 	i: Int!
 	s: String!
 	d: DateTime!
+}
+
+type Transaction {
+	id: Int!
+	idPledge: Int!
+	status: TransactionStatus!
+	idSchedule: Int
+	idLocation: Int
+	createdAt: DateTime!
+	updatedAt: DateTime!
+}
+
+enum TransactionStatus {
+	PENDING
+	COMPLETED
+	CANCELLED
 }
 
 """

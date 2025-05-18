@@ -11,8 +11,8 @@
 use std::fs;
 use std::path::Path;
 
+use api_data::api::graphql::handler::{EmptySubscription, Mutation, Query};
 use api_data::database::model::user::Account;
-use api_data::graphql_api::handler::{EmptySubscription, Mutation, Query};
 use api_data::server::connection::PostgresPool;
 use async_graphql::Schema;
 
@@ -21,12 +21,8 @@ fn main() {
     let schema = {
         let postgres_pool_group = PostgresPool::new_mock();
 
-        let query_resolver = Query {
-            postgres_pool_group: postgres_pool_group.clone(), // pass context as instance value
-        };
-        let mutation_resolver = Mutation {
-            postgres_pool_group, // pass context as instance value
-        };
+        let query_resolver = Query::new(postgres_pool_group.clone()); // pass context as instance value
+        let mutation_resolver = Mutation::new(postgres_pool_group); // pass context as instance value
         let subscription_resolver = EmptySubscription;
 
         Schema::build(query_resolver, mutation_resolver, subscription_resolver).finish()

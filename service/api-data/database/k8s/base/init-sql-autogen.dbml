@@ -77,10 +77,6 @@ Enum "message_type" {
   "schedule_opportunity"
 }
 
-Table "test" {
-  "i" integer
-}
-
 Ref:"user"."account"."id" < "user"."profile"."owner"
 
 Ref:"user"."account"."id" < "user"."profile"."created_by"
@@ -135,8 +131,15 @@ Ref:"user"."profile"."id" < "interaction"."review"."reviewer"
 
 Ref:"interaction"."message"."id" < "interaction"."schedule_opportunity"."id"
 
+Table "test"."test" {
+  "i" integer
+  "s" VARCHAR(100)
+  "d" TIMESTAMPTZ [default: `CURRENT_TIMESTAMP`]
+}
+
 Table "user"."account" {
   "id" UUID [pk]
+  "remarks" TEXT
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 }
 
