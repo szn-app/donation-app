@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { SectionProvider } from "@/contexts/SectionContext";
 import { BreadcrumbListComponent } from "@/components/breadcrumb-list";
-import { sections } from "@/services/local-data/sections";
+import { sections } from "@/modules/local-data/sections";
 import { useAuth, hasAuthParams } from "react-oidc-context";
 import { useEffect, useState } from "react";
 

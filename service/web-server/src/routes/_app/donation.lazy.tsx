@@ -5,8 +5,8 @@ import { NavMain } from "@/components/nav-main";
 import {
   navMainData,
   projects,
-} from "@/services/local-data/donation-navigation";
-import { Product, products } from "@/services/local-data/dummy_products";
+} from "@/modules/local-data/donation-navigation";
+import { Product, products } from "@/modules/local-data/dummy_products";
 import { E } from "@/modules/example/example-grpahql";
 
 export const Route = createLazyFileRoute("/_app/donation")({

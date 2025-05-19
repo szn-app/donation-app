@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import { SectionContext } from "@/contexts/SectionContext";
 import { defaultUser, UserContext } from "@/contexts/UserContext";
-import { sections } from "@/services/local-data/sections";
+import { sections } from "@/modules/local-data/sections";
 import { useAuth } from "react-oidc-context";
 
 import { Button } from "@/components/ui/button";

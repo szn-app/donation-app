@@ -4,7 +4,7 @@ import { NavMain } from "@/components/nav-main";
 import {
   navMainData,
   projects,
-} from "@/services/local-data/retailer-navigation";
+} from "@/modules/local-data/retailer-navigation";
 
 export const Route = createLazyFileRoute("/_app/retailer")({
   component,

@@ -6,7 +6,7 @@ export const Route = createLazyFileRoute("/_app/market")({
   component,
 });
 
-import { navMainData, projects } from "@/services/local-data/market-navigation";
+import { navMainData, projects } from "@/modules/local-data/market-navigation";
 
 export default function component() {
   const imageColumns = [
