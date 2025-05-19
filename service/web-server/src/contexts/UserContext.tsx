@@ -8,7 +8,7 @@ import { AuthProviderProps, AuthProvider, useAuth } from "react-oidc-context";
 import { Log, WebStorageStateStore, UserManagerSettings } from "oidc-client-ts";
 import { User } from "@/types/user";
 import { useNavigate } from "@tanstack/react-router";
-import { handleSigninCallback, handleSignoutCallback } from "@/lib/auth";
+import { handleSigninCallback, handleSignoutCallback } from "@/modules/auth";
 
 interface UserContextType {
   user: User;

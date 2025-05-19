@@ -22,7 +22,7 @@ import { useAuth } from "react-oidc-context";
 import { Button } from "@/components/ui/button";
 import { LogIn, User2 } from "lucide-react";
 import { type User } from "@/types/user";
-import { handleLogin } from "@/lib/auth";
+import { handleLogin } from "@/modules/auth";
 
 export type { Section };
 

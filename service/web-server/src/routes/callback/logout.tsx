@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "react-oidc-context";
 import { useEffect } from "react";
-import { debug, handleRedirectAfterCallback } from "@/lib/auth";
+import { debug, handleRedirectAfterCallback } from "@/modules/auth";
 
 // example usage of react-oidc-context https://github.com/authts/react-oidc-context?tab=readme-ov-file
 export const Route = createFileRoute("/callback/logout")({

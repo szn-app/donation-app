@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { User } from "@/types/user";
 import { useAuth } from "react-oidc-context";
-import { handleLogout } from "@/lib/auth";
+import { handleLogout } from "@/modules/auth";
 import { useNavigate } from "@tanstack/react-router";
 
 export function NavUser({ user }: { user: User }) {
