@@ -33,7 +33,7 @@ impl Guard for AuthorizeUser {
         let c = ctx.data::<DataContext>()?;
 
         let user_id = c.user_id.as_ref().ok_or(
-            async_graphql::Error::new("Not authenticated & no user info provided").extend_with(
+            async_graphql::Error::new("Not authenticated & No user header detected").extend_with(
                 |err, e| {
                     e.set("code", 401);
                     e.set("message", err.message.clone()); // Optional: copy the error message

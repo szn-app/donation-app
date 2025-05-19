@@ -88,7 +88,7 @@ impl TestQuery {
         let user_id = c
             .user_id
             .as_ref()
-            .ok_or("Not authenticated & no user info provided")?;
+            .ok_or("Not authenticated & No user header detected")?;
 
         match check_permission_for_subject(keto_client, "Test", "object", "relation", user_id).await
         {

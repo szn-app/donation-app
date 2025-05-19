@@ -30,7 +30,7 @@
         "handler": "header",
         "config": {
           "headers": {
-            "X-User": "{{ print .Subject }}"
+            "app-user-id": "{{ print .Subject }}"
           }
         }
       }

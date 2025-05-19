@@ -166,7 +166,7 @@ EOF
 }
 EOF
 
-        curl -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY" -H "X-User: header-content-here"
+        curl -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY" -H "app-user-id: header-content-here"
     }
 
     query_secure_example() {
@@ -179,7 +179,7 @@ EOF
 EOF
 
         # request should be denied with anonymous user
-        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "app-user-id: anonymous" -d "$QUERY"
 
         read -r -d '' QUERY <<EOF
 {
@@ -188,7 +188,7 @@ EOF
 EOF
 
         # request should be denied with anonymous user
-        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "app-user-id: anonymous" -d "$QUERY"
 
 
         read -r -d '' QUERY <<EOF
@@ -198,7 +198,7 @@ EOF
 EOF
 
         # request should be denied with anonymous user
-        curl -X POST "$URL" -H "Content-Type: application/json" -H "X-User: anonymous" -d "$QUERY"
+        curl -X POST "$URL" -H "Content-Type: application/json" -H "app-user-id: anonymous" -d "$QUERY"
 
     }
 }

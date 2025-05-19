@@ -91,11 +91,11 @@ oathkeeper:
           # headers:
           #   Y-Api-Key: '{% raw %}{{ .MatchContext.Header.Get "X-Api-Key" }}'{% endraw %}
           # headers: 
-          #   x-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
+          #   app-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
           #   x-user-email: "{% raw %}{{ print .Extra.identity.traits.email }}{% endraw %}"
           #   x-user-name: "{% raw %}{{ print .Extra.identity.traits.name }}{% endraw %}"
-          #   x-user-id-a: "{% raw %}{{ index .Extra 'id' }}{% endraw %}"
-          #   x-user-id-b: "{% raw %}{{ index .Extra \"id\" }}{% endraw %}"
+          #   app-user-id-a: "{% raw %}{{ index .Extra 'id' }}{% endraw %}"
+          #   app-user-id-b: "{% raw %}{{ index .Extra \"id\" }}{% endraw %}"
           # https://www.ory.sh/docs/keto/reference/rest-api#tag/permission/operation/postCheckPermissionOrError 
           # https://github.com/ory/oathkeeper/blob/master/pipeline/authn/authenticator.go#L40
           # example:           
@@ -115,7 +115,7 @@ oathkeeper:
         enabled: true
         config:
           headers:
-            x-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
+            app-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
       noop:
         enabled: true
       # id_token:

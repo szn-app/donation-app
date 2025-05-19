@@ -38,7 +38,7 @@ impl DataContext {
         // extract header
         let user_id = req
             .headers()
-            .get("X-User")
+            .get("app-user-id")
             .and_then(|v| v.to_str().ok())
             .map(String::from);
 
