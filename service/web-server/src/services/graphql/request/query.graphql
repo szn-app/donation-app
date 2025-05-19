@@ -1,7 +1,157 @@
-query GetTestList1 {
-  tests {
-    i
-    s
-    d
+# Get all accounts
+query GetAccounts {
+  accounts {
+    id
+    createdAt
+    remarks
+  }
+}
+
+# Get all profiles
+query GetProfiles {
+  profiles {
+    id
+    name
+    type
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Get all communities
+query GetCommunities {
+  communities {
+    id
+    title
+    description
+    type
+    createdAt
+    updatedAt
+  }
+}
+
+# Get committees by community
+query GetCommitteesByCommunity($idCommunity: Int!) {
+  committeesByCommunity(idCommunity: $idCommunity) {
+    idCommunity
+    idProfile
+    memberRole
+    joinedAt
+  }
+}
+
+# Get all categories
+query GetCategories {
+  getCategories {
+    id
+    title
+    description
+    categoryParent
+    createdAt
+    updatedAt
+  }
+}
+
+# Get items by category
+query GetItemsByCategory($categoryId: Int!) {
+  getItemsByCategory(categoryId: $categoryId) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+
+# Get all locations
+query GetLocations {
+  getLocations {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    geom
+    createdAt
+    updatedAt
+  }
+}
+
+# Get all collections
+query GetCollections {
+  getCollections {
+    id
+    title
+    type
+    visibility
+    position
+    createdAt
+    updatedAt
+  }
+}
+
+# Get publishes by collection
+query GetPublishesByCollection($collectionId: Int!) {
+  getPublishesByCollection(collectionId: $collectionId) {
+    idCollection
+    idItem
+    position
+    note
+    addedBy
+    createdAt
+    updatedAt
+  }
+}
+
+# Get item by ID
+query GetItemById($id: Int!) {
+  getItemById(id: $id) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+
+# Get all items
+query GetItems {
+  getItems {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+
+# Get media by item
+query GetMediaByItem($itemId: Int!) {
+  getMediaByItem(itemId: $itemId) {
+    id
+    url
+    type
+    caption
+    createdAt
+    updatedAt
   }
 }

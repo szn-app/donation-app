@@ -1,7 +1,201 @@
-query GetTestList2 {
-  tests {
-    i
-    s
-    d
+# Account and Profile mutations
+mutation AddAccount($id: UUID!) {
+  addAccount(id: $id) {
+    id
+    createdAt
+    remarks
+  }
+}
+
+mutation AddProfile(
+  $idAccount: UUID!
+  $name: String!
+  $bio: String
+  $avatarUrl: String
+) {
+  addProfile(
+    idAccount: $idAccount
+    name: $name
+    bio: $bio
+    avatarUrl: $avatarUrl
+  ) {
+    id
+    name
+    type
+    description
+    createdAt
+    updatedAt
+  }
+}
+
+# Community and Committee mutations
+mutation AddCommunity(
+  $createdBy: UUID!
+  $description: String!
+  $name: String!
+) {
+  addCommunity(createdBy: $createdBy, description: $description, name: $name) {
+    id
+    title
+    description
+    type
+    createdAt
+    updatedAt
+  }
+}
+
+mutation AddCommittee($idCommunity: Int!, $idProfile: UUID!, $role: String!) {
+  addCommittee(idCommunity: $idCommunity, idProfile: $idProfile, role: $role) {
+    idCommunity
+    idProfile
+    memberRole
+    joinedAt
+  }
+}
+
+# Category mutations
+mutation AddCategory($description: String!, $name: String!, $parentId: Int) {
+  addCategory(description: $description, name: $name, parentId: $parentId) {
+    id
+    title
+    description
+    categoryParent
+    createdAt
+    updatedAt
+  }
+}
+
+# Location mutations
+mutation AddLocation(
+  $address: String!
+  $city: String!
+  $country: String!
+  $idProfile: UUID!
+  $name: String!
+  $postalCode: String!
+  $state: String!
+) {
+  addLocation(
+    address: $address
+    city: $city
+    country: $country
+    idProfile: $idProfile
+    name: $name
+    postalCode: $postalCode
+    state: $state
+  ) {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    geom
+    createdAt
+    updatedAt
+  }
+}
+
+# Item mutations
+mutation AddItem(
+  $currency: String
+  $description: String!
+  $idCategory: Int!
+  $idLocation: Int
+  $idProfile: UUID!
+  $price: Float
+  $title: String!
+) {
+  addItem(
+    currency: $currency
+    description: $description
+    idCategory: $idCategory
+    idLocation: $idLocation
+    idProfile: $idProfile
+    price: $price
+    title: $title
+  ) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+
+# Media mutations
+mutation AddMedia(
+  $idItem: Int!
+  $mediaType: String!
+  $position: Int!
+  $url: String!
+) {
+  addMedia(
+    idItem: $idItem
+    mediaType: $mediaType
+    position: $position
+    url: $url
+  ) {
+    id
+    url
+    type
+    caption
+    createdAt
+    updatedAt
+  }
+}
+
+# Collection mutations
+mutation AddCollection(
+  $description: String!
+  $idProfile: UUID!
+  $isPublic: Boolean!
+  $name: String!
+) {
+  addCollection(
+    description: $description
+    idProfile: $idProfile
+    isPublic: $isPublic
+    name: $name
+  ) {
+    id
+    title
+    type
+    visibility
+    position
+    createdAt
+    updatedAt
+  }
+}
+
+# Publish mutations
+mutation AddPublish(
+  $createdBy: UUID!
+  $idCollection: Int!
+  $idItem: Int!
+  $note: String
+  $position: Int!
+) {
+  addPublish(
+    createdBy: $createdBy
+    idCollection: $idCollection
+    idItem: $idItem
+    note: $note
+    position: $position
+  ) {
+    idCollection
+    idItem
+    position
+    note
+    addedBy
+    createdAt
+    updatedAt
   }
 }

@@ -944,15 +944,176 @@ export type GetTestListPartialQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetTestListPartialQuery = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, d: Date }> };
 
-export type GetTestList2QueryVariables = Exact<{ [key: string]: never; }>;
+export type AddAccountMutationVariables = Exact<{
+  id: Scalars['UUID']['input'];
+}>;
 
 
-export type GetTestList2Query = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, s: string, d: Date }> };
+export type AddAccountMutation = { __typename?: 'Mutation', addAccount: { __typename?: 'Account', id: string, createdAt: Date, remarks?: string | null } };
 
-export type GetTestList1QueryVariables = Exact<{ [key: string]: never; }>;
+export type AddProfileMutationVariables = Exact<{
+  idAccount: Scalars['UUID']['input'];
+  name: Scalars['String']['input'];
+  bio?: InputMaybe<Scalars['String']['input']>;
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
-export type GetTestList1Query = { __typename?: 'Query', tests: Array<{ __typename?: 'Test', i: number, s: string, d: Date }> };
+export type AddProfileMutation = { __typename?: 'Mutation', addProfile: { __typename?: 'Profile', id: number, name?: string | null, type?: ProfileType | null, description?: string | null, createdAt: Date, updatedAt?: Date | null } };
+
+export type AddCommunityMutationVariables = Exact<{
+  createdBy: Scalars['UUID']['input'];
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type AddCommunityMutation = { __typename?: 'Mutation', addCommunity: { __typename?: 'Community', id: number, title?: string | null, description?: string | null, type: CommunityType, createdAt: Date, updatedAt?: Date | null } };
+
+export type AddCommitteeMutationVariables = Exact<{
+  idCommunity: Scalars['Int']['input'];
+  idProfile: Scalars['UUID']['input'];
+  role: Scalars['String']['input'];
+}>;
+
+
+export type AddCommitteeMutation = { __typename?: 'Mutation', addCommittee: { __typename?: 'Committee', idCommunity: number, idProfile: number, memberRole: CommitteeRole, joinedAt: Date } };
+
+export type AddCategoryMutationVariables = Exact<{
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type AddCategoryMutation = { __typename?: 'Mutation', addCategory: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date } };
+
+export type AddLocationMutationVariables = Exact<{
+  address: Scalars['String']['input'];
+  city: Scalars['String']['input'];
+  country: Scalars['String']['input'];
+  idProfile: Scalars['UUID']['input'];
+  name: Scalars['String']['input'];
+  postalCode: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+}>;
+
+
+export type AddLocationMutation = { __typename?: 'Mutation', addLocation: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, geom?: string | null, createdAt: Date, updatedAt: Date } };
+
+export type AddItemMutationVariables = Exact<{
+  currency?: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
+  idCategory: Scalars['Int']['input'];
+  idLocation?: InputMaybe<Scalars['Int']['input']>;
+  idProfile: Scalars['UUID']['input'];
+  price?: InputMaybe<Scalars['Float']['input']>;
+  title: Scalars['String']['input'];
+}>;
+
+
+export type AddItemMutation = { __typename?: 'Mutation', addItem: { __typename?: 'Item', id: number, title: string, description?: string | null, status: ItemStatus, type: ItemType, condition: ItemCondition, intentAction: ItemIntentAction, quantity: number, createdAt: Date, updatedAt: Date } };
+
+export type AddMediaMutationVariables = Exact<{
+  idItem: Scalars['Int']['input'];
+  mediaType: Scalars['String']['input'];
+  position: Scalars['Int']['input'];
+  url: Scalars['String']['input'];
+}>;
+
+
+export type AddMediaMutation = { __typename?: 'Mutation', addMedia: { __typename?: 'Media', id: number, url: string, type: MediaType, caption?: string | null, createdAt: Date, updatedAt: Date } };
+
+export type AddCollectionMutationVariables = Exact<{
+  description: Scalars['String']['input'];
+  idProfile: Scalars['UUID']['input'];
+  isPublic: Scalars['Boolean']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type AddCollectionMutation = { __typename?: 'Mutation', addCollection: { __typename?: 'Collection', id: number, title: string, type: CollectionType, visibility: CollectionVisibility, position: number, createdAt: Date, updatedAt: Date } };
+
+export type AddPublishMutationVariables = Exact<{
+  createdBy: Scalars['UUID']['input'];
+  idCollection: Scalars['Int']['input'];
+  idItem: Scalars['Int']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  position: Scalars['Int']['input'];
+}>;
+
+
+export type AddPublishMutation = { __typename?: 'Mutation', addPublish: { __typename?: 'Publish', idCollection: number, idItem: number, position: number, note?: string | null, addedBy: string, createdAt: Date, updatedAt: Date } };
+
+export type GetAccountsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAccountsQuery = { __typename?: 'Query', accounts: Array<{ __typename?: 'Account', id: string, createdAt: Date, remarks?: string | null }> };
+
+export type GetProfilesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProfilesQuery = { __typename?: 'Query', profiles: Array<{ __typename?: 'Profile', id: number, name?: string | null, type?: ProfileType | null, description?: string | null, createdAt: Date, updatedAt?: Date | null }> };
+
+export type GetCommunitiesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCommunitiesQuery = { __typename?: 'Query', communities: Array<{ __typename?: 'Community', id: number, title?: string | null, description?: string | null, type: CommunityType, createdAt: Date, updatedAt?: Date | null }> };
+
+export type GetCommitteesByCommunityQueryVariables = Exact<{
+  idCommunity: Scalars['Int']['input'];
+}>;
+
+
+export type GetCommitteesByCommunityQuery = { __typename?: 'Query', committeesByCommunity: Array<{ __typename?: 'Committee', idCommunity: number, idProfile: number, memberRole: CommitteeRole, joinedAt: Date }> };
+
+export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCategoriesQuery = { __typename?: 'Query', getCategories: Array<{ __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date }> };
+
+export type GetItemsByCategoryQueryVariables = Exact<{
+  categoryId: Scalars['Int']['input'];
+}>;
+
+
+export type GetItemsByCategoryQuery = { __typename?: 'Query', getItemsByCategory: Array<{ __typename?: 'Item', id: number, title: string, description?: string | null, status: ItemStatus, type: ItemType, condition: ItemCondition, intentAction: ItemIntentAction, quantity: number, createdAt: Date, updatedAt: Date }> };
+
+export type GetLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetLocationsQuery = { __typename?: 'Query', getLocations: Array<{ __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, geom?: string | null, createdAt: Date, updatedAt: Date }> };
+
+export type GetCollectionsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetCollectionsQuery = { __typename?: 'Query', getCollections: Array<{ __typename?: 'Collection', id: number, title: string, type: CollectionType, visibility: CollectionVisibility, position: number, createdAt: Date, updatedAt: Date }> };
+
+export type GetPublishesByCollectionQueryVariables = Exact<{
+  collectionId: Scalars['Int']['input'];
+}>;
+
+
+export type GetPublishesByCollectionQuery = { __typename?: 'Query', getPublishesByCollection: Array<{ __typename?: 'Publish', idCollection: number, idItem: number, position: number, note?: string | null, addedBy: string, createdAt: Date, updatedAt: Date }> };
+
+export type GetItemByIdQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetItemByIdQuery = { __typename?: 'Query', getItemById?: { __typename?: 'Item', id: number, title: string, description?: string | null, status: ItemStatus, type: ItemType, condition: ItemCondition, intentAction: ItemIntentAction, quantity: number, createdAt: Date, updatedAt: Date } | null };
+
+export type GetItemsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetItemsQuery = { __typename?: 'Query', getItems: Array<{ __typename?: 'Item', id: number, title: string, description?: string | null, status: ItemStatus, type: ItemType, condition: ItemCondition, intentAction: ItemIntentAction, quantity: number, createdAt: Date, updatedAt: Date }> };
+
+export type GetMediaByItemQueryVariables = Exact<{
+  itemId: Scalars['Int']['input'];
+}>;
+
+
+export type GetMediaByItemQuery = { __typename?: 'Query', getMediaByItem: Array<{ __typename?: 'Media', id: number, url: string, type: MediaType, caption?: string | null, createdAt: Date, updatedAt: Date }> };
 
 export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -991,24 +1152,317 @@ export const GetTestListPartialDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetTestListPartialQuery, GetTestListPartialQueryVariables>;
-export const GetTestList2Document = new TypedDocumentString(`
-    query GetTestList2 {
-  tests {
-    i
-    s
-    d
+export const AddAccountDocument = new TypedDocumentString(`
+    mutation AddAccount($id: UUID!) {
+  addAccount(id: $id) {
+    id
+    createdAt
+    remarks
   }
 }
-    `) as unknown as TypedDocumentString<GetTestList2Query, GetTestList2QueryVariables>;
-export const GetTestList1Document = new TypedDocumentString(`
-    query GetTestList1 {
-  tests {
-    i
-    s
-    d
+    `) as unknown as TypedDocumentString<AddAccountMutation, AddAccountMutationVariables>;
+export const AddProfileDocument = new TypedDocumentString(`
+    mutation AddProfile($idAccount: UUID!, $name: String!, $bio: String, $avatarUrl: String) {
+  addProfile(idAccount: $idAccount, name: $name, bio: $bio, avatarUrl: $avatarUrl) {
+    id
+    name
+    type
+    description
+    createdAt
+    updatedAt
   }
 }
-    `) as unknown as TypedDocumentString<GetTestList1Query, GetTestList1QueryVariables>;
+    `) as unknown as TypedDocumentString<AddProfileMutation, AddProfileMutationVariables>;
+export const AddCommunityDocument = new TypedDocumentString(`
+    mutation AddCommunity($createdBy: UUID!, $description: String!, $name: String!) {
+  addCommunity(createdBy: $createdBy, description: $description, name: $name) {
+    id
+    title
+    description
+    type
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddCommunityMutation, AddCommunityMutationVariables>;
+export const AddCommitteeDocument = new TypedDocumentString(`
+    mutation AddCommittee($idCommunity: Int!, $idProfile: UUID!, $role: String!) {
+  addCommittee(idCommunity: $idCommunity, idProfile: $idProfile, role: $role) {
+    idCommunity
+    idProfile
+    memberRole
+    joinedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddCommitteeMutation, AddCommitteeMutationVariables>;
+export const AddCategoryDocument = new TypedDocumentString(`
+    mutation AddCategory($description: String!, $name: String!, $parentId: Int) {
+  addCategory(description: $description, name: $name, parentId: $parentId) {
+    id
+    title
+    description
+    categoryParent
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddCategoryMutation, AddCategoryMutationVariables>;
+export const AddLocationDocument = new TypedDocumentString(`
+    mutation AddLocation($address: String!, $city: String!, $country: String!, $idProfile: UUID!, $name: String!, $postalCode: String!, $state: String!) {
+  addLocation(
+    address: $address
+    city: $city
+    country: $country
+    idProfile: $idProfile
+    name: $name
+    postalCode: $postalCode
+    state: $state
+  ) {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    geom
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddLocationMutation, AddLocationMutationVariables>;
+export const AddItemDocument = new TypedDocumentString(`
+    mutation AddItem($currency: String, $description: String!, $idCategory: Int!, $idLocation: Int, $idProfile: UUID!, $price: Float, $title: String!) {
+  addItem(
+    currency: $currency
+    description: $description
+    idCategory: $idCategory
+    idLocation: $idLocation
+    idProfile: $idProfile
+    price: $price
+    title: $title
+  ) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddItemMutation, AddItemMutationVariables>;
+export const AddMediaDocument = new TypedDocumentString(`
+    mutation AddMedia($idItem: Int!, $mediaType: String!, $position: Int!, $url: String!) {
+  addMedia(idItem: $idItem, mediaType: $mediaType, position: $position, url: $url) {
+    id
+    url
+    type
+    caption
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddMediaMutation, AddMediaMutationVariables>;
+export const AddCollectionDocument = new TypedDocumentString(`
+    mutation AddCollection($description: String!, $idProfile: UUID!, $isPublic: Boolean!, $name: String!) {
+  addCollection(
+    description: $description
+    idProfile: $idProfile
+    isPublic: $isPublic
+    name: $name
+  ) {
+    id
+    title
+    type
+    visibility
+    position
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddCollectionMutation, AddCollectionMutationVariables>;
+export const AddPublishDocument = new TypedDocumentString(`
+    mutation AddPublish($createdBy: UUID!, $idCollection: Int!, $idItem: Int!, $note: String, $position: Int!) {
+  addPublish(
+    createdBy: $createdBy
+    idCollection: $idCollection
+    idItem: $idItem
+    note: $note
+    position: $position
+  ) {
+    idCollection
+    idItem
+    position
+    note
+    addedBy
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<AddPublishMutation, AddPublishMutationVariables>;
+export const GetAccountsDocument = new TypedDocumentString(`
+    query GetAccounts {
+  accounts {
+    id
+    createdAt
+    remarks
+  }
+}
+    `) as unknown as TypedDocumentString<GetAccountsQuery, GetAccountsQueryVariables>;
+export const GetProfilesDocument = new TypedDocumentString(`
+    query GetProfiles {
+  profiles {
+    id
+    name
+    type
+    description
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetProfilesQuery, GetProfilesQueryVariables>;
+export const GetCommunitiesDocument = new TypedDocumentString(`
+    query GetCommunities {
+  communities {
+    id
+    title
+    description
+    type
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetCommunitiesQuery, GetCommunitiesQueryVariables>;
+export const GetCommitteesByCommunityDocument = new TypedDocumentString(`
+    query GetCommitteesByCommunity($idCommunity: Int!) {
+  committeesByCommunity(idCommunity: $idCommunity) {
+    idCommunity
+    idProfile
+    memberRole
+    joinedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetCommitteesByCommunityQuery, GetCommitteesByCommunityQueryVariables>;
+export const GetCategoriesDocument = new TypedDocumentString(`
+    query GetCategories {
+  getCategories {
+    id
+    title
+    description
+    categoryParent
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetCategoriesQuery, GetCategoriesQueryVariables>;
+export const GetItemsByCategoryDocument = new TypedDocumentString(`
+    query GetItemsByCategory($categoryId: Int!) {
+  getItemsByCategory(categoryId: $categoryId) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetItemsByCategoryQuery, GetItemsByCategoryQueryVariables>;
+export const GetLocationsDocument = new TypedDocumentString(`
+    query GetLocations {
+  getLocations {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    geom
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetLocationsQuery, GetLocationsQueryVariables>;
+export const GetCollectionsDocument = new TypedDocumentString(`
+    query GetCollections {
+  getCollections {
+    id
+    title
+    type
+    visibility
+    position
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetCollectionsQuery, GetCollectionsQueryVariables>;
+export const GetPublishesByCollectionDocument = new TypedDocumentString(`
+    query GetPublishesByCollection($collectionId: Int!) {
+  getPublishesByCollection(collectionId: $collectionId) {
+    idCollection
+    idItem
+    position
+    note
+    addedBy
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetPublishesByCollectionQuery, GetPublishesByCollectionQueryVariables>;
+export const GetItemByIdDocument = new TypedDocumentString(`
+    query GetItemById($id: Int!) {
+  getItemById(id: $id) {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetItemByIdQuery, GetItemByIdQueryVariables>;
+export const GetItemsDocument = new TypedDocumentString(`
+    query GetItems {
+  getItems {
+    id
+    title
+    description
+    status
+    type
+    condition
+    intentAction
+    quantity
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetItemsQuery, GetItemsQueryVariables>;
+export const GetMediaByItemDocument = new TypedDocumentString(`
+    query GetMediaByItem($itemId: Int!) {
+  getMediaByItem(itemId: $itemId) {
+    id
+    url
+    type
+    caption
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<GetMediaByItemQuery, GetMediaByItemQueryVariables>;
 export const GetAccountListDocument = new TypedDocumentString(`
     query GetAccountList {
   accounts {
