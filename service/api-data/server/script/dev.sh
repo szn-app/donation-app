@@ -166,7 +166,7 @@ EOF
 }
 EOF
 
-        curl -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY" -H "app-user-id: header-content-here"
+        curl -i -k -X POST "$URL" -H "Content-Type: application/json" -d "$QUERY" -H "app-user-id: anonymous"
     }
 
     query_secure_example() {
@@ -174,7 +174,7 @@ EOF
 
         read -r -d '' QUERY <<EOF
 {
-  "query": "query { dummyTestSecure { secureMessage } }"
+  "query": "query { dummyTestSecure { s } }"
 }
 EOF
 
@@ -183,7 +183,7 @@ EOF
 
         read -r -d '' QUERY <<EOF
 {
-  "query": "query { dummyTestSecurePermissionCheck { secureMessage } }"
+  "query": "query { dummyTestSecurePermissionCheck { s } }"
 }
 EOF
 
@@ -193,13 +193,23 @@ EOF
 
         read -r -d '' QUERY <<EOF
 {
-  "query": "query { dummyTestSecureGuard { secureMessage } }"
+  "query": "query { dummyTestSecureGuard { s } }"
 }
 EOF
 
         # request should be denied with anonymous user
         curl -X POST "$URL" -H "Content-Type: application/json" -H "app-user-id: anonymous" -d "$QUERY"
 
+    }
+
+    verify_CORS_headers_returned() {
+        URL="http://localhost:8081/graphql"
+        curl -i -X OPTIONS "${URL}/not-found" -H "app-user-id: anonymous"
+
+        # verify the request through the gateway does indeed return the same access-control-allow-origin header
+        URL="https://api.donation-app.local/graphql" # endpoints relating to graphql rounter which is nested under /graphql 
+        curl -i -k -X OPTIONS "${URL}/any-not-found-page" -H "app-user-id: anonymous"
+        curl -k -i -X OPTIONS "${URL}/graphql" -H "Origin: https://donation-app.local"   -H "Access-Control-Request-Method: POST"
     }
 }
 

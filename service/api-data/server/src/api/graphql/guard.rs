@@ -27,16 +27,19 @@ impl Guard for AuthorizeUser {
     async fn check(&self, ctx: &Context<'_>) -> async_graphql::Result<()> {
         log::debug!("--> Guard for dummyTestSecure @ graphql resolver");
         let g = ctx.data::<GlobalContext>()?;
+        let c = ctx.data::<DataContext>()?;
+
+        log::debug!("app-user-id = {:?}", &c.user_id);
 
         let keto_client = g.keto_channel_group.write.clone();
-
-        let c = ctx.data::<DataContext>()?;
 
         let user_id = c.user_id.as_ref().ok_or(
             async_graphql::Error::new("Not authenticated & No user header detected").extend_with(
                 |err, e| {
                     e.set("code", 401);
-                    e.set("message", err.message.clone()); // Optional: copy the error message
+                    // e.set("message", err.message.clone()); // Optional: copy the error message
+
+                    log::error!("{}", err.message.clone());
                 },
             ),
         )?;

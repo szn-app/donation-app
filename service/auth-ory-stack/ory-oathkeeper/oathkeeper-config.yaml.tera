@@ -110,6 +110,7 @@ oathkeeper:
         enabled: false 
 
     # https://www.ory.sh/docs/oathkeeper/pipeline/mutator
+    # NOTE: access-rules.json override this config.
     mutators:
       header:
         enabled: true

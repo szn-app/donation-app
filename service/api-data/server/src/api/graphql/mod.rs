@@ -46,16 +46,20 @@ pub fn routes(
             // http::Method::PATCH,
             // http::Method::TRACE,
         ])
-        .allow_headers(tower_http::cors::Any);
+        // IMPORTANT: headers should be explicitely mentioned for browsers not to block the CORS request.
+        .allow_headers([
+            http::header::CONTENT_TYPE,
+            http::header::AUTHORIZATION,
+            http::header::ACCEPT,
+        ]);
 
     Router::new()
         .merge(graphql_router)
-        // TODO:
-        // .route("ws", ....)
+        // .route("ws", ....) // TODO: websocket subscriptions
         .route("/ide-1", get(ide_graphiql_handler))
         .route("/ide-2", get(ide_graphql_playground)) // Serve the GraphQL Playground
-        .fallback(handle_not_found)
-        .layer(cors_layer)
+        .fallback(handle_not_found) // redundant as already handled in parent router (but can still be useful for mocking and testing)
+        .layer(cors_layer) // when verifying CORS, make sure to check directly exposed calls and those rerouted through the gateway, as well as in the browser network section also the React request should properly include cookies and headers, etc. // IMPOTRANT: Gateway & Oathkeeper access-control must allow OPTIONS method
 }
 
 fn create_graphql_router(

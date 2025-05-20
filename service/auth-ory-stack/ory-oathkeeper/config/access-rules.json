@@ -59,7 +59,11 @@
     "mutators": [
       {
         "handler": "header",
-        "config": null
+        "config": {
+          "headers": {
+            "app-user-id": "{% raw %}{{ print .Subject }}{% endraw %}"
+          }
+        }
       }
     ],
     "errors": [
@@ -123,7 +127,11 @@
     "mutators": [
       {
         "handler": "header",
-        "config": null
+        "config": {
+          "headers": {
+            "app-user-id": "{% raw %}{{ print .Subject }}{% endraw %}"
+          }
+        }
       }
     ],
     "errors": [

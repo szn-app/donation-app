@@ -20,7 +20,7 @@ pub async fn start_http_server(
     let cors_layer = tower_http::cors::CorsLayer::new()
         // NOTE: wild card origin headers do not work well in all browsers
         .allow_origin(app_endpoint.parse::<http::header::HeaderValue>().unwrap())
-        // NOTE: methods should be explicitely mentioned (tower_http::cors::Any won't work on browsers) when credentials are passed (e.g. Authorization headers)
+        // NOTE: methods should be explicitely mentioned (tower_http::cors::Any won't work on browsers) when credentials are passed (e.g. Authorization headers) otherwise request would be blocked by browser.
         .allow_methods(tower_http::cors::Any)
         .allow_headers(tower_http::cors::Any);
 
@@ -33,6 +33,7 @@ pub async fn start_http_server(
 
     let graphql_routes = graphql::routes(app_endpoint, postgres_pool_group, keto_channel_group);
 
+    // NOTE: any nested endpoint when accesses through the gateway must be setup in the authorization setting of Ory Oathkeeper access control.
     let http_app = axum::Router::new()
         .nest("/rest", rest_routes)
         .nest("/graphql", graphql_routes)

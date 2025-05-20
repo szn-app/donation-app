@@ -25,7 +25,11 @@ pub fn routes(app_endpoint: &str) -> axum::Router {
             // http::Method::CONNECT,
             // http::Method::TRACE,
         ])
-        .allow_headers(tower_http::cors::Any);
+        .allow_headers([
+            http::header::CONTENT_TYPE,
+            http::header::AUTHORIZATION,
+            http::header::ACCEPT,
+        ]);
 
     Router::new()
         .route("/private/dummy_post_data", post(handler::dummy_post_data))
