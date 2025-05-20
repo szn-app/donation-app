@@ -42,6 +42,9 @@ spec:
         - name: oathkeeper-api
           namespace: auth
           port: 80
+      # Additional new headers (while co-existing will already be overriden) to be added to the original request when forward for the backend service after authorization
+      headersToBackend: 
+        - app-user-id
 ---
 # Generic allow SecurityPolicy of Gateway (envoy-gateway-system namespace) to Services (auth)
 # https://gateway.envoyproxy.io/docs/api/extension_types/#securitypolicy

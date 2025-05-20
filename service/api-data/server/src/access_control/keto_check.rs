@@ -134,3 +134,56 @@ pub async fn check_permission_for_subject_set(
 
 // TODO: implement batch checks https://github.com/ory/keto/blob/master/proto/buf.md#ory-keto-relation_tuples-v1alpha2-Subject
 pub async fn batch_check_permission() {}
+
+// $`cargo test -q access_control::keto_check::tests::test_keto_permission_check -- --nocapture`
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+    use crate::server::connection::keto::KetoChannelGroup;
+
+    #[tokio::test]
+    async fn test_keto_permission_check() {
+        const KETO_ENDPOINT: &str = "localhost:4466";
+
+        let KetoChannelGroup {
+            read: read_channel,
+            write: _,
+        } = KetoChannelGroup::new(&KETO_ENDPOINT, &KETO_ENDPOINT)
+            .await
+            .expect("Failed to create gRPC channel");
+
+        let r = check_permission_for_subject(read_channel, "Test", "object", "relation", "subject")
+            .await; // Test:object#relation@subject
+
+        println!("{:?}", &r);
+
+        assert!(r.is_ok(), "Permission check returned false");
+    }
+
+    #[tokio::test]
+    async fn test_keto_permission_check_with_subject_set() {
+        const KETO_ENDPOINT: &str = "localhost:4466";
+
+        let KetoChannelGroup {
+            read: read_channel,
+            write: _,
+        } = KetoChannelGroup::new(&KETO_ENDPOINT, &KETO_ENDPOINT)
+            .await
+            .expect("Failed to create gRPC channel");
+
+        let r = check_permission_for_subject_set(
+            read_channel,
+            "Test",
+            "object",
+            "relation",
+            "Test",
+            "subject",
+            "relation",
+        )
+        .await; // Test:object#relation@(Test:subject#relation)
+
+        println!("{:?}", &r);
+
+        assert!(r.is_ok(), "Permission check returned false");
+    }
+}

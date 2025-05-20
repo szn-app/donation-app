@@ -1,4 +1,4 @@
-use crate::access_control::check_permission_for_subject;
+use crate::access_control;
 use crate::api::graphql::service::{DataContext, GlobalContext};
 use async_graphql::{Context, ErrorExtensions, Guard, ResultExt, TypeDirective};
 
@@ -25,24 +25,24 @@ pub struct AuthorizeUser {
 
 impl Guard for AuthorizeUser {
     async fn check(&self, ctx: &Context<'_>) -> async_graphql::Result<()> {
-        log::debug!("--> Guard for dummyTestSecure @ graphql resolver");
+        log::debug!("-->  Guard for graphql resolver");
         let g = ctx.data::<GlobalContext>()?;
         let c = ctx.data::<DataContext>()?;
 
         log::debug!("app-user-id = {:?}", &c.user_id);
 
-        let keto_client = g.keto_channel_group.write.clone();
+        let keto_client = g.keto_channel_group.read.clone();
 
-        let user_id = c.user_id.as_ref().ok_or(
-            async_graphql::Error::new("Not authenticated & No user header detected").extend_with(
-                |err, e| {
-                    e.set("code", 401);
-                    // e.set("message", err.message.clone()); // Optional: copy the error message
+        let user_id = c.user_id.as_ref().ok_or_else(|| {
+            const ERROR_MESSAGE: &str = "Not authenticated & No user header detected";
 
-                    log::error!("{}", err.message.clone());
-                },
-            ),
-        )?;
+            log::error!("{}", ERROR_MESSAGE);
+
+            async_graphql::Error::new(ERROR_MESSAGE).extend_with(|err, e| {
+                e.set("code", 401);
+                // e.set("message", err.message.clone());
+            })
+        })?;
 
         log::debug!(
             "{}:{}#{}@{}",
@@ -51,15 +51,16 @@ impl Guard for AuthorizeUser {
             &self.relation,
             &user_id
         );
-        match check_permission_for_subject(
+        let r = access_control::check_permission_for_subject(
             keto_client,
             &self.namespace,
             &self.object,
             &self.relation,
             user_id,
         )
-        .await
-        {
+        .await;
+
+        match r {
             Ok(true) => {
                 log::debug!("successful permission check for user {}", user_id);
                 Ok::<(), async_graphql::Error>(())
@@ -83,9 +84,7 @@ impl Guard for AuthorizeUser {
                     e.set("message", err.message.clone()); // Optional: copy the error message
                 }));
             }
-        };
-
-        Ok(())
+        }
     }
 }
 
@@ -110,15 +109,16 @@ impl Guard for AuthorizeRelationTuple {
             &self.relation,
             &self.subject_id
         );
-        match check_permission_for_subject(
+        let r = access_control::check_permission_for_subject(
             keto_client,
             &self.namespace,
             &self.object,
             &self.relation,
             &self.subject_id,
         )
-        .await
-        {
+        .await;
+
+        match r {
             Ok(true) => {
                 log::debug!("successful permission check for user {}", &self.subject_id);
                 Ok::<(), async_graphql::Error>(())
@@ -145,9 +145,7 @@ impl Guard for AuthorizeRelationTuple {
                     e.set("message", err.message.clone()); // Optional: copy the error message
                 }));
             }
-        };
-
-        Ok(())
+        }
     }
 }
 

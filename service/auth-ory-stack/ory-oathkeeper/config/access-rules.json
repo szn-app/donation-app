@@ -61,7 +61,7 @@
         "handler": "header",
         "config": {
           "headers": {
-            "app-user-id": "{% raw %}{{ print .Subject }}{% endraw %}"
+            "app-user-id": "{{ print .Subject }}"
           }
         }
       }
@@ -129,7 +129,7 @@
         "handler": "header",
         "config": {
           "headers": {
-            "app-user-id": "{% raw %}{{ print .Subject }}{% endraw %}"
+            "app-user-id": "{{ print .Subject }}"
           }
         }
       }
