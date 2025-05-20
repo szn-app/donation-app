@@ -1,5 +1,7 @@
 # NOTE: Apache Kafka with Raft-based implementation is still under development and has some limitations. For instance, scaling of controller node or JBOD storage (you can specify type: jbod storage in Strimzi custom resources, but it should contain only a single volume) are not supported.
 
+# https://strimzi.io/docs/operators/latest/full/configuring#api_reference-str
+
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:

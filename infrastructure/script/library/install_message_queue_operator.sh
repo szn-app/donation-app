@@ -10,6 +10,7 @@ install.kafka-operator#task@infrastructure() {
     pushd "$tmp_dir"
     {
         # Download Strimzi installation files into the temporary directory
+        # TODO: update to 0.46.0 to support kafka
         local strimzi_version="0.45.0"
         curl -L "https://github.com/strimzi/strimzi-kafka-operator/releases/download/$strimzi_version/strimzi-$strimzi_version.zip" -o strimzi-$strimzi_version.zip && unzip strimzi-$strimzi_version.zip
         pushd "strimzi-$strimzi_version"
@@ -51,6 +52,10 @@ delete.kafka-operator@infrastructure() {
 
     kubectl -n $operator_namespace delete -f "https://strimzi.io/install/latest?namespace=$operator_namespace"
     kubectl delete namespace $operator_namespace
+
+    kubectl delete clusterrolebinding strimzi-cluster-operator-namespaced
+    kubectl delete clusterrolebinding strimzi-cluster-operator-watched
+    kubectl delete clusterrolebinding strimzi-cluster-operator-entity-operator-delegation
 }
 
 verify.kafka-operator@infrastructure() {

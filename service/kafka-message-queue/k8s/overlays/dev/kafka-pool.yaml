@@ -12,9 +12,15 @@ spec:
   storage:
     type: jbod
     volumes:
+      # - id: 0
+      #   type: persistent-claim
+      #   class: longhorn-local-ext4-1replica
+      #   size: 2Gi
+      #   deleteClaim: true
+      #   kraftMetadata: shared
+
+      # NOTE: use temporary storage to prevent re-deployment issue
       - id: 0
-        type: persistent-claim
-        class: longhorn-local-ext4-1replica
-        size: 2Gi
-        deleteClaim: true
+        type: ephemeral
+        sizeLimit: 2Gi
         kraftMetadata: shared
