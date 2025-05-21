@@ -51,12 +51,14 @@ impl Guard for AuthorizeUser {
             &self.relation,
             &user_id
         );
-        let r = access_control::check_permission_for_subject(
+        let r = access_control::check_permission_for_subject_set(
             keto_client,
             &self.namespace,
             &self.object,
             &self.relation,
+            "User",
             user_id,
+            "",
         )
         .await;
 

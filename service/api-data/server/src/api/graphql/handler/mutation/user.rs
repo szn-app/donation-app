@@ -1,4 +1,3 @@
-use crate::access_control::check_permission_for_subject;
 use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::api::graphql::service::{DataContext, GlobalContext};
 use crate::database::model;

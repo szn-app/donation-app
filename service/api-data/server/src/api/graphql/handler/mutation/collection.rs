@@ -1,7 +1,6 @@
 use async_graphql::Result;
 use tracing::instrument;
 
-use crate::access_control::check_permission_for_subject;
 use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::{Collection, CollectionType, Publish};
 use crate::database::repository::collection::{CollectionRepository, PublishRepository};

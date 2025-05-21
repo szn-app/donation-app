@@ -1,7 +1,6 @@
 use async_graphql::{Context, Error, Result};
 use tracing::{debug, instrument};
 
-use crate::access_control::check_permission_for_subject;
 use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::{
     Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType,
