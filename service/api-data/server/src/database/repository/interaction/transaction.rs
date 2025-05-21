@@ -52,11 +52,16 @@ impl TransactionRepository {
         &self,
         id_pledge: i64,
         status: TransactionStatus,
+        id_schedule: Option<i64>,
+        id_location: Option<i64>,
     ) -> Result<Transaction, Box<dyn Error>> {
         debug!("Adding transaction for pledge: {}", id_pledge);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(ADD_TRANSACTION, &[&id_pledge, &status])
+            .query_one(
+                ADD_TRANSACTION,
+                &[&id_pledge, &status, &id_schedule, &id_location],
+            )
             .await?;
         Ok(Transaction::from(row))
     }

@@ -160,34 +160,28 @@ type Message {
 }
 
 enum MessageType {
-  IMAGE
+  SCHEDULE_OPPORTUNITY
   TEXT
-  VIDEO
 }
 
 """GraphQL Mutation Root"""
 type Mutation {
-  """Create a new account"""
   addAccount(id: UUID!): Account!
   addCategory(description: String!, name: String!, parentId: Int): Category!
-  addCollection(description: String!, idProfile: UUID!, isPublic: Boolean!, name: String!): Collection!
-  """Add a new committee"""
-  addCommittee(idCommunity: Int!, idProfile: UUID!, role: String!): Committee!
-  """Add a new community"""
-  addCommunity(createdBy: UUID!, description: String!, name: String!): Community!
-  addItem(currency: String, description: String!, idCategory: Int!, idLocation: Int, idProfile: UUID!, price: Float, title: String!): Item!
+  addCollection(collectionType: CollectionType!, description: String!, idProfile: UUID!, isPublic: Boolean!, name: String!): Collection!
+  addCommittee(idCommunity: Int!, idProfile: UUID!, memberRole: CommitteeRole!): Committee!
+  addCommunity(communityType: CommunityType!, createdBy: UUID!, description: String!, owner: UUID!, title: String!): Community!
+  addItem(condition: ItemCondition!, currency: String, description: String!, idCategory: Int!, idLocation: Int, idProfile: UUID!, intentAction: ItemIntentAction!, itemType: ItemType!, price: Float, status: ItemStatus!, title: String!): Item!
   addLocation(address: String!, city: String!, country: String!, idProfile: UUID!, name: String!, postalCode: String!, state: String!): Location!
-  addMedia(idItem: Int!, mediaType: String!, position: Int!, url: String!): Media!
+  addMedia(idItem: Int!, mediaType: MediaType!, position: Int!, url: String!): Media!
   addMessage(content: String!, idSender: UUID!, idTransaction: Int!, type: MessageType!): Message!
-  addPledge(idItem: Int!, idProfile: UUID!, intentAction: ItemIntentAction!, message: String, status: PledgeStatus!): Pledge!
-  """Add a new profile"""
-  addProfile(avatarUrl: String, bio: String, idAccount: UUID!, name: String!): Profile!
+  addPledge(idItem: Int!, idProfile: UUID!, intentAction: PledgeIntentAction!, message: String, status: PledgeStatus!): Pledge!
+  addProfile(description: String, idAccount: UUID!, name: String!, profileType: ProfileType): Profile!
   addPublish(createdBy: UUID!, idCollection: Int!, idItem: Int!, note: String, position: Int!): Publish!
   addReview(comment: String, idSubject: Int!, idTransaction: Int!, rating: Int!): Review!
   addSchedule(scheduledFor: DateTime!): Schedule!
   addScheduleOpportunity(idOpportunity: Int!, idSchedule: Int!): ScheduleOpportunity!
-  addTransaction(idPledge: Int!, status: TransactionStatus!): Transaction!
-  """Delete an account"""
+  addTransaction(idLocation: Int, idPledge: Int!, idSchedule: Int, status: TransactionStatus!): Transaction!
   deleteAccount(id: UUID!): Boolean!
   deleteCategory(id: Int!): Boolean!
   deleteCollection(id: Int!): Boolean!
@@ -198,19 +192,19 @@ type Mutation {
   deleteItem(id: Int!): Boolean!
   deleteLocation(id: Int!): Boolean!
   deleteMedia(id: Int!): Boolean!
+  deleteProfile(id: UUID!): Boolean!
   deletePublish(idCollection: Int!, idItem: Int!): Boolean!
   updateCategory(description: String, id: Int!, name: String, parentId: Int): Category!
-  updateCollection(description: String, id: Int!, isPublic: Boolean, name: String): Collection!
+  updateCollection(collectionType: CollectionType, description: String, id: Int!, isPublic: Boolean, name: String): Collection!
   """Update committee role"""
-  updateCommitteeRole(idCommunity: Int!, idProfile: UUID!, role: String!): Committee!
+  updateCommitteeRole(idCommunity: Int!, idProfile: UUID!, memberRole: CommitteeRole!): Committee!
   """Update a community"""
-  updateCommunity(description: String, id: Int!, name: String): Community!
-  updateItem(currency: String, description: String, id: Int!, idCategory: Int, idLocation: Int, price: Float, title: String): Item!
+  updateCommunity(communityType: CommunityType, description: String, id: Int!, title: String): Community!
+  updateItem(condition: ItemCondition, currency: String, description: String, id: Int!, idCategory: Int, idLocation: Int, intentAction: ItemIntentAction, itemType: ItemType, price: Float, status: ItemStatus, title: String): Item!
   updateLocation(address: String, city: String, country: String, id: Int!, name: String, postalCode: String, state: String): Location!
-  updateMedia(id: Int!, mediaType: String, position: Int, url: String): Media!
+  updateMedia(id: Int!, mediaType: MediaType, position: Int, url: String): Media!
   updatePledge(id: Int!, status: PledgeStatus!): Pledge!
-  """Update a profile"""
-  updateProfile(avatarUrl: String, bio: String, id: UUID!, name: String): Profile!
+  updateProfile(description: String, id: UUID!, name: String, profileType: ProfileType): Profile!
   updatePublish(idCollection: Int!, idItem: Int!, note: String, position: Int!, updatedBy: UUID!): Publish!
   updateScheduleOpportunity(id: Int!, windowEnd: DateTime!, windowStart: DateTime!): ScheduleOpportunity!
   updateTransaction(id: Int!, status: TransactionStatus!): Transaction!
@@ -221,17 +215,21 @@ type Pledge {
   id: Int!
   idItem: Int!
   idProfile: UUID!
-  intentAction: ItemIntentAction!
+  intentAction: PledgeIntentAction!
   message: String
   status: PledgeStatus!
   updatedAt: DateTime!
 }
 
+enum PledgeIntentAction {
+  GIVE
+  RECEIVE
+}
+
 enum PledgeStatus {
-  ACCEPTED
-  CANCELLED
+  APPROVED
+  DECLINED
   PENDING
-  REJECTED
 }
 
 type Profile {
@@ -378,7 +376,7 @@ type Transaction {
 enum TransactionStatus {
   CANCELLED
   COMPLETED
-  PENDING
+  IN_PROGRESS
 }
 
 """

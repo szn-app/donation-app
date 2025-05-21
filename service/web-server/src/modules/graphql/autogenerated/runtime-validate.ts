@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from './graphql.ts'
+import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeIntentAction, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from './graphql.ts'
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -30,6 +30,8 @@ export const ItemTypeSchema = z.nativeEnum(ItemType);
 export const MediaTypeSchema = z.nativeEnum(MediaType);
 
 export const MessageTypeSchema = z.nativeEnum(MessageType);
+
+export const PledgeIntentActionSchema = z.nativeEnum(PledgeIntentAction);
 
 export const PledgeStatusSchema = z.nativeEnum(PledgeStatus);
 
@@ -164,7 +166,7 @@ export function PledgeSchema(): z.ZodObject<Properties<Pledge>> {
     id: z.number(),
     idItem: z.number(),
     idProfile: z.string(),
-    intentAction: ItemIntentActionSchema,
+    intentAction: PledgeIntentActionSchema,
     message: z.string().nullish(),
     status: PledgeStatusSchema,
     updatedAt: z.coerce.date()

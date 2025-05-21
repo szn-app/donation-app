@@ -1,13 +1,21 @@
 use crate::access_control::check_permission_for_subject;
 use crate::api::graphql::guard::{auth, AuthorizeUser};
-use crate::api::graphql::service::{DataContext, GlobalContext};
-use crate::database::model;
-use crate::database::repository;
+use crate::database::model::interaction::{
+    Message, MessageType, Pledge, PledgeIntentAction, PledgeStatus, Review, Schedule,
+    ScheduleOpportunity, Transaction, TransactionStatus,
+};
+use crate::database::repository::interaction::{
+    message::MessageRepository, pledge::PledgeRepository, review::ReviewRepository,
+    schedule::ScheduleRepository, schedule_opportunity::ScheduleOpportunityRepository,
+    transaction::TransactionRepository,
+};
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
-use async_graphql::{self, Context, FieldResult, Object};
+use async_graphql::{self, Context, Error, FieldResult, Object, Result};
 use log;
 use time;
-use uuid;
+use tracing::debug;
+use tracing::instrument;
+use uuid::Uuid;
 
 pub struct ReviewMutation {
     pub postgres_pool_group: PostgresPool,
@@ -20,21 +28,20 @@ impl ReviewMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_review(
+    pub async fn add_review(
         &self,
         _ctx: &Context<'_>,
         id_transaction: i64,
         id_subject: i64,
         rating: i32,
         comment: Option<String>,
-    ) -> FieldResult<model::interaction::Review> {
-        log::debug!("--> add_review @ graphql resolver");
-        let repository =
-            repository::interaction::ReviewRepository::new(self.postgres_pool_group.clone());
-        let review = repository
+    ) -> Result<Review> {
+        let review_repository = ReviewRepository::new(self.postgres_pool_group.clone());
+        let review = review_repository
             .add_review(id_transaction, id_subject, rating, comment)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
+
         Ok(review)
     }
 }
@@ -53,19 +60,18 @@ impl PledgeMutation {
     async fn add_pledge(
         &self,
         _ctx: &Context<'_>,
-        id_profile: uuid::Uuid,
+        id_profile: Uuid,
         id_item: i64,
-        intent_action: model::listing::ItemIntentAction,
+        intent_action: PledgeIntentAction,
         message: Option<String>,
-        status: model::interaction::PledgeStatus,
-    ) -> FieldResult<model::interaction::Pledge> {
-        log::debug!("--> add_pledge @ graphql resolver");
-        let repository =
-            repository::interaction::PledgeRepository::new(self.postgres_pool_group.clone());
-        let pledge = repository
+        status: PledgeStatus,
+    ) -> Result<Pledge> {
+        let pledge_repository = PledgeRepository::new(self.postgres_pool_group.clone());
+        let pledge = pledge_repository
             .add_pledge(id_profile, id_item, intent_action, message, status)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
+
         Ok(pledge)
     }
 
@@ -78,15 +84,14 @@ impl PledgeMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        status: model::interaction::PledgeStatus,
-    ) -> FieldResult<model::interaction::Pledge> {
-        log::debug!("--> update_pledge @ graphql resolver");
-        let repository =
-            repository::interaction::PledgeRepository::new(self.postgres_pool_group.clone());
+        status: PledgeStatus,
+    ) -> FieldResult<Pledge> {
+        debug!("Updating pledge: id={}", id);
+        let repository = PledgeRepository::new(self.postgres_pool_group.clone());
         let pledge = repository
             .update_pledge(id, status)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(pledge)
     }
 }
@@ -107,15 +112,16 @@ impl ScheduleOpportunityMutation {
         _ctx: &Context<'_>,
         id_schedule: i64,
         id_opportunity: i64,
-    ) -> FieldResult<model::interaction::ScheduleOpportunity> {
-        log::debug!("--> add_schedule_opportunity @ graphql resolver");
-        let repository = repository::interaction::ScheduleOpportunityRepository::new(
-            self.postgres_pool_group.clone(),
+    ) -> FieldResult<ScheduleOpportunity> {
+        debug!(
+            "Adding schedule opportunity: schedule={}, opportunity={}",
+            id_schedule, id_opportunity
         );
+        let repository = ScheduleOpportunityRepository::new(self.postgres_pool_group.clone());
         let schedule_opportunity = repository
             .add_schedule_opportunity(id_schedule, id_opportunity)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule_opportunity)
     }
 
@@ -130,15 +136,13 @@ impl ScheduleOpportunityMutation {
         id: i64,
         window_start: time::OffsetDateTime,
         window_end: time::OffsetDateTime,
-    ) -> FieldResult<model::interaction::ScheduleOpportunity> {
-        log::debug!("--> update_schedule_opportunity @ graphql resolver");
-        let repository = repository::interaction::ScheduleOpportunityRepository::new(
-            self.postgres_pool_group.clone(),
-        );
+    ) -> FieldResult<ScheduleOpportunity> {
+        debug!("Updating schedule opportunity: id={}", id);
+        let repository = ScheduleOpportunityRepository::new(self.postgres_pool_group.clone());
         let schedule_opportunity = repository
             .update_schedule_opportunity(id, window_start, window_end)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule_opportunity)
     }
 }
@@ -158,14 +162,13 @@ impl ScheduleMutation {
         &self,
         _ctx: &Context<'_>,
         scheduled_for: time::OffsetDateTime,
-    ) -> FieldResult<model::interaction::Schedule> {
-        log::debug!("--> add_schedule @ graphql resolver");
-        let repository =
-            repository::interaction::ScheduleRepository::new(self.postgres_pool_group.clone());
+    ) -> FieldResult<Schedule> {
+        debug!("Adding schedule: scheduled_for={}", scheduled_for);
+        let repository = ScheduleRepository::new(self.postgres_pool_group.clone());
         let schedule = repository
             .add_schedule(scheduled_for)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule)
     }
 }
@@ -185,15 +188,18 @@ impl TransactionMutation {
         &self,
         _ctx: &Context<'_>,
         id_pledge: i64,
-        status: model::interaction::TransactionStatus,
-    ) -> FieldResult<model::interaction::Transaction> {
-        log::debug!("--> add_transaction @ graphql resolver");
-        let repository =
-            repository::interaction::TransactionRepository::new(self.postgres_pool_group.clone());
-        let transaction = repository
-            .add_transaction(id_pledge, status)
+        status: TransactionStatus,
+        id_schedule: Option<i64>,
+        id_location: Option<i64>,
+    ) -> FieldResult<Transaction> {
+        debug!("Adding transaction: pledge={}", id_pledge);
+        let transaction_repo = TransactionRepository::new(self.postgres_pool_group.clone());
+
+        let transaction = transaction_repo
+            .add_transaction(id_pledge, status, id_schedule, id_location)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
+
         Ok(transaction)
     }
 
@@ -206,15 +212,14 @@ impl TransactionMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        status: model::interaction::TransactionStatus,
-    ) -> FieldResult<model::interaction::Transaction> {
-        log::debug!("--> update_transaction @ graphql resolver");
-        let repository =
-            repository::interaction::TransactionRepository::new(self.postgres_pool_group.clone());
+        status: TransactionStatus,
+    ) -> FieldResult<Transaction> {
+        debug!("Updating transaction: id={}", id);
+        let repository = TransactionRepository::new(self.postgres_pool_group.clone());
         let transaction = repository
             .update_transaction(id, status)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(transaction)
     }
 }
@@ -230,21 +235,20 @@ impl MessageMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_message(
+    pub async fn add_message(
         &self,
         _ctx: &Context<'_>,
         id_transaction: i64,
-        id_sender: uuid::Uuid,
-        type_: model::interaction::MessageType,
+        id_sender: Uuid,
+        type_: MessageType,
         content: String,
-    ) -> FieldResult<model::interaction::Message> {
-        log::debug!("--> add_message @ graphql resolver");
-        let repository =
-            repository::interaction::MessageRepository::new(self.postgres_pool_group.clone());
-        let message = repository
+    ) -> Result<Message> {
+        let message_repository = MessageRepository::new(self.postgres_pool_group.clone());
+        let message = message_repository
             .add_message(id_transaction, id_sender, type_, content)
             .await
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Error::new(e.to_string()))?;
+
         Ok(message)
     }
 }

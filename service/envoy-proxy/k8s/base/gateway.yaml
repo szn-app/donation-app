@@ -45,6 +45,29 @@ spec:
       # Additional new headers (while co-existing will already be overriden) to be added to the original request when forward for the backend service after authorization
       headersToBackend: 
         - app-user-id
+  cors:
+    allowOrigins:
+      - "https://donation-app.local"
+      - "https://api.donation-app.local"
+    allowMethods:
+      - GET
+      - POST
+      - OPTIONS
+      - HEAD
+      - PUT
+      - DELETE
+      - PATCH
+      # - CONNECT
+      # - TRACE
+    allowHeaders:
+      - Content-Type
+      - Authorization
+      - Accept
+    maxAge: 1h # CORS changes are rare
+    allowCredentials: true
+    # exposeHeaders:
+    #   - X-Custom-Header
+
 ---
 # Generic allow SecurityPolicy of Gateway (envoy-gateway-system namespace) to Services (auth)
 # https://gateway.envoyproxy.io/docs/api/extension_types/#securitypolicy

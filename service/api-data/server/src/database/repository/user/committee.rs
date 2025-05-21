@@ -1,4 +1,4 @@
-use crate::database::model::user::Committee;
+use crate::database::model::user::{Committee, CommitteeRole};
 use crate::database::sql::user::committee::{
     ADD_COMMITTEE, DELETE_COMMITTEE, GET_COMMITTEES, GET_COMMITTEES_BY_COMMUNITY,
     GET_COMMITTEES_BY_PROFILE, GET_COMMITTEE_BY_ID, GET_COMMITTEE_BY_PROFILE_AND_COMMUNITY,
@@ -20,7 +20,7 @@ impl CommitteeRepository {
         Self { pool }
     }
 
-    pub async fn get_committees(&self) -> Result<Vec<Committee>, Box<dyn Error>> {
+    pub async fn get_committees(&self) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
         debug!("Getting all committees");
         let client = self.pool.r.get().await?;
         let rows = client.query(GET_COMMITTEES, &[]).await?;
@@ -31,7 +31,7 @@ impl CommitteeRepository {
         &self,
         id_profile: Uuid,
         id_community: i64,
-    ) -> Result<Option<Committee>, Box<dyn Error>> {
+    ) -> Result<Option<Committee>, Box<dyn Error + Send + Sync>> {
         debug!(
             "Getting committee by id_profile: {} and id_community: {}",
             id_profile, id_community
@@ -47,7 +47,7 @@ impl CommitteeRepository {
         &self,
         id_profile: Uuid,
         id_community: i64,
-    ) -> Result<Option<Committee>, Box<dyn Error>> {
+    ) -> Result<Option<Committee>, Box<dyn Error + Send + Sync>> {
         debug!(
             "Getting committee by profile: {} and community: {}",
             id_profile, id_community
@@ -65,7 +65,7 @@ impl CommitteeRepository {
     pub async fn get_committees_by_community(
         &self,
         id_community: i64,
-    ) -> Result<Vec<Committee>, Box<dyn Error>> {
+    ) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
         debug!("Getting committees by community: {}", id_community);
         let client = self.pool.r.get().await?;
         let rows = client
@@ -77,7 +77,7 @@ impl CommitteeRepository {
     pub async fn get_committees_by_profile(
         &self,
         id_profile: Uuid,
-    ) -> Result<Vec<Committee>, Box<dyn Error>> {
+    ) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
         debug!("Getting committees by profile: {}", id_profile);
         let client = self.pool.r.get().await?;
         let rows = client
@@ -90,15 +90,15 @@ impl CommitteeRepository {
         &self,
         id_profile: Uuid,
         id_community: i64,
-        role: &str,
-    ) -> Result<Committee, Box<dyn Error>> {
+        member_role: CommitteeRole,
+    ) -> Result<Committee, Box<dyn Error + Send + Sync>> {
         debug!(
             "Adding committee for profile: {} and community: {}",
             id_profile, id_community
         );
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(ADD_COMMITTEE, &[&id_profile, &id_community, &role])
+            .query_one(ADD_COMMITTEE, &[&id_profile, &id_community, &member_role])
             .await?;
         Ok(Committee::from(row))
     }
@@ -107,15 +107,18 @@ impl CommitteeRepository {
         &self,
         id_profile: Uuid,
         id_community: i64,
-        role: &str,
-    ) -> Result<Committee, Box<dyn Error>> {
+        member_role: CommitteeRole,
+    ) -> Result<Committee, Box<dyn Error + Send + Sync>> {
         debug!(
             "Updating committee role for profile: {} and community: {}",
             id_profile, id_community
         );
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(UPDATE_COMMITTEE_ROLE, &[&id_profile, &id_community, &role])
+            .query_one(
+                UPDATE_COMMITTEE_ROLE,
+                &[&id_profile, &id_community, &member_role],
+            )
             .await?;
         Ok(Committee::from(row))
     }
@@ -124,7 +127,7 @@ impl CommitteeRepository {
         &self,
         id_profile: Uuid,
         id_community: i64,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), Box<dyn Error + Send + Sync>> {
         debug!(
             "Deleting committee for profile: {} and community: {}",
             id_profile, id_community

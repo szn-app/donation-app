@@ -2,7 +2,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 import { loadConfig } from "graphql-config";
 import { z } from "zod";
 
-const c = await loadConfig();
+const c = await loadConfig({});
 
 const config: CodegenConfig = {
   schema: c?.getDefault().schema,

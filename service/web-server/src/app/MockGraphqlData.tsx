@@ -17,6 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { request } from "graphql-request";
+import { useAuth } from "react-oidc-context";
 import {
   AddAccountDocument,
   AddProfileDocument,
@@ -45,6 +46,12 @@ export function MockGraphqlData() {
   const [isLoading, setIsLoading] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+  const auth = useAuth();
+  const token = auth?.user?.access_token;
+
+  const headers: Record<string, string> | undefined = token
+    ? { Authorization: `Bearer ${token}` }
+    : undefined;
 
   const addAccountMutation = useMutation({
     mutationFn: async (variables: { id: string }) =>
@@ -52,6 +59,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddAccountDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -66,6 +74,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddProfileDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -79,6 +88,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddCommunityDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -92,6 +102,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddCommitteeDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -105,6 +116,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddCategoryDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -122,6 +134,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddLocationDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -139,6 +152,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddItemDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -153,6 +167,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddMediaDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -167,6 +182,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddCollectionDocument.toString(),
         variables,
+        headers,
       ),
   });
 
@@ -182,6 +198,7 @@ export function MockGraphqlData() {
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         AddPublishDocument.toString(),
         variables,
+        headers,
       ),
   });
 

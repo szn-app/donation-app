@@ -1,4 +1,4 @@
-use crate::database::model::listing::Media;
+use crate::database::model::listing::{Media, MediaType};
 use crate::database::sql::listing::media::{
     ADD_MEDIA, DELETE_MEDIA, GET_MEDIA, GET_MEDIA_BY_ID, GET_MEDIA_BY_ITEM, UPDATE_MEDIA,
 };
@@ -43,7 +43,7 @@ impl MediaRepository {
         &self,
         id_item: i64,
         url: &str,
-        media_type: &str,
+        media_type: MediaType,
         position: i32,
     ) -> Result<Media, Box<dyn Error>> {
         debug!("Adding media for item: {}", id_item);
@@ -58,7 +58,7 @@ impl MediaRepository {
         &self,
         id: i64,
         url: Option<String>,
-        media_type: Option<String>,
+        media_type: Option<MediaType>,
         position: Option<i32>,
     ) -> Result<Media, Box<dyn Error>> {
         debug!("Updating media: {}", id);

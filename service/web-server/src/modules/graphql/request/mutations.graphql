@@ -2,50 +2,70 @@
 mutation AddAccount($id: UUID!) {
   addAccount(id: $id) {
     id
-    createdAt
     remarks
+    createdAt
   }
 }
 
 mutation AddProfile(
   $idAccount: UUID!
   $name: String!
-  $bio: String
-  $avatarUrl: String
+  $description: String
+  $profileType: ProfileType
 ) {
   addProfile(
     idAccount: $idAccount
     name: $name
-    bio: $bio
-    avatarUrl: $avatarUrl
+    description: $description
+    profileType: $profileType
   ) {
     id
     name
-    type
     description
+    type
+    owner
     createdAt
     updatedAt
+    createdBy
   }
 }
 
 # Community and Committee mutations
 mutation AddCommunity(
-  $createdBy: UUID!
+  $title: String!
   $description: String!
-  $name: String!
+  $communityType: CommunityType!
+  $owner: UUID!
+  $createdBy: UUID!
 ) {
-  addCommunity(createdBy: $createdBy, description: $description, name: $name) {
+  addCommunity(
+    title: $title
+    description: $description
+    communityType: $communityType
+    owner: $owner
+    createdBy: $createdBy
+  ) {
     id
     title
     description
     type
+    owner
     createdAt
     updatedAt
+    createdBy
   }
 }
 
-mutation AddCommittee($idCommunity: Int!, $idProfile: UUID!, $role: String!) {
-  addCommittee(idCommunity: $idCommunity, idProfile: $idProfile, role: $role) {
+mutation AddCommittee(
+  $idCommunity: Int!
+  $idProfile: UUID!
+  $memberRole: CommitteeRole!
+) {
+  addCommittee(
+    idCommunity: $idCommunity
+    idProfile: $idProfile
+    memberRole: $memberRole
+  ) {
     idCommunity
     idProfile
     memberRole
@@ -54,8 +74,8 @@ mutation AddCommittee($idCommunity: Int!, $idProfile: UUID!, $role: String!) {
 }
 
 # Category mutations
-mutation AddCategory($description: String!, $name: String!, $parentId: Int) {
-  addCategory(description: $description, name: $name, parentId: $parentId) {
+mutation AddCategory($name: String!, $description: String!, $parentId: Int) {
+  addCategory(name: $name, description: $description, parentId: $parentId) {
     id
     title
     description
@@ -67,22 +87,22 @@ mutation AddCategory($description: String!, $name: String!, $parentId: Int) {
 
 # Location mutations
 mutation AddLocation(
+  $name: String!
   $address: String!
   $city: String!
-  $country: String!
-  $idProfile: UUID!
-  $name: String!
-  $postalCode: String!
   $state: String!
+  $country: String!
+  $postalCode: String!
+  $idProfile: UUID!
 ) {
   addLocation(
+    name: $name
     address: $address
     city: $city
-    country: $country
-    idProfile: $idProfile
-    name: $name
-    postalCode: $postalCode
     state: $state
+    country: $country
+    postalCode: $postalCode
+    idProfile: $idProfile
   ) {
     id
     addressLine1
@@ -91,8 +111,8 @@ mutation AddLocation(
     state
     country
     district
-    entranceNote
     geom
+    entranceNote
     createdAt
     updatedAt
   }
@@ -100,31 +120,38 @@ mutation AddLocation(
 
 # Item mutations
 mutation AddItem(
-  $currency: String
+  $title: String!
   $description: String!
   $idCategory: Int!
-  $idLocation: Int
   $idProfile: UUID!
+  $idLocation: Int
   $price: Float
-  $title: String!
+  $currency: String
+  $itemType: ItemType!
+  $intentAction: ItemIntentAction!
+  $status: ItemStatus!
+  $condition: ItemCondition!
 ) {
   addItem(
-    currency: $currency
+    title: $title
     description: $description
     idCategory: $idCategory
-    idLocation: $idLocation
     idProfile: $idProfile
+    idLocation: $idLocation
     price: $price
-    title: $title
+    currency: $currency
+    itemType: $itemType
+    intentAction: $intentAction
+    status: $status
+    condition: $condition
   ) {
     id
     title
     description
-    status
     type
-    condition
     intentAction
-    quantity
+    status
+    condition
     createdAt
     updatedAt
   }
@@ -133,15 +160,15 @@ mutation AddItem(
 # Media mutations
 mutation AddMedia(
   $idItem: Int!
-  $mediaType: String!
-  $position: Int!
   $url: String!
+  $mediaType: MediaType!
+  $position: Int!
 ) {
   addMedia(
     idItem: $idItem
+    url: $url
     mediaType: $mediaType
     position: $position
-    url: $url
   ) {
     id
     url
@@ -154,16 +181,18 @@ mutation AddMedia(
 
 # Collection mutations
 mutation AddCollection(
+  $name: String!
   $description: String!
   $idProfile: UUID!
   $isPublic: Boolean!
-  $name: String!
+  $collectionType: CollectionType!
 ) {
   addCollection(
+    name: $name
     description: $description
     idProfile: $idProfile
     isPublic: $isPublic
-    name: $name
+    collectionType: $collectionType
   ) {
     id
     title
@@ -175,26 +204,96 @@ mutation AddCollection(
   }
 }
 
+# Pledge mutations
+mutation AddPledge(
+  $idProfile: UUID!
+  $idItem: Int!
+  $intentAction: PledgeIntentAction!
+  $message: String
+  $status: PledgeStatus!
+) {
+  addPledge(
+    idProfile: $idProfile
+    idItem: $idItem
+    intentAction: $intentAction
+    message: $message
+    status: $status
+  ) {
+    id
+    idProfile
+    idItem
+    intentAction
+    message
+    status
+    createdAt
+    updatedAt
+  }
+}
+
+# Transaction mutations
+mutation AddTransaction(
+  $idPledge: Int!
+  $status: TransactionStatus!
+  $idSchedule: Int
+  $idLocation: Int
+) {
+  addTransaction(
+    idPledge: $idPledge
+    status: $status
+    idSchedule: $idSchedule
+    idLocation: $idLocation
+  ) {
+    id
+    idPledge
+    status
+    createdAt
+    updatedAt
+  }
+}
+
 # Publish mutations
 mutation AddPublish(
-  $createdBy: UUID!
-  $idCollection: Int!
   $idItem: Int!
+  $idCollection: Int!
   $note: String
   $position: Int!
+  $createdBy: UUID!
 ) {
   addPublish(
-    createdBy: $createdBy
-    idCollection: $idCollection
     idItem: $idItem
+    idCollection: $idCollection
     note: $note
     position: $position
+    createdBy: $createdBy
   ) {
-    idCollection
     idItem
-    position
+    idCollection
     note
+    position
     addedBy
+    createdAt
+    updatedAt
+  }
+}
+
+# Message mutations
+mutation AddMessage(
+  $idTransaction: Int!
+  $idSender: UUID!
+  $type: MessageType!
+  $content: String!
+) {
+  addMessage(
+    idTransaction: $idTransaction
+    idSender: $idSender
+    type: $type
+    content: $content
+  ) {
+    id
+    idSender
+    idTransaction
+    type
+    content
     createdAt
     updatedAt
   }

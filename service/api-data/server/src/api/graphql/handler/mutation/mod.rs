@@ -4,6 +4,7 @@ pub mod user;
 
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql;
+use async_graphql::{Context, Object, Result};
 
 /// GraphQL Mutation Root
 #[derive(async_graphql::MergedObject)]

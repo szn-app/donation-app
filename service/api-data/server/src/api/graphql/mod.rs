@@ -2,6 +2,10 @@ pub mod guard;
 pub mod handler;
 pub mod service;
 
+pub use handler::EmptySubscription;
+pub use handler::Mutation;
+pub use handler::Query;
+
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql::{
     http::{GraphQLPlaygroundConfig, GraphiQLSource},

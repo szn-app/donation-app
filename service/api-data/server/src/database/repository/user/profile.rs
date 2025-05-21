@@ -1,6 +1,7 @@
-use crate::database::model::user::Profile;
+use crate::database::model::user::{Profile, ProfileType};
 use crate::database::sql::user::profile::{
-    ADD_PROFILE, GET_PROFILES, GET_PROFILE_BY_ACCOUNT, GET_PROFILE_BY_ID, UPDATE_PROFILE,
+    ADD_PROFILE, DELETE_PROFILE, GET_PROFILES, GET_PROFILE_BY_ACCOUNT, GET_PROFILE_BY_ID,
+    UPDATE_PROFILE,
 };
 use crate::server::connection::PostgresPool;
 use deadpool_postgres::PoolError;
@@ -18,14 +19,17 @@ impl ProfileRepository {
         Self { pool }
     }
 
-    pub async fn get_profiles(&self) -> Result<Vec<Profile>, Box<dyn Error>> {
+    pub async fn get_profiles(&self) -> Result<Vec<Profile>, Box<dyn Error + Send + Sync>> {
         debug!("Getting all profiles");
         let client = self.pool.r.get().await?;
         let rows = client.query(GET_PROFILES, &[]).await?;
         Ok(rows.into_iter().map(Profile::from).collect())
     }
 
-    pub async fn get_profile_by_id(&self, id: Uuid) -> Result<Option<Profile>, Box<dyn Error>> {
+    pub async fn get_profile_by_id(
+        &self,
+        id: Uuid,
+    ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
         debug!("Getting profile by id: {}", id);
         let client = self.pool.r.get().await?;
         let row = client.query_opt(GET_PROFILE_BY_ID, &[&id]).await?;
@@ -35,7 +39,7 @@ impl ProfileRepository {
     pub async fn get_profile_by_account(
         &self,
         id_account: Uuid,
-    ) -> Result<Option<Profile>, Box<dyn Error>> {
+    ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
         debug!("Getting profile by account: {}", id_account);
         let client = self.pool.r.get().await?;
         let row = client
@@ -48,13 +52,16 @@ impl ProfileRepository {
         &self,
         id_account: Uuid,
         name: &str,
-        bio: Option<String>,
-        avatar_url: Option<String>,
-    ) -> Result<Profile, Box<dyn Error>> {
+        description: Option<String>,
+        profile_type: Option<ProfileType>,
+    ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
         debug!("Adding profile for account: {}", id_account);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(ADD_PROFILE, &[&id_account, &name, &bio, &avatar_url])
+            .query_one(
+                ADD_PROFILE,
+                &[&id_account, &name, &description, &profile_type],
+            )
             .await?;
         Ok(Profile::from(row))
     }
@@ -63,14 +70,21 @@ impl ProfileRepository {
         &self,
         id: Uuid,
         name: Option<String>,
-        bio: Option<String>,
-        avatar_url: Option<String>,
-    ) -> Result<Profile, Box<dyn Error>> {
+        description: Option<String>,
+        profile_type: Option<ProfileType>,
+    ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
         debug!("Updating profile: {}", id);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(UPDATE_PROFILE, &[&id, &name, &bio, &avatar_url])
+            .query_one(UPDATE_PROFILE, &[&id, &name, &description, &profile_type])
             .await?;
         Ok(Profile::from(row))
+    }
+
+    pub async fn delete_profile(&self, id: Uuid) -> Result<(), Box<dyn Error + Send + Sync>> {
+        debug!("Deleting profile: {}", id);
+        let client = self.pool.rw.get().await?;
+        client.execute(DELETE_PROFILE, &[&id]).await?;
+        Ok(())
     }
 }

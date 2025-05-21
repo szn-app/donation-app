@@ -16,6 +16,8 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as CallbackIndexImport } from './routes/callback/index'
 import { Route as CallbackLogoutImport } from './routes/callback/logout'
 import { Route as CallbackLoginImport } from './routes/callback/login'
+import { Route as AppMockGenerateImport } from './routes/_app/mock/generate'
+import { Route as AppMockDisplayImport } from './routes/_app/mock/display'
 
 // Create Virtual Routes
 
@@ -24,7 +26,6 @@ const AppLazyImport = createFileRoute('/_app')()
 const AppIndexLazyImport = createFileRoute('/_app/')()
 const AppRetailerLazyImport = createFileRoute('/_app/retailer')()
 const AppProtectedLazyImport = createFileRoute('/_app/protected')()
-const AppMockDataLazyImport = createFileRoute('/_app/mock-data')()
 const AppMarketLazyImport = createFileRoute('/_app/market')()
 const AppLuxuryLazyImport = createFileRoute('/_app/luxury')()
 const AppDonationLazyImport = createFileRoute('/_app/donation')()
@@ -68,14 +69,6 @@ const AppProtectedLazyRoute = AppProtectedLazyImport.update({
   import('./routes/_app/protected.lazy').then((d) => d.Route),
 )
 
-const AppMockDataLazyRoute = AppMockDataLazyImport.update({
-  id: '/mock-data',
-  path: '/mock-data',
-  getParentRoute: () => AppLazyRoute,
-} as any).lazy(() =>
-  import('./routes/_app/mock-data.lazy').then((d) => d.Route),
-)
-
 const AppMarketLazyRoute = AppMarketLazyImport.update({
   id: '/market',
   path: '/market',
@@ -104,6 +97,18 @@ const CallbackLoginRoute = CallbackLoginImport.update({
   id: '/callback/login',
   path: '/callback/login',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AppMockGenerateRoute = AppMockGenerateImport.update({
+  id: '/mock/generate',
+  path: '/mock/generate',
+  getParentRoute: () => AppLazyRoute,
+} as any)
+
+const AppMockDisplayRoute = AppMockDisplayImport.update({
+  id: '/mock/display',
+  path: '/mock/display',
+  getParentRoute: () => AppLazyRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -159,13 +164,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMarketLazyImport
       parentRoute: typeof AppLazyImport
     }
-    '/_app/mock-data': {
-      id: '/_app/mock-data'
-      path: '/mock-data'
-      fullPath: '/mock-data'
-      preLoaderRoute: typeof AppMockDataLazyImport
-      parentRoute: typeof AppLazyImport
-    }
     '/_app/protected': {
       id: '/_app/protected'
       path: '/protected'
@@ -194,6 +192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexLazyImport
       parentRoute: typeof AppLazyImport
     }
+    '/_app/mock/display': {
+      id: '/_app/mock/display'
+      path: '/mock/display'
+      fullPath: '/mock/display'
+      preLoaderRoute: typeof AppMockDisplayImport
+      parentRoute: typeof AppLazyImport
+    }
+    '/_app/mock/generate': {
+      id: '/_app/mock/generate'
+      path: '/mock/generate'
+      fullPath: '/mock/generate'
+      preLoaderRoute: typeof AppMockGenerateImport
+      parentRoute: typeof AppLazyImport
+    }
   }
 }
 
@@ -203,20 +215,22 @@ interface AppLazyRouteChildren {
   AppDonationLazyRoute: typeof AppDonationLazyRoute
   AppLuxuryLazyRoute: typeof AppLuxuryLazyRoute
   AppMarketLazyRoute: typeof AppMarketLazyRoute
-  AppMockDataLazyRoute: typeof AppMockDataLazyRoute
   AppProtectedLazyRoute: typeof AppProtectedLazyRoute
   AppRetailerLazyRoute: typeof AppRetailerLazyRoute
   AppIndexLazyRoute: typeof AppIndexLazyRoute
+  AppMockDisplayRoute: typeof AppMockDisplayRoute
+  AppMockGenerateRoute: typeof AppMockGenerateRoute
 }
 
 const AppLazyRouteChildren: AppLazyRouteChildren = {
   AppDonationLazyRoute: AppDonationLazyRoute,
   AppLuxuryLazyRoute: AppLuxuryLazyRoute,
   AppMarketLazyRoute: AppMarketLazyRoute,
-  AppMockDataLazyRoute: AppMockDataLazyRoute,
   AppProtectedLazyRoute: AppProtectedLazyRoute,
   AppRetailerLazyRoute: AppRetailerLazyRoute,
   AppIndexLazyRoute: AppIndexLazyRoute,
+  AppMockDisplayRoute: AppMockDisplayRoute,
+  AppMockGenerateRoute: AppMockGenerateRoute,
 }
 
 const AppLazyRouteWithChildren =
@@ -230,11 +244,12 @@ export interface FileRoutesByFullPath {
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
-  '/mock-data': typeof AppMockDataLazyRoute
   '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
   '/callback': typeof CallbackIndexRoute
   '/': typeof AppIndexLazyRoute
+  '/mock/display': typeof AppMockDisplayRoute
+  '/mock/generate': typeof AppMockGenerateRoute
 }
 
 export interface FileRoutesByTo {
@@ -244,11 +259,12 @@ export interface FileRoutesByTo {
   '/donation': typeof AppDonationLazyRoute
   '/luxury': typeof AppLuxuryLazyRoute
   '/market': typeof AppMarketLazyRoute
-  '/mock-data': typeof AppMockDataLazyRoute
   '/protected': typeof AppProtectedLazyRoute
   '/retailer': typeof AppRetailerLazyRoute
   '/callback': typeof CallbackIndexRoute
   '/': typeof AppIndexLazyRoute
+  '/mock/display': typeof AppMockDisplayRoute
+  '/mock/generate': typeof AppMockGenerateRoute
 }
 
 export interface FileRoutesById {
@@ -260,11 +276,12 @@ export interface FileRoutesById {
   '/_app/donation': typeof AppDonationLazyRoute
   '/_app/luxury': typeof AppLuxuryLazyRoute
   '/_app/market': typeof AppMarketLazyRoute
-  '/_app/mock-data': typeof AppMockDataLazyRoute
   '/_app/protected': typeof AppProtectedLazyRoute
   '/_app/retailer': typeof AppRetailerLazyRoute
   '/callback/': typeof CallbackIndexRoute
   '/_app/': typeof AppIndexLazyRoute
+  '/_app/mock/display': typeof AppMockDisplayRoute
+  '/_app/mock/generate': typeof AppMockGenerateRoute
 }
 
 export interface FileRouteTypes {
@@ -277,11 +294,12 @@ export interface FileRouteTypes {
     | '/donation'
     | '/luxury'
     | '/market'
-    | '/mock-data'
     | '/protected'
     | '/retailer'
     | '/callback'
     | '/'
+    | '/mock/display'
+    | '/mock/generate'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
@@ -290,11 +308,12 @@ export interface FileRouteTypes {
     | '/donation'
     | '/luxury'
     | '/market'
-    | '/mock-data'
     | '/protected'
     | '/retailer'
     | '/callback'
     | '/'
+    | '/mock/display'
+    | '/mock/generate'
   id:
     | '__root__'
     | '/_app'
@@ -304,11 +323,12 @@ export interface FileRouteTypes {
     | '/_app/donation'
     | '/_app/luxury'
     | '/_app/market'
-    | '/_app/mock-data'
     | '/_app/protected'
     | '/_app/retailer'
     | '/callback/'
     | '/_app/'
+    | '/_app/mock/display'
+    | '/_app/mock/generate'
   fileRoutesById: FileRoutesById
 }
 
@@ -351,10 +371,11 @@ export const routeTree = rootRoute
         "/_app/donation",
         "/_app/luxury",
         "/_app/market",
-        "/_app/mock-data",
         "/_app/protected",
         "/_app/retailer",
-        "/_app/"
+        "/_app/",
+        "/_app/mock/display",
+        "/_app/mock/generate"
       ]
     },
     "/about": {
@@ -378,10 +399,6 @@ export const routeTree = rootRoute
       "filePath": "_app/market.lazy.tsx",
       "parent": "/_app"
     },
-    "/_app/mock-data": {
-      "filePath": "_app/mock-data.lazy.tsx",
-      "parent": "/_app"
-    },
     "/_app/protected": {
       "filePath": "_app/protected.lazy.tsx",
       "parent": "/_app"
@@ -395,6 +412,14 @@ export const routeTree = rootRoute
     },
     "/_app/": {
       "filePath": "_app/index.lazy.tsx",
+      "parent": "/_app"
+    },
+    "/_app/mock/display": {
+      "filePath": "_app/mock/display.tsx",
+      "parent": "/_app"
+    },
+    "/_app/mock/generate": {
+      "filePath": "_app/mock/generate.tsx",
       "parent": "/_app"
     }
   }

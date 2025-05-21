@@ -6,6 +6,16 @@ metadata:
 requires:
   - path: .
     configs: [envoy-proxy-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production
 
 ---
 
@@ -21,3 +31,16 @@ manifests:
 
 deploy:
   kubectl: {}
+
+profiles:
+- name: development
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+  
+- name: production
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod

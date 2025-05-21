@@ -1,4 +1,4 @@
-use crate::database::model::listing::Collection;
+use crate::database::model::listing::{Collection, CollectionType};
 use crate::database::sql::listing::collection::{
     ADD_COLLECTION, DELETE_COLLECTION, GET_COLLECTIONS, GET_COLLECTIONS_BY_PROFILE,
     GET_COLLECTION_BY_ID, UPDATE_COLLECTION,
@@ -54,13 +54,20 @@ impl CollectionRepository {
         description: &str,
         id_profile: Uuid,
         is_public: bool,
+        collection_type: CollectionType,
     ) -> Result<Collection, Box<dyn Error>> {
         debug!("Adding collection: {}", name);
         let client = self.pool.rw.get().await?;
         let row = client
             .query_one(
                 ADD_COLLECTION,
-                &[&name, &description, &id_profile, &is_public],
+                &[
+                    &name,
+                    &description,
+                    &id_profile,
+                    &is_public,
+                    &collection_type,
+                ],
             )
             .await?;
         Ok(Collection::from(row))
@@ -72,11 +79,15 @@ impl CollectionRepository {
         name: Option<String>,
         description: Option<String>,
         is_public: Option<bool>,
+        collection_type: Option<CollectionType>,
     ) -> Result<Collection, Box<dyn Error>> {
         debug!("Updating collection: {}", id);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(UPDATE_COLLECTION, &[&id, &name, &description, &is_public])
+            .query_one(
+                UPDATE_COLLECTION,
+                &[&id, &name, &description, &is_public, &collection_type],
+            )
             .await?;
         Ok(Collection::from(row))
     }

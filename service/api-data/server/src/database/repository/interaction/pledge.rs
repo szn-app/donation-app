@@ -1,5 +1,4 @@
-use crate::database::model::interaction::{Pledge, PledgeStatus};
-use crate::database::model::listing::ItemIntentAction;
+use crate::database::model::interaction::{Pledge, PledgeIntentAction, PledgeStatus};
 use crate::database::sql::interaction::pledge::{
     ADD_PLEDGE, GET_PLEDGES, GET_PLEDGES_BY_ITEM, GET_PLEDGES_BY_PROFILE, GET_PLEDGE_BY_ID,
     UPDATE_PLEDGE,
@@ -55,7 +54,7 @@ impl PledgeRepository {
         &self,
         id_profile: Uuid,
         id_item: i64,
-        intent_action: ItemIntentAction,
+        intent_action: PledgeIntentAction,
         message: Option<String>,
         status: PledgeStatus,
     ) -> Result<Pledge, Box<dyn Error>> {

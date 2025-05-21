@@ -1,4 +1,6 @@
-use crate::database::model::listing::Item;
+use crate::database::model::listing::{
+    Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType,
+};
 use crate::database::sql::listing::item::{
     ADD_ITEM, DELETE_ITEM, GET_ITEMS, GET_ITEMS_BY_CATEGORY, GET_ITEMS_BY_PROFILE, GET_ITEM_BY_ID,
     UPDATE_ITEM,
@@ -62,6 +64,10 @@ impl ItemRepository {
         id_location: Option<i64>,
         price: Option<f64>,
         currency: Option<String>,
+        item_type: ItemType,
+        intent_action: ItemIntentAction,
+        status: ItemStatus,
+        condition: ItemCondition,
     ) -> Result<Item, Box<dyn Error>> {
         debug!("Adding item: {}", title);
         let client = self.pool.rw.get().await?;
@@ -76,6 +82,10 @@ impl ItemRepository {
                     &id_location,
                     &price,
                     &currency,
+                    &item_type,
+                    &intent_action,
+                    &status,
+                    &condition,
                 ],
             )
             .await?;
@@ -91,6 +101,10 @@ impl ItemRepository {
         id_location: Option<i64>,
         price: Option<f64>,
         currency: Option<String>,
+        item_type: Option<ItemType>,
+        intent_action: Option<ItemIntentAction>,
+        status: Option<ItemStatus>,
+        condition: Option<ItemCondition>,
     ) -> Result<Item, Box<dyn Error>> {
         debug!("Updating item: {}", id);
         let client = self.pool.rw.get().await?;
@@ -105,6 +119,10 @@ impl ItemRepository {
                     &id_location,
                     &price,
                     &currency,
+                    &item_type,
+                    &intent_action,
+                    &status,
+                    &condition,
                 ],
             )
             .await?;

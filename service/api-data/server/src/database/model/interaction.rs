@@ -14,15 +14,14 @@ use uuid::Uuid;
 #[postgres(name = "pledge_status")]
 pub enum PledgeStatus {
     Pending,
-    Accepted,
-    Rejected,
-    Cancelled,
+    Approved,
+    Declined,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Enum, FromSql, ToSql)]
 #[postgres(name = "transaction_status")]
 pub enum TransactionStatus {
-    Pending,
+    InProgress,
     Completed,
     Cancelled,
 }
@@ -31,8 +30,14 @@ pub enum TransactionStatus {
 #[postgres(name = "message_type")]
 pub enum MessageType {
     Text,
-    Image,
-    Video,
+    ScheduleOpportunity,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Enum, FromSql, ToSql)]
+#[postgres(name = "pledge_intent_action")]
+pub enum PledgeIntentAction {
+    Give,
+    Receive,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
@@ -59,7 +64,7 @@ pub struct Pledge {
     pub id: i64,
     pub id_profile: Uuid,
     pub id_item: i64,
-    pub intent_action: ItemIntentAction,
+    pub intent_action: PledgeIntentAction,
     pub message: Option<String>,
     pub status: PledgeStatus,
     pub created_at: OffsetDateTime,
