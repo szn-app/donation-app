@@ -1,0 +1,55 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Infrastructure and Deployment
+
+## Kubernetes Configuration
+1. Use [skaffold.yaml](mdc:skaffold.yaml) for local development
+2. Follow Kubernetes best practices
+3. Use appropriate resource limits
+4. Implement health checks
+5. Configure proper logging
+
+## Deployment Process
+1. Use [release-please-config.json](mdc:release-please-config.json) for versioning
+2. Follow semantic versioning
+3. Update [CHANGELOG.md](mdc:CHANGELOG.md)
+4. Test in staging environment
+5. Monitor deployment metrics
+
+## Infrastructure Components
+1. Use [manifest/](mdc:manifest) for Kubernetes manifests
+2. Configure proper networking
+3. Set up monitoring and alerting
+4. Implement backup strategies
+5. Use infrastructure as code
+
+## Environment Configuration
+1. Use environment variables for configuration
+2. Keep secrets secure
+3. Use appropriate config maps
+4. Document all configuration options
+5. Test configuration changes
+
+## Monitoring and Logging
+1. Implement structured logging
+2. Set up metrics collection
+3. Configure alerting
+4. Monitor resource usage
+5. Track error rates
+
+## Security
+1. Follow security best practices
+2. Use network policies
+3. Implement RBAC
+4. Regular security audits
+5. Keep dependencies updated
+
+## Disaster Recovery
+1. Regular backups
+2. Document recovery procedures
+3. Test recovery process
+4. Maintain backup schedules
+5. Monitor backup success

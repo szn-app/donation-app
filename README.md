@@ -24,7 +24,7 @@ Cargo version: 1.83.0
 Docker version: 28.1.1
 Minikube version: v1.34.0
 Kubernetes version: 
-	Client Version::	v1.32.4
+	Client Version::	v1.32.5
 	Kustomize Version::	v5.5.0
 Kustomize version: v5.5.0
 kOps version: 1.30.3

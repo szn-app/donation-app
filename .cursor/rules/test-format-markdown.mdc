@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Response Format
+*  Structure with Simplicity: Markdown allows for hierarchical organization (headings, lists, code blocks, tables) without the verbosity of HTML or XML. This clear structure helps LLMs parse and understand the different components of your input.
+* Headings (#, ##, etc.): Signal topic changes and hierarchy, helping the LLM grasp the main points and sub-points.
+* Lists (-, *, 1., 2.): Indicate enumerations, steps, or distinct items, which is crucial for instruction following or extracting structured data.
+* Code Blocks (```): Clearly delineate code from natural language, preventing the LLM from misinterpreting code as prose and vice-versa. This is especially important for code generation or analysis tasks.
+* Bold (**text**) and Italic (*text*): Provide semantic cues, highlighting important terms or phrases.
+* always include headers
+* always Bod (**text**) for each sentence the key points not entire paragraph.

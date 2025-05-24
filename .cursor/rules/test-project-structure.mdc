@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Project Structure and Architecture
+
+## Directory Structure
+- `src/`: Main source code directory
+- `service/`: Service-specific implementations
+- `dependency/`: External dependencies and integrations
+- `shared/`: Shared utilities and common code
+- `infrastructure/`: Infrastructure and deployment configurations
+- `test/`: Test suites and test utilities
+- `docs/`: Project documentation
+- `config/`: Configuration files
+- `manifest/`: Kubernetes manifests and deployment configurations
+
+## Key Files
+- [Cargo.toml](mdc:Cargo.toml): Main project configuration and dependencies
+- [skaffold.yaml](mdc:skaffold.yaml): Kubernetes deployment configuration
+- [script.sh](mdc:script.sh): Common development scripts
+
+## Architecture Guidelines
+1. Follow Rust's module system for code organization
+2. Keep services modular and loosely coupled
+3. Use shared libraries for common functionality
+4. Maintain clear separation between business logic and infrastructure code
+5. Document all public APIs and interfaces
+
+## Best Practices
+1. Place new services in the `service/` directory
+2. Add shared utilities to `shared/` directory
+3. Keep configuration in `config/` directory
+4. Document all major architectural decisions
+5. Follow the existing project structure for consistency

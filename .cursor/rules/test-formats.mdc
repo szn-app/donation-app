@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Response Format 
+* synthesize answer within yaml formats, copy another in xml formats, and another copy within markdown formats.

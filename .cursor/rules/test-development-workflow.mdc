@@ -1,0 +1,49 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Development Workflow
+
+## Getting Started
+1. Ensure Rust toolchain is installed and up to date
+2. Run `cargo build` to verify the build environment
+
+## Development Process
+1. Create feature branches from `main`
+2. Follow conventional commit messages
+3. Write tests for new features
+4. Update documentation as needed
+5. Submit PRs with clear descriptions
+
+## Testing
+1. Run unit tests: `cargo test`
+2. Run integration tests: `cargo test --test '*_integration'`
+3. Ensure all tests pass before submitting PRs
+4. Add new tests for new features
+5. Maintain test coverage
+
+## Code Review Process
+1. Self-review before submitting PRs
+2. Ensure all CI checks pass
+3. Address reviewer comments promptly
+4. Keep PRs focused and manageable
+5. Update documentation as needed
+
+## Common Commands
+```bash
+# Build
+cargo build
+
+# Test
+cargo test
+
+# Format
+cargo fmt
+
+# Lint
+cargo clippy
+
+# Run
+cargo run
+```

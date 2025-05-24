@@ -5,11 +5,6 @@
     "./service/web-server/src-tauri/Cargo.toml",
     "./service/api-data/server/Cargo.toml",
   ],
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#1F3220",
-    "titleBar.activeBackground": "#2B462C",
-    "titleBar.activeForeground": "#F9FBF9"
-  },
   "rust-analyzer.files.excludeDirs": [
     "**/dependency/",
   ],
@@ -123,7 +118,12 @@
     "**/.trunk/*logs/": true,
     "**/.trunk/*notifications/": true,
     "**/.trunk/*out/": true,
-    "**/.trunk/*plugins/": true
+    "**/.trunk/*plugins/": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/tmp/*/**": true,
+    "**/target/*/**": true,
   },
   "files.associations": {
     "*.yaml.gotmpl": "yaml",

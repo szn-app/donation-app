@@ -39,8 +39,9 @@ kube.config
 *.key # Private keys
 
 *.txt.tmp
-*.env 
+*.env
 *.local
 
 # tools specific
 dbml-error.log
+.Trash-*/

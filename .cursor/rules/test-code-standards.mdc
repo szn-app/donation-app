@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Code Style and Standards
+
+## Rust Code Style
+1. Follow Rust's official style guide
+2. Use `cargo fmt` to maintain consistent formatting
+3. Run `cargo clippy` to catch common issues
+4. Do not restrict line length
+5. Use meaningful variable and function names
+
+## Documentation
+1. Document all public APIs with rustdoc comments
+2. Include examples in documentation
+3. Document configuration options
+4. Add inline comments for complex logic
+
+## Error Handling
+1. Use proper error types and Result
+2. Implement custom error types when needed
+3. Provide meaningful error messages
+4. Handle all error cases explicitly
+5. Log errors appropriately
+
+## Testing Standards
+1. Write unit tests for all public functions
+2. Include integration tests for key workflows
+3. Use meaningful test names
+4. Follow the Arrange-Act-Assert pattern
+5. Mock external dependencies
+
+## Performance
+1. Profile code before optimizing
+2. Use appropriate data structures
+3. Minimize allocations
+4. Consider async/await for I/O operations
+5. Document performance characteristics
+
+## Security
+1. Follow Rust security best practices
+2. Validate all input
+3. Use secure defaults
+4. Keep dependencies updated
+5. Handle sensitive data appropriately
+
+## Code Organization
+1. Group related functionality
+2. Keep modules focused
+3. Use appropriate visibility modifiers
+4. Follow the principle of least privilege
+5. Maintain clear module boundaries
