@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.80](https://github.com/szn-app/donation-app/compare/web-server@v0.0.79...web-server@v0.0.80) (2025-05-24)
+
+
+### Features
+
+* add graphql basic operations (query/mutation) ([7305dcc](https://github.com/szn-app/donation-app/commit/7305dccc0081fdfae4ae69cd7f084c8ee57240c6))
+* CORS headers implementation on gateway level ([f7067ef](https://github.com/szn-app/donation-app/commit/f7067efe4822ed8b4e2be7b41bbf15df6c480f50))
+* implement CRUD SQL operations for all schemas following consistent LLM instructions ([89367d5](https://github.com/szn-app/donation-app/commit/89367d54e9a3f6427627dda2c732cd4a8e123668))
+* mock data for graphql endpoint testing ([75765b0](https://github.com/szn-app/donation-app/commit/75765b0e38b63f4a43fcaca568de3bc5fb5f16f1))
+
+
+### Bug Fixes
+
+* autgen script and modify to supported DateTime graphql schema scalar ([4487c71](https://github.com/szn-app/donation-app/commit/4487c71228353f7d6043fa4cb5826b9e56b09c52))
+
 ## [0.0.79](https://github.com/szn-app/donation-app/compare/web-server@v0.0.78...web-server@v0.0.79) (2025-05-15)
 
 

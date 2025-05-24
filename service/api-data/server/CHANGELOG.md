@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.0.7](https://github.com/szn-app/donation-app/compare/api-data@v0.0.6...api-data@v0.0.7) (2025-05-24)
+
+
+### Features
+
+* add query sql, models, repository for rest of tables. ([972406c](https://github.com/szn-app/donation-app/commit/972406c88ee4f338971987d977df1bedb6d84737))
+* CORS headers implementation on gateway level ([f7067ef](https://github.com/szn-app/donation-app/commit/f7067efe4822ed8b4e2be7b41bbf15df6c480f50))
+* graphql api basic entry points for each schema table ([46f7e78](https://github.com/szn-app/donation-app/commit/46f7e78762058520bcd07fbf98529c72f5217797))
+* implement CRUD SQL operations for all schemas following consistent LLM instructions ([89367d5](https://github.com/szn-app/donation-app/commit/89367d54e9a3f6427627dda2c732cd4a8e123668))
+* implement interaction repository's graphql resolvers ([4db0594](https://github.com/szn-app/donation-app/commit/4db0594fe0d6fc0c9b4817897a23e67a963e85bf))
+* implement listing repository's graphql resolvers ([ff8793d](https://github.com/szn-app/donation-app/commit/ff8793dc8b82f6b3a50868c767d0f5165aa0c63a))
+* implement user repository's graphql resolvers ([15e4256](https://github.com/szn-app/donation-app/commit/15e4256edcf4d4ddf24e7833301d876dcf848252))
+* permission check guard with namespaced subject id ([aa9a91a](https://github.com/szn-app/donation-app/commit/aa9a91aad462833d0d2780d484682433be2eca32))
+
+
+### Bug Fixes
+
+* autgen script and modify to supported DateTime graphql schema scalar ([4487c71](https://github.com/szn-app/donation-app/commit/4487c71228353f7d6043fa4cb5826b9e56b09c52))
+* graphql requests with user id header naming ([8a22372](https://github.com/szn-app/donation-app/commit/8a22372acc77de3329ca8b6b95bf23bc0165ca9e))
+* properly pass app-user-id header for all the access-control settings; handle CORS properly for browsers by explicit headers/methods listings ([7749b95](https://github.com/szn-app/donation-app/commit/7749b959253d6f6614765d0872b95651811392e3))
+* user id header propagation through gateway & oathkeeper authorizer;  Call keto with read-only grpc functions; ([ffeee99](https://github.com/szn-app/donation-app/commit/ffeee99d3ecc23d2b31623e2ee481e3806294c2f))
+
 ## [0.0.6](https://github.com/szn-app/donation-app/compare/api-data@v0.0.5...api-data@v0.0.6) (2025-05-15)
 
 

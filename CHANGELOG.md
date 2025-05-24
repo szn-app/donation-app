@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.30](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.29...donation-app@v0.4.30) (2025-05-24)
+
+
+### Features
+
+* CORS headers implementation on gateway level ([f7067ef](https://github.com/szn-app/donation-app/commit/f7067efe4822ed8b4e2be7b41bbf15df6c480f50))
+
+
+### Bug Fixes
+
+* autgen script and modify to supported DateTime graphql schema scalar ([4487c71](https://github.com/szn-app/donation-app/commit/4487c71228353f7d6043fa4cb5826b9e56b09c52))
+* graphql requests with user id header naming ([8a22372](https://github.com/szn-app/donation-app/commit/8a22372acc77de3329ca8b6b95bf23bc0165ca9e))
+* properly pass app-user-id header for all the access-control settings; handle CORS properly for browsers by explicit headers/methods listings ([7749b95](https://github.com/szn-app/donation-app/commit/7749b959253d6f6614765d0872b95651811392e3))
+* user id header propagation through gateway & oathkeeper authorizer;  Call keto with read-only grpc functions; ([ffeee99](https://github.com/szn-app/donation-app/commit/ffeee99d3ecc23d2b31623e2ee481e3806294c2f))
+
 ## [0.4.29](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.28...donation-app@v0.4.29) (2025-05-15)
 
 
