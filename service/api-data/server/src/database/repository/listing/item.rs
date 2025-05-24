@@ -57,17 +57,15 @@ impl ItemRepository {
 
     pub async fn add_item(
         &self,
-        title: &str,
-        description: &str,
-        id_category: i64,
-        id_profile: Uuid,
-        id_location: Option<i64>,
-        price: Option<f64>,
-        currency: Option<String>,
         item_type: ItemType,
         intent_action: ItemIntentAction,
         status: ItemStatus,
+        title: &str,
+        description: &str,
+        category: i64,
         condition: ItemCondition,
+        location: Option<i64>,
+        created_by: Uuid,
     ) -> Result<Item, Box<dyn Error>> {
         debug!("Adding item: {}", title);
         let client = self.pool.rw.get().await?;
@@ -75,17 +73,15 @@ impl ItemRepository {
             .query_one(
                 ADD_ITEM,
                 &[
-                    &title,
-                    &description,
-                    &id_category,
-                    &id_profile,
-                    &id_location,
-                    &price,
-                    &currency,
                     &item_type,
                     &intent_action,
                     &status,
+                    &title,
+                    &description,
+                    &category,
                     &condition,
+                    &location,
+                    &created_by,
                 ],
             )
             .await?;
@@ -95,16 +91,14 @@ impl ItemRepository {
     pub async fn update_item(
         &self,
         id: i64,
-        title: Option<String>,
-        description: Option<String>,
-        id_category: Option<i64>,
-        id_location: Option<i64>,
-        price: Option<f64>,
-        currency: Option<String>,
         item_type: Option<ItemType>,
         intent_action: Option<ItemIntentAction>,
         status: Option<ItemStatus>,
+        title: Option<String>,
+        description: Option<String>,
+        category: Option<i64>,
         condition: Option<ItemCondition>,
+        location: Option<i64>,
     ) -> Result<Item, Box<dyn Error>> {
         debug!("Updating item: {}", id);
         let client = self.pool.rw.get().await?;
@@ -113,16 +107,14 @@ impl ItemRepository {
                 UPDATE_ITEM,
                 &[
                     &id,
-                    &title,
-                    &description,
-                    &id_category,
-                    &id_location,
-                    &price,
-                    &currency,
                     &item_type,
                     &intent_action,
                     &status,
+                    &title,
+                    &description,
+                    &category,
                     &condition,
+                    &location,
                 ],
             )
             .await?;

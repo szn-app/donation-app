@@ -1,2 +1,4 @@
-DELETE FROM item
-WHERE id = $1 
+-- Delete item
+DELETE FROM "listing"."item"
+WHERE id = $1
+RETURNING id; 

@@ -1,4 +1,4 @@
--- Get all items
+-- Get items by location
 SELECT 
     id,
     type,
@@ -15,4 +15,5 @@ SELECT
     updated_at,
     created_by
 FROM "listing"."item"
+WHERE location = $1
 ORDER BY created_at DESC; 

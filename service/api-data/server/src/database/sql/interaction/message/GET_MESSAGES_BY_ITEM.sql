@@ -1,4 +1,4 @@
--- Get message by ID
+-- Get messages by item
 SELECT 
     id,
     id_item,
@@ -6,4 +6,5 @@ SELECT
     created_by,
     created_at
 FROM "interaction"."message"
-WHERE id = $1; 
+WHERE id_item = $1
+ORDER BY created_at DESC; 

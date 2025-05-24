@@ -1,4 +1,4 @@
--- Get all items
+-- Get items by creator
 SELECT 
     id,
     type,
@@ -15,4 +15,5 @@ SELECT
     updated_at,
     created_by
 FROM "listing"."item"
+WHERE created_by = $1
 ORDER BY created_at DESC; 

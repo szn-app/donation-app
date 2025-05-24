@@ -1,3 +1,17 @@
-INSERT INTO "interaction"."message" (id_sender, id_transaction, type, content)
-VALUES ($1, $2, $3, $4)
-RETURNING id, id_sender, id_transaction, type, content, sent_at, updated_at; 
+-- Create a new message
+INSERT INTO "interaction"."message" (
+    id_item,
+    content,
+    created_by
+)
+VALUES (
+    $1, -- id_item (BIGINT)
+    $2, -- content (TEXT)
+    $3  -- created_by (BIGINT)
+)
+RETURNING 
+    id,
+    id_item,
+    content,
+    created_by,
+    created_at; 

@@ -38,29 +38,28 @@ impl ProfileRepository {
 
     pub async fn get_profile_by_account(
         &self,
-        id_account: Uuid,
+        owner: Uuid,
     ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting profile by account: {}", id_account);
+        debug!("Getting profile by owner: {}", owner);
         let client = self.pool.r.get().await?;
-        let row = client
-            .query_opt(GET_PROFILE_BY_ACCOUNT, &[&id_account])
-            .await?;
+        let row = client.query_opt(GET_PROFILE_BY_ACCOUNT, &[&owner]).await?;
         Ok(row.map(Profile::from))
     }
 
     pub async fn add_profile(
         &self,
-        id_account: Uuid,
         name: &str,
         description: Option<String>,
         profile_type: Option<ProfileType>,
+        owner: Uuid,
+        created_by: Uuid,
     ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
-        debug!("Adding profile for account: {}", id_account);
+        debug!("Adding profile for owner: {}", owner);
         let client = self.pool.rw.get().await?;
         let row = client
             .query_one(
                 ADD_PROFILE,
-                &[&id_account, &name, &description, &profile_type],
+                &[&name, &description, &profile_type, &owner, &created_by],
             )
             .await?;
         Ok(Profile::from(row))
