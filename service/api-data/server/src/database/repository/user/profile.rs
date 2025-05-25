@@ -1,14 +1,11 @@
-use crate::database::model::user::{Profile, ProfileType};
-use crate::database::sql::user::profile::{
-    ADD_PROFILE, DELETE_PROFILE, GET_PROFILES, GET_PROFILE_BY_ACCOUNT, GET_PROFILE_BY_ID,
-    UPDATE_PROFILE,
-};
-use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
+use time::OffsetDateTime;
 use uuid::Uuid;
+use log::debug;
+
+use crate::database::model::user::profile::{Profile, ProfileType};
+use crate::database::sql::user::profile::{CREATE_PROFILE, GET_PROFILE_BY_ID, GET_PROFILES_BY_OWNER, UPDATE_PROFILE, DELETE_PROFILE};
+use crate::error::Error;
+use crate::server::connection::PostgresPool;
 
 pub struct ProfileRepository {
     pool: PostgresPool,
@@ -19,71 +16,78 @@ impl ProfileRepository {
         Self { pool }
     }
 
-    pub async fn get_profiles(&self) -> Result<Vec<Profile>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting all profiles");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_PROFILES, &[]).await?;
-        Ok(rows.into_iter().map(Profile::from).collect())
-    }
-
-    pub async fn get_profile_by_id(
+    pub async fn create(
         &self,
-        id: Uuid,
-    ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting profile by id: {}", id);
-        let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_PROFILE_BY_ID, &[&id]).await?;
-        Ok(row.map(Profile::from))
-    }
-
-    pub async fn get_profile_by_account(
-        &self,
-        owner: Uuid,
-    ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting profile by owner: {}", owner);
-        let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_PROFILE_BY_ACCOUNT, &[&owner]).await?;
-        Ok(row.map(Profile::from))
-    }
-
-    pub async fn add_profile(
-        &self,
-        name: &str,
+        name: String,
         description: Option<String>,
-        profile_type: Option<ProfileType>,
+        type_: Option<ProfileType>,
         owner: Uuid,
         created_by: Uuid,
-    ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
-        debug!("Adding profile for owner: {}", owner);
+    ) -> Result<Profile, Error> {
+        debug!("Creating new profile: {} for owner: {}", name, owner);
         let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
         let row = client
             .query_one(
-                ADD_PROFILE,
-                &[&name, &description, &profile_type, &owner, &created_by],
+                CREATE_PROFILE,
+                &[&name, &description, &type_, &owner, &now, &created_by],
             )
             .await?;
         Ok(Profile::from(row))
     }
 
-    pub async fn update_profile(
-        &self,
-        id: Uuid,
-        name: Option<String>,
-        description: Option<String>,
-        profile_type: Option<ProfileType>,
-    ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
-        debug!("Updating profile: {}", id);
-        let client = self.pool.rw.get().await?;
+    pub async fn get_by_id(&self, id: i64) -> Result<Option<Profile>, Error> {
+        debug!("Getting profile by id: {}", id);
+        let client = self.pool.r.get().await?;
         let row = client
-            .query_one(UPDATE_PROFILE, &[&id, &name, &description, &profile_type])
+            .query_opt(
+                GET_PROFILE_BY_ID,
+                &[&id],
+            )
             .await?;
-        Ok(Profile::from(row))
+        Ok(row.map(Profile::from))
     }
 
-    pub async fn delete_profile(&self, id: Uuid) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn get_by_owner(&self, owner: Uuid) -> Result<Vec<Profile>, Error> {
+        debug!("Getting profiles for owner: {}", owner);
+        let client = self.pool.r.get().await?;
+        let rows = client
+            .query(
+                GET_PROFILES_BY_OWNER,
+                &[&owner],
+            )
+            .await?;
+        Ok(rows.into_iter().map(Profile::from).collect())
+    }
+
+    pub async fn update(
+        &self,
+        id: i64,
+        name: String,
+        description: Option<String>,
+        type_: Option<ProfileType>,
+    ) -> Result<Option<Profile>, Error> {
+        debug!("Updating profile {} with name: {}", id, name);
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
+        let row = client
+            .query_opt(
+                UPDATE_PROFILE,
+                &[&id, &name, &description, &type_, &now],
+            )
+            .await?;
+        Ok(row.map(Profile::from))
+    }
+
+    pub async fn delete(&self, id: i64) -> Result<bool, Error> {
         debug!("Deleting profile: {}", id);
         let client = self.pool.rw.get().await?;
-        client.execute(DELETE_PROFILE, &[&id]).await?;
-        Ok(())
+        let rows_affected = client
+            .execute(
+                DELETE_PROFILE,
+                &[&id],
+            )
+            .await?;
+        Ok(rows_affected > 0)
     }
 }

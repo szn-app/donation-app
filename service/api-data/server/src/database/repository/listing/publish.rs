@@ -1,14 +1,9 @@
-use crate::database::model::listing::Publish;
-use crate::database::sql::listing::publish::{
-    ADD_PUBLISH, DELETE_PUBLISH, GET_PUBLISHES, GET_PUBLISHES_BY_COLLECTION, GET_PUBLISHES_BY_ITEM,
-    GET_PUBLISH_BY_ID, GET_PUBLISH_BY_ITEM_AND_COLLECTION, UPDATE_PUBLISH,
-};
-use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
+use time::OffsetDateTime;
 use uuid::Uuid;
+
+use crate::database::model::listing::publish::Publish;
+use crate::error::Error;
+use crate::server::connection::PostgresPool;
 
 pub struct PublishRepository {
     pool: PostgresPool,
@@ -19,118 +14,85 @@ impl PublishRepository {
         Self { pool }
     }
 
-    pub async fn get_publishes(&self) -> Result<Vec<Publish>, Box<dyn Error>> {
-        debug!("Getting all publishes");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_PUBLISHES, &[]).await?;
-        Ok(rows.into_iter().map(Publish::from).collect())
-    }
-
-    pub async fn get_publish_by_id(&self, id: i64) -> Result<Option<Publish>, Box<dyn Error>> {
-        debug!("Getting publish by id: {}", id);
-        let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_PUBLISH_BY_ID, &[&id]).await?;
-        Ok(row.map(Publish::from))
-    }
-
-    pub async fn get_publish_by_item_and_collection(
+    pub async fn create(
         &self,
         id_item: i64,
         id_collection: i64,
-    ) -> Result<Option<Publish>, Box<dyn Error>> {
-        debug!(
-            "Getting publish by item: {} and collection: {}",
-            id_item, id_collection
-        );
+        note: Option<String>,
+        position: i32,
+        added_by: Option<Uuid>,
+    ) -> Result<Publish, Error> {
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
+        let row = client
+            .query_one(
+                "INSERT INTO listing.publish (id_item, id_collection, note, position, added_by, posted_on) 
+                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+                &[&id_item, &id_collection, &note, &position, &added_by, &now],
+            )
+            .await?;
+        Ok(Publish::from(row))
+    }
+
+    pub async fn get_by_item_and_collection(
+        &self,
+        id_item: i64,
+        id_collection: i64,
+    ) -> Result<Option<Publish>, Error> {
         let client = self.pool.r.get().await?;
         let row = client
             .query_opt(
-                GET_PUBLISH_BY_ITEM_AND_COLLECTION,
+                "SELECT * FROM listing.publish WHERE id_item = $1 AND id_collection = $2",
                 &[&id_item, &id_collection],
             )
             .await?;
         Ok(row.map(Publish::from))
     }
 
-    pub async fn get_publishes_by_collection(
-        &self,
-        id_collection: i64,
-    ) -> Result<Vec<Publish>, Box<dyn Error>> {
-        debug!("Getting publishes by collection: {}", id_collection);
+    pub async fn get_by_collection(&self, id_collection: i64) -> Result<Vec<Publish>, Error> {
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_PUBLISHES_BY_COLLECTION, &[&id_collection])
+            .query(
+                "SELECT * FROM listing.publish WHERE id_collection = $1 ORDER BY position",
+                &[&id_collection],
+            )
             .await?;
         Ok(rows.into_iter().map(Publish::from).collect())
     }
 
-    pub async fn get_publishes_by_item(
-        &self,
-        id_item: i64,
-    ) -> Result<Vec<Publish>, Box<dyn Error>> {
-        debug!("Getting publishes by item: {}", id_item);
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_PUBLISHES_BY_ITEM, &[&id_item]).await?;
-        Ok(rows.into_iter().map(Publish::from).collect())
-    }
-
-    pub async fn add_publish(
+    pub async fn update(
         &self,
         id_item: i64,
         id_collection: i64,
         note: Option<String>,
         position: i32,
-        created_by: Uuid,
-    ) -> Result<Publish, Box<dyn Error>> {
-        debug!(
-            "Adding publish for item: {} in collection: {}",
-            id_item, id_collection
-        );
+    ) -> Result<Option<Publish>, Error> {
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(
-                ADD_PUBLISH,
-                &[&id_item, &id_collection, &note, &position, &created_by],
+            .query_opt(
+                "UPDATE listing.publish 
+                 SET note = $3, position = $4
+                 WHERE id_item = $1 AND id_collection = $2 
+                 RETURNING *",
+                &[&id_item, &id_collection, &note, &position],
             )
             .await?;
-        Ok(Publish::from(row))
+        Ok(row.map(Publish::from))
     }
 
-    pub async fn update_publish(
+    pub async fn delete(
         &self,
         id_item: i64,
         id_collection: i64,
-        note: Option<String>,
-        position: i32,
-        updated_by: Uuid,
-    ) -> Result<Publish, Box<dyn Error>> {
-        debug!(
-            "Updating publish for item: {} in collection: {}",
-            id_item, id_collection
-        );
+    ) -> Result<bool, Error> {
         let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(
-                UPDATE_PUBLISH,
-                &[&id_item, &id_collection, &note, &position, &updated_by],
+        let rows_affected = client
+            .execute(
+                "DELETE FROM listing.publish 
+                 WHERE id_item = $1 AND id_collection = $2",
+                &[&id_item, &id_collection],
             )
             .await?;
-        Ok(Publish::from(row))
-    }
-
-    pub async fn delete_publish(
-        &self,
-        id_item: i64,
-        id_collection: i64,
-    ) -> Result<(), Box<dyn Error>> {
-        debug!(
-            "Deleting publish for item: {} from collection: {}",
-            id_item, id_collection
-        );
-        let client = self.pool.rw.get().await?;
-        client
-            .execute(DELETE_PUBLISH, &[&id_item, &id_collection])
-            .await?;
-        Ok(())
+        Ok(rows_affected > 0)
     }
 }

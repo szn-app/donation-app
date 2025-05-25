@@ -1,2 +1,1 @@
-DELETE FROM user.profile
-WHERE id = $1; 
+DELETE FROM "user".profile WHERE id = $1; 

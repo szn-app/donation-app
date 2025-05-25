@@ -1,3 +1,3 @@
 SELECT id, title, description, type, owner, created_at, updated_at, created_by
 FROM "user".community 
-WHERE id = $1; 
+WHERE owner = $1 

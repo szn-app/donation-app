@@ -1,15 +1,15 @@
-use crate::database::model::user::{Committee, CommitteeRole};
-use crate::database::sql::user::committee::{
-    ADD_COMMITTEE, DELETE_COMMITTEE, GET_COMMITTEES, GET_COMMITTEES_BY_COMMUNITY,
-    GET_COMMITTEES_BY_PROFILE, GET_COMMITTEE_BY_ID, GET_COMMITTEE_BY_PROFILE_AND_COMMUNITY,
-    UPDATE_COMMITTEE_ROLE,
-};
-use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
+use time::OffsetDateTime;
 use uuid::Uuid;
+use log::debug;
+
+use crate::database::model::user::committee::{Committee, CommitteeRole};
+use crate::database::sql::user::committee::{
+    CREATE_COMMITTEE, GET_COMMITTEE_BY_PROFILE_AND_COMMUNITY,
+    GET_COMMITTEES_BY_PROFILE, GET_COMMITTEES_BY_COMMUNITY,
+    UPDATE_COMMITTEE_ROLE, DELETE_COMMITTEE
+};
+use crate::error::Error;
+use crate::server::connection::PostgresPool;
 
 pub struct CommitteeRepository {
     pool: PostgresPool,
@@ -20,38 +20,30 @@ impl CommitteeRepository {
         Self { pool }
     }
 
-    pub async fn get_committees(&self) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting all committees");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_COMMITTEES, &[]).await?;
-        Ok(rows.into_iter().map(Committee::from).collect())
-    }
-
-    pub async fn get_committee_by_id(
+    pub async fn create(
         &self,
-        id_profile: Uuid,
+        id_profile: i64,
         id_community: i64,
-    ) -> Result<Option<Committee>, Box<dyn Error + Send + Sync>> {
-        debug!(
-            "Getting committee by id_profile: {} and id_community: {}",
-            id_profile, id_community
-        );
-        let client = self.pool.r.get().await?;
+        member_role: CommitteeRole,
+    ) -> Result<Committee, Error> {
+        debug!("Creating committee for profile: {} in community: {} with role: {:?}", id_profile, id_community, member_role);
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
         let row = client
-            .query_opt(GET_COMMITTEE_BY_ID, &[&id_profile, &id_community])
+            .query_one(
+                CREATE_COMMITTEE,
+                &[&id_profile, &id_community, &member_role, &now],
+            )
             .await?;
-        Ok(row.map(Committee::from))
+        Ok(Committee::from(row))
     }
 
-    pub async fn get_committee_by_profile_and_community(
+    pub async fn get_by_profile_and_community(
         &self,
-        id_profile: Uuid,
+        id_profile: i64,
         id_community: i64,
-    ) -> Result<Option<Committee>, Box<dyn Error + Send + Sync>> {
-        debug!(
-            "Getting committee by profile: {} and community: {}",
-            id_profile, id_community
-        );
+    ) -> Result<Option<Committee>, Error> {
+        debug!("Getting committee for profile: {} in community: {}", id_profile, id_community);
         let client = self.pool.r.get().await?;
         let row = client
             .query_opt(
@@ -62,80 +54,60 @@ impl CommitteeRepository {
         Ok(row.map(Committee::from))
     }
 
-    pub async fn get_committees_by_community(
-        &self,
-        id_community: i64,
-    ) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting committees by community: {}", id_community);
+    pub async fn get_by_profile(&self, id_profile: i64) -> Result<Vec<Committee>, Error> {
+        debug!("Getting committees for profile: {}", id_profile);
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_COMMITTEES_BY_COMMUNITY, &[&id_community])
+            .query(
+                GET_COMMITTEES_BY_PROFILE,
+                &[&id_profile],
+            )
             .await?;
         Ok(rows.into_iter().map(Committee::from).collect())
     }
 
-    pub async fn get_committees_by_profile(
-        &self,
-        id_profile: Uuid,
-    ) -> Result<Vec<Committee>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting committees by profile: {}", id_profile);
+    pub async fn get_by_community(&self, id_community: i64) -> Result<Vec<Committee>, Error> {
+        debug!("Getting committees for community: {}", id_community);
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_COMMITTEES_BY_PROFILE, &[&id_profile])
+            .query(
+                GET_COMMITTEES_BY_COMMUNITY,
+                &[&id_community],
+            )
             .await?;
         Ok(rows.into_iter().map(Committee::from).collect())
     }
 
-    pub async fn add_committee(
+    pub async fn update_role(
         &self,
-        id_profile: Uuid,
+        id_profile: i64,
         id_community: i64,
         member_role: CommitteeRole,
-    ) -> Result<Committee, Box<dyn Error + Send + Sync>> {
-        debug!(
-            "Adding committee for profile: {} and community: {}",
-            id_profile, id_community
-        );
+    ) -> Result<Option<Committee>, Error> {
+        debug!("Updating committee role for profile: {} in community: {} to: {:?}", id_profile, id_community, member_role);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(ADD_COMMITTEE, &[&id_profile, &id_community, &member_role])
-            .await?;
-        Ok(Committee::from(row))
-    }
-
-    pub async fn update_committee_role(
-        &self,
-        id_profile: Uuid,
-        id_community: i64,
-        member_role: CommitteeRole,
-    ) -> Result<Committee, Box<dyn Error + Send + Sync>> {
-        debug!(
-            "Updating committee role for profile: {} and community: {}",
-            id_profile, id_community
-        );
-        let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(
+            .query_opt(
                 UPDATE_COMMITTEE_ROLE,
                 &[&id_profile, &id_community, &member_role],
             )
             .await?;
-        Ok(Committee::from(row))
+        Ok(row.map(Committee::from))
     }
 
-    pub async fn delete_committee(
+    pub async fn delete(
         &self,
-        id_profile: Uuid,
+        id_profile: i64,
         id_community: i64,
-    ) -> Result<(), Box<dyn Error + Send + Sync>> {
-        debug!(
-            "Deleting committee for profile: {} and community: {}",
-            id_profile, id_community
-        );
+    ) -> Result<bool, Error> {
+        debug!("Deleting committee for profile: {} in community: {}", id_profile, id_community);
         let client = self.pool.rw.get().await?;
-        client
-            .execute(DELETE_COMMITTEE, &[&id_profile, &id_community])
+        let rows_affected = client
+            .execute(
+                DELETE_COMMITTEE,
+                &[&id_profile, &id_community],
+            )
             .await?;
-        Ok(())
+        Ok(rows_affected > 0)
     }
 }

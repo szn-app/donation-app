@@ -1,14 +1,8 @@
-use crate::database::model::listing::{Collection, CollectionType};
-use crate::database::sql::listing::collection::{
-    ADD_COLLECTION, DELETE_COLLECTION, GET_COLLECTIONS, GET_COLLECTIONS_BY_PROFILE,
-    GET_COLLECTION_BY_ID, UPDATE_COLLECTION,
-};
+use time::OffsetDateTime;
+
+use crate::database::model::listing::collection::{Collection, CollectionType, CollectionVisibility};
+use crate::error::Error;
 use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
-use uuid::Uuid;
 
 pub struct CollectionRepository {
     pool: PostgresPool,
@@ -19,83 +13,78 @@ impl CollectionRepository {
         Self { pool }
     }
 
-    pub async fn get_collections(&self) -> Result<Vec<Collection>, Box<dyn Error>> {
-        debug!("Getting all collections");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_COLLECTIONS, &[]).await?;
-        Ok(rows.into_iter().map(Collection::from).collect())
+    pub async fn create(
+        &self,
+        id_community: Option<i64>,
+        title: Option<String>,
+        visibility: CollectionVisibility,
+        type_: Option<CollectionType>,
+        position: i32,
+    ) -> Result<Collection, Error> {
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
+        let row = client
+            .query_one(
+                "INSERT INTO listing.collection (
+                    id_community, title, visibility, type, position, created_at
+                ) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+                &[&id_community, &title, &visibility, &type_, &position, &now],
+            )
+            .await?;
+        Ok(Collection::from(row))
     }
 
-    pub async fn get_collection_by_id(
-        &self,
-        id: i64,
-    ) -> Result<Option<Collection>, Box<dyn Error>> {
-        debug!("Getting collection by id: {}", id);
+    pub async fn get_by_id(&self, id: i64) -> Result<Option<Collection>, Error> {
         let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_COLLECTION_BY_ID, &[&id]).await?;
+        let row = client
+            .query_opt(
+                "SELECT * FROM listing.collection WHERE id = $1",
+                &[&id],
+            )
+            .await?;
         Ok(row.map(Collection::from))
     }
 
-    pub async fn get_collections_by_profile(
-        &self,
-        id_profile: Uuid,
-    ) -> Result<Vec<Collection>, Box<dyn Error>> {
-        debug!("Getting collections by profile: {}", id_profile);
+    pub async fn get_by_community(&self, id_community: i64) -> Result<Vec<Collection>, Error> {
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_COLLECTIONS_BY_PROFILE, &[&id_profile])
+            .query(
+                "SELECT * FROM listing.collection WHERE id_community = $1 ORDER BY position",
+                &[&id_community],
+            )
             .await?;
         Ok(rows.into_iter().map(Collection::from).collect())
     }
 
-    pub async fn add_collection(
-        &self,
-        name: &str,
-        description: &str,
-        id_profile: Uuid,
-        is_public: bool,
-        collection_type: CollectionType,
-    ) -> Result<Collection, Box<dyn Error>> {
-        debug!("Adding collection: {}", name);
-        let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(
-                ADD_COLLECTION,
-                &[
-                    &name,
-                    &description,
-                    &id_profile,
-                    &is_public,
-                    &collection_type,
-                ],
-            )
-            .await?;
-        Ok(Collection::from(row))
-    }
-
-    pub async fn update_collection(
+    pub async fn update(
         &self,
         id: i64,
-        name: Option<String>,
-        description: Option<String>,
-        is_public: Option<bool>,
-        collection_type: Option<CollectionType>,
-    ) -> Result<Collection, Box<dyn Error>> {
-        debug!("Updating collection: {}", id);
+        title: Option<String>,
+        visibility: CollectionVisibility,
+        type_: Option<CollectionType>,
+        position: i32,
+    ) -> Result<Option<Collection>, Error> {
         let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
         let row = client
-            .query_one(
-                UPDATE_COLLECTION,
-                &[&id, &name, &description, &is_public, &collection_type],
+            .query_opt(
+                "UPDATE listing.collection 
+                 SET title = $2, visibility = $3, type = $4, position = $5, updated_at = $6
+                 WHERE id = $1 RETURNING *",
+                &[&id, &title, &visibility, &type_, &position, &now],
             )
             .await?;
-        Ok(Collection::from(row))
+        Ok(row.map(Collection::from))
     }
 
-    pub async fn delete_collection(&self, id: i64) -> Result<(), Box<dyn Error>> {
-        debug!("Deleting collection: {}", id);
+    pub async fn delete(&self, id: i64) -> Result<bool, Error> {
         let client = self.pool.rw.get().await?;
-        client.execute(DELETE_COLLECTION, &[&id]).await?;
-        Ok(())
+        let rows_affected = client
+            .execute(
+                "DELETE FROM listing.collection WHERE id = $1",
+                &[&id],
+            )
+            .await?;
+        Ok(rows_affected > 0)
     }
 }

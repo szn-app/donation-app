@@ -116,6 +116,8 @@ Supported XML tags:
 
 * Prefer organizing related implementations into multiple modular files within nested folders, rather than combining them into a single large file.
 
+* Each file has single responsibility, with modular boundaries.
+
 * Fully implement all requested functionality.
 
 * Leave NO todos, placeholders, or missing pieces.

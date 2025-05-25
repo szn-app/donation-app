@@ -1,0 +1,1 @@
+UPDATE "user".account SET remarks = $2 WHERE id = $1 RETURNING id, remarks, created_at 

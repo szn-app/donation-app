@@ -1,13 +1,8 @@
-use crate::database::model::listing::{Media, MediaType};
-use crate::database::sql::listing::media::{
-    ADD_MEDIA, DELETE_MEDIA, GET_MEDIA, GET_MEDIA_BY_ID, GET_MEDIA_BY_ITEM, UPDATE_MEDIA,
-};
+use time::OffsetDateTime;
+
+use crate::database::model::listing::media::{Media, MediaType};
+use crate::error::Error;
 use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
-use uuid::Uuid;
 
 pub struct MediaRepository {
     pool: PostgresPool,
@@ -18,61 +13,74 @@ impl MediaRepository {
         Self { pool }
     }
 
-    pub async fn get_media(&self) -> Result<Vec<Media>, Box<dyn Error>> {
-        debug!("Getting all media");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_MEDIA, &[]).await?;
-        Ok(rows.into_iter().map(Media::from).collect())
+    pub async fn create(
+        &self,
+        id_item: i64,
+        caption: Option<String>,
+        url: String,
+        type_: MediaType,
+    ) -> Result<Media, Error> {
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
+        let row = client
+            .query_one(
+                "INSERT INTO listing.media (id_item, caption, url, type, created_at) 
+                 VALUES ($1, $2, $3, $4, $5) RETURNING *",
+                &[&id_item, &caption, &url, &type_, &now],
+            )
+            .await?;
+        Ok(Media::from(row))
     }
 
-    pub async fn get_media_by_id(&self, id: i64) -> Result<Option<Media>, Box<dyn Error>> {
-        debug!("Getting media by id: {}", id);
+    pub async fn get_by_id(&self, id: i64) -> Result<Option<Media>, Error> {
         let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_MEDIA_BY_ID, &[&id]).await?;
+        let row = client
+            .query_opt(
+                "SELECT * FROM listing.media WHERE id = $1",
+                &[&id],
+            )
+            .await?;
         Ok(row.map(Media::from))
     }
 
-    pub async fn get_media_by_item(&self, id_item: i64) -> Result<Vec<Media>, Box<dyn Error>> {
-        debug!("Getting media by item: {}", id_item);
+    pub async fn get_by_item(&self, id_item: i64) -> Result<Vec<Media>, Error> {
         let client = self.pool.r.get().await?;
-        let rows = client.query(GET_MEDIA_BY_ITEM, &[&id_item]).await?;
+        let rows = client
+            .query(
+                "SELECT * FROM listing.media WHERE id_item = $1",
+                &[&id_item],
+            )
+            .await?;
         Ok(rows.into_iter().map(Media::from).collect())
     }
 
-    pub async fn add_media(
-        &self,
-        id_item: i64,
-        url: &str,
-        media_type: MediaType,
-        position: i32,
-    ) -> Result<Media, Box<dyn Error>> {
-        debug!("Adding media for item: {}", id_item);
-        let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(ADD_MEDIA, &[&id_item, &url, &media_type, &position])
-            .await?;
-        Ok(Media::from(row))
-    }
-
-    pub async fn update_media(
+    pub async fn update(
         &self,
         id: i64,
-        url: Option<String>,
-        media_type: Option<MediaType>,
-        position: Option<i32>,
-    ) -> Result<Media, Box<dyn Error>> {
-        debug!("Updating media: {}", id);
+        caption: Option<String>,
+        url: String,
+        type_: MediaType,
+    ) -> Result<Option<Media>, Error> {
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(UPDATE_MEDIA, &[&id, &url, &media_type, &position])
+            .query_opt(
+                "UPDATE listing.media 
+                 SET caption = $2, url = $3, type = $4
+                 WHERE id = $1 RETURNING *",
+                &[&id, &caption, &url, &type_],
+            )
             .await?;
-        Ok(Media::from(row))
+        Ok(row.map(Media::from))
     }
 
-    pub async fn delete_media(&self, id: i64) -> Result<(), Box<dyn Error>> {
-        debug!("Deleting media: {}", id);
+    pub async fn delete(&self, id: i64) -> Result<bool, Error> {
         let client = self.pool.rw.get().await?;
-        client.execute(DELETE_MEDIA, &[&id]).await?;
-        Ok(())
+        let rows_affected = client
+            .execute(
+                "DELETE FROM listing.media WHERE id = $1",
+                &[&id],
+            )
+            .await?;
+        Ok(rows_affected > 0)
     }
 }

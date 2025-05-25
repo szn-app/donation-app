@@ -1,14 +1,11 @@
-use crate::database::model::user::{Community, CommunityType};
-use crate::database::sql::user::community::{
-    ADD_COMMUNITY, DELETE_COMMUNITY, GET_COMMUNITIES, GET_COMMUNITIES_BY_PROFILE,
-    GET_COMMUNITY_BY_ID, UPDATE_COMMUNITY,
-};
-use crate::server::connection::PostgresPool;
-use deadpool_postgres::PoolError;
-use std::error::Error;
-use tokio_postgres::Row;
-use tracing::debug;
+use time::OffsetDateTime;
 use uuid::Uuid;
+use log::debug;
+
+use crate::database::model::user::community::{Community, CommunityType};
+use crate::database::sql::user::community::{CREATE_COMMUNITY, GET_COMMUNITY_BY_ID, GET_COMMUNITIES_BY_OWNER, UPDATE_COMMUNITY, DELETE_COMMUNITY};
+use crate::error::Error;
+use crate::server::connection::PostgresPool;
 
 pub struct CommunityRepository {
     pool: PostgresPool,
@@ -19,76 +16,78 @@ impl CommunityRepository {
         Self { pool }
     }
 
-    pub async fn get_communities(&self) -> Result<Vec<Community>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting all communities");
-        let client = self.pool.r.get().await?;
-        let rows = client.query(GET_COMMUNITIES, &[]).await?;
-        Ok(rows.into_iter().map(Community::from).collect())
+    pub async fn create(
+        &self,
+        title: String,
+        description: Option<String>,
+        type_: CommunityType,
+        owner: Uuid,
+        created_by: Uuid,
+    ) -> Result<Community, Error> {
+        debug!("Creating new community: {} for owner: {}", title, owner);
+        let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
+        let row = client
+            .query_one(
+                CREATE_COMMUNITY,
+                &[&title, &description, &type_, &owner, &now, &created_by],
+            )
+            .await?;
+        Ok(Community::from(row))
     }
 
-    pub async fn get_community_by_id(
-        &self,
-        id: i64,
-    ) -> Result<Option<Community>, Box<dyn Error + Send + Sync>> {
+    pub async fn get_by_id(&self, id: i64) -> Result<Option<Community>, Error> {
         debug!("Getting community by id: {}", id);
         let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_COMMUNITY_BY_ID, &[&id]).await?;
+        let row = client
+            .query_opt(
+                GET_COMMUNITY_BY_ID,
+                &[&id],
+            )
+            .await?;
         Ok(row.map(Community::from))
     }
 
-    pub async fn get_communities_by_profile(
-        &self,
-        id_profile: Uuid,
-    ) -> Result<Vec<Community>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting communities by profile: {}", id_profile);
+    pub async fn get_by_owner(&self, owner: Uuid) -> Result<Vec<Community>, Error> {
+        debug!("Getting communities for owner: {}", owner);
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_COMMUNITIES_BY_PROFILE, &[&id_profile])
+            .query(
+                GET_COMMUNITIES_BY_OWNER,
+                &[&owner],
+            )
             .await?;
         Ok(rows.into_iter().map(Community::from).collect())
     }
 
-    pub async fn add_community(
-        &self,
-        title: &str,
-        description: &str,
-        community_type: CommunityType,
-        owner: Uuid,
-        created_by: Uuid,
-    ) -> Result<Community, Box<dyn Error + Send + Sync>> {
-        debug!("Adding community: {}", title);
-        let client = self.pool.rw.get().await?;
-        let row = client
-            .query_one(
-                ADD_COMMUNITY,
-                &[&title, &description, &community_type, &owner, &created_by],
-            )
-            .await?;
-        Ok(Community::from(row))
-    }
-
-    pub async fn update_community(
+    pub async fn update(
         &self,
         id: i64,
-        title: Option<String>,
+        title: String,
         description: Option<String>,
-        community_type: Option<CommunityType>,
-    ) -> Result<Community, Box<dyn Error + Send + Sync>> {
-        debug!("Updating community: {}", id);
+        type_: CommunityType,
+    ) -> Result<Option<Community>, Error> {
+        debug!("Updating community {} with title: {}", id, title);
         let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
         let row = client
-            .query_one(
+            .query_opt(
                 UPDATE_COMMUNITY,
-                &[&id, &title, &description, &community_type],
+                &[&id, &title, &description, &type_, &now],
             )
             .await?;
-        Ok(Community::from(row))
+        Ok(row.map(Community::from))
     }
 
-    pub async fn delete_community(&self, id: i64) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn delete(&self, id: i64) -> Result<bool, Error> {
         debug!("Deleting community: {}", id);
         let client = self.pool.rw.get().await?;
-        client.execute(DELETE_COMMUNITY, &[&id]).await?;
-        Ok(())
+        let rows_affected = client
+            .execute(
+                DELETE_COMMUNITY,
+                &[&id],
+            )
+            .await?;
+        Ok(rows_affected > 0)
     }
 }
