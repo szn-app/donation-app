@@ -44,4 +44,4 @@ kube.config
 
 # tools specific
 dbml-error.log
-.Trash-*/
+.Trash*
