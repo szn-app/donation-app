@@ -1,11 +1,9 @@
-use crate::api::graphql::guard::{auth, AuthorizeUser};
-use crate::api::graphql::repository::pledge::PledgeRepository;
+use crate::api::graphql::guard::AuthorizeUser;
 use crate::database::model::interaction::{Pledge, PledgeIntentAction, PledgeStatus};
+use crate::database::repository::interaction::pledge::PledgeRepository;
 use crate::server::connection::PostgresPool;
-use async_graphql::{self, Context, Error, FieldResult, Object, Result};
-use log;
+use async_graphql::{Context, Error, FieldResult, Object, Result};
 use tracing::debug;
-use tracing::instrument;
 use uuid::Uuid;
 
 pub struct PledgeMutation {
@@ -19,7 +17,7 @@ impl PledgeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create_pledge(
+    async fn create(
         &self,
         _ctx: &Context<'_>,
         id_profile: Uuid,
@@ -42,33 +40,18 @@ impl PledgeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_pledge(
+    async fn update(
         &self,
-        ctx: &Context<'_>,
+        _ctx: &Context<'_>,
         id: i64,
         status: PledgeStatus,
     ) -> FieldResult<Pledge> {
         debug!("Updating pledge: id={}", id);
         let repository = PledgeRepository::new(self.postgres_pool_group.clone());
         let pledge = repository
-            .update_pledge(id, status)
+            .update(id, status)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(pledge)
     }
-
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
-    async fn delete_pledge(&self, ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
-        debug!("Deleting pledge: id={}", id);
-        let repository = PledgeRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_pledge(id)
-            .await
-            .map_err(|e| Error::new(e.to_string()))?;
-        Ok(true)
-    }
-}
+} 

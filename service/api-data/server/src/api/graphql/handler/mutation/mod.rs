@@ -2,12 +2,11 @@ pub mod interaction;
 pub mod listing;
 pub mod user;
 
-use crate::server::connection::{KetoChannelGroup, PostgresPool};
-use async_graphql;
-use async_graphql::{Context, Object, Result};
+use crate::server::connection::PostgresPool;
+use async_graphql::MergedObject;
 
 /// GraphQL Mutation Root
-#[derive(async_graphql::MergedObject)]
+#[derive(MergedObject)]
 pub struct Mutation(
     user::AccountMutation,
     user::CommitteeMutation,

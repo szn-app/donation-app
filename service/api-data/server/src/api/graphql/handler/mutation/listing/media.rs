@@ -1,10 +1,9 @@
-use async_graphql::{Context, Error, Result};
-use tracing::{debug, instrument};
-
-use crate::api::graphql::repository::media::MediaRepository;
-use crate::database::model::listing::Media;
-use crate::server::auth::AuthorizeUser;
+use crate::api::graphql::guard::AuthorizeUser;
+use crate::database::model::listing::{Media, MediaType};
+use crate::database::repository::listing::media::MediaRepository;
 use crate::server::connection::PostgresPool;
+use async_graphql::{Context, Error, FieldResult, Object, Result};
+use tracing::debug;
 
 pub struct MediaMutation {
     pub postgres_pool_group: PostgresPool,
@@ -17,7 +16,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create_media(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -27,7 +26,7 @@ impl MediaMutation {
     ) -> Result<Media> {
         let media_repository = MediaRepository::new(self.postgres_pool_group.clone());
         let media = media_repository
-            .create(id_item, &url, media_type, position)
+            .create(id_item, None, url.to_string(), media_type)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -39,22 +38,20 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn update_media(
+    async fn update(
         &self,
-        ctx: &Context<'_>,
+        _ctx: &Context<'_>,
         id: i64,
         url: Option<String>,
-        media_type: Option<String>,
+        media_type: Option<MediaType>,
         position: Option<i32>,
-    ) -> Result<Media> {
+    ) -> FieldResult<Media> {
         debug!("Updating media: id={}", id);
-        let media_repository = MediaRepository::new(self.postgres_pool_group.clone());
-
-        let media = media_repository
-            .update_media(id, url, media_type, position)
+        let repository = MediaRepository::new(self.postgres_pool_group.clone());
+        let media = repository
+            .update(id, None, url.unwrap_or_default(), media_type.unwrap_or_default())
             .await
             .map_err(|e| Error::new(e.to_string()))?;
-
         Ok(media)
     }
 
@@ -63,15 +60,13 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn delete_media(&self, ctx: &Context<'_>, id: i64) -> Result<bool> {
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting media: id={}", id);
-        let media_repository = MediaRepository::new(self.postgres_pool_group.clone());
-
-        media_repository
-            .delete_media(id)
+        let repository = MediaRepository::new(self.postgres_pool_group.clone());
+        repository
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
-
         Ok(true)
     }
-}
+} 

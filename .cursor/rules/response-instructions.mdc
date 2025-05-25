@@ -144,6 +144,8 @@ Supported XML tags:
 
 * follow best practices for naming conventions only if there isn't a naming convention already in place.
 
+* when user requests to refactor, preserve current functionality and do not introduce additional features or function signatures.
+
 <!-- SQL -->
 ## When coding SQL: 
 

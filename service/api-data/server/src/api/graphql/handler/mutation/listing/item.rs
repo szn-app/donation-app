@@ -5,7 +5,7 @@ use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::{
     Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType,
 };
-use crate::database::repository::item::ItemRepository;
+use crate::database::repository::listing::item::ItemRepository;
 use crate::server::connection::PostgresPool;
 use async_graphql::{self, FieldResult};
 use log;
@@ -22,7 +22,7 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create_item(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         type_: ItemType,
@@ -57,19 +57,29 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_item(
+    async fn update(
         &self,
-        ctx: &Context<'_>,
+        _ctx: &Context<'_>,
         id: i64,
         title: Option<String>,
         description: Option<String>,
-        condition: Option<String>,
-        quantity: Option<i32>,
+        category: Option<i64>,
+        condition: ItemCondition,
+        location: Option<i64>,
+        status: ItemStatus,
     ) -> FieldResult<Item> {
         debug!("Updating item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = repository
-            .update_item(id, title, description, condition, quantity)
+            .update(
+                id,
+                title,
+                description,
+                category,
+                condition,
+                location,
+                status,
+            )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(item)
@@ -80,13 +90,28 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_item(&self, ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_item(id)
+        let result = repository
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
-        Ok(true)
+        Ok(result)
+    }
+
+    #[graphql(guard = "AuthorizeUser {
+            namespace: \"Group\".to_string(),
+            object: \"admin\".to_string(),
+            relation: \"member\".to_string()
+        }")]
+    async fn report(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<Option<Item>> {
+        debug!("Reporting item: id={}", id);
+        let repository = ItemRepository::new(self.postgres_pool_group.clone());
+        let item = repository
+            .report(id)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
+        Ok(item)
     }
 }

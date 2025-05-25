@@ -1,13 +1,13 @@
+use log::debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use log::debug;
 
 use crate::database::model::listing::{
     Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType,
 };
 use crate::database::sql::listing::item::{
-    CREATE_ITEM, DELETE_ITEM, FIND_ITEM, FIND_ITEMS_BY_CATEGORY,
-    UPDATE_ITEM, INCREMENT_VIEWS, REPORT_ITEM, LIST_ITEMS
+    CREATE_ITEM, DELETE_ITEM, FIND_ITEM, FIND_ITEMS_BY_CATEGORY, INCREMENT_VIEWS, LIST_ITEMS,
+    REPORT_ITEM, UPDATE_ITEM,
 };
 use crate::server::connection::PostgresPool;
 use std::error::Error;
@@ -55,9 +55,7 @@ impl ItemRepository {
     pub async fn find(&self, id: i64) -> Result<Option<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Getting item by id: {}", id);
         let client = self.pool.r.get().await?;
-        let row = client
-            .query_opt(FIND_ITEM, &[&id])
-            .await?;
+        let row = client.query_opt(FIND_ITEM, &[&id]).await?;
         Ok(row.map(Item::from))
     }
 
@@ -67,9 +65,7 @@ impl ItemRepository {
     ) -> Result<Vec<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Getting items by category: {}", category);
         let client = self.pool.r.get().await?;
-        let rows = client
-            .query(FIND_ITEMS_BY_CATEGORY, &[&category])
-            .await?;
+        let rows = client.query(FIND_ITEMS_BY_CATEGORY, &[&category]).await?;
         Ok(rows.into_iter().map(Item::from).collect())
     }
 
@@ -82,7 +78,7 @@ impl ItemRepository {
         condition: ItemCondition,
         location: Option<i64>,
         status: ItemStatus,
-    ) -> Result<Option<Item>, Box<dyn Error + Send + Sync>> {
+    ) -> Result<Item, Box<dyn Error + Send + Sync>> {
         debug!("Updating item {} with title: {:?}", id, title);
         let client = self.pool.rw.get().await?;
         let now = OffsetDateTime::now_utc();
@@ -101,7 +97,10 @@ impl ItemRepository {
                 ],
             )
             .await?;
-        Ok(row.map(Item::from))
+
+        let item = row.map(Item::from).ok_or("No record found to update")?;
+
+        Ok(item)
     }
 
     pub async fn increment_views(
@@ -110,27 +109,21 @@ impl ItemRepository {
     ) -> Result<Option<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Incrementing views for item: {}", id);
         let client = self.pool.rw.get().await?;
-        let row = client
-            .query_opt(INCREMENT_VIEWS, &[&id])
-            .await?;
+        let row = client.query_opt(INCREMENT_VIEWS, &[&id]).await?;
         Ok(row.map(Item::from))
     }
 
     pub async fn report(&self, id: i64) -> Result<Option<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Reporting item: {}", id);
         let client = self.pool.rw.get().await?;
-        let row = client
-            .query_opt(REPORT_ITEM, &[&id])
-            .await?;
+        let row = client.query_opt(REPORT_ITEM, &[&id]).await?;
         Ok(row.map(Item::from))
     }
 
     pub async fn delete(&self, id: i64) -> Result<bool, Box<dyn Error + Send + Sync>> {
         debug!("Deleting item: {}", id);
         let client = self.pool.rw.get().await?;
-        let rows_affected = client
-            .execute(DELETE_ITEM, &[&id])
-            .await?;
+        let rows_affected = client.execute(DELETE_ITEM, &[&id]).await?;
         Ok(rows_affected > 0)
     }
 

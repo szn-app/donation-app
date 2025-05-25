@@ -3,7 +3,7 @@ pub mod listing;
 pub mod test;
 pub mod user;
 
-use crate::server::connection::{KetoChannelGroup, PostgresPool};
+use crate::server::connection::PostgresPool;
 use async_graphql;
 
 // TODO: implement limit, filter, sort and pagination arguments.
