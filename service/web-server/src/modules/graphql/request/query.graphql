@@ -1,49 +1,100 @@
 # Get all accounts
-query GetAccounts {
-  accounts {
+query ListAccounts {
+  listAccounts {
     id
-    createdAt
     remarks
+    created_at
+  }
+}
+
+# Get account by ID
+query FindAccount($id: UUID!) {
+  findAccount(id: $id) {
+    id
+    remarks
+    created_at
   }
 }
 
 # Get all profiles
-query GetProfiles {
-  profiles {
+query ListProfiles {
+  listProfiles {
     id
     name
-    type
     description
-    createdAt
+    type
+    owner
+    created_at
     updatedAt
+    createdBy
+  }
+}
+
+# Get profile by ID
+query FindProfile($id: Int!) {
+  findProfile(id: $id) {
+    id
+    name
+    description
+    type
+    owner
+    created_at
+    updatedAt
+    createdBy
   }
 }
 
 # Get all communities
-query GetCommunities {
-  communities {
+query ListCommunities {
+  listCommunities {
     id
     title
     description
     type
-    createdAt
+    owner
+    created_at
     updatedAt
+    createdBy
   }
 }
 
-# Get committees by community
-query GetCommitteesByCommunity($idCommunity: Int!) {
-  committeesByCommunity(idCommunity: $idCommunity) {
-    idCommunity
+# Get community by ID
+query FindCommunity($id: Int!) {
+  findCommunity(id: $id) {
+    id
+    title
+    description
+    type
+    owner
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+# Get all committees
+query ListCommittees {
+  listCommittees {
     idProfile
+    idCommunity
     memberRole
-    joinedAt
+    joined_at
+  }
+}
+
+# Get committee by ID
+query FindCommittee($id: UUID!) {
+  findCommittee(id: $id) {
+    idProfile
+    idCommunity
+    memberRole
+    joined_at
   }
 }
 
 # Get all categories
-query GetCategories {
-  getCategories {
+query ListCategories {
+  listCategories {
     id
     title
     description
@@ -53,25 +104,61 @@ query GetCategories {
   }
 }
 
-# Get items by category
-query GetItemsByCategory($categoryId: Int!) {
-  getItemsByCategory(categoryId: $categoryId) {
+# Get category by ID
+query FindCategory($id: Int!) {
+  findCategory(id: $id) {
     id
     title
     description
-    status
-    type
-    condition
-    intentAction
-    quantity
+    categoryParent
     createdAt
     updatedAt
   }
 }
 
+# Get all items
+query ListItems {
+  listItems {
+    id
+    type
+    intentAction
+    status
+    title
+    description
+    category
+    condition
+    location
+    viewsCount
+    isReported
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+# Get item by ID
+query FindItem($id: Int!) {
+  findItem(id: $id) {
+    id
+    type
+    intentAction
+    status
+    title
+    description
+    category
+    condition
+    location
+    viewsCount
+    isReported
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
 # Get all locations
-query GetLocations {
-  getLocations {
+query ListLocations {
+  listLocations {
     id
     addressLine1
     addressLine2
@@ -80,78 +167,123 @@ query GetLocations {
     country
     district
     entranceNote
-    geom
     createdAt
-    updatedAt
+  }
+}
+
+# Get location by ID
+query FindLocation($id: Int!) {
+  findLocation(id: $id) {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    createdAt
   }
 }
 
 # Get all collections
-query GetCollections {
-  getCollections {
+query ListCollections {
+  listCollections {
     id
+    idCommunity
     title
-    type
     visibility
+    type
     position
-    createdAt
+    created_at
     updatedAt
   }
 }
 
-# Get publishes by collection
-query GetPublishesByCollection($collectionId: Int!) {
-  getPublishesByCollection(collectionId: $collectionId) {
-    idCollection
+# Get collection by ID
+query FindCollection($id: Int!) {
+  findCollection(id: $id) {
+    id
+    idCommunity
+    title
+    visibility
+    type
+    position
+    created_at
+    updatedAt
+  }
+}
+
+# Get all media
+query ListMedia {
+  listMedia {
+    id
     idItem
-    position
-    note
-    addedBy
-    createdAt
-    updatedAt
-  }
-}
-
-# Get item by ID
-query GetItemById($id: Int!) {
-  getItemById(id: $id) {
-    id
-    title
-    description
-    status
-    type
-    condition
-    intentAction
-    quantity
-    createdAt
-    updatedAt
-  }
-}
-
-# Get all items
-query GetItems {
-  getItems {
-    id
-    title
-    description
-    status
-    type
-    condition
-    intentAction
-    quantity
-    createdAt
-    updatedAt
-  }
-}
-
-# Get media by item
-query GetMediaByItem($itemId: Int!) {
-  getMediaByItem(itemId: $itemId) {
-    id
+    caption
     url
     type
+    created_at
+  }
+}
+
+# Get media by ID
+query FindMedia($id: Int!) {
+  findMedia(id: $id) {
+    id
+    idItem
     caption
-    createdAt
+    url
+    type
+    created_at
+  }
+}
+
+# Get all publishes
+query ListPublishes {
+  listPublishes {
+    idItem
+    idCollection
+    note
+    position
+    addedBy
+    posted_on
+  }
+}
+
+# Get publish by ID
+query FindPublish($id: Int!) {
+  findPublish(id: $id) {
+    idItem
+    idCollection
+    note
+    position
+    addedBy
+    posted_on
+  }
+}
+
+# Get all messages
+query ListMessages {
+  listMessages {
+    id
+    idSender
+    idTransaction
+    type
+    content
+    sent_at
+    updatedAt
+  }
+}
+
+# Get message by ID
+query FindMessage($id: Int!) {
+  findMessage(id: $id) {
+    id
+    idSender
+    idTransaction
+    type
+    content
+    sent_at
     updatedAt
   }
 }

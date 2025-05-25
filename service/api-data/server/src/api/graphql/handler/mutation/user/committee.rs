@@ -16,7 +16,7 @@ impl CommitteeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_committee(
         &self,
         _ctx: &Context<'_>,
         id_profile: i64,
@@ -37,7 +37,7 @@ impl CommitteeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_committee(
         &self,
         _ctx: &Context<'_>,
         id_profile: i64,
@@ -58,7 +58,7 @@ impl CommitteeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(
+    async fn delete_committee(
         &self,
         _ctx: &Context<'_>,
         id_profile: i64,

@@ -107,9 +107,9 @@ VALUES
 -- Insert test items 
 INSERT INTO "listing"."item" (id, type, intent_action, condition, title, description, category, location, created_by)
 VALUES
-  (220000000000000001, 'in-kind', 'offer', 'brand_new', 'Set of books', 'A full set of new books.', 200000000000000001, 210000000000000001, '00000000-0000-0000-0000-000000000001'::uuid),
+  (220000000000000001, 'inkind', 'offer', 'brand_new', 'Set of books', 'A full set of new books.', 200000000000000001, 210000000000000001, '00000000-0000-0000-0000-000000000001'::uuid),
   (220000000000000002, 'service', 'request', 'pre_owned_usable', 'Tutoring Help', 'Need help with math tutoring.', 200000000000000002, 210000000000000002, '00000000-0000-0000-0000-000000000002'::uuid),
-  (220000000000000003, 'in-kind', 'offer', 'pre_owned_barely_used', 'Vintage Jacket', 'A barely used vintage jacket in great condition.', 200000000000000002, 210000000000000001, '00000000-0000-0000-0000-000000000001'::uuid),
+  (220000000000000003, 'inkind', 'offer', 'pre_owned_barely_used', 'Vintage Jacket', 'A barely used vintage jacket in great condition.', 200000000000000002, 210000000000000001, '00000000-0000-0000-0000-000000000001'::uuid),
   (220000000000000004, 'monetary', 'offer', 'brand_new', 'Gift Card', 'A $50 gift card for any store.', 200000000000000001, 210000000000000002, '00000000-0000-0000-0000-000000000002'::uuid),
   (220000000000000005, 'inquiry', 'request', 'pre_owned_usable', 'Laptop Repair', 'Looking for someone to help repair my laptop.', 200000000000000001, 210000000000000001, '00000000-0000-0000-0000-000000000001'::uuid),
   (220000000000000006, 'service', 'offer', 'pre_owned_usable', 'Personal Training', 'Offering personal training sessions.', 200000000000000002, 210000000000000002, '00000000-0000-0000-0000-000000000002'::uuid);
@@ -184,9 +184,9 @@ VALUES
 -- Insert test transaction 
 INSERT INTO "interaction"."transaction" (id, id_pledge, status)
 VALUES
-  (310000000000000001, 300000000000000001, 'in-progress'), 
-  (310000000000000002, 300000000000000003, 'in-progress'),
-  (310000000000000003, 300000000000000004, 'in-progress');
+  (310000000000000001, 300000000000000001, 'inprogress'), 
+  (310000000000000002, 300000000000000003, 'inprogress'),
+  (310000000000000003, 300000000000000004, 'inprogress');
 
 -- Insert test messages 
 INSERT INTO "interaction"."message" (id, id_sender, id_transaction, type, content)

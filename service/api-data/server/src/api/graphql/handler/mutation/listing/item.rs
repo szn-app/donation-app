@@ -22,7 +22,7 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_item(
         &self,
         _ctx: &Context<'_>,
         type_: ItemType,
@@ -57,7 +57,7 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_item(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -90,7 +90,7 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_item(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         let result = repository
@@ -105,7 +105,7 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn report(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<Option<Item>> {
+    async fn report_item(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<Option<Item>> {
         debug!("Reporting item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = repository

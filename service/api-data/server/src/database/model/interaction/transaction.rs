@@ -9,7 +9,7 @@ use tokio_postgres::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Enum, FromSql, ToSql)]
 #[postgres(name = "transaction_status")]
 pub enum TransactionStatus {
-    #[graphql(name = "in-progress")]
+    #[graphql(name = "inprogress")]
     InProgress,
     #[graphql(name = "completed")]
     Completed,
@@ -41,4 +41,4 @@ impl From<Row> for Transaction {
             updated_at: row.get("updated_at"),
         }
     }
-} 
+}

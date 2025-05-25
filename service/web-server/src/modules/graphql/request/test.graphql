@@ -1,12 +1,12 @@
 query GetAccountList {
-  accounts {
+  listAccounts {
     id
-    createdAt
+    created_at
   }
 }
 
 query GetTestList {
-  tests {
+  listTests {
     i
     s
     d

@@ -16,7 +16,7 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_publish(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -39,7 +39,7 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_publish(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -61,7 +61,7 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(
+    async fn delete_publish(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,

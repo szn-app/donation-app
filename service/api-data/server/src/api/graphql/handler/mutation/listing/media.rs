@@ -16,7 +16,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_media(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -38,7 +38,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_media(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -60,7 +60,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_media(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting media: id={}", id);
         let repository = MediaRepository::new(self.postgres_pool_group.clone());
         repository

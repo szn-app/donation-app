@@ -17,7 +17,7 @@ impl AccountMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_account(
         &self,
         _ctx: &Context<'_>,
         id: Uuid,
@@ -34,7 +34,7 @@ impl AccountMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn update(
+    pub async fn update_account(
         &self,
         _ctx: &Context<'_>,
         id: Uuid,
@@ -51,7 +51,7 @@ impl AccountMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: Uuid) -> FieldResult<bool> {
+    async fn delete_account(&self, _ctx: &Context<'_>, id: Uuid) -> FieldResult<bool> {
         log::debug!("--> delete_account @ graphql resolver");
         let repository = AccountRepository::new(self.postgres_pool_group.clone());
         let result = repository.delete(id).await.map_err(|e| e.to_string())?;

@@ -10,7 +10,7 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Enum, FromSql, ToSql)]
 #[postgres(name = "item_type")]
 pub enum ItemType {
-    #[graphql(name = "in-kind")]
+    #[graphql(name = "inkind")]
     InKind,
     #[graphql(name = "inquiry")]
     Inquiry,
@@ -71,7 +71,7 @@ pub struct Item {
     #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
     pub updated_at: Option<OffsetDateTime>,
-    pub created_by: Option<Uuid>
+    pub created_by: Option<Uuid>,
 }
 
 impl From<Row> for Item {
@@ -90,7 +90,7 @@ impl From<Row> for Item {
             is_reported: row.get("is_reported"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
-            created_by: row.get("created_by")
+            created_by: row.get("created_by"),
         }
     }
-} 
+}

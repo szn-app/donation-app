@@ -17,23 +17,17 @@ impl CommunityMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_community(
         &self,
         _ctx: &Context<'_>,
         name: String,
         description: String,
-        avatar_url: Option<String>,
+        type_: CommunityType,
         created_by: Uuid,
     ) -> Result<Community> {
         let community_repository = CommunityRepository::new(self.postgres_pool_group.clone());
         let community = community_repository
-            .create(
-                name,
-                Some(description),
-                CommunityType::Solo, // default type
-                created_by,
-                created_by,
-            )
+            .create(name, Some(description), type_, created_by, created_by)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -45,7 +39,7 @@ impl CommunityMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_community(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -67,10 +61,13 @@ impl CommunityMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_community(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         log::debug!("--> delete_community @ graphql resolver");
         let repository = CommunityRepository::new(self.postgres_pool_group.clone());
-        let result = repository.delete(id).await.map_err(|e| Error::new(e.to_string()))?;
+        let result = repository
+            .delete(id)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(result)
     }
-} 
+}

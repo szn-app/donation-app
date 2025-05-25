@@ -26,7 +26,7 @@ export class MockDataGenerator {
   static generateAccount(): Account {
     return {
       id: faker.string.uuid(),
-      createdAt: faker.date.past(),
+      created_at: faker.date.past(),
       remarks: faker.lorem.sentence(),
     };
   }
@@ -43,7 +43,7 @@ export class MockDataGenerator {
       ]),
       owner: accountId,
       createdBy: accountId,
-      createdAt: faker.date.past(),
+      created_at: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }
@@ -59,7 +59,7 @@ export class MockDataGenerator {
       ]),
       owner: accountId,
       createdBy: accountId,
-      createdAt: faker.date.past(),
+      created_at: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }
@@ -72,7 +72,7 @@ export class MockDataGenerator {
         CommitteeRole.Member,
         CommitteeRole.Organizer,
       ]),
-      joinedAt: faker.date.past(),
+      joined_at: faker.date.past(),
     };
   }
 
@@ -97,19 +97,21 @@ export class MockDataGenerator {
       country: faker.location.country(),
       district: faker.location.county(),
       entranceNote: faker.lorem.sentence(),
-      geom: faker.location.longitude() + "," + faker.location.latitude(),
       createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
     };
   }
 
-  static generateItem(categoryId: number, locationId: number): Item {
+  static generateItem(
+    categoryId: number,
+    locationId: number,
+    createdBy: string,
+  ): Item {
     return {
       id: faker.number.int(),
       title: faker.commerce.productName(),
       description: faker.lorem.paragraph(),
       type: faker.helpers.arrayElement([
-        ItemType.InKind,
+        ItemType.Inkind,
         ItemType.Monetary,
         ItemType.Service,
         ItemType.Inquiry,
@@ -130,11 +132,13 @@ export class MockDataGenerator {
         ItemIntentAction.Offer,
         ItemIntentAction.Request,
       ]),
-      quantity: faker.number.int({ min: 1, max: 100 }),
-      idCategory: categoryId,
-      idLocation: locationId,
-      createdAt: faker.date.past(),
+      category: categoryId,
+      location: locationId,
+      createdBy: createdBy,
+      created_at: faker.date.past(),
       updatedAt: faker.date.recent(),
+      viewsCount: faker.number.int({ min: 0, max: 1000 }),
+      isReported: faker.datatype.boolean(),
     };
   }
 
@@ -142,11 +146,14 @@ export class MockDataGenerator {
     return {
       id: faker.number.int(),
       idItem: itemId,
-      type: faker.helpers.arrayElement([MediaType.Image, MediaType.Video]),
+      type: faker.helpers.arrayElement([
+        MediaType.Image,
+        MediaType.Video,
+        MediaType.Document,
+      ]),
       url: faker.image.url(),
       caption: faker.lorem.sentence(),
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
+      created_at: faker.date.past(),
     };
   }
 
@@ -164,7 +171,7 @@ export class MockDataGenerator {
         CollectionVisibility.Restricted,
       ]),
       position: faker.number.int({ min: 1, max: 100 }),
-      createdAt: faker.date.past(),
+      created_at: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }
@@ -179,9 +186,8 @@ export class MockDataGenerator {
       idItem: itemId,
       position: faker.number.int({ min: 1, max: 100 }),
       note: faker.lorem.sentence(),
-      addedBy,
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
+      addedBy: addedBy,
+      posted_on: faker.date.past(),
     };
   }
 }

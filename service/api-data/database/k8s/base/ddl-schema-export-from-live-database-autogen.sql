@@ -174,7 +174,7 @@ ALTER TYPE public.item_status OWNER TO postgres;
 --
 
 CREATE TYPE public.item_type AS ENUM (
-    'in-kind',
+    'inkind',
     'inquiry',
     'monetary',
     'service'
@@ -250,7 +250,7 @@ ALTER TYPE public.profile_type OWNER TO postgres;
 --
 
 CREATE TYPE public.transaction_status AS ENUM (
-    'in-progress',
+    'inprogress',
     'completed',
     'cancelled'
 );
@@ -391,7 +391,7 @@ ALTER TABLE interaction.schedule_opportunity OWNER TO postgres;
 CREATE TABLE interaction.transaction (
     id bigint NOT NULL,
     id_pledge bigint,
-    status public.transaction_status DEFAULT 'in-progress'::public.transaction_status NOT NULL,
+    status public.transaction_status DEFAULT 'inprogress'::public.transaction_status NOT NULL,
     id_schedule bigint,
     id_location bigint,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,

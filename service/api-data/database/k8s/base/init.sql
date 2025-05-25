@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS "listing"."location" (
 );
 
 -- listing.item (depends on category, location)
-CREATE TYPE item_type AS ENUM ('in-kind', 'inquiry', 'monetary', 'service');
+CREATE TYPE item_type AS ENUM ('inkind', 'inquiry', 'monetary', 'service');
 CREATE TYPE item_intent_action AS ENUM ('request', 'offer');
 CREATE TYPE item_status AS ENUM ('draft', 'active', 'disabled', 'archived');
 CREATE TYPE item_condition AS ENUM ('brand_new', 'pre_owned_barely_used', 'pre_owned_usable', 'pre_owned_damaged');
@@ -191,11 +191,11 @@ CREATE TABLE IF NOT EXISTS "interaction"."pledge" (
 );
 
 -- interaction.transaction (depends on pledge, location, schedule)
-CREATE TYPE transaction_status AS ENUM ('in-progress', 'completed', 'cancelled');
+CREATE TYPE transaction_status AS ENUM ('inprogress', 'completed', 'cancelled');
 CREATE TABLE IF NOT EXISTS "interaction"."transaction" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_pledge BIGINT REFERENCES "interaction"."pledge"(id) ON DELETE CASCADE,
-    status transaction_status NOT NULL DEFAULT 'in-progress',
+    status transaction_status NOT NULL DEFAULT 'inprogress',
     id_schedule BIGINT REFERENCES "interaction"."schedule"(id) ON DELETE SET NULL,
     id_location BIGINT REFERENCES "listing"."location"(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,

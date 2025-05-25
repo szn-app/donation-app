@@ -16,7 +16,7 @@ import {
 // do not query `s` field
 const GET_TEST_LIST_PARTIAL_DOCUMENT = graphql(`
   query GetTestListPartial {
-    tests {
+    listTests {
       i
       d
     }
@@ -35,7 +35,7 @@ export function ExampleGraphqlPartial() {
       ),
     // parsing setp to match expected types to returned values on runtime
     select: (raw) => ({
-      tests: raw.tests.map((test) => {
+      tests: raw.listTests.map((test) => {
         const { data, error, success } = TestSchema().partial().safeParse(test);
         if (!success) {
           console.error("Validation failed for test:", error);
@@ -78,7 +78,7 @@ export function ExampleGraphqlZodParsing() {
       ),
     // parsing setp to match expected types to returned values on runtime
     select: (raw) => ({
-      tests: raw.tests.map((test) => {
+      tests: raw.listTests.map((test) => {
         const { data, error, success } = TestSchema().safeParse(test);
         if (!success) {
           console.error("Validation failed for test:", error);
@@ -124,7 +124,7 @@ export function ExampleGraphqlQueryIntegratedParsing() {
     },
     // parsing setp to match types on runtime
     select: (data) => ({
-      tests: data.tests.map((test) => ({
+      listTests: data.listTests.map((test) => ({
         ...test,
         d: new Date(test.d),
       })),
@@ -134,7 +134,7 @@ export function ExampleGraphqlQueryIntegratedParsing() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const tests = data?.tests;
+  const tests = data?.listTests;
 
   return tests ? (
     <div>
@@ -155,12 +155,12 @@ export function ExampleGraphqlQueryIntegratedParsing() {
 export function ExampleGraphqlFetchManualParsing() {
   useEffect(() => {
     async function fetch_data() {
-      const { tests } = await request<GetTestListQuery>(
+      const { listTests } = await request<GetTestListQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         GetTestListDocument.toString(),
       );
 
-      return tests as Test[];
+      return listTests as Test[];
     }
 
     try {
@@ -201,7 +201,7 @@ export function ExampleGraphqlWithoutAuth() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const tests = data?.tests;
+  const tests = data?.listTests;
 
   return tests ? (
     <div>
@@ -242,7 +242,7 @@ export function ExampleGraphqlWIthAuth() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message} </p>;
 
-  const tests = data?.tests;
+  const tests = data?.listTests;
 
   return tests ? (
     <div>

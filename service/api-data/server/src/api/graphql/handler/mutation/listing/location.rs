@@ -16,7 +16,7 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_location(
         &self,
         _ctx: &Context<'_>,
         name: String,
@@ -49,7 +49,7 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_location(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -73,7 +73,7 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_location(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = LocationRepository::new(self.postgres_pool_group.clone());
         repository
             .delete(id)

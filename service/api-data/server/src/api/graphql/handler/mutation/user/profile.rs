@@ -17,20 +17,18 @@ impl ProfileMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_profile(
         &self,
         _ctx: &Context<'_>,
         id_account: Uuid,
         name: String,
-        email: String,
-        phone: Option<String>,
-        avatar_url: Option<String>,
+        description: String,
     ) -> Result<Profile> {
         let profile_repository = ProfileRepository::new(self.postgres_pool_group.clone());
         let profile = profile_repository
             .create(
                 name,
-                Some(email),
+                Some(description),
                 Some(ProfileType::Individual),
                 id_account,
                 id_account,
@@ -46,7 +44,7 @@ impl ProfileMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_profile(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -68,10 +66,13 @@ impl ProfileMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_profile(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         log::debug!("--> delete_profile @ graphql resolver");
         let repository = ProfileRepository::new(self.postgres_pool_group.clone());
-        let result = repository.delete(id).await.map_err(|e| Error::new(e.to_string()))?;
+        let result = repository
+            .delete(id)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
         Ok(result)
     }
-} 
+}

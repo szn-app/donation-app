@@ -1,7 +1,7 @@
 type Account {
 	id: UUID!
 	remarks: String
-	createdAt: DateTime!
+	created_at: DateTime!
 }
 
 
@@ -16,51 +16,51 @@ type Category {
 
 type Collection {
 	id: Int!
-	idCommunity: Int!
-	title: String!
+	idCommunity: Int
+	title: String
 	visibility: CollectionVisibility!
-	type: CollectionType!
+	type: CollectionType
 	position: Int!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	created_at: DateTime!
+	updatedAt: DateTime
 }
 
 enum CollectionType {
-	FEATURED
-	REGULAR
+	featured
+	regular
 }
 
 enum CollectionVisibility {
-	PUBLIC
-	RESTRICTED
+	public
+	restricted
 }
 
 type Committee {
 	idProfile: Int!
 	idCommunity: Int!
 	memberRole: CommitteeRole!
-	joinedAt: DateTime!
+	joined_at: DateTime!
 }
 
 enum CommitteeRole {
-	ORGANIZER
-	MEMBER
+	organizer
+	member
 }
 
 type Community {
 	id: Int!
-	title: String
+	title: String!
 	description: String
 	type: CommunityType!
 	owner: UUID!
-	createdAt: DateTime!
+	created_at: DateTime!
 	updatedAt: DateTime
 	createdBy: UUID!
 }
 
 enum CommunityType {
-	SOLO
-	ORGANIZED
+	solo
+	organized
 }
 
 """
@@ -78,52 +78,46 @@ scalar DateTime
 
 type Item {
 	id: Int!
-	idCategory: Int!
-	idLocation: Int!
-	title: String!
-	description: String
 	type: ItemType!
 	intentAction: ItemIntentAction!
 	status: ItemStatus!
+	title: String
+	description: String
+	category: Int
 	condition: ItemCondition!
-	quantity: Int!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	location: Int
+	viewsCount: Int!
+	isReported: Boolean!
+	created_at: DateTime!
+	updatedAt: DateTime
+	createdBy: UUID
 }
 
 enum ItemCondition {
-	BRAND_NEW
-	PRE_OWNED_BARELY_USED
-	PRE_OWNED_USABLE
-	PRE_OWNED_DAMAGED
+	brand_new
+	pre_owned_barely_used
+	pre_owned_usable
+	pre_owned_damaged
 }
 
 enum ItemIntentAction {
-	REQUEST
-	OFFER
+	request
+	offer
 }
 
 enum ItemStatus {
-	DRAFT
-	ACTIVE
-	DISABLED
-	ARCHIVED
+	draft
+	active
+	disabled
+	archived
 }
 
 enum ItemType {
-	IN_KIND
-	INQUIRY
-	MONETARY
-	SERVICE
+	inkind
+	inquiry
+	monetary
+	service
 }
-
-"""
-A local datetime without timezone offset.
-
-The input/output is a string in ISO 8601 format without timezone, including
-subseconds. E.g. "2022-01-12T07:30:19.12345".
-"""
-scalar LocalDateTime
 
 type Location {
 	id: Int!
@@ -133,10 +127,8 @@ type Location {
 	state: String!
 	district: String
 	country: String!
-	geom: String
 	entranceNote: String
 	createdAt: DateTime!
-	updatedAt: DateTime!
 }
 
 type Media {
@@ -145,137 +137,107 @@ type Media {
 	caption: String
 	url: String!
 	type: MediaType!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	created_at: DateTime!
 }
 
 enum MediaType {
-	IMAGE
-	VIDEO
+	document
+	image
+	video
 }
 
 type Message {
 	id: Int!
-	idSender: UUID!
+	idSender: Int
 	idTransaction: Int!
-	type: MessageType!
+	type: MessageType
 	content: String!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	sent_at: DateTime!
+	updatedAt: DateTime
 }
 
 enum MessageType {
-	TEXT
-	IMAGE
-	VIDEO
+	text
+	schedule_opportunity
 }
 
 """
 GraphQL Mutation Root
 """
 type Mutation {
-	"""
-	Create a new account
-	"""
-	addAccount(id: UUID!): Account!
-	"""
-	Delete an account
-	"""
+	createAccount(id: UUID!, remarks: String): Account!
+	updateAccount(id: UUID!, remarks: String): Account
 	deleteAccount(id: UUID!): Boolean!
-	"""
-	Add a new committee
-	"""
-	addCommittee(idProfile: UUID!, idCommunity: Int!, role: String!): Committee!
-	"""
-	Update committee role
-	"""
-	updateCommitteeRole(idProfile: UUID!, idCommunity: Int!, role: String!): Committee!
-	"""
-	Delete a committee
-	"""
-	deleteCommittee(idProfile: UUID!, idCommunity: Int!): Boolean!
-	"""
-	Add a new community
-	"""
-	addCommunity(name: String!, description: String!, createdBy: UUID!): Community!
-	"""
-	Update a community
-	"""
-	updateCommunity(id: Int!, name: String, description: String): Community!
-	"""
-	Delete a community
-	"""
+	createCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee!
+	updateCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee
+	deleteCommittee(idProfile: Int!, idCommunity: Int!): Boolean!
+	createCommunity(name: String!, description: String!, type: CommunityType!, createdBy: UUID!): Community!
+	updateCommunity(id: Int!, title: String!, description: String, type: CommunityType!): Community
 	deleteCommunity(id: Int!): Boolean!
-	"""
-	Add a new profile
-	"""
-	addProfile(idAccount: UUID!, name: String!, bio: String, avatarUrl: String): Profile!
-	"""
-	Update a profile
-	"""
-	updateProfile(id: UUID!, name: String, bio: String, avatarUrl: String): Profile!
-	addCategory(name: String!, description: String!, parentId: Int): Category!
+	createProfile(idAccount: UUID!, name: String!, description: String!): Profile!
+	updateProfile(id: Int!, name: String!, description: String, type: ProfileType): Profile
+	deleteProfile(id: Int!): Boolean!
+	createCategory(name: String!, description: String!, parentId: Int): Category!
 	updateCategory(id: Int!, name: String, description: String, parentId: Int): Category!
 	deleteCategory(id: Int!): Boolean!
-	addLocation(name: String!, address: String!, city: String!, state: String!, country: String!, postalCode: String!, idProfile: UUID!): Location!
+	createLocation(name: String!, address: String!, city: String!, state: String!, country: String!, postalCode: String!, idProfile: UUID!): Location!
 	updateLocation(id: Int!, name: String, address: String, city: String, state: String, country: String, postalCode: String): Location!
 	deleteLocation(id: Int!): Boolean!
-	addItem(title: String!, description: String!, idCategory: Int!, idProfile: UUID!, idLocation: Int, price: Float, currency: String): Item!
-	updateItem(id: Int!, title: String, description: String, idCategory: Int, idLocation: Int, price: Float, currency: String): Item!
+	createItem(type: ItemType!, intentAction: ItemIntentAction!, title: String, description: String, category: Int, condition: ItemCondition!, location: Int, createdBy: UUID): Item!
+	updateItem(id: Int!, title: String, description: String, category: Int, condition: ItemCondition!, location: Int, status: ItemStatus!): Item!
 	deleteItem(id: Int!): Boolean!
-	addCollection(name: String!, description: String!, idProfile: UUID!, isPublic: Boolean!): Collection!
-	updateCollection(id: Int!, name: String, description: String, isPublic: Boolean): Collection!
+	reportItem(id: Int!): Item
+	createCollection(idCommunity: Int!, title: String!, visibility: CollectionVisibility!, type: CollectionType!, position: Int!): Collection!
+	updateCollection(id: Int!, title: String!, visibility: CollectionVisibility!, type: CollectionType!, position: Int!): Collection!
 	deleteCollection(id: Int!): Boolean!
-	addMedia(idItem: Int!, url: String!, mediaType: String!, position: Int!): Media!
-	updateMedia(id: Int!, url: String, mediaType: String, position: Int): Media!
+	createMedia(idItem: Int!, url: String!, mediaType: MediaType!, position: Int!): Media!
+	updateMedia(id: Int!, url: String, mediaType: MediaType, position: Int): Media!
 	deleteMedia(id: Int!): Boolean!
-	addPublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, createdBy: UUID!): Publish!
-	updatePublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, updatedBy: UUID!): Publish!
+	createPublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, createdBy: UUID!): Publish!
+	updatePublish(idItem: Int!, idCollection: Int!, note: String, position: Int!): Publish!
 	deletePublish(idItem: Int!, idCollection: Int!): Boolean!
-	addReview(idTransaction: Int!, idSubject: Int!, rating: Int!, comment: String): Review!
-	addPledge(idProfile: UUID!, idItem: Int!, intentAction: ItemIntentAction!, message: String, status: PledgeStatus!): Pledge!
-	updatePledge(id: Int!, status: PledgeStatus!): Pledge!
-	addScheduleOpportunity(idSchedule: Int!, idOpportunity: Int!): ScheduleOpportunity!
-	updateScheduleOpportunity(id: Int!, windowStart: LocalDateTime!, windowEnd: LocalDateTime!): ScheduleOpportunity!
-	addSchedule(scheduledFor: DateTime!): Schedule!
-	addTransaction(idPledge: Int!, status: TransactionStatus!): Transaction!
-	updateTransaction(id: Int!, status: TransactionStatus!): Transaction!
-	addMessage(idTransaction: Int!, idSender: UUID!, type: MessageType!, content: String!): Message!
+	create(idTransaction: Int!, idSender: UUID!, type: MessageType!, content: String!): Message!
+	update(id: Int!, status: TransactionStatus!): Transaction!
 }
 
 type Pledge {
 	id: Int!
-	idProfile: UUID!
+	idProfile: Int!
 	idItem: Int!
-	intentAction: ItemIntentAction!
+	intentAction: PledgeIntentAction!
 	message: String
 	status: PledgeStatus!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	pledged_at: DateTime!
+	updatedAt: DateTime
+	updatedBy: UUID
+}
+
+enum PledgeIntentAction {
+	give
+	receive
 }
 
 enum PledgeStatus {
-	PENDING
-	ACCEPTED
-	REJECTED
-	CANCELLED
+	pending
+	approved
+	declined
 }
 
 type Profile {
 	id: Int!
-	name: String
+	name: String!
 	description: String
 	type: ProfileType
 	owner: UUID!
-	createdAt: DateTime!
+	created_at: DateTime!
 	updatedAt: DateTime
 	createdBy: UUID!
 }
 
 enum ProfileType {
-	INDIVIDUAL
-	ORGANIZATION
-	COMPANY
+	individual
+	organization
+	company
 }
 
 type Publish {
@@ -283,9 +245,8 @@ type Publish {
 	idCollection: Int!
 	note: String
 	position: Int!
-	addedBy: UUID!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	addedBy: UUID
+	posted_on: DateTime!
 }
 
 """
@@ -295,94 +256,59 @@ type Query {
 	"""
 	Get all accounts
 	"""
-	accounts: [Account!]!
+	listAccounts: [Account!]!
 	"""
 	Get account by ID
 	"""
-	accountById(id: UUID!): Account
+	findAccount(id: UUID!): Account
 	"""
 	Get all committees
 	"""
-	committees: [Committee!]!
+	listCommittees: [Committee!]!
 	"""
 	Get committee by ID
 	"""
-	committeeById(idProfile: UUID!, idCommunity: Int!): Committee
-	"""
-	Get committee by profile and community
-	"""
-	committeeByProfileAndCommunity(idProfile: UUID!, idCommunity: Int!): Committee
-	"""
-	Get committees by community
-	"""
-	committeesByCommunity(idCommunity: Int!): [Committee!]!
-	"""
-	Get committees by profile
-	"""
-	committeesByProfile(idProfile: UUID!): [Committee!]!
+	findCommittee(id: UUID!): Committee
 	"""
 	Get all communities
 	"""
-	communities: [Community!]!
+	listCommunities: [Community!]!
 	"""
 	Get community by ID
 	"""
-	communityById(id: Int!): Community
-	"""
-	Get communities by profile
-	"""
-	communitiesByProfile(idProfile: UUID!): [Community!]!
+	findCommunity(id: Int!): Community
 	"""
 	Get all profiles
 	"""
-	profiles: [Profile!]!
+	listProfiles: [Profile!]!
 	"""
 	Get profile by ID
 	"""
-	profileById(id: UUID!): Profile
-	"""
-	Get profile by account
-	"""
-	profileByAccount(idAccount: UUID!): Profile
-	getCategories: [Category!]!
-	getCategoryById(id: Int!): Category
-	getCategoriesByParent(parentId: Int): [Category!]!
-	getLocations: [Location!]!
-	getLocationById(id: Int!): Location
-	getLocationsByProfile(profileId: UUID!): [Location!]!
-	getItems: [Item!]!
-	getItemById(id: Int!): Item
-	getItemsByProfile(profileId: UUID!): [Item!]!
-	getItemsByCategory(categoryId: Int!): [Item!]!
-	getCollections: [Collection!]!
-	getCollectionById(id: Int!): Collection
-	getCollectionsByProfile(profileId: UUID!): [Collection!]!
-	getMedia: [Media!]!
-	getMediaById(id: Int!): Media
-	getMediaByItem(itemId: Int!): [Media!]!
-	getPublishes: [Publish!]!
-	getPublishById(id: Int!): Publish
-	getPublishByItemAndCollection(itemId: Int!, collectionId: Int!): Publish
-	getPublishesByCollection(collectionId: Int!): [Publish!]!
-	getPublishesByItem(itemId: Int!): [Publish!]!
-	getReviews: [Review!]!
-	getReviewById(idTransaction: Int!, idSubject: Int!): Review
-	getReviewByTransactionAndSubject(idTransaction: Int!, idSubject: Int!): Review
-	getPledges: [Pledge!]!
-	getPledgeById(id: Int!): Pledge
-	getPledgesByItem(idItem: Int!): [Pledge!]!
-	getPledgesByProfile(idProfile: UUID!): [Pledge!]!
-	getScheduleOpportunities: [ScheduleOpportunity!]!
-	getScheduleOpportunityById(id: Int!): ScheduleOpportunity
-	getSchedules: [Schedule!]!
-	getScheduleById(id: Int!): Schedule
-	getTransactions: [Transaction!]!
-	getTransactionById(id: Int!): Transaction
-	getTransactionsByPledge(idPledge: Int!): [Transaction!]!
-	getMessages: [Message!]!
-	getMessageById(id: Int!): Message
-	getMessagesByTransaction(idTransaction: Int!): [Message!]!
-	tests: [Test!]!
+	findProfile(id: Int!): Profile
+	listCategories: [Category!]!
+	findCategory(id: Int!): Category
+	listLocations: [Location!]!
+	findLocation(id: Int!): Location
+	listItems: [Item!]!
+	findItem(id: Int!): Item
+	listCollections: [Collection!]!
+	findCollection(id: Int!): Collection
+	listMedia: [Media!]!
+	findMedia(id: Int!): Media
+	listPublishes: [Publish!]!
+	findPublish(id: Int!): Publish
+	listReviews: [Review!]!
+	listPledges: [Pledge!]!
+	findPledge(id: Int!): Pledge
+	listScheduleOpportunities: [ScheduleOpportunity!]!
+	findScheduleOpportunity(id: Int!): ScheduleOpportunity
+	listSchedules: [Schedule!]!
+	findSchedule(id: Int!): Schedule
+	listTransactions: [Transaction!]!
+	findTransaction(id: Int!): Transaction
+	listMessages: [Message!]!
+	findMessage(id: Int!): Message
+	listTests: [Test!]!
 	dummyTest: [String!]!
 	dummyTestRequestHeader: String!
 	dummyTestSecure: Test!
@@ -392,26 +318,22 @@ type Query {
 
 type Review {
 	idTransaction: Int!
-	idSubjectProfile: UUID!
-	rating: Int!
+	idSubjectProfile: Int!
+	reviewer: Int!
 	comment: String
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	score: Int!
+	created_at: DateTime!
 }
 
 type Schedule {
 	id: Int!
-	scheduledFor: DateTime!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	scheduled_for: DateTime!
 }
 
 type ScheduleOpportunity {
 	id: Int!
-	windowStart: DateTime!
-	windowEnd: DateTime!
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	windowStart: DateTime
+	windowEnd: DateTime
 }
 
 
@@ -427,14 +349,14 @@ type Transaction {
 	status: TransactionStatus!
 	idSchedule: Int
 	idLocation: Int
-	createdAt: DateTime!
-	updatedAt: DateTime!
+	created_at: DateTime!
+	updatedAt: DateTime
 }
 
 enum TransactionStatus {
-	PENDING
-	COMPLETED
-	CANCELLED
+	inprogress
+	completed
+	cancelled
 }
 
 """

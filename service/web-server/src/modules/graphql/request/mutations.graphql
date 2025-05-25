@@ -1,48 +1,70 @@
-# Account and Profile mutations
-mutation AddAccount($id: UUID!) {
-  addAccount(id: $id) {
+# Account mutations
+mutation CreateAccount($id: UUID!, $remarks: String) {
+  createAccount(id: $id, remarks: $remarks) {
     id
     remarks
-    createdAt
+    created_at
   }
 }
 
-mutation AddProfile(
+mutation UpdateAccount($id: UUID!, $remarks: String) {
+  updateAccount(id: $id, remarks: $remarks) {
+    id
+    remarks
+    created_at
+  }
+}
+
+mutation DeleteAccount($id: UUID!) {
+  deleteAccount(id: $id)
+}
+
+# Profile mutations
+mutation CreateProfile(
   $idAccount: UUID!
   $name: String!
-  $description: String
-  $profileType: ProfileType
+  $description: String!
 ) {
-  addProfile(
-    idAccount: $idAccount
-    name: $name
-    description: $description
-    profileType: $profileType
-  ) {
+  createProfile(idAccount: $idAccount, name: $name, description: $description) {
     id
     name
     description
     type
     owner
-    createdAt
+    created_at
     updatedAt
     createdBy
   }
 }
 
-# Community and Committee mutations
-mutation AddCommunity(
-  $title: String!
+mutation UpdateProfile($id: Int!, $name: String!, $description: String!) {
+  updateProfile(id: $id, name: $name, description: $description) {
+    id
+    name
+    description
+    type
+    owner
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+mutation DeleteProfile($id: Int!) {
+  deleteProfile(id: $id)
+}
+
+# Community mutations
+mutation CreateCommunity(
+  $name: String!
   $description: String!
-  $communityType: CommunityType!
-  $owner: UUID!
+  $type: CommunityType!
   $createdBy: UUID!
 ) {
-  addCommunity(
-    title: $title
+  createCommunity(
+    name: $name
     description: $description
-    communityType: $communityType
-    owner: $owner
+    type: $type
     createdBy: $createdBy
   ) {
     id
@@ -50,32 +72,81 @@ mutation AddCommunity(
     description
     type
     owner
-    createdAt
+    created_at
     updatedAt
     createdBy
   }
 }
 
-mutation AddCommittee(
-  $idCommunity: Int!
-  $idProfile: UUID!
-  $memberRole: CommitteeRole!
+mutation UpdateCommunity(
+  $id: Int!
+  $title: String!
+  $description: String!
+  $type: CommunityType!
 ) {
-  addCommittee(
-    idCommunity: $idCommunity
-    idProfile: $idProfile
-    memberRole: $memberRole
+  updateCommunity(
+    id: $id
+    title: $title
+    description: $description
+    type: $type
   ) {
-    idCommunity
-    idProfile
-    memberRole
-    joinedAt
+    id
+    title
+    description
+    type
+    owner
+    created_at
+    updatedAt
+    createdBy
   }
 }
 
+mutation DeleteCommunity($id: Int!) {
+  deleteCommunity(id: $id)
+}
+
+# Committee mutations
+mutation CreateCommittee(
+  $idProfile: Int!
+  $idCommunity: Int!
+  $memberRole: CommitteeRole!
+) {
+  createCommittee(
+    idProfile: $idProfile
+    idCommunity: $idCommunity
+    memberRole: $memberRole
+  ) {
+    idProfile
+    idCommunity
+    memberRole
+    joined_at
+  }
+}
+
+mutation UpdateCommittee(
+  $idProfile: Int!
+  $idCommunity: Int!
+  $memberRole: CommitteeRole!
+) {
+  updateCommittee(
+    idProfile: $idProfile
+    idCommunity: $idCommunity
+    memberRole: $memberRole
+  ) {
+    idProfile
+    idCommunity
+    memberRole
+    joined_at
+  }
+}
+
+mutation DeleteCommittee($idProfile: Int!, $idCommunity: Int!) {
+  deleteCommittee(idProfile: $idProfile, idCommunity: $idCommunity)
+}
+
 # Category mutations
-mutation AddCategory($name: String!, $description: String!, $parentId: Int) {
-  addCategory(name: $name, description: $description, parentId: $parentId) {
+mutation CreateCategory($name: String!, $description: String!, $parentId: Int) {
+  createCategory(name: $name, description: $description, parentId: $parentId) {
     id
     title
     description
@@ -85,8 +156,33 @@ mutation AddCategory($name: String!, $description: String!, $parentId: Int) {
   }
 }
 
+mutation UpdateCategory(
+  $id: Int!
+  $name: String!
+  $description: String!
+  $parentId: Int
+) {
+  updateCategory(
+    id: $id
+    name: $name
+    description: $description
+    parentId: $parentId
+  ) {
+    id
+    title
+    description
+    categoryParent
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteCategory($id: Int!) {
+  deleteCategory(id: $id)
+}
+
 # Location mutations
-mutation AddLocation(
+mutation CreateLocation(
   $name: String!
   $address: String!
   $city: String!
@@ -95,7 +191,7 @@ mutation AddLocation(
   $postalCode: String!
   $idProfile: UUID!
 ) {
-  addLocation(
+  createLocation(
     name: $name
     address: $address
     city: $city
@@ -111,155 +207,247 @@ mutation AddLocation(
     state
     country
     district
-    geom
     entranceNote
     createdAt
-    updatedAt
   }
+}
+
+mutation UpdateLocation(
+  $id: Int!
+  $name: String!
+  $address: String!
+  $city: String!
+  $state: String!
+  $country: String!
+  $postalCode: String!
+) {
+  updateLocation(
+    id: $id
+    name: $name
+    address: $address
+    city: $city
+    state: $state
+    country: $country
+    postalCode: $postalCode
+  ) {
+    id
+    addressLine1
+    addressLine2
+    city
+    state
+    country
+    district
+    entranceNote
+    createdAt
+  }
+}
+
+mutation DeleteLocation($id: Int!) {
+  deleteLocation(id: $id)
 }
 
 # Item mutations
-mutation AddItem(
+mutation CreateItem(
+  $type: ItemType!
+  $intentAction: ItemIntentAction!
   $title: String!
   $description: String!
-  $idCategory: Int!
-  $idProfile: UUID!
-  $idLocation: Int
-  $price: Float
-  $currency: String
-  $itemType: ItemType!
-  $intentAction: ItemIntentAction!
-  $status: ItemStatus!
+  $category: Int!
   $condition: ItemCondition!
+  $location: Int!
+  $createdBy: UUID!
 ) {
-  addItem(
+  createItem(
+    type: $type
+    intentAction: $intentAction
     title: $title
     description: $description
-    idCategory: $idCategory
-    idProfile: $idProfile
-    idLocation: $idLocation
-    price: $price
-    currency: $currency
-    itemType: $itemType
-    intentAction: $intentAction
-    status: $status
+    category: $category
     condition: $condition
+    location: $location
+    createdBy: $createdBy
   ) {
     id
-    title
-    description
     type
     intentAction
     status
+    title
+    description
+    category
     condition
-    createdAt
+    location
+    viewsCount
+    isReported
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+mutation UpdateItem(
+  $id: Int!
+  $title: String!
+  $description: String!
+  $category: Int!
+  $condition: ItemCondition!
+  $location: Int!
+  $status: ItemStatus!
+) {
+  updateItem(
+    id: $id
+    title: $title
+    description: $description
+    category: $category
+    condition: $condition
+    location: $location
+    status: $status
+  ) {
+    id
+    type
+    intentAction
+    status
+    title
+    description
+    category
+    condition
+    location
+    viewsCount
+    isReported
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+mutation DeleteItem($id: Int!) {
+  deleteItem(id: $id)
+}
+
+mutation ReportItem($id: Int!) {
+  reportItem(id: $id) {
+    id
+    type
+    intentAction
+    status
+    title
+    description
+    category
+    condition
+    location
+    viewsCount
+    isReported
+    created_at
+    updatedAt
+    createdBy
+  }
+}
+
+# Collection mutations
+mutation CreateCollection(
+  $idCommunity: Int!
+  $title: String!
+  $visibility: CollectionVisibility!
+  $type: CollectionType!
+  $position: Int!
+) {
+  createCollection(
+    idCommunity: $idCommunity
+    title: $title
+    visibility: $visibility
+    type: $type
+    position: $position
+  ) {
+    id
+    idCommunity
+    title
+    visibility
+    type
+    position
+    created_at
     updatedAt
   }
 }
 
+mutation UpdateCollection(
+  $id: Int!
+  $title: String!
+  $visibility: CollectionVisibility!
+  $type: CollectionType!
+  $position: Int!
+) {
+  updateCollection(
+    id: $id
+    title: $title
+    visibility: $visibility
+    type: $type
+    position: $position
+  ) {
+    id
+    idCommunity
+    title
+    visibility
+    type
+    position
+    created_at
+    updatedAt
+  }
+}
+
+mutation DeleteCollection($id: Int!) {
+  deleteCollection(id: $id)
+}
+
 # Media mutations
-mutation AddMedia(
+mutation CreateMedia(
   $idItem: Int!
   $url: String!
   $mediaType: MediaType!
   $position: Int!
 ) {
-  addMedia(
+  createMedia(
     idItem: $idItem
     url: $url
     mediaType: $mediaType
     position: $position
   ) {
     id
+    idItem
+    caption
     url
     type
-    caption
-    createdAt
-    updatedAt
+    created_at
   }
 }
 
-# Collection mutations
-mutation AddCollection(
-  $name: String!
-  $description: String!
-  $idProfile: UUID!
-  $isPublic: Boolean!
-  $collectionType: CollectionType!
+mutation UpdateMedia(
+  $id: Int!
+  $url: String!
+  $mediaType: MediaType!
+  $position: Int!
 ) {
-  addCollection(
-    name: $name
-    description: $description
-    idProfile: $idProfile
-    isPublic: $isPublic
-    collectionType: $collectionType
-  ) {
+  updateMedia(id: $id, url: $url, mediaType: $mediaType, position: $position) {
     id
-    title
-    type
-    visibility
-    position
-    createdAt
-    updatedAt
-  }
-}
-
-# Pledge mutations
-mutation AddPledge(
-  $idProfile: UUID!
-  $idItem: Int!
-  $intentAction: PledgeIntentAction!
-  $message: String
-  $status: PledgeStatus!
-) {
-  addPledge(
-    idProfile: $idProfile
-    idItem: $idItem
-    intentAction: $intentAction
-    message: $message
-    status: $status
-  ) {
-    id
-    idProfile
     idItem
-    intentAction
-    message
-    status
-    createdAt
-    updatedAt
+    caption
+    url
+    type
+    created_at
   }
 }
 
-# Transaction mutations
-mutation AddTransaction(
-  $idPledge: Int!
-  $status: TransactionStatus!
-  $idSchedule: Int
-  $idLocation: Int
-) {
-  addTransaction(
-    idPledge: $idPledge
-    status: $status
-    idSchedule: $idSchedule
-    idLocation: $idLocation
-  ) {
-    id
-    idPledge
-    status
-    createdAt
-    updatedAt
-  }
+mutation DeleteMedia($id: Int!) {
+  deleteMedia(id: $id)
 }
 
 # Publish mutations
-mutation AddPublish(
+mutation CreatePublish(
   $idItem: Int!
   $idCollection: Int!
-  $note: String
+  $note: String!
   $position: Int!
   $createdBy: UUID!
 ) {
-  addPublish(
+  createPublish(
     idItem: $idItem
     idCollection: $idCollection
     note: $note
@@ -271,30 +459,31 @@ mutation AddPublish(
     note
     position
     addedBy
-    createdAt
-    updatedAt
+    posted_on
   }
 }
 
-# Message mutations
-mutation AddMessage(
-  $idTransaction: Int!
-  $idSender: UUID!
-  $type: MessageType!
-  $content: String!
+mutation UpdatePublish(
+  $idItem: Int!
+  $idCollection: Int!
+  $note: String!
+  $position: Int!
 ) {
-  addMessage(
-    idTransaction: $idTransaction
-    idSender: $idSender
-    type: $type
-    content: $content
+  updatePublish(
+    idItem: $idItem
+    idCollection: $idCollection
+    note: $note
+    position: $position
   ) {
-    id
-    idSender
-    idTransaction
-    type
-    content
-    createdAt
-    updatedAt
+    idItem
+    idCollection
+    note
+    position
+    addedBy
+    posted_on
   }
+}
+
+mutation DeletePublish($idItem: Int!, $idCollection: Int!) {
+  deletePublish(idItem: $idItem, idCollection: $idCollection)
 }

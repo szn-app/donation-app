@@ -1,6 +1,6 @@
 -- Schema Types:
 -- id: BIGINT (GENERATED ALWAYS AS IDENTITY PRIMARY KEY)
--- type: item_type ENUM ('in-kind', 'inquiry', 'monetary', 'service')
+-- type: item_type ENUM ('inkind', 'inquiry', 'monetary', 'service')
 -- intent_action: item_intent_action ENUM ('request', 'offer')
 -- status: item_status ENUM ('draft', 'active', 'disabled', 'archived')
 -- title: VARCHAR(150)

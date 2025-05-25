@@ -16,7 +16,7 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn create(
+    pub async fn create_collection(
         &self,
         _ctx: &Context<'_>,
         id_community: i64,
@@ -39,7 +39,7 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update(
+    async fn update_collection(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -62,7 +62,7 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete_collection(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting collection: id={}", id);
         let repository = CollectionRepository::new(self.postgres_pool_group.clone());
         repository

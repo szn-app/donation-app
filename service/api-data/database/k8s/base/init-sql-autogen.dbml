@@ -15,7 +15,7 @@ Enum "committee_role" {
 }
 
 Enum "item_type" {
-  "in-kind"
+  "inkind"
   "inquiry"
   "monetary"
   "service"
@@ -67,7 +67,7 @@ Enum "pledge_status" {
 }
 
 Enum "transaction_status" {
-  "in-progress"
+  "inprogress"
   "completed"
   "cancelled"
 }
@@ -266,7 +266,7 @@ Table "interaction"."pledge" {
 Table "interaction"."transaction" {
   "id" BIGINT [pk, increment]
   "id_pledge" BIGINT
-  "status" transaction_status [not null, default: 'in-progress']
+  "status" transaction_status [not null, default: 'inprogress']
   "id_schedule" BIGINT
   "id_location" BIGINT
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
