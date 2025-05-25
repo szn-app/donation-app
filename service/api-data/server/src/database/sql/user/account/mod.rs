@@ -1,8 +1,9 @@
 use std::fs;
 use std::path::Path;
 
-pub const GET_ACCOUNTS: &str = include_str!("GET_ACCOUNTS.sql");
-pub const GET_ACCOUNT_BY_ID: &str = include_str!("GET_ACCOUNT_BY_ID.sql");
+// SQL queries for account operations
+pub const LIST_ACCOUNTS: &str = include_str!("LIST_ACCOUNTS.sql");
+pub const FIND_ACCOUNT: &str = include_str!("FIND_ACCOUNT.sql");
 pub const CREATE_ACCOUNT: &str = include_str!("CREATE_ACCOUNT.sql");
 pub const UPDATE_ACCOUNT: &str = include_str!("UPDATE_ACCOUNT.sql");
 pub const DELETE_ACCOUNT: &str = include_str!("DELETE_ACCOUNT.sql");

@@ -1,44 +1,137 @@
-// raw Postgres SQL parametrized queries (which tokio-postgres creates PREPARE statements from and execution)
+// SQL queries for database operations
+// Each module contains parametrized queries that tokio-postgres uses to create PREPARE statements
 
 pub mod interaction;
 pub mod listing;
 pub mod test;
 pub mod user;
 
-// Re-export commonly used queries for convenience
+// Re-export commonly used queries
+// Note: These are organized by domain and operation type
+
+// User domain
+pub use user::account::{
+    CREATE_ACCOUNT,
+    LIST_ACCOUNTS,
+    FIND_ACCOUNT,
+    UPDATE_ACCOUNT,
+    DELETE_ACCOUNT,
+};
+
+pub use user::profile::{
+    CREATE_PROFILE,
+    LIST_PROFILES,
+    FIND_PROFILE,
+    UPDATE_PROFILE,
+    DELETE_PROFILE,
+};
+
+pub use user::community::{
+    CREATE_COMMUNITY,
+    LIST_COMMUNITIES,
+    FIND_COMMUNITY,
+    UPDATE_COMMUNITY,
+    DELETE_COMMUNITY,
+};
+
+pub use user::committee::{
+    CREATE_COMMITTEE,
+    LIST_COMMITTEES,
+    FIND_COMMITTEES_BY_COMMUNITY,
+    FIND_COMMITTEES_BY_PROFILE,
+    FIND_COMMITTEE_BY_PROFILE_AND_COMMUNITY,
+    UPDATE_COMMITTEE_ROLE,
+    DELETE_COMMITTEE,
+};
+
+// Interaction domain
 pub use interaction::message::{
-    ADD_MESSAGE, GET_MESSAGES, GET_MESSAGES_BY_TRANSACTION, GET_MESSAGE_BY_ID,
+    CREATE_MESSAGE,
+    LIST_MESSAGES,
+    FIND_MESSAGES_BY_TRANSACTION,
+    FIND_MESSAGE,
 };
+
 pub use interaction::pledge::{
-    ADD_PLEDGE, GET_PLEDGES, GET_PLEDGES_BY_ITEM, GET_PLEDGES_BY_PROFILE, GET_PLEDGE_BY_ID,
+    CREATE_PLEDGE,
+    LIST_PLEDGES,
+    FIND_PLEDGES_BY_ITEM,
+    FIND_PLEDGES_BY_PROFILE,
+    FIND_PLEDGE,
 };
-pub use interaction::review::{GET_REVIEWS, GET_REVIEW_BY_TRANSACTION_AND_SUBJECT};
-pub use interaction::schedule::{ADD_SCHEDULE, GET_SCHEDULES, GET_SCHEDULE_BY_ID, UPDATE_SCHEDULE};
+
+pub use interaction::review::{
+    LIST_REVIEWS,
+    FIND_REVIEW_BY_TRANSACTION_AND_SUBJECT,
+};
+
+pub use interaction::schedule::{
+    CREATE_SCHEDULE,
+    LIST_SCHEDULES,
+    FIND_SCHEDULE,
+    UPDATE_SCHEDULE,
+};
+
 pub use interaction::schedule_opportunity::{
-    ADD_SCHEDULE_OPPORTUNITY, GET_SCHEDULE_OPPORTUNITIES, GET_SCHEDULE_OPPORTUNITY_BY_ID,
+    CREATE_SCHEDULE_OPPORTUNITY,
+    LIST_SCHEDULE_OPPORTUNITIES,
+    FIND_SCHEDULE_OPPORTUNITY,
     UPDATE_SCHEDULE_OPPORTUNITY,
 };
+
 pub use interaction::transaction::{
-    ADD_TRANSACTION, GET_TRANSACTIONS, GET_TRANSACTIONS_BY_PLEDGE, GET_TRANSACTION_BY_ID,
+    CREATE_TRANSACTION,
+    LIST_TRANSACTIONS,
+    FIND_TRANSACTIONS_BY_PLEDGE,
+    FIND_TRANSACTION,
     UPDATE_TRANSACTION,
 };
-pub use listing::category::{ADD_CATEGORY, GET_CATEGORIES, GET_CATEGORY_BY_ID, UPDATE_CATEGORY};
+
+// Listing domain
+pub use listing::category::{
+    CREATE_CATEGORY,
+    LIST_CATEGORIES,
+    FIND_CATEGORY,
+    UPDATE_CATEGORY,
+};
+
 pub use listing::collection::{
-    ADD_COLLECTION, GET_COLLECTIONS, GET_COLLECTIONS_BY_PROFILE, GET_COLLECTION_BY_ID,
+    CREATE_COLLECTION,
+    LIST_COLLECTIONS,
+    FIND_COLLECTIONS_BY_PROFILE,
+    FIND_COLLECTION,
     UPDATE_COLLECTION,
 };
-pub use listing::item::{GET_ITEMS, GET_ITEM_BY_ID};
-pub use listing::location::{ADD_LOCATION, GET_LOCATIONS, GET_LOCATION_BY_ID, UPDATE_LOCATION};
-pub use listing::media::{ADD_MEDIA, DELETE_MEDIA, GET_MEDIA, GET_MEDIA_BY_ID, GET_MEDIA_BY_ITEM};
+
+pub use listing::item::{
+    LIST_ITEMS,
+    FIND_ITEM,
+};
+
+pub use listing::location::{
+    CREATE_LOCATION,
+    LIST_LOCATIONS,
+    FIND_LOCATION,
+    UPDATE_LOCATION,
+};
+
+pub use listing::media::{
+    CREATE_MEDIA,
+    DELETE_MEDIA,
+    LIST_MEDIA,
+    FIND_MEDIA,
+    FIND_MEDIA_BY_ITEM,
+};
+
 pub use listing::publish::{
-    ADD_PUBLISH, DELETE_PUBLISH, GET_PUBLISHES, GET_PUBLISHES_BY_COLLECTION, GET_PUBLISHES_BY_ITEM,
-    GET_PUBLISH_BY_ITEM_AND_COLLECTION, UPDATE_PUBLISH,
+    CREATE_PUBLISH,
+    DELETE_PUBLISH,
+    LIST_PUBLISHES,
+    FIND_PUBLISHES_BY_COLLECTION,
+    FIND_PUBLISHES_BY_ITEM,
+    FIND_PUBLISH_BY_ITEM_AND_COLLECTION,
+    UPDATE_PUBLISH,
 };
-pub use test::GET_TESTS;
-pub use user::account::{ADD_ACCOUNT, GET_ACCOUNTS, GET_ACCOUNT_BY_ID};
-pub use user::committee::{
-    ADD_COMMITTEE, DELETE_COMMITTEE, GET_COMMITTEES, GET_COMMITTEES_BY_COMMUNITY,
-    GET_COMMITTEES_BY_PROFILE, GET_COMMITTEE_BY_PROFILE_AND_COMMUNITY, UPDATE_COMMITTEE_ROLE,
-};
-pub use user::community::{ADD_COMMUNITY, GET_COMMUNITIES, GET_COMMUNITY_BY_ID, UPDATE_COMMUNITY};
-pub use user::profile::{ADD_PROFILE, GET_PROFILES, GET_PROFILE_BY_ID, UPDATE_PROFILE};
+
+// Test domain
+pub use test::LIST_TESTS;

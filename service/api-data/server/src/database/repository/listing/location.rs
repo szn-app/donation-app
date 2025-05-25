@@ -1,6 +1,6 @@
 use crate::database::model::listing::Location;
 use crate::database::sql::listing::location::{
-    ADD_LOCATION, DELETE_LOCATION, GET_LOCATIONS, GET_LOCATIONS_BY_PROFILE, GET_LOCATION_BY_ID,
+    CREATE_LOCATION, DELETE_LOCATION, LIST_LOCATIONS, FIND_LOCATIONS_BY_PROFILE, FIND_LOCATION,
     UPDATE_LOCATION,
 };
 use crate::server::connection::PostgresPool;
@@ -19,33 +19,33 @@ impl LocationRepository {
         Self { pool }
     }
 
-    pub async fn get_locations(&self) -> Result<Vec<Location>, Box<dyn Error>> {
+    pub async fn list(&self) -> Result<Vec<Location>, Box<dyn Error + Send + Sync>> {
         debug!("Getting all locations");
         let client = self.pool.r.get().await?;
-        let rows = client.query(GET_LOCATIONS, &[]).await?;
+        let rows = client.query(LIST_LOCATIONS, &[]).await?;
         Ok(rows.into_iter().map(Location::from).collect())
     }
 
-    pub async fn get_location_by_id(&self, id: i64) -> Result<Option<Location>, Box<dyn Error>> {
+    pub async fn find(&self, id: i64) -> Result<Option<Location>, Box<dyn Error + Send + Sync>> {
         debug!("Getting location by id: {}", id);
         let client = self.pool.r.get().await?;
-        let row = client.query_opt(GET_LOCATION_BY_ID, &[&id]).await?;
+        let row = client.query_opt(FIND_LOCATION, &[&id]).await?;
         Ok(row.map(Location::from))
     }
 
-    pub async fn get_locations_by_profile(
+    pub async fn find_by_profile(
         &self,
         id_profile: Uuid,
-    ) -> Result<Vec<Location>, Box<dyn Error>> {
+    ) -> Result<Vec<Location>, Box<dyn Error + Send + Sync>> {
         debug!("Getting locations by profile: {}", id_profile);
         let client = self.pool.r.get().await?;
         let rows = client
-            .query(GET_LOCATIONS_BY_PROFILE, &[&id_profile])
+            .query(FIND_LOCATIONS_BY_PROFILE, &[&id_profile])
             .await?;
         Ok(rows.into_iter().map(Location::from).collect())
     }
 
-    pub async fn add_location(
+    pub async fn create(
         &self,
         name: &str,
         address: &str,
@@ -54,12 +54,12 @@ impl LocationRepository {
         country: &str,
         postal_code: &str,
         id_profile: Uuid,
-    ) -> Result<Location, Box<dyn Error>> {
+    ) -> Result<Location, Box<dyn Error + Send + Sync>> {
         debug!("Adding location: {}", name);
         let client = self.pool.rw.get().await?;
         let row = client
             .query_one(
-                ADD_LOCATION,
+                CREATE_LOCATION,
                 &[
                     &name,
                     &address,
@@ -74,7 +74,7 @@ impl LocationRepository {
         Ok(Location::from(row))
     }
 
-    pub async fn update_location(
+    pub async fn update(
         &self,
         id: i64,
         name: Option<String>,
@@ -83,7 +83,7 @@ impl LocationRepository {
         state: Option<String>,
         country: Option<String>,
         postal_code: Option<String>,
-    ) -> Result<Location, Box<dyn Error>> {
+    ) -> Result<Location, Box<dyn Error + Send + Sync>> {
         debug!("Updating location: {}", id);
         let client = self.pool.rw.get().await?;
         let row = client
@@ -95,7 +95,7 @@ impl LocationRepository {
         Ok(Location::from(row))
     }
 
-    pub async fn delete_location(&self, id: i64) -> Result<(), Box<dyn Error>> {
+    pub async fn delete(&self, id: i64) -> Result<(), Box<dyn Error + Send + Sync>> {
         debug!("Deleting location: {}", id);
         let client = self.pool.rw.get().await?;
         client.execute(DELETE_LOCATION, &[&id]).await?;

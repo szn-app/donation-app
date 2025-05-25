@@ -138,6 +138,12 @@ Supported XML tags:
 
 * Explain your OBSERVATIONS clearly, then provide REASONING to identify the exact issue. Add print statements or console logs when needed to gather more information.
 
+* Do not modify any file that has '.autogen' in the filename.
+
+* Any signature changes of existing functions must be explicitely approved and mentioned.
+
+* follow best practices for naming conventions only if there isn't a naming convention already in place.
+
 <!-- SQL -->
 ## When coding SQL: 
 

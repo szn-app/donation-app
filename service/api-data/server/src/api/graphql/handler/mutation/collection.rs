@@ -23,17 +23,20 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_collection(
+    pub async fn create_collection(
         &self,
-        ctx: &Context<'_>,
-        id_profile: String,
+        _ctx: &Context<'_>,
+        id_community: i64,
         title: String,
-        description: Option<String>,
+        visibility: CollectionVisibility,
+        type_: CollectionType,
+        position: i32,
     ) -> Result<Collection> {
         let collection_repository = CollectionRepository::new(self.postgres_pool_group.clone());
         let collection = collection_repository
-            .add_collection(id_profile, title, description)
-            .await?;
+            .create(id_community, &title, visibility, type_, position)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(collection)
     }
@@ -79,19 +82,20 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_publish(
+    pub async fn create_publish(
         &self,
-        ctx: &Context<'_>,
-        created_by: String,
-        id_collection: i32,
-        id_item: i32,
+        _ctx: &Context<'_>,
+        id_item: i64,
+        id_collection: i64,
         note: Option<String>,
         position: i32,
+        created_by: Uuid,
     ) -> Result<Publish> {
         let publish_repository = PublishRepository::new(self.postgres_pool_group.clone());
         let publish = publish_repository
-            .add_publish(created_by, id_collection, id_item, note, position)
-            .await?;
+            .create(id_item, id_collection, note.as_deref(), position, created_by)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(publish)
     }

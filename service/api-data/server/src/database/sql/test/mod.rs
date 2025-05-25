@@ -1,4 +1,4 @@
 use std::fs;
 use std::path::Path;
 
-pub const GET_TESTS: &str = include_str!("GET_TESTS.sql");
+pub const LIST_TESTS: &str = include_str!("LIST_TESTS.sql");

@@ -42,7 +42,7 @@ impl UserSync for UserSyncService {
 
         let repository = user::AccountRepository::new(self.postgres_pool_group.clone());
         repository
-            .add_account(user_uuid)
+            .create(user_uuid, None)
             .await
             .map_err(|e| Status::internal(e.to_string()))?;
 

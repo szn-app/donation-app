@@ -10,6 +10,7 @@ use crate::database::repository::listing::{
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql::{self, Context, Error, FieldResult, Object, Result};
 use log;
+use time::OffsetDateTime;
 use tracing::debug;
 use uuid::Uuid;
 
@@ -24,7 +25,7 @@ impl CategoryMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_category(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         name: String,
@@ -33,7 +34,7 @@ impl CategoryMutation {
     ) -> Result<Category> {
         let category_repository = CategoryRepository::new(self.postgres_pool_group.clone());
         let category = category_repository
-            .add_category(&name, &description, parent_id)
+            .create(&name, &description, parent_id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -45,7 +46,7 @@ impl CategoryMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_category(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -55,7 +56,7 @@ impl CategoryMutation {
     ) -> FieldResult<Category> {
         let repository = CategoryRepository::new(self.postgres_pool_group.clone());
         let category = repository
-            .update_category(id, name, description, parent_id)
+            .update(id, name, description, parent_id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(category)
@@ -66,10 +67,10 @@ impl CategoryMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_category(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = CategoryRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_category(id)
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)
@@ -87,7 +88,7 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_location(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         name: String,
@@ -100,7 +101,7 @@ impl LocationMutation {
     ) -> Result<Location> {
         let location_repository = LocationRepository::new(self.postgres_pool_group.clone());
         let location = location_repository
-            .add_location(
+            .create(
                 &name,
                 &address,
                 &city,
@@ -120,7 +121,7 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_location(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -133,7 +134,7 @@ impl LocationMutation {
     ) -> FieldResult<Location> {
         let repository = LocationRepository::new(self.postgres_pool_group.clone());
         let location = repository
-            .update_location(id, name, address, city, state, country, postal_code)
+            .update(id, name, address, city, state, country, postal_code)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(location)
@@ -144,10 +145,10 @@ impl LocationMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_location(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = LocationRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_location(id)
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)
@@ -165,35 +166,29 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_item(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
-        title: String,
-        description: String,
-        id_category: i64,
-        id_profile: Uuid,
-        id_location: Option<i64>,
-        price: Option<f64>,
-        currency: Option<String>,
-        item_type: ItemType,
+        type_: ItemType,
         intent_action: ItemIntentAction,
-        status: ItemStatus,
+        title: Option<String>,
+        description: Option<String>,
+        category: Option<i64>,
         condition: ItemCondition,
+        location: Option<i64>,
+        created_by: Option<Uuid>,
     ) -> Result<Item> {
         let item_repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = item_repository
-            .add_item(
-                &title,
-                &description,
-                id_category,
-                id_profile,
-                id_location,
-                price,
-                currency,
-                item_type,
+            .create(
+                type_,
                 intent_action,
-                status,
+                title,
+                description,
+                category,
                 condition,
+                location,
+                created_by,
             )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
@@ -206,39 +201,31 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_item(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
         title: Option<String>,
         description: Option<String>,
-        id_category: Option<i64>,
-        id_location: Option<i64>,
-        price: Option<f64>,
-        currency: Option<String>,
-        item_type: Option<ItemType>,
-        intent_action: Option<ItemIntentAction>,
-        status: Option<ItemStatus>,
-        condition: Option<ItemCondition>,
+        category: Option<i64>,
+        condition: ItemCondition,
+        location: Option<i64>,
+        status: ItemStatus,
     ) -> FieldResult<Item> {
-        debug!("Updating item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = repository
-            .update_item(
+            .update(
                 id,
                 title,
                 description,
-                id_category,
-                id_location,
-                price,
-                currency,
-                item_type,
-                intent_action,
-                status,
+                category,
                 condition,
+                location,
+                status,
             )
             .await
-            .map_err(|e| Error::new(e.to_string()))?;
+            .map_err(|e| Error::new(e.to_string()))?
+            .ok_or_else(|| Error::new("Item not found"))?;
         Ok(item)
     }
 
@@ -247,11 +234,11 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_item(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         debug!("Deleting item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_item(id)
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)
@@ -269,18 +256,24 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_collection(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
-        name: String,
-        description: String,
-        id_profile: Uuid,
-        is_public: bool,
-        collection_type: CollectionType,
+        id_community: i64,
+        title: String,
+        visibility: CollectionVisibility,
+        type_: CollectionType,
+        position: i32,
     ) -> Result<Collection> {
         let collection_repository = CollectionRepository::new(self.postgres_pool_group.clone());
         let collection = collection_repository
-            .add_collection(&name, &description, id_profile, is_public, collection_type)
+            .create(
+                id_community,
+                title.to_string(),
+                visibility,
+                type_,
+                position,
+            )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -292,19 +285,18 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_collection(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        name: Option<String>,
-        description: Option<String>,
-        is_public: Option<bool>,
-        collection_type: Option<CollectionType>,
+        title: String,
+        visibility: CollectionVisibility,
+        type_: CollectionType,
+        position: i32,
     ) -> FieldResult<Collection> {
-        debug!("Updating collection: id={}", id);
         let repository = CollectionRepository::new(self.postgres_pool_group.clone());
         let collection = repository
-            .update_collection(id, name, description, is_public, collection_type)
+            .update(id, title, visibility, type_, position)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(collection)
@@ -315,11 +307,10 @@ impl CollectionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_collection(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
-        debug!("Deleting collection: id={}", id);
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = CollectionRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_collection(id)
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)
@@ -337,7 +328,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_media(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -347,7 +338,12 @@ impl MediaMutation {
     ) -> Result<Media> {
         let media_repository = MediaRepository::new(self.postgres_pool_group.clone());
         let media = media_repository
-            .add_media(id_item, &url, media_type, position)
+            .create(
+                id_item,
+                None,
+                url.to_string(),
+                media_type,
+            )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -359,7 +355,7 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_media(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -367,10 +363,14 @@ impl MediaMutation {
         media_type: Option<MediaType>,
         position: Option<i32>,
     ) -> FieldResult<Media> {
-        debug!("Updating media: id={}", id);
         let repository = MediaRepository::new(self.postgres_pool_group.clone());
         let media = repository
-            .update_media(id, url, media_type, position)
+            .update(
+                id,
+                None,
+                url.unwrap_or_default(),
+                media_type.unwrap_or_default()
+            )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(media)
@@ -381,11 +381,10 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_media(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
-        debug!("Deleting media: id={}", id);
+    async fn delete(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = MediaRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_media(id)
+            .delete(id)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)
@@ -403,7 +402,7 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_publish(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
@@ -414,7 +413,7 @@ impl PublishMutation {
     ) -> Result<Publish> {
         let publish_repository = PublishRepository::new(self.postgres_pool_group.clone());
         let publish = publish_repository
-            .add_publish(id_item, id_collection, note, position, created_by)
+            .create(id_item, id_collection, note, position, created_by)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -426,24 +425,20 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_publish(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
         id_collection: i64,
         note: Option<String>,
         position: i32,
-        updated_by: Uuid,
     ) -> FieldResult<Publish> {
-        debug!(
-            "Updating publish: item={}, collection={}",
-            id_item, id_collection
-        );
         let repository = PublishRepository::new(self.postgres_pool_group.clone());
         let publish = repository
-            .update_publish(id_item, id_collection, note, position, updated_by)
+            .update(id_item, id_collection, note, position)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
+
         Ok(publish)
     }
 
@@ -452,19 +447,15 @@ impl PublishMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_publish(
+    async fn delete(
         &self,
         _ctx: &Context<'_>,
         id_item: i64,
         id_collection: i64,
     ) -> FieldResult<bool> {
-        debug!(
-            "Deleting publish: item={}, collection={}",
-            id_item, id_collection
-        );
         let repository = PublishRepository::new(self.postgres_pool_group.clone());
         repository
-            .delete_publish(id_item, id_collection)
+            .delete(id_item, id_collection)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(true)

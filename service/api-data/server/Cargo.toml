@@ -38,7 +38,7 @@ reqwest = { version = "0.11", features = ["json"] }
 time = { version = "0.3.41", features = ["formatting", "parsing", "std", "local-offset", "serde"] }
 uuid = { version = "1.16.0", features = ["v4", "serde"] }
 rust_decimal = "1.37.1"
-geo-types = {version = "0.7.16", features = []} # Geographic types that work with tokio-postgres
+geo-types = {version = "0.7.16", features = ["serde"]} # Geographic types that work with tokio-postgres
 url = "2.5.4"
 
 # utils

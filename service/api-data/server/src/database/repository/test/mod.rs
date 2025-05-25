@@ -1,4 +1,4 @@
-use crate::database::model;
+use crate::database::model::test::Test;
 use crate::database::sql;
 use crate::server::connection::PostgresPool;
 use deadpool_postgres::PoolError;
@@ -15,13 +15,13 @@ impl TestRepository {
         Self { pool }
     }
 
-    pub async fn get_tests(&self) -> Result<Vec<model::test::Test>, Box<dyn Error>> {
+    pub async fn list(&self) -> Result<Vec<Test>, Box<dyn Error + Send + Sync>> {
         log::debug!("--> get_tests");
 
         let client = self.pool.r.get().await?;
-        let rows: Vec<Row> = client.query(sql::GET_TESTS, &[]).await?;
+        let rows: Vec<Row> = client.query(sql::LIST_TESTS, &[]).await?;
 
-        let tests: Vec<model::test::Test> = rows.into_iter().map(|row| row.into()).collect();
+        let tests: Vec<Test> = rows.into_iter().map(|row| row.into()).collect();
 
         Ok(tests)
     }

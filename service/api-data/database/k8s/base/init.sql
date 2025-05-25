@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS "listing"."collection" (
 );
 
 -- listing.media (depends on item)
-CREATE TYPE media_type AS ENUM ('image', 'video');
+CREATE TYPE media_type AS ENUM ('document', 'image', 'video');
 CREATE TABLE IF NOT EXISTS "listing"."media" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_item BIGINT REFERENCES "listing"."item"(id) ON DELETE CASCADE,

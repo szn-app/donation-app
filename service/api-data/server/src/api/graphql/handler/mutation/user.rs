@@ -10,7 +10,7 @@ use crate::database::repository::user::{
 };
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 use async_graphql::Result;
-use async_graphql::{self, Context, FieldResult, Object};
+use async_graphql::{self, Context, Error, FieldResult, Object};
 use log;
 use tracing::debug;
 use tracing::instrument;
@@ -22,35 +22,54 @@ pub struct AccountMutation {
 
 #[async_graphql::Object]
 impl AccountMutation {
+    /// Create a new account with explicit ID
+    /// Note: ID must be provided and will not be auto-generated
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_account(
+    pub async fn create_account(
         &self,
         _ctx: &Context<'_>,
         id: uuid::Uuid,
+        remarks: Option<String>,
     ) -> Result<model::user::Account> {
-        let account_repository = AccountRepository::new(self.postgres_pool_group.clone());
-        let account = account_repository.add_account(id).await?;
-
+        log::debug!("--> create_account @ graphql resolver");
+        let repository = AccountRepository::new(self.postgres_pool_group.clone());
+        let account = repository.create(id, remarks).await?;
         Ok(account)
     }
 
+    /// Update an account
+    #[graphql(guard = "AuthorizeUser {
+            namespace: \"Group\".to_string(),
+            object: \"admin\".to_string(),
+            relation: \"member\".to_string()
+        }")]
+    pub async fn update_account(
+        &self,
+        _ctx: &Context<'_>,
+        id: uuid::Uuid,
+        remarks: Option<String>,
+    ) -> Result<Option<model::user::Account>> {
+        log::debug!("--> update_account @ graphql resolver");
+        let repository = AccountRepository::new(self.postgres_pool_group.clone());
+        let account = repository.update(id, remarks).await?;
+        Ok(account)
+    }
+
+    /// Delete an account
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
     async fn delete_account(&self, _ctx: &Context<'_>, id: uuid::Uuid) -> FieldResult<bool> {
-        debug!("Deleting account: id={}", id);
+        log::debug!("--> delete_account @ graphql resolver");
         let repository = AccountRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_account(id)
-            .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
-        Ok(true)
+        let result = repository.delete(id).await.map_err(|e| e.to_string())?;
+        Ok(result)
     }
 }
 
@@ -60,27 +79,37 @@ pub struct ProfileMutation {
 
 #[async_graphql::Object]
 impl ProfileMutation {
+    /// Add a new profile
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_profile(
+    pub async fn create_profile(
         &self,
         _ctx: &Context<'_>,
         id_account: uuid::Uuid,
         name: String,
-        description: Option<String>,
-        profile_type: Option<ProfileType>,
+        email: String,
+        phone: Option<String>,
+        avatar_url: Option<String>,
     ) -> Result<model::user::Profile> {
         let profile_repository = ProfileRepository::new(self.postgres_pool_group.clone());
         let profile = profile_repository
-            .add_profile(id_account, &name, description, profile_type)
-            .await?;
+            .create(
+                name,
+                Some(email),
+                Some(ProfileType::Individual),
+                id_account,
+                id_account
+            )
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(profile)
     }
 
+    /// Update a profile
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
@@ -89,33 +118,31 @@ impl ProfileMutation {
     async fn update_profile(
         &self,
         _ctx: &Context<'_>,
-        id: uuid::Uuid,
-        name: Option<String>,
+        id: i64,
+        name: String,
         description: Option<String>,
-        profile_type: Option<ProfileType>,
-    ) -> FieldResult<model::user::Profile> {
-        debug!("Updating profile: {}", id);
+        type_: Option<ProfileType>,
+    ) -> FieldResult<Option<model::user::Profile>> {
+        log::debug!("--> update_profile @ graphql resolver");
         let repository = ProfileRepository::new(self.postgres_pool_group.clone());
         let profile = repository
-            .update_profile(id, name, description, profile_type)
+            .update(id, name, description, type_)
             .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
+            .map_err(|e| e.to_string())?;
         Ok(profile)
     }
 
+    /// Delete a profile
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn delete_profile(&self, _ctx: &Context<'_>, id: uuid::Uuid) -> FieldResult<bool> {
-        debug!("Deleting profile: id={}", id);
+    async fn delete_profile(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
+        log::debug!("--> delete_profile @ graphql resolver");
         let repository = ProfileRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_profile(id)
-            .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
-        Ok(true)
+        let result = repository.delete(id).await.map_err(|e| e.to_string())?;
+        Ok(result)
     }
 }
 
@@ -125,24 +152,31 @@ pub struct CommunityMutation {
 
 #[async_graphql::Object]
 impl CommunityMutation {
+    /// Add a new community
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_community(
+    pub async fn create_community(
         &self,
         _ctx: &Context<'_>,
-        title: String,
+        name: String,
         description: String,
-        community_type: CommunityType,
-        owner: uuid::Uuid,
+        avatar_url: Option<String>,
         created_by: uuid::Uuid,
     ) -> Result<model::user::Community> {
         let community_repository = CommunityRepository::new(self.postgres_pool_group.clone());
         let community = community_repository
-            .add_community(&title, &description, community_type, owner, created_by)
-            .await?;
+            .create(
+                name,
+                Some(description),
+                CommunityType::Solo, // default type
+                created_by,
+                created_by
+            )
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(community)
     }
@@ -157,15 +191,16 @@ impl CommunityMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        title: Option<String>,
+        title: String,
         description: Option<String>,
-        community_type: Option<CommunityType>,
-    ) -> FieldResult<model::user::Community> {
-        debug!("Updating community: {}", id);
-        let community = CommunityRepository::new(self.postgres_pool_group.clone())
-            .update_community(id, title, description, community_type)
+        type_: CommunityType,
+    ) -> FieldResult<Option<model::user::Community>> {
+        log::debug!("--> update_community @ graphql resolver");
+        let repository = CommunityRepository::new(self.postgres_pool_group.clone());
+        let community = repository
+            .update(id, title, description, type_)
             .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
+            .map_err(|e| e.to_string())?;
         Ok(community)
     }
 
@@ -177,13 +212,9 @@ impl CommunityMutation {
         }")]
     async fn delete_community(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         log::debug!("--> delete_community @ graphql resolver");
-        let repository =
-            repository::user::CommunityRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_community(id)
-            .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
-        Ok(true)
+        let repository = CommunityRepository::new(self.postgres_pool_group.clone());
+        let result = repository.delete(id).await.map_err(|e| e.to_string())?;
+        Ok(result)
     }
 }
 
@@ -193,27 +224,33 @@ pub struct CommitteeMutation {
 
 #[async_graphql::Object]
 impl CommitteeMutation {
+    /// Add a new committee
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_committee(
+    pub async fn create_committee(
         &self,
         _ctx: &Context<'_>,
-        id_profile: uuid::Uuid,
+        id_profile: i64,
         id_community: i64,
         member_role: CommitteeRole,
     ) -> Result<model::user::Committee> {
         let committee_repository = CommitteeRepository::new(self.postgres_pool_group.clone());
         let committee = committee_repository
-            .add_committee(id_profile, id_community, member_role)
-            .await?;
+            .create(
+                id_profile,
+                id_community,
+                member_role,
+            )
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(committee)
     }
 
-    /// Update committee role
+    /// Update a committee's role
     #[graphql(guard = "AuthorizeUser {
             namespace: \"Group\".to_string(),
             object: \"admin\".to_string(),
@@ -222,18 +259,16 @@ impl CommitteeMutation {
     async fn update_committee_role(
         &self,
         _ctx: &Context<'_>,
-        id_profile: uuid::Uuid,
+        id_profile: i64,
         id_community: i64,
         member_role: CommitteeRole,
-    ) -> FieldResult<model::user::Committee> {
-        debug!(
-            "Updating committee role for profile: {} and community: {}",
-            id_profile, id_community
-        );
-        let committee = CommitteeRepository::new(self.postgres_pool_group.clone())
-            .update_committee_role(id_profile, id_community, member_role)
+    ) -> FieldResult<Option<model::user::Committee>> {
+        log::debug!("--> update_committee_role @ graphql resolver");
+        let repository = CommitteeRepository::new(self.postgres_pool_group.clone());
+        let committee = repository
+            .update(id_profile, id_community, member_role)
             .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
+            .map_err(|e| e.to_string())?;
         Ok(committee)
     }
 
@@ -246,18 +281,15 @@ impl CommitteeMutation {
     async fn delete_committee(
         &self,
         _ctx: &Context<'_>,
-        id_profile: uuid::Uuid,
+        id_profile: i64,
         id_community: i64,
     ) -> FieldResult<bool> {
-        debug!(
-            "Deleting committee for profile: {} and community: {}",
-            id_profile, id_community
-        );
+        log::debug!("--> delete_committee @ graphql resolver");
         let repository = CommitteeRepository::new(self.postgres_pool_group.clone());
-        repository
-            .delete_committee(id_profile, id_community)
+        let result = repository
+            .delete(id_profile, id_community)
             .await
-            .map_err(|e| async_graphql::Error::new(e.to_string()))?;
-        Ok(true)
+            .map_err(|e| e.to_string())?;
+        Ok(result)
     }
 }

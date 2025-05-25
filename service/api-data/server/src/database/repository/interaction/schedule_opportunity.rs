@@ -1,6 +1,6 @@
 use crate::database::model::interaction::ScheduleOpportunity;
 use crate::database::sql::{
-    ADD_SCHEDULE_OPPORTUNITY, GET_SCHEDULE_OPPORTUNITIES, GET_SCHEDULE_OPPORTUNITY_BY_ID,
+    CREATE_SCHEDULE_OPPORTUNITY, LIST_SCHEDULE_OPPORTUNITIES, FIND_SCHEDULE_OPPORTUNITY,
     UPDATE_SCHEDULE_OPPORTUNITY,
 };
 use crate::server::connection::PostgresPool;
@@ -19,49 +19,47 @@ impl ScheduleOpportunityRepository {
         Self { pool }
     }
 
-    pub async fn get_schedule_opportunities(
+    pub async fn list(
         &self,
-    ) -> Result<Vec<ScheduleOpportunity>, Box<dyn Error>> {
+    ) -> Result<Vec<ScheduleOpportunity>, Box<dyn Error + Send + Sync>> {
         debug!("Getting all schedule opportunities");
         let client = self.pool.r.get().await?;
-        let rows = client.query(GET_SCHEDULE_OPPORTUNITIES, &[]).await?;
+        let rows = client.query(LIST_SCHEDULE_OPPORTUNITIES, &[]).await?;
         Ok(rows.into_iter().map(ScheduleOpportunity::from).collect())
     }
 
-    pub async fn get_schedule_opportunity_by_id(
+    pub async fn find(
         &self,
         id: i64,
-    ) -> Result<Option<ScheduleOpportunity>, Box<dyn Error>> {
+    ) -> Result<Option<ScheduleOpportunity>, Box<dyn Error + Send + Sync>> {
         debug!("Getting schedule opportunity by id: {}", id);
         let client = self.pool.r.get().await?;
-        let row = client
-            .query_opt(GET_SCHEDULE_OPPORTUNITY_BY_ID, &[&id])
-            .await?;
+        let row = client.query_opt(FIND_SCHEDULE_OPPORTUNITY, &[&id]).await?;
         Ok(row.map(ScheduleOpportunity::from))
     }
 
-    pub async fn add_schedule_opportunity(
+    pub async fn create(
         &self,
         id_schedule: i64,
         id_opportunity: i64,
-    ) -> Result<ScheduleOpportunity, Box<dyn Error>> {
+    ) -> Result<ScheduleOpportunity, Box<dyn Error + Send + Sync>> {
         debug!(
             "Adding schedule opportunity for schedule: {} and opportunity: {}",
             id_schedule, id_opportunity
         );
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(ADD_SCHEDULE_OPPORTUNITY, &[&id_schedule, &id_opportunity])
+            .query_one(CREATE_SCHEDULE_OPPORTUNITY, &[&id_schedule, &id_opportunity])
             .await?;
         Ok(ScheduleOpportunity::from(row))
     }
 
-    pub async fn update_schedule_opportunity(
+    pub async fn update(
         &self,
         id: i64,
         window_start: time::OffsetDateTime,
         window_end: time::OffsetDateTime,
-    ) -> Result<ScheduleOpportunity, Box<dyn Error>> {
+    ) -> Result<ScheduleOpportunity, Box<dyn Error + Send + Sync>> {
         debug!("Updating schedule opportunity: {}", id);
         let client = self.pool.rw.get().await?;
         let row = client

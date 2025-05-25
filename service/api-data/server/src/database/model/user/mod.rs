@@ -1,9 +1,9 @@
-mod account;
-mod profile;
-mod community;
-mod committee;
+pub mod account;
+pub mod committee;
+pub mod community;
+pub mod profile;
 
 pub use account::*;
-pub use profile::*;
+pub use committee::*;
 pub use community::*;
-pub use committee::*; 
+pub use profile::*;

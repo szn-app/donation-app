@@ -22,27 +22,32 @@ impl ItemMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_item(
+    pub async fn create_item(
         &self,
-        ctx: &Context<'_>,
-        id_profile: String,
-        id_collection: i32,
-        title: String,
+        _ctx: &Context<'_>,
+        type_: ItemType,
+        intent_action: ItemIntentAction,
+        title: Option<String>,
         description: Option<String>,
-        condition: String,
-        quantity: i32,
+        category: Option<i64>,
+        condition: ItemCondition,
+        location: Option<i64>,
+        created_by: Option<Uuid>,
     ) -> Result<Item> {
         let item_repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = item_repository
-            .add_item(
-                id_profile,
-                id_collection,
+            .create(
+                type_,
+                intent_action,
                 title,
                 description,
+                category,
                 condition,
-                quantity,
+                location,
+                created_by,
             )
-            .await?;
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(item)
     }

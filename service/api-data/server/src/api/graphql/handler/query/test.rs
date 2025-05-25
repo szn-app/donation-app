@@ -2,7 +2,7 @@ use crate::access_control::check_permission_for_subject;
 use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::api::graphql::service::{DataContext, GlobalContext};
 use crate::database::model;
-use crate::database::repository;
+use crate::database::repository::test::TestRepository;
 use crate::server::connection::{KetoChannelGroup, PostgresPool};
 
 use async_graphql::{self, Context, Error, ErrorExtensions, FieldResult, Object}; // note: `graphql` attribute is processed by async_graphql macros
@@ -18,13 +18,14 @@ pub struct TestQuery {
 
 #[async_graphql::Object]
 impl TestQuery {
-    async fn tests(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::test::Test>> {
-        log::debug!("--> tests @ graphql resolver");
-        // let c = ctx.data::<super::Context>()?; // EXMAPLE
-
-        let repository = repository::test::TestRepository::new(self.postgres_pool_group.clone());
-        let test_list = repository.get_tests().await.map_err(|e| e.to_string())?;
-
+    #[graphql(guard = "AuthorizeUser {
+            namespace: \"Group\".to_string(),
+            object: \"admin\".to_string(),
+            relation: \"member\".to_string()
+        }")]
+    async fn list_tests(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::test::Test>> {
+        let repository = TestRepository::new(self.postgres_pool_group.clone());
+        let test_list = repository.list().await.map_err(|e| e.to_string())?;
         Ok(test_list)
     }
 

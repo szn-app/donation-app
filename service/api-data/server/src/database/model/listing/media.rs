@@ -9,10 +9,18 @@ use tokio_postgres::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Enum, FromSql, ToSql)]
 #[postgres(name = "media_type")]
 pub enum MediaType {
+    #[graphql(name = "document")]
+    Document,
     #[graphql(name = "image")]
     Image,
     #[graphql(name = "video")]
     Video,
+}
+
+impl Default for MediaType {
+    fn default() -> Self {
+        MediaType::Image
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]

@@ -17,18 +17,19 @@ impl MediaMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_media(
+    pub async fn create_media(
         &self,
-        ctx: &Context<'_>,
-        id_item: i32,
-        media_type: String,
-        position: i32,
+        _ctx: &Context<'_>,
+        id_item: i64,
         url: String,
+        media_type: MediaType,
+        position: i32,
     ) -> Result<Media> {
         let media_repository = MediaRepository::new(self.postgres_pool_group.clone());
         let media = media_repository
-            .add_media(id_item, media_type, position, url)
-            .await?;
+            .create(id_item, &url, media_type, position)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(media)
     }

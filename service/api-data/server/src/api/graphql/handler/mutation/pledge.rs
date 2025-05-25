@@ -19,9 +19,9 @@ impl PledgeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_pledge(
+    pub async fn create_pledge(
         &self,
-        ctx: &Context<'_>,
+        _ctx: &Context<'_>,
         id_profile: Uuid,
         id_item: i64,
         intent_action: PledgeIntentAction,
@@ -30,8 +30,9 @@ impl PledgeMutation {
     ) -> Result<Pledge> {
         let pledge_repository = PledgeRepository::new(self.postgres_pool_group.clone());
         let pledge = pledge_repository
-            .add_pledge(id_profile, id_item, intent_action, message, status)
-            .await?;
+            .create(id_profile, id_item, intent_action, message, status)
+            .await
+            .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(pledge)
     }

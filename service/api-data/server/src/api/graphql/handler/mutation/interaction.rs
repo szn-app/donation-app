@@ -27,7 +27,7 @@ impl ReviewMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_review(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         id_transaction: i64,
@@ -37,7 +37,7 @@ impl ReviewMutation {
     ) -> Result<Review> {
         let review_repository = ReviewRepository::new(self.postgres_pool_group.clone());
         let review = review_repository
-            .add_review(id_transaction, id_subject, rating, comment)
+            .create(id_transaction, id_subject, rating, comment)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -56,7 +56,7 @@ impl PledgeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_pledge(
+    async fn create(
         &self,
         _ctx: &Context<'_>,
         id_profile: Uuid,
@@ -67,7 +67,7 @@ impl PledgeMutation {
     ) -> Result<Pledge> {
         let pledge_repository = PledgeRepository::new(self.postgres_pool_group.clone());
         let pledge = pledge_repository
-            .add_pledge(id_profile, id_item, intent_action, message, status)
+            .create(id_profile, id_item, intent_action, message, status)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -79,7 +79,7 @@ impl PledgeMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_pledge(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -88,7 +88,7 @@ impl PledgeMutation {
         debug!("Updating pledge: id={}", id);
         let repository = PledgeRepository::new(self.postgres_pool_group.clone());
         let pledge = repository
-            .update_pledge(id, status)
+            .update(id, status)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(pledge)
@@ -106,19 +106,19 @@ impl ScheduleOpportunityMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_schedule_opportunity(
+    async fn create(
         &self,
         _ctx: &Context<'_>,
         id_schedule: i64,
         id_opportunity: i64,
     ) -> FieldResult<ScheduleOpportunity> {
         debug!(
-            "Adding schedule opportunity: schedule={}, opportunity={}",
+            "Creating schedule opportunity: schedule={}, opportunity={}",
             id_schedule, id_opportunity
         );
         let repository = ScheduleOpportunityRepository::new(self.postgres_pool_group.clone());
         let schedule_opportunity = repository
-            .add_schedule_opportunity(id_schedule, id_opportunity)
+            .create(id_schedule, id_opportunity)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule_opportunity)
@@ -129,7 +129,7 @@ impl ScheduleOpportunityMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_schedule_opportunity(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -139,7 +139,7 @@ impl ScheduleOpportunityMutation {
         debug!("Updating schedule opportunity: id={}", id);
         let repository = ScheduleOpportunityRepository::new(self.postgres_pool_group.clone());
         let schedule_opportunity = repository
-            .update_schedule_opportunity(id, window_start, window_end)
+            .update(id, window_start, window_end)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule_opportunity)
@@ -157,15 +157,15 @@ impl ScheduleMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_schedule(
+    async fn create(
         &self,
         _ctx: &Context<'_>,
         scheduled_for: time::OffsetDateTime,
     ) -> FieldResult<Schedule> {
-        debug!("Adding schedule: scheduled_for={}", scheduled_for);
+        debug!("Creating schedule: scheduled_for={}", scheduled_for);
         let repository = ScheduleRepository::new(self.postgres_pool_group.clone());
         let schedule = repository
-            .add_schedule(scheduled_for)
+            .create(scheduled_for)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(schedule)
@@ -183,7 +183,7 @@ impl TransactionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn add_transaction(
+    async fn create(
         &self,
         _ctx: &Context<'_>,
         id_pledge: i64,
@@ -191,11 +191,11 @@ impl TransactionMutation {
         id_schedule: Option<i64>,
         id_location: Option<i64>,
     ) -> FieldResult<Transaction> {
-        debug!("Adding transaction: pledge={}", id_pledge);
+        debug!("Creating transaction: pledge={}", id_pledge);
         let transaction_repo = TransactionRepository::new(self.postgres_pool_group.clone());
 
         let transaction = transaction_repo
-            .add_transaction(id_pledge, status, id_schedule, id_location)
+            .create(id_pledge, status, id_schedule, id_location)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -207,7 +207,7 @@ impl TransactionMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    async fn update_transaction(
+    async fn update(
         &self,
         _ctx: &Context<'_>,
         id: i64,
@@ -216,7 +216,7 @@ impl TransactionMutation {
         debug!("Updating transaction: id={}", id);
         let repository = TransactionRepository::new(self.postgres_pool_group.clone());
         let transaction = repository
-            .update_transaction(id, status)
+            .update(id, status)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(transaction)
@@ -234,7 +234,7 @@ impl MessageMutation {
             object: \"admin\".to_string(),
             relation: \"member\".to_string()
         }")]
-    pub async fn add_message(
+    pub async fn create(
         &self,
         _ctx: &Context<'_>,
         id_transaction: i64,
@@ -244,7 +244,7 @@ impl MessageMutation {
     ) -> Result<Message> {
         let message_repository = MessageRepository::new(self.postgres_pool_group.clone());
         let message = message_repository
-            .add_message(id_transaction, id_sender, type_, content)
+            .create(id_transaction, id_sender, type_, content)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
