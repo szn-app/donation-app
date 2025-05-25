@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS "listing"."location" (
     address_line2 VARCHAR(64),
     city VARCHAR(50) NOT NULL,
     state VARCHAR(50),
-    district BIGINT,
+    district VARCHAR(100),
     country VARCHAR(50) NOT NULL,
     geom extension.GEOGRAPHY(Point, 4326),
     entrance_note TEXT,

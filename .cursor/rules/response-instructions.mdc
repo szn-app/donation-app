@@ -114,6 +114,8 @@ Supported XML tags:
 
 * Prioritize readability over performance.
 
+* Prefer organizing related implementations into multiple modular files within nested folders, rather than combining them into a single large file.
+
 * Fully implement all requested functionality.
 
 * Leave NO todos, placeholders, or missing pieces.

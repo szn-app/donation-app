@@ -3,7 +3,8 @@
   <Objective>implement CRUD operations for Postgresql schema</Objective>
 
   <Parameter name="schema_path" type="input" description="Postgresql schema .sql file" required="true" />
-  <Parameter name="target_path" type="output" description="output directory path of generated SQL files" required="true" />
+  <Parameter name="sql_target_path" type="output" description="output directory path of generated SQL files" required="true" />
+  <Parameter name="model_target_path" type="output" description="output directory path of generate Rust type binding models" required="true" />
 
   <Execution>
     <Task id="list-schema-tables">
@@ -14,13 +15,22 @@
     <Task id="generate-sql-operation-per-table" dependsOn="list-schema-tables">
       <Wait />
       <Step>
-        generate SQL operation in .sql files at {{target_path}} from from each table {{table_name}} of schema {{schema_path}}
+        generate SQL operation in .sql files at {{sql_target_path}} from from each table {{table_name}} of schema {{schema_path}}
       </Step>
-      <Step>
-         In a structured markdown table format, highlight the alignment of sql files to corresponding schema and detect inconsistencies. 
-      </Step>
-
       <Parameter name="table_name" type="input" description="output directory path of generated SQL" required="true" />
+    </Task>
+
+    <Task>
+      <Step>In a structured markdown table format, highlight the alignment of sql files to corresponding schema and detect inconsistencies.</Step>
+      <Wait />
+    </Task>
+
+    <Task id="generate-rust-type-binding-models">
+      <Step>for each of the tables in {{schema_path}} generate Rust type binding models at {{model_target_path}}</Step>
+
+      <Rule>Rust models should be implemented with tokio_postgres and also should have async_graphql decorator</Rule>
+      <Rule>postgresql enums should be implemented as well in Rust with tokio_postgres crate and FromSql/ToSql traits too</Rule>
+      <Rule>Follow existing models patterns to correctly implement the models and enum types</Rule>
     </Task>
   </Execution>
 
@@ -29,6 +39,8 @@
     <Rule>organize in folder per table</Rule>
     <Rule>always check if existing files corresponding to the implementation are present, if so modify them as necessary</Rule>
     <Rule>add comments to SQL with types details from corresponding schema</Rule>
+    <Rule>Rust models should be consistent with database schema</Rule>
+    <Rule>if Rust model already exist consider updating it if necessary</Rule>
   </Rules>
 
 </Workflow>

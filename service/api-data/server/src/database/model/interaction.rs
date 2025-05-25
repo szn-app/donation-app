@@ -60,15 +60,81 @@ impl From<Row> for Schedule {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
+pub struct Review {
+    pub id_transaction: i64,
+    pub id_subject_profile: i64,
+    pub reviewer: i64,
+    pub comment: Option<String>,
+    pub score: i16,
+    pub created_at: OffsetDateTime,
+}
+
+impl From<Row> for Review {
+    fn from(row: Row) -> Self {
+        Self {
+            id_transaction: row.get("id_transaction"),
+            id_subject_profile: row.get("id_subject_profile"),
+            reviewer: row.get("reviewer"),
+            comment: row.get("comment"),
+            score: row.get("score"),
+            created_at: row.get("created_at"),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
+pub struct ScheduleOpportunity {
+    pub id: i64,
+    pub window_start: Option<OffsetDateTime>,
+    pub window_end: Option<OffsetDateTime>
+}
+
+impl From<Row> for ScheduleOpportunity {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get("id"),
+            window_start: row.get("window_start"),
+            window_end: row.get("window_end")
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
+pub struct Message {
+    pub id: i64,
+    pub id_sender: i64,
+    pub id_transaction: i64,
+    pub type_: Option<MessageType>,
+    pub content: String,
+    pub sent_at: OffsetDateTime,
+    pub updated_at: Option<OffsetDateTime>,
+}
+
+impl From<Row> for Message {
+    fn from(row: Row) -> Self {
+        Self {
+            id: row.get("id"),
+            id_sender: row.get("id_sender"),
+            id_transaction: row.get("id_transaction"),
+            type_: row.get("type"),
+            content: row.get("content"),
+            sent_at: row.get("sent_at"),
+            updated_at: row.get("updated_at"),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Pledge {
     pub id: i64,
-    pub id_profile: Uuid,
+    pub id_profile: i64,
     pub id_item: i64,
     pub intent_action: PledgeIntentAction,
     pub message: Option<String>,
     pub status: PledgeStatus,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    pub pledged_at: OffsetDateTime,
+    pub updated_at: Option<OffsetDateTime>,
+    pub updated_by: Option<Uuid>,
 }
 
 impl From<Row> for Pledge {
@@ -80,8 +146,9 @@ impl From<Row> for Pledge {
             intent_action: row.get("intent_action"),
             message: row.get("message"),
             status: row.get("status"),
-            created_at: row.get("created_at"),
+            pledged_at: row.get("pledged_at"),
             updated_at: row.get("updated_at"),
+            updated_by: row.get("updated_by"),
         }
     }
 }
@@ -105,75 +172,6 @@ impl From<Row> for Transaction {
             status: row.get("status"),
             id_schedule: row.get("id_schedule"),
             id_location: row.get("id_location"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
-pub struct Message {
-    pub id: i64,
-    pub id_sender: Uuid,
-    pub id_transaction: i64,
-    pub type_: MessageType,
-    pub content: String,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
-}
-
-impl From<Row> for Message {
-    fn from(row: Row) -> Self {
-        Self {
-            id: row.get("id"),
-            id_sender: row.get("id_sender"),
-            id_transaction: row.get("id_transaction"),
-            type_: row.get("type"),
-            content: row.get("content"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
-pub struct Review {
-    pub id_transaction: i64,
-    pub id_subject_profile: Uuid,
-    pub rating: i32,
-    pub comment: Option<String>,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
-}
-
-impl From<Row> for Review {
-    fn from(row: Row) -> Self {
-        Self {
-            id_transaction: row.get("id_transaction"),
-            id_subject_profile: row.get("id_subject_profile"),
-            rating: row.get("rating"),
-            comment: row.get("comment"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
-        }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
-pub struct ScheduleOpportunity {
-    pub id: i64,
-    pub window_start: OffsetDateTime,
-    pub window_end: OffsetDateTime,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
-}
-
-impl From<Row> for ScheduleOpportunity {
-    fn from(row: Row) -> Self {
-        Self {
-            id: row.get("id"),
-            window_start: row.get("window_start"),
-            window_end: row.get("window_end"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
         }

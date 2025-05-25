@@ -98,8 +98,7 @@ pub struct Location {
     pub country: String,
     pub geom: Option<String>,
     pub entrance_note: Option<String>,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    pub created_at: OffsetDateTime
 }
 
 impl From<Row> for Location {
@@ -114,8 +113,7 @@ impl From<Row> for Location {
             country: row.get("country"),
             geom: row.get("geom"),
             entrance_note: row.get("entrance_note"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
+            created_at: row.get("created_at")
         }
     }
 }
@@ -123,34 +121,38 @@ impl From<Row> for Location {
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Item {
     pub id: i64,
-    pub id_category: i64,
-    pub id_location: i64,
-    pub title: String,
-    pub description: Option<String>,
     pub type_: ItemType,
     pub intent_action: ItemIntentAction,
     pub status: ItemStatus,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub category: Option<i64>,
     pub condition: ItemCondition,
-    pub quantity: i32,
+    pub location: Option<i64>,
+    pub views_count: i64,
+    pub is_reported: bool,
     pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    pub updated_at: Option<OffsetDateTime>,
+    pub created_by: Option<Uuid>
 }
 
 impl From<Row> for Item {
     fn from(row: Row) -> Self {
         Self {
             id: row.get("id"),
-            id_category: row.get("id_category"),
-            id_location: row.get("id_location"),
-            title: row.get("title"),
-            description: row.get("description"),
             type_: row.get("type"),
             intent_action: row.get("intent_action"),
             status: row.get("status"),
+            title: row.get("title"),
+            description: row.get("description"),
+            category: row.get("category"),
             condition: row.get("condition"),
-            quantity: row.get("quantity"),
+            location: row.get("location"),
+            views_count: row.get("views_count"),
+            is_reported: row.get("is_reported"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
+            created_by: row.get("created_by")
         }
     }
 }
@@ -213,9 +215,8 @@ pub struct Publish {
     pub id_collection: i64,
     pub note: Option<String>,
     pub position: i32,
-    pub added_by: Uuid,
-    pub created_at: OffsetDateTime,
-    pub updated_at: OffsetDateTime,
+    pub added_by: Option<Uuid>,
+    pub posted_on: OffsetDateTime
 }
 
 impl From<Row> for Publish {
@@ -226,8 +227,7 @@ impl From<Row> for Publish {
             note: row.get("note"),
             position: row.get("position"),
             added_by: row.get("added_by"),
-            created_at: row.get("created_at"),
-            updated_at: row.get("updated_at"),
+            posted_on: row.get("posted_on")
         }
     }
 }
