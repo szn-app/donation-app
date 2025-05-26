@@ -6,21 +6,31 @@ FROM rust AS build
 RUN apt-get update && apt-get install -y bash
 SHELL ["/bin/bash", "-c"]
 
+# musl toolchain
+# RUN apt-get update -y && apt-get install musl-tools -y
+# RUN rustup target add x86_64-unknown-linux-musl
+
 COPY . /app
 WORKDIR /app
 
 RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@webhook-handler
 
+# NOTE: distroless image lacks protobuf required dependencies; otherwise build with 'musl' relase target
+# RUN cargo build --release --locked --target x86_64-unknown-linux-musl
+
 RUN cargo build --release --locked
 
 # configure run script
+# RUN mv /app/target/x86_64-unknown-linux-musl/release/webhook-handler /bin/webhook-handler
 RUN mv /app/target/release/webhook-handler /bin/webhook-handler
 RUN chmod +x /bin/webhook-handler
 
 # ---
 
-# image hosting application (required glibc for rust)
-FROM gcr.io/distroless/cc AS production
+# image hosting application (if built with glibc, binary would require glibc and requires dependencies for tonic protobuf)
+# TODO: use slim version after satisfying protobuf requirements, possible by retrying to build with `musl` and install dependenices on a 'distroless' image
+# FROM rust:slim-bookworm AS production
+FROM rust:latest AS production
 
 # ISSUE: github container registry doesn't pick up org.opencontainers.image.source value to associate automatically the image with the repo.
 LABEL org.opencontainers.image.source="https://github.com/szn-app/donation-app"

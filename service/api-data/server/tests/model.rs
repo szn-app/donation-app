@@ -1,5 +1,5 @@
 use api_data::database::repository;
-use api_data::database::sql::GET_ACCOUNTS;
+use api_data::database::sql::LIST_ACCOUNTS;
 use std::error::Error;
 use tokio_postgres::{self, NoTls};
 
@@ -95,7 +95,7 @@ mod tests {
             }
         });
 
-        let rows = client.query(GET_ACCOUNTS, &[]).await?;
+        let rows = client.query(LIST_ACCOUNTS, &[]).await?;
 
         if !rows.is_empty() {
             let value: i32 = rows[0].get("id");
@@ -119,7 +119,7 @@ mod tests {
         let postgres_pool_group = PostgresPool::new_single_point_pool(Option::Some(5432)).await;
 
         let result =
-            repository::user::AccountRepository::get_accounts(&postgres_pool_group).await?;
+            repository::user::AccountRepository::LIST_ACCOUNTS(&postgres_pool_group).await?;
 
         if !result.is_empty() {
             println!(

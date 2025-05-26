@@ -35,8 +35,18 @@ build_container#package_hook@webhook-handler() {
     docker build . -t webhook-handler:latest
 
     verify() {
+        eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
+
+        docker build -t webhook-handler:latest --target production . 
+
         # check if build works with current Cargo.toml options
         docker run -it -v $(pwd):/app -w /app rust /bin/bash
+
+        docker run -it --entrypoint "/bin/ls" -v $(pwd):/app -w /app webhook-handler:latest -al
+    }
+
+    ldd_discover_binary_dependencies(){
+        ldd ./target/debug/webhook-handler
     }
 }
 

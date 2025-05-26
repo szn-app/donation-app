@@ -3,6 +3,12 @@ name = "webhook-handler"
 version = "0.0.4"
 edition = "2021"
 
+# for musl target - statically compile Rust binary with musl instead of relying on image glibc 
+# [profile.release]
+# strip = true
+# lto = true
+# codegen-units = 1
+
 [dependencies]
 shared_protobuf_webhook = { path = "./shared/protobuf-webhook" }
 

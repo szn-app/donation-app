@@ -4,6 +4,10 @@ set -e
 ### contains some scripts used for tools intallaions
 # NOTE: these are not used anywhere in the code, they are merely for documentation records
 
+install_linux_tools() {
+    sudo yum install -y htop
+}
+
 install_tailwindcss() { 
     pnpm install -D tailwindcss postcss autoprefixer
     pnpm dlx tailwindcss init -p
