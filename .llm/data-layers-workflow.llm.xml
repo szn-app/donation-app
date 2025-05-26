@@ -88,8 +88,7 @@
         }")]
       </Rule>
       <Rule> each resolver method should have parameter for &self, _ctx: &Context<'_>, followed by
-        parameters if any
-      </Rule>
+        parameters if any </Rule>
       <Rule>return repository result in Result type</Rule>
       <Rule>graphql method names should always include their struct name to prevent conflicts when
         merging the structs</Rule>
@@ -98,6 +97,11 @@
     <Task>
       <Step>check consistency across all layers Database schema definitions, Rust model structs and
         Enums, SQL operations, Repository implementations.</Step>
+    </Task>
+
+    <Task id="react-graphql">
+      <Step>align graphql query documents with graphql schema</Step>
+      <Step>align React components with generated Codegen graphql.ts type definitions</Step>
     </Task>
   </Execution>
 
