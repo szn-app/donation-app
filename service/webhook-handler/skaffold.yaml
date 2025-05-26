@@ -8,7 +8,9 @@ requires:
     configs: [webhook-handler-generic]
     activeProfiles:                                     
       - name: development
-        activatedBy: [development, local-production]
+        activatedBy: [development]
+      - name: local-production
+        activatedBy: [local-production]
       - name: production                               
         activatedBy: [production]
 
@@ -70,6 +72,40 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/dev
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@webhook-handler development"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@webhook-handler development"]
+              dir: .
+
+# build production mode and run with local dev settings
+- name: local-production
+
+  build: 
+    local: 
+      push: false 
+      tryImportMissing: false
+    tagPolicy:
+      customTemplate:
+        template: "webhook-handler:latest"
+    artifacts:
+    - image: webhook-handler
+      context: .
+      docker:
+        target: production
+        dockerfile: Dockerfile
+        buildArgs: {}
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+
   deploy: 
     kubectl: 
       hooks:
