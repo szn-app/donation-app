@@ -80,30 +80,34 @@ sleep 15
 echo "Creating Keto policy tuples"
 keto relation-tuple parse admin-user-policies.rts policies.rts --format json | keto relation-tuple create --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security - && echo "Successfully Keto created tuple" || echo "Error Keto creating admin tuple"
 
-example() {
-    keto relation-tuple get --namespace="Group" --relation="member" \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
-
-    keto relation-tuple get --namespace="Endpoint" --subject-set="Group:admin#member" \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
-
-    keto expand member Group admin \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification  --format yaml
-
-    keto expand access Endpoint k8s \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format yaml
-
-    curl -k -X POST http://keto-read:80/relation-tuples/check -H "Content-Type: application/json" -d \
-        '{ "namespace": "Endpoint", "object": "test", "relation": "access", "subject_set": { "namespace": "Group", "object": "admin", "relation": "" } }'
-    keto check Group:admin access Endpoint test \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
-    keto check User:$admin_uuid access Endpoint test \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
-        
-    keto check User:b@b.com access Endpoint k8s \
-        --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
-}
 EOF
+
+            example() {
+                keto relation-tuple get --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification
+                
+                keto relation-tuple get --namespace="Group" --relation="member" \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
+
+                keto relation-tuple get --namespace="Endpoint" --subject-set="Group:admin#member" \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
+
+                keto expand member Group admin \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification  --format yaml
+
+                keto expand access Endpoint k8s \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format yaml
+
+                curl -k -X POST http://keto-read:80/relation-tuples/check -H "Content-Type: application/json" -d \
+                    '{ "namespace": "Endpoint", "object": "test", "relation": "access", "subject_set": { "namespace": "Group", "object": "admin", "relation": "" } }'
+                keto check Group:admin access Endpoint test \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
+                keto check User:$admin_uuid access Endpoint test \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
+                    
+                keto check User:b@b.com access Endpoint k8s \
+                    --read-remote keto-read:80 --write-remote keto-write:80 --insecure-disable-transport-security --insecure-skip-hostname-verification --format json | jq
+            }
+
             kubectl cp $t setup-pod-keto:$t --namespace auth
             kubectl exec setup-pod-keto --namespace auth -- /bin/bash -c "chmod +x $t && $t"
         }

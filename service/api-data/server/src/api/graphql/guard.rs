@@ -45,10 +45,11 @@ impl Guard for AuthorizeUser {
         })?;
 
         log::debug!(
-            "{}:{}#{}@{}",
+            "{}:{}#{}@{}:{}",
             &self.namespace,
             &self.object,
             &self.relation,
+            "User",
             &user_id
         );
         let r = access_control::check_permission_for_subject_set(
@@ -57,7 +58,7 @@ impl Guard for AuthorizeUser {
             &self.object,
             &self.relation,
             "User",
-            user_id,
+            &user_id,
             "",
         )
         .await;
@@ -102,7 +103,7 @@ impl Guard for AuthorizeRelationTuple {
         log::debug!("--> Guard for dummyTestSecure @ graphql resolver");
         let g = ctx.data::<GlobalContext>()?;
 
-        let keto_client = g.keto_channel_group.write.clone();
+        let keto_client = g.keto_channel_group.read.clone();
 
         log::debug!(
             "{}:{}#{}@{}",
