@@ -17,7 +17,7 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { request } from "graphql-request";
-import { useAuth } from "react-oidc-context";
+import { useAuthHeaders } from "@/modules/auth/useAuthHeaders";
 import {
   CreateAccountDocument,
   CreateProfileDocument,
@@ -56,24 +56,22 @@ export function MockGraphqlData() {
   const [isLoading, setIsLoading] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
-  const auth = useAuth();
-  const token = auth?.user?.access_token;
-
-  const headers: Record<string, string> | undefined = token
-    ? { Authorization: `Bearer ${token}` }
-    : undefined;
+  const { headers, isAuthenticated } = useAuthHeaders();
 
   const addAccountMutation = useMutation({
-    mutationFn: async (variables: { id: string }) =>
-      await request<CreateAccountMutation>(
+    mutationKey: ['createAccount', isAuthenticated],
+    mutationFn: async (variables: { id: string }) => {
+      return await request<CreateAccountMutation>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         CreateAccountDocument.toString(),
         variables,
         headers,
-      ),
+      )
+    }
   });
 
   const addProfileMutation = useMutation({
+    mutationKey: ['createProfile', isAuthenticated],
     mutationFn: async (variables: {
       idAccount: string;
       name: string;
@@ -89,6 +87,7 @@ export function MockGraphqlData() {
   });
 
   const addCommunityMutation = useMutation({
+    mutationKey: ['createCommunity', isAuthenticated],
     mutationFn: async (variables: {
       name: string;
       description: string;
@@ -104,6 +103,7 @@ export function MockGraphqlData() {
   });
 
   const addCommitteeMutation = useMutation({
+    mutationKey: ['createCommittee', isAuthenticated],
     mutationFn: async (variables: {
       idCommunity: number;
       idProfile: string;
@@ -118,6 +118,7 @@ export function MockGraphqlData() {
   });
 
   const addCategoryMutation = useMutation({
+    mutationKey: ['createCategory', isAuthenticated],
     mutationFn: async (variables: {
       description: string;
       name: string;
@@ -132,6 +133,7 @@ export function MockGraphqlData() {
   });
 
   const addLocationMutation = useMutation({
+    mutationKey: ['createLocation', isAuthenticated],
     mutationFn: async (variables: {
       address: string;
       city: string;
@@ -150,6 +152,7 @@ export function MockGraphqlData() {
   });
 
   const addItemMutation = useMutation({
+    mutationKey: ['createItem', isAuthenticated],
     mutationFn: async (variables: {
       title: string;
       description: string;
@@ -172,6 +175,7 @@ export function MockGraphqlData() {
   });
 
   const addMediaMutation = useMutation({
+    mutationKey: ['createMedia', isAuthenticated],
     mutationFn: async (variables: {
       idItem: number;
       url: string;
@@ -187,6 +191,7 @@ export function MockGraphqlData() {
   });
 
   const addCollectionMutation = useMutation({
+    mutationKey: ['createCollection', isAuthenticated],
     mutationFn: async (variables: {
       idCommunity: number;
       title: string;
@@ -203,6 +208,7 @@ export function MockGraphqlData() {
   });
 
   const addPublishMutation = useMutation({
+    mutationKey: ['createPublish', isAuthenticated],
     mutationFn: async (variables: {
       createdBy: string;
       idCollection: number;
