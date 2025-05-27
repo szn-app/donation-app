@@ -11,8 +11,10 @@ use uuid::Uuid;
 #[postgres(name = "pledge_intent_action")]
 pub enum PledgeIntentAction {
     #[graphql(name = "give")]
+    #[postgres(name = "give")]
     Give,
     #[graphql(name = "receive")]
+    #[postgres(name = "receive")]
     Receive,
 }
 
@@ -20,10 +22,13 @@ pub enum PledgeIntentAction {
 #[postgres(name = "pledge_status")]
 pub enum PledgeStatus {
     #[graphql(name = "pending")]
+    #[postgres(name = "pending")]
     Pending,
     #[graphql(name = "approved")]
+    #[postgres(name = "approved")]
     Approved,
     #[graphql(name = "declined")]
+    #[postgres(name = "declined")]
     Declined,
 }
 

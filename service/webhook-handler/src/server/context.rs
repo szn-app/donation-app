@@ -34,8 +34,8 @@ pub async fn create_grpc_channel(
     address: &str,
 ) -> Result<Channel, Box<dyn std::error::Error + Send + Sync>> {
     let mut attempts = 0;
-    let max_retries: u32 = 10;
-    let mut delay = Duration::from_millis(500);
+    let max_retries: u32 = 100;
+    let mut delay = Duration::from_millis(300);
 
     while attempts <= max_retries {
         println!(

@@ -10,8 +10,10 @@ use tokio_postgres::{
 #[postgres(name = "collection_visibility")]
 pub enum CollectionVisibility {
     #[graphql(name = "public")]
+    #[postgres(name = "public")]
     Public,
     #[graphql(name = "restricted")]
+    #[postgres(name = "restricted")]
     Restricted,
 }
 
@@ -19,8 +21,10 @@ pub enum CollectionVisibility {
 #[postgres(name = "collection_type")]
 pub enum CollectionType {
     #[graphql(name = "featured")]
+    #[postgres(name = "featured")]
     Featured,
     #[graphql(name = "regular")]
+    #[postgres(name = "regular")]
     Regular,
 }
 

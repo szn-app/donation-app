@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model;
 use crate::database::repository;
 use crate::server::connection::PostgresPool;
@@ -10,22 +10,20 @@ pub struct LocationQuery {
 
 #[async_graphql::Object]
 impl LocationQuery {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn list_locations(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::Location>> {
         let repository = repository::listing::LocationRepository::new(self.postgres_pool_group.clone());
         let locations = repository.list().await.map_err(|e| e.to_string())?;
         Ok(locations)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn find_location(&self, ctx: &Context<'_>, id: i64) -> FieldResult<Option<model::Location>> {
         let repository = repository::listing::LocationRepository::new(self.postgres_pool_group.clone());
         let location = repository.find(id).await.map_err(|e| e.to_string())?;

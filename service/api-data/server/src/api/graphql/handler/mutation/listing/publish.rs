@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::Publish;
 use crate::database::repository::listing::publish::PublishRepository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct PublishMutation {
 
 #[async_graphql::Object]
 impl PublishMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_publish(
         &self,
         _ctx: &Context<'_>,
@@ -34,11 +33,10 @@ impl PublishMutation {
         Ok(publish)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update_publish(
         &self,
         _ctx: &Context<'_>,
@@ -56,11 +54,10 @@ impl PublishMutation {
         Ok(publish)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_publish(
         &self,
         _ctx: &Context<'_>,

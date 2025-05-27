@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::Category;
 use crate::database::repository::listing::category::CategoryRepository;
 use crate::server::connection::PostgresPool;
@@ -10,11 +10,10 @@ pub struct CategoryMutation {
 
 #[async_graphql::Object]
 impl CategoryMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_category(
         &self,
         _ctx: &Context<'_>,
@@ -31,11 +30,10 @@ impl CategoryMutation {
         Ok(category)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update_category(
         &self,
         _ctx: &Context<'_>,
@@ -52,11 +50,10 @@ impl CategoryMutation {
         Ok(category)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_category(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = CategoryRepository::new(self.postgres_pool_group.clone());
         repository

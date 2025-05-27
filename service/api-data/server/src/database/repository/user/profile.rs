@@ -60,10 +60,14 @@ impl ProfileRepository {
             name, description, type_, owner, created_by
         );
         let client = self.pool.rw.get().await?;
+
+        // Convert Option<ProfileType> to a form tokio-postgres can handle Option<&ProfileType> with FromSql/ToSql blanket implementation
+        let type_param: Option<&ProfileType> = type_.as_ref();
+
         let row = client
             .query_one(
                 CREATE_PROFILE,
-                &[&name, &description, &type_, &owner, &created_by],
+                &[&name, &description, &type_param, &owner, &created_by],
             )
             .await?;
         Ok(Profile::from(row))

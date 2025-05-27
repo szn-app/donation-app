@@ -11,10 +11,13 @@ use uuid::Uuid;
 #[postgres(name = "profile_type")]
 pub enum ProfileType {
     #[graphql(name = "individual")]
+    #[postgres(name = "individual")]
     Individual,
     #[graphql(name = "organization")]
+    #[postgres(name = "organization")]
     Organization,
     #[graphql(name = "company")]
+    #[postgres(name = "company")]
     Company,
 }
 

@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model;
 use crate::database::repository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct ReviewQuery {
 
 #[async_graphql::Object]
 impl ReviewQuery {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn list_reviews(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::interaction::Review>> {
         log::debug!("--> list_reviews @ graphql resolver");
         let repository = repository::interaction::ReviewRepository::new(self.postgres_pool_group.clone());

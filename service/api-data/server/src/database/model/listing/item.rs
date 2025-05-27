@@ -11,12 +11,16 @@ use uuid::Uuid;
 #[postgres(name = "item_type")]
 pub enum ItemType {
     #[graphql(name = "inkind")]
+    #[postgres(name = "inkind")]
     InKind,
     #[graphql(name = "inquiry")]
+    #[postgres(name = "inquiry")]
     Inquiry,
     #[graphql(name = "monetary")]
+    #[postgres(name = "monetary")]
     Monetary,
     #[graphql(name = "service")]
+    #[postgres(name = "service")]
     Service,
 }
 
@@ -24,8 +28,10 @@ pub enum ItemType {
 #[postgres(name = "item_intent_action")]
 pub enum ItemIntentAction {
     #[graphql(name = "request")]
+    #[postgres(name = "request")]
     Request,
     #[graphql(name = "offer")]
+    #[postgres(name = "offer")]
     Offer,
 }
 
@@ -33,12 +39,16 @@ pub enum ItemIntentAction {
 #[postgres(name = "item_status")]
 pub enum ItemStatus {
     #[graphql(name = "draft")]
+    #[postgres(name = "draft")]
     Draft,
     #[graphql(name = "active")]
+    #[postgres(name = "active")]
     Active,
     #[graphql(name = "disabled")]
+    #[postgres(name = "disabled")]
     Disabled,
     #[graphql(name = "archived")]
+    #[postgres(name = "archived")]
     Archived,
 }
 
@@ -46,12 +56,16 @@ pub enum ItemStatus {
 #[postgres(name = "item_condition")]
 pub enum ItemCondition {
     #[graphql(name = "brand_new")]
+    #[postgres(name = "brand_new")]
     BrandNew,
     #[graphql(name = "pre_owned_barely_used")]
+    #[postgres(name = "pre_owned_barely_used")]
     PreOwnedBarelyUsed,
     #[graphql(name = "pre_owned_usable")]
+    #[postgres(name = "pre_owned_usable")]
     PreOwnedUsable,
     #[graphql(name = "pre_owned_damaged")]
+    #[postgres(name = "pre_owned_damaged")]
     PreOwnedDamaged,
 }
 

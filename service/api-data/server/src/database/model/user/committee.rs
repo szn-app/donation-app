@@ -10,8 +10,10 @@ use tokio_postgres::{
 #[postgres(name = "committee_role")]
 pub enum CommitteeRole {
     #[graphql(name = "organizer")]
+    #[postgres(name = "organizer")]
     Organizer,
     #[graphql(name = "member")]
+    #[postgres(name = "member")]
     Member,
 }
 

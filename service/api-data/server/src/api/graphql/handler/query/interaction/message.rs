@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model;
 use crate::database::repository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct MessageQuery {
 
 #[async_graphql::Object]
 impl MessageQuery {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn list_messages(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::Message>> {
         log::debug!("--> list_messages @ graphql resolver");
         let repository = repository::interaction::MessageRepository::new(self.postgres_pool_group.clone());
@@ -23,11 +22,10 @@ impl MessageQuery {
         Ok(messages)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn find_message(&self, ctx: &Context<'_>, id: i64) -> FieldResult<Option<model::Message>> {
         log::debug!("--> find_message @ graphql resolver");
         let repository = repository::interaction::MessageRepository::new(self.postgres_pool_group.clone());

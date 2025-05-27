@@ -10,10 +10,13 @@ use tokio_postgres::{
 #[postgres(name = "media_type")]
 pub enum MediaType {
     #[graphql(name = "document")]
+    #[postgres(name = "document")]
     Document,
     #[graphql(name = "image")]
+    #[postgres(name = "image")]
     Image,
     #[graphql(name = "video")]
+    #[postgres(name = "video")]
     Video,
 }
 

@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::listing::Location;
 use crate::database::repository::listing::location::LocationRepository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct LocationMutation {
 
 #[async_graphql::Object]
 impl LocationMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_location(
         &self,
         _ctx: &Context<'_>,
@@ -44,11 +43,10 @@ impl LocationMutation {
         Ok(location)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update_location(
         &self,
         _ctx: &Context<'_>,
@@ -68,11 +66,10 @@ impl LocationMutation {
         Ok(location)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_location(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         let repository = LocationRepository::new(self.postgres_pool_group.clone());
         repository

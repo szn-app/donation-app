@@ -81,14 +81,15 @@
       <Rule>follow existing resolvers implementations patterns and tools</Rule>
       <Rule>
         each resolver method should be by default guarded with:
-        #[graphql(guard = "AuthorizeUser {
-        namespace: \"Group\".to_string(),
-        object: \"admin\".to_string(),
-        relation: \"member\".to_string()
-        }")]
+
+        #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+        )]
       </Rule>
       <Rule> each resolver method should have parameter for &self, _ctx: &Context<'_>, followed by
-        parameters if any </Rule>
+        parameters if any
+      </Rule>
       <Rule>return repository result in Result type</Rule>
       <Rule>graphql method names should always include their struct name to prevent conflicts when
         merging the structs</Rule>

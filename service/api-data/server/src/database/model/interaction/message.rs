@@ -10,8 +10,10 @@ use tokio_postgres::{
 #[postgres(name = "message_type")]
 pub enum MessageType {
     #[graphql(name = "text")]
+    #[postgres(name = "text")]
     Text,
     #[graphql(name = "schedule_opportunity")]
+    #[postgres(name = "schedule_opportunity")]
     ScheduleOpportunity,
 }
 

@@ -12,3 +12,7 @@ used strictly for data access (no business logic & services)
    // You will also need to implement FromSql and ToSql for these types if using tokio-postgres
    // You might need a crate for spatial types, e.g., `geo-types`
    // use geo_types::Point; // Example placeholder
+
+
+# notes: 
+- derive macros (decorators) for structs and enums map the exact name - case sensitive - of the Postgres and graphql equivalent definitions (struct, enum, fields); https://docs.rs/postgres-types/latest/postgres_types/

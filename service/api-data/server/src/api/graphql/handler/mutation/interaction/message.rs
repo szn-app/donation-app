@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::interaction::{Message, MessageType};
 use crate::database::repository::interaction::message::MessageRepository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct MessageMutation {
 
 #[async_graphql::Object]
 impl MessageMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create(
         &self,
         _ctx: &Context<'_>,

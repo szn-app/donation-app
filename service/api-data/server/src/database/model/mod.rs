@@ -16,26 +16,3 @@ pub use interaction::*;
 pub use listing::*;
 pub use test::*;
 pub use user::*;
-
-// TODO: use in implementation
-mod example_enums {
-    // https://docs.rs/postgres-types/latest/postgres_types/
-
-    use postgres_types::{FromSql, ToSql};
-
-    // Note: map the exact name - case sensitive - of the Postgres ENUM
-    #[derive(FromSql, ToSql, Debug)]
-    #[postgres(name = "USER_STATUS")]
-    enum UserStatus {
-        INACTIVE,
-        ACTIVE,
-        DELETED,
-    }
-
-    struct User {
-        id: u32,
-        name: String,
-        age: Option<u32>,
-        status: UserStatus,
-    }
-}

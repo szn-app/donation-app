@@ -10,10 +10,13 @@ use tokio_postgres::{
 #[postgres(name = "transaction_status")]
 pub enum TransactionStatus {
     #[graphql(name = "inprogress")]
+    #[postgres(name = "inprogress")]
     InProgress,
     #[graphql(name = "completed")]
+    #[postgres(name = "completed")]
     Completed,
     #[graphql(name = "cancelled")]
+    #[postgres(name = "cancelled")]
     Cancelled,
 }
 

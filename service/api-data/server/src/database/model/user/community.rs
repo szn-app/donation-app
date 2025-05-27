@@ -11,8 +11,10 @@ use uuid::Uuid;
 #[postgres(name = "community_type")]
 pub enum CommunityType {
     #[graphql(name = "solo")]
+    #[postgres(name = "solo")]
     Solo,
     #[graphql(name = "organized")]
+    #[postgres(name = "organized")]
     Organized,
 }
 

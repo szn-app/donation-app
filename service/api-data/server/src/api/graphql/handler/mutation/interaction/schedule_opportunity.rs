@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::interaction::ScheduleOpportunity;
 use crate::database::repository::interaction::schedule_opportunity::ScheduleOpportunityRepository;
 use crate::server::connection::PostgresPool;
@@ -12,11 +12,10 @@ pub struct ScheduleOpportunityMutation {
 
 #[async_graphql::Object]
 impl ScheduleOpportunityMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn create(
         &self,
         _ctx: &Context<'_>,
@@ -35,11 +34,10 @@ impl ScheduleOpportunityMutation {
         Ok(schedule_opportunity)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update(
         &self,
         _ctx: &Context<'_>,

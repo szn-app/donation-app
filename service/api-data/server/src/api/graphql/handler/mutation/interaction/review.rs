@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::interaction::Review;
 use crate::database::repository::interaction::review::ReviewRepository;
 use crate::server::connection::PostgresPool;
@@ -10,11 +10,10 @@ pub struct ReviewMutation {
 
 #[async_graphql::Object]
 impl ReviewMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create(
         &self,
         _ctx: &Context<'_>,

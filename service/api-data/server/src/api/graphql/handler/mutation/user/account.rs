@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::user::Account;
 use crate::database::repository::user::AccountRepository;
 use crate::server::connection::PostgresPool;
@@ -12,11 +12,10 @@ pub struct AccountMutation {
 
 #[async_graphql::Object]
 impl AccountMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_account(
         &self,
         _ctx: &Context<'_>,
@@ -29,11 +28,10 @@ impl AccountMutation {
         Ok(account)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn update_account(
         &self,
         _ctx: &Context<'_>,
@@ -46,11 +44,10 @@ impl AccountMutation {
         Ok(account)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_account(&self, _ctx: &Context<'_>, id: Uuid) -> FieldResult<bool> {
         log::debug!("--> delete_account @ graphql resolver");
         let repository = AccountRepository::new(self.postgres_pool_group.clone());

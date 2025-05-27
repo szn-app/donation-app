@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model;
 use crate::database::repository;
 use crate::server::connection::PostgresPool;
@@ -13,11 +13,10 @@ pub struct CommitteeQuery {
 #[async_graphql::Object]
 impl CommitteeQuery {
     /// Get all committees
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn list_committees(&self, _ctx: &Context<'_>) -> FieldResult<Vec<model::user::Committee>> {
         log::debug!("--> committees @ graphql resolver");
         let repository = repository::user::CommitteeRepository::new(self.postgres_pool_group.clone());
@@ -26,11 +25,10 @@ impl CommitteeQuery {
     }
 
     /// Get committee by ID
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn find_committee(&self, _ctx: &Context<'_>, id: uuid::Uuid) -> FieldResult<Option<model::user::Committee>> {
         log::debug!("--> committee_by_id @ graphql resolver");
         let repository = repository::user::CommitteeRepository::new(self.postgres_pool_group.clone());

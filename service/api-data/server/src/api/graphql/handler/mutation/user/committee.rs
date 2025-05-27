@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::user::{Committee, CommitteeRole};
 use crate::database::repository::user::CommitteeRepository;
 use crate::server::connection::PostgresPool;
@@ -11,11 +11,10 @@ pub struct CommitteeMutation {
 
 #[async_graphql::Object]
 impl CommitteeMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_committee(
         &self,
         _ctx: &Context<'_>,
@@ -32,11 +31,10 @@ impl CommitteeMutation {
         Ok(committee)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update_committee(
         &self,
         _ctx: &Context<'_>,
@@ -53,11 +51,10 @@ impl CommitteeMutation {
         Ok(committee)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_committee(
         &self,
         _ctx: &Context<'_>,

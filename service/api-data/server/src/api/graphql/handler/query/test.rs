@@ -18,11 +18,10 @@ pub struct TestQuery {
 
 #[async_graphql::Object]
 impl TestQuery {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn list_tests(&self, ctx: &Context<'_>) -> FieldResult<Vec<model::test::Test>> {
         let repository = TestRepository::new(self.postgres_pool_group.clone());
         let test_list = repository.list().await.map_err(|e| e.to_string())?;
@@ -121,11 +120,7 @@ impl TestQuery {
 
     // for debugging purposes
     #[graphql(
-        guard = "AuthorizeUser {
-            namespace: \"Endpoint\".to_string(),
-            object: \"k8s\".to_string(),
-            relation: \"access\".to_string()
-        }",
+        guard = "AuthorizeUser::k8s_endpoint_access_guard()",
         directive = auth::apply(Some("required_authorization".to_string()))
     )]
     async fn dummyTestSecureGuard(&self, ctx: &Context<'_>) -> FieldResult<model::test::Test> {

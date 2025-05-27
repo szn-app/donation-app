@@ -4,6 +4,7 @@ use shared_protobuf_keto::proto::relation_tuples::{
 }; // spec: https://github.com/ory/keto/blob/master/proto/buf.md
 use std::error::Error;
 use tonic::{self, transport::Channel};
+use log;
 
 /// Checks if a subject has a specific relation with an object
 ///
@@ -66,15 +67,17 @@ pub async fn check_permission_for_subject(
         r#ref: Some(subject::Ref::Id(subject_id.to_string())),
     });
 
-    let tuple = RelationTuple {
+    let relation_tuple = RelationTuple {
         namespace: namespace.to_string(),
         object: object.to_string(),
         relation: relation.to_string(),
         subject,
     };
 
+    log::debug!("{:?}", relation_tuple); 
+
     let request = tonic::Request::new(CheckRequest {
-        tuple: Some(tuple),
+        tuple: Some(relation_tuple),
         max_depth: 10,
         ..Default::default()
     });

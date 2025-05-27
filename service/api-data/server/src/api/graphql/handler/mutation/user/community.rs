@@ -1,4 +1,4 @@
-use crate::api::graphql::guard::AuthorizeUser;
+use crate::api::graphql::guard::{auth, AuthorizeUser};
 use crate::database::model::user::{Community, CommunityType};
 use crate::database::repository::user::CommunityRepository;
 use crate::server::connection::PostgresPool;
@@ -12,11 +12,10 @@ pub struct CommunityMutation {
 
 #[async_graphql::Object]
 impl CommunityMutation {
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     pub async fn create_community(
         &self,
         _ctx: &Context<'_>,
@@ -34,11 +33,10 @@ impl CommunityMutation {
         Ok(community)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn update_community(
         &self,
         _ctx: &Context<'_>,
@@ -56,11 +54,10 @@ impl CommunityMutation {
         Ok(community)
     }
 
-    #[graphql(guard = "AuthorizeUser {
-            namespace: \"Group\".to_string(),
-            object: \"admin\".to_string(),
-            relation: \"member\".to_string()
-        }")]
+    #[graphql(
+        guard = "AuthorizeUser::group_admin_guard()",
+        directive = auth::apply(Some("required_authorization".to_string()))
+    )]
     async fn delete_community(&self, _ctx: &Context<'_>, id: i64) -> FieldResult<bool> {
         log::debug!("--> delete_community @ graphql resolver");
         let repository = CommunityRepository::new(self.postgres_pool_group.clone());
