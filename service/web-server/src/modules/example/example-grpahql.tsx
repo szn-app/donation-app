@@ -30,19 +30,20 @@ export function ExampleGraphqlPartial() {
   const token = auth?.user?.access_token;
 
   const headers = React.useMemo<Record<string, string> | undefined>(() => 
-      token ? { Authorization: `Bearer ${token}` } : undefined,
+      token ? { "Authorization": `Bearer ${token}` } : undefined,
       [token]
     );
-  
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["cache-key-1", auth.isAuthenticated],
-    queryFn: async () =>
-      await request<GetTestListPartialQuery>(
+    queryKey: ["cache-key-1", auth.isAuthenticated, token],
+    queryFn: async () => {
+      return await request<GetTestListPartialQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
         GET_TEST_LIST_PARTIAL_DOCUMENT.toString(),
         undefined,
         headers
-      ),
+      )
+    },
     // parsing setp to match expected types to returned values on runtime
     select: (raw) => ({
       tests: raw.listTests.map((test) => {
