@@ -22,7 +22,7 @@ impl CollectionRepository {
         id_community: i64,
         title: String,
         visibility: CollectionVisibility,
-        type_: CollectionType,
+        variant: CollectionType,
         position: i32,
     ) -> Result<Collection, Box<dyn Error + Send + Sync>> {
         debug!(
@@ -33,7 +33,7 @@ impl CollectionRepository {
         let row = client
             .query_one(
                 CREATE_COLLECTION,
-                &[&id_community, &title, &visibility, &type_, &position],
+                &[&id_community, &title, &visibility, &variant, &position],
             )
             .await?;
         Ok(Collection::from(row))
@@ -51,7 +51,7 @@ impl CollectionRepository {
         id: i64,
         title: String,
         visibility: CollectionVisibility,
-        type_: CollectionType,
+        variant: CollectionType,
         position: i32,
     ) -> Result<Collection, Box<dyn Error + Send + Sync>> {
         debug!("Updating collection {} with title: {}", id, title);
@@ -60,7 +60,7 @@ impl CollectionRepository {
         let row = client
             .query_opt(
                 UPDATE_COLLECTION,
-                &[&id, &title, &visibility, &type_, &position, &now],
+                &[&id, &title, &visibility, &variant, &position, &now],
             )
             .await?;
 

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeIntentAction, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from './graphql.ts'
+import { Account, Category, Collection, CollectionType, CollectionVisibility, Committee, CommitteeRole, Community, CommunityType, Coordinates, CoordinatesInput, Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType, Location, Media, MediaType, Message, MessageType, Pledge, PledgeIntentAction, PledgeStatus, Profile, ProfileType, Publish, Review, Schedule, ScheduleOpportunity, Test, Transaction, TransactionStatus } from './graphql.ts'
 
 type Properties<T> = Required<{
   [K in keyof T]: z.ZodType<T[K], any, T[K]>;
@@ -42,7 +42,7 @@ export const TransactionStatusSchema = z.nativeEnum(TransactionStatus);
 export function AccountSchema(): z.ZodObject<Properties<Account>> {
   return z.object({
     __typename: z.literal('Account').optional(),
-    created_at: z.coerce.date(),
+    createdAt: z.coerce.date(),
     id: z.string(),
     remarks: z.string().nullish()
   })
@@ -52,24 +52,22 @@ export function CategorySchema(): z.ZodObject<Properties<Category>> {
   return z.object({
     __typename: z.literal('Category').optional(),
     categoryParent: z.number().nullish(),
-    createdAt: z.coerce.date(),
     description: z.string().nullish(),
     id: z.number(),
-    title: z.string(),
-    updatedAt: z.coerce.date()
+    title: z.string()
   })
 }
 
 export function CollectionSchema(): z.ZodObject<Properties<Collection>> {
   return z.object({
     __typename: z.literal('Collection').optional(),
-    created_at: z.coerce.date(),
+    createdAt: z.coerce.date(),
     id: z.number(),
     idCommunity: z.number().nullish(),
     position: z.number(),
     title: z.string().nullish(),
-    type: CollectionTypeSchema.nullish(),
     updatedAt: z.coerce.date().nullish(),
+    variant: CollectionTypeSchema.nullish(),
     visibility: CollectionVisibilitySchema
   })
 }
@@ -87,14 +85,29 @@ export function CommitteeSchema(): z.ZodObject<Properties<Committee>> {
 export function CommunitySchema(): z.ZodObject<Properties<Community>> {
   return z.object({
     __typename: z.literal('Community').optional(),
+    createdAt: z.coerce.date(),
     createdBy: z.string(),
-    created_at: z.coerce.date(),
     description: z.string().nullish(),
     id: z.number(),
     owner: z.string(),
     title: z.string(),
-    type: CommunityTypeSchema,
-    updatedAt: z.coerce.date().nullish()
+    updatedAt: z.coerce.date().nullish(),
+    variant: CommunityTypeSchema
+  })
+}
+
+export function CoordinatesSchema(): z.ZodObject<Properties<Coordinates>> {
+  return z.object({
+    __typename: z.literal('Coordinates').optional(),
+    latitude: z.number(),
+    longitude: z.number()
+  })
+}
+
+export function CoordinatesInputSchema(): z.ZodObject<Properties<CoordinatesInput>> {
+  return z.object({
+    latitude: z.number(),
+    longitude: z.number()
   })
 }
 
@@ -102,18 +115,18 @@ export function ItemSchema(): z.ZodObject<Properties<Item>> {
   return z.object({
     __typename: z.literal('Item').optional(),
     category: z.number().nullish(),
-    condition: ItemConditionSchema,
+    condition: ItemConditionSchema.nullish(),
+    createdAt: z.coerce.date(),
     createdBy: z.string().nullish(),
-    created_at: z.coerce.date(),
     description: z.string().nullish(),
     id: z.number(),
     intentAction: ItemIntentActionSchema,
     isReported: z.boolean(),
     location: z.number().nullish(),
-    status: ItemStatusSchema,
+    status: ItemStatusSchema.nullish(),
     title: z.string().nullish(),
-    type: ItemTypeSchema,
     updatedAt: z.coerce.date().nullish(),
+    variant: ItemTypeSchema,
     viewsCount: z.number()
   })
 }
@@ -124,12 +137,13 @@ export function LocationSchema(): z.ZodObject<Properties<Location>> {
     addressLine1: z.string(),
     addressLine2: z.string().nullish(),
     city: z.string(),
+    coordinates: CoordinatesSchema().nullish(),
     country: z.string(),
     createdAt: z.coerce.date(),
     district: z.string().nullish(),
     entranceNote: z.string().nullish(),
     id: z.number(),
-    state: z.string()
+    state: z.string().nullish()
   })
 }
 
@@ -137,11 +151,11 @@ export function MediaSchema(): z.ZodObject<Properties<Media>> {
   return z.object({
     __typename: z.literal('Media').optional(),
     caption: z.string().nullish(),
-    created_at: z.coerce.date(),
+    createdAt: z.coerce.date(),
     id: z.number(),
     idItem: z.number(),
-    type: MediaTypeSchema,
-    url: z.string()
+    url: z.string(),
+    variant: MediaTypeSchema
   })
 }
 
@@ -153,8 +167,8 @@ export function MessageSchema(): z.ZodObject<Properties<Message>> {
     idSender: z.number().nullish(),
     idTransaction: z.number(),
     sent_at: z.coerce.date(),
-    type: MessageTypeSchema.nullish(),
-    updatedAt: z.coerce.date().nullish()
+    updatedAt: z.coerce.date().nullish(),
+    variant: MessageTypeSchema.nullish()
   })
 }
 
@@ -176,14 +190,14 @@ export function PledgeSchema(): z.ZodObject<Properties<Pledge>> {
 export function ProfileSchema(): z.ZodObject<Properties<Profile>> {
   return z.object({
     __typename: z.literal('Profile').optional(),
+    createdAt: z.coerce.date(),
     createdBy: z.string(),
-    created_at: z.coerce.date(),
     description: z.string().nullish(),
     id: z.number(),
-    name: z.string(),
+    name: z.string().nullish(),
     owner: z.string(),
-    type: ProfileTypeSchema.nullish(),
-    updatedAt: z.coerce.date().nullish()
+    updatedAt: z.coerce.date().nullish(),
+    variant: ProfileTypeSchema.nullish()
   })
 }
 
@@ -203,7 +217,7 @@ export function ReviewSchema(): z.ZodObject<Properties<Review>> {
   return z.object({
     __typename: z.literal('Review').optional(),
     comment: z.string().nullish(),
-    created_at: z.coerce.date(),
+    createdAt: z.coerce.date(),
     idSubjectProfile: z.number(),
     idTransaction: z.number(),
     reviewer: z.number(),
@@ -240,7 +254,7 @@ export function TestSchema(): z.ZodObject<Properties<Test>> {
 export function TransactionSchema(): z.ZodObject<Properties<Transaction>> {
   return z.object({
     __typename: z.literal('Transaction').optional(),
-    created_at: z.coerce.date(),
+    createdAt: z.coerce.date(),
     id: z.number(),
     idLocation: z.number().nullish(),
     idPledge: z.number(),

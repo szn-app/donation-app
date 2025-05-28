@@ -22,7 +22,7 @@ pub struct Message {
     pub id: i64,
     pub id_sender: Option<i64>,
     pub id_transaction: i64,
-    pub type_: Option<MessageType>,
+    pub variant: Option<MessageType>,
     pub content: String,
     #[graphql(name = "sent_at")]
     pub sent_at: OffsetDateTime,
@@ -35,10 +35,10 @@ impl From<Row> for Message {
             id: row.get("id"),
             id_sender: row.get("id_sender"),
             id_transaction: row.get("id_transaction"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             content: row.get("content"),
             sent_at: row.get("sent_at"),
             updated_at: row.get("updated_at"),
         }
     }
-} 
+}

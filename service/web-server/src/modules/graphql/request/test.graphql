@@ -1,7 +1,7 @@
 query GetAccountList {
   listAccounts {
     id
-    created_at
+    createdAt
   }
 }
 

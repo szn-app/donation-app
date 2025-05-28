@@ -12,6 +12,6 @@
 -- $3: INT2 - rating score
 -- $4: TEXT - comment
 
-INSERT INTO review (id_transaction, id_subject, rating, comment)
+INSERT INTO "interaction"."review" (id_transaction, id_subject, rating, comment)
 VALUES ($1, $2, $3, $4)
 RETURNING id_transaction, id_subject_profile, reviewer, comment, score, created_at; 

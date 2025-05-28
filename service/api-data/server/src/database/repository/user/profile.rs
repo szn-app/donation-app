@@ -1,14 +1,14 @@
+use log::debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use log::debug;
 
 use crate::database::model::user::profile::{Profile, ProfileType};
 use crate::database::sql::user::profile::{
-    CREATE_PROFILE, DELETE_PROFILE, FIND_PROFILE, LIST_PROFILES, FIND_PROFILES_BY_OWNER,
+    CREATE_PROFILE, DELETE_PROFILE, FIND_PROFILE, FIND_PROFILES_BY_OWNER, LIST_PROFILES,
     UPDATE_PROFILE,
 };
-use std::error::Error;
 use crate::server::connection::PostgresPool;
+use std::error::Error;
 
 pub struct ProfileRepository {
     pool: PostgresPool,
@@ -51,18 +51,18 @@ impl ProfileRepository {
         &self,
         name: String,
         description: Option<String>,
-        type_: Option<ProfileType>,
+        variant: Option<ProfileType>,
         owner: Uuid,
         created_by: Uuid,
     ) -> Result<Profile, Box<dyn Error + Send + Sync>> {
         debug!(
             "Creating new profile with name: {}, description: {:?}, type: {:?}, owner: {}, created_by: {}",
-            name, description, type_, owner, created_by
+            name, description, variant, owner, created_by
         );
         let client = self.pool.rw.get().await?;
 
         // Convert Option<ProfileType> to a form tokio-postgres can handle Option<&ProfileType> with FromSql/ToSql blanket implementation
-        let type_param: Option<&ProfileType> = type_.as_ref();
+        let type_param: Option<&ProfileType> = variant.as_ref();
 
         let row = client
             .query_one(
@@ -79,15 +79,15 @@ impl ProfileRepository {
         id: i64,
         name: String,
         description: Option<String>,
-        type_: Option<ProfileType>,
+        variant: Option<ProfileType>,
     ) -> Result<Option<Profile>, Box<dyn Error + Send + Sync>> {
         debug!(
             "Updating profile {} with name: {}, description: {:?}, type: {:?}",
-            id, name, description, type_
+            id, name, description, variant
         );
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_opt(UPDATE_PROFILE, &[&id, &name, &description, &type_])
+            .query_opt(UPDATE_PROFILE, &[&id, &name, &description, &variant])
             .await?;
         Ok(row.map(Profile::from))
     }

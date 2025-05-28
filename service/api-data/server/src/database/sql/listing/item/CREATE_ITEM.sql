@@ -1,6 +1,6 @@
 -- Create a new listing item
 INSERT INTO "listing"."item" (
-    type,
+    variant,
     intent_action,
     status,
     title,
@@ -11,7 +11,7 @@ INSERT INTO "listing"."item" (
     created_by
 )
 VALUES (
-    $1, -- type (item_type)
+    $1, -- variant (item_type)
     $2, -- intent_action (item_intent_action)
     $3, -- status (item_status)
     $4, -- title (VARCHAR(150))
@@ -23,7 +23,7 @@ VALUES (
 )
 RETURNING 
     id,
-    type,
+    variant,
     intent_action,
     status,
     title,

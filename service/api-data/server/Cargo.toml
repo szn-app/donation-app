@@ -14,7 +14,8 @@ tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking
 # database
 tokio-postgres = {version = "0.7.13", features = ["with-uuid-1", "with-time-0_3", "with-bit-vec-0_6", "array-impls", "with-geo-types-0_7"]}
 deadpool-postgres = "0.14.1"
-postgres-types = { version = "0.2.9", features = ["derive", "time-03"] }
+# https://github.com/sfackler/rust-postgres/blob/master/postgres-types/Cargo.toml
+postgres-types = { version = "0.2.9", features = ["derive", "with-uuid-1", "with-time-0_3", "with-geo-types-0_7", "with-bit-vec-0_6"] }
 refinery = "0.8.16" # database migrations management
 
 # web server
@@ -38,8 +39,11 @@ reqwest = { version = "0.11", features = ["json"] }
 time = { version = "0.3.41", features = ["formatting", "parsing", "std", "local-offset", "serde"] }
 uuid = { version = "1.16.0", features = ["v4", "serde"] }
 rust_decimal = "1.37.1"
+# TODO: use `geo` rust crate with `https://crates.io/crates/geo-traits` 
 geo-types = {version = "0.7.16", features = ["serde"]} # Geographic types that work with tokio-postgres
 url = "2.5.4"
+bytes = { version = "1.10.1", features = ["serde"] }
+postgis = "0.9.0" # PostGIS support for Rust
 
 # utils
 base64 = "0.22.1" # Encode and decode base64 as bytes or utf8.
@@ -53,8 +57,6 @@ env_logger = "0.10.1"
 retry = "2.1.0"
 bit-vec = "0.8.0"
 async-trait = "0.1.88"
-
-bytes = { version = "1.10.1", features = ["serde"] }
 futures-util = { version = "0.3.31", default-features = false }
 
 [dev-dependencies]

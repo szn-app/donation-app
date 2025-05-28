@@ -5,4 +5,4 @@
 -- joined_at: TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 -- Note: PRIMARY KEY (id_profile, id_community)
 
-SELECT * FROM committee 
+SELECT * FROM "user"."committee" 

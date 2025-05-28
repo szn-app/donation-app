@@ -54,3 +54,15 @@ generate_initial_release_please_config#setup@monorepo() {
     release-please release-pr --token=$GITHUB_TOKEN --repo-url=szn-app/donation-app --dry-run
     release-please github-release --token=$GITHUB_TOKEN --repo-url=szn-app/donation-app
 }
+
+git_worktree() { 
+    git worktree list
+    git worktree prune 
+
+    {
+        branch="worktree-1"
+        repo_name=$(basename "$(git rev-parse --show-toplevel)")
+        target="../${repo_name}-${branch}"
+        git worktree add -b $branch "${target}"
+    }
+}

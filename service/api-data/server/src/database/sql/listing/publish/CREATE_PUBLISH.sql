@@ -1,4 +1,4 @@
-INSERT INTO listing.publish (
+INSERT INTO "listing"."publish" (
     id_item, 
     id_collection, 
     note, 

@@ -3,7 +3,7 @@ query ListAccounts {
   listAccounts {
     id
     remarks
-    created_at
+    createdAt
   }
 }
 
@@ -12,7 +12,7 @@ query FindAccount($id: UUID!) {
   findAccount(id: $id) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
 
@@ -22,9 +22,9 @@ query ListProfiles {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -36,9 +36,9 @@ query FindProfile($id: Int!) {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -50,9 +50,9 @@ query ListCommunities {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -64,9 +64,9 @@ query FindCommunity($id: Int!) {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -99,8 +99,6 @@ query ListCategories {
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
 
@@ -111,8 +109,6 @@ query FindCategory($id: Int!) {
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
 
@@ -120,7 +116,7 @@ query FindCategory($id: Int!) {
 query ListItems {
   listItems {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -130,7 +126,7 @@ query ListItems {
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -140,7 +136,7 @@ query ListItems {
 query FindItem($id: Int!) {
   findItem(id: $id) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -150,7 +146,7 @@ query FindItem($id: Int!) {
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -168,6 +164,10 @@ query ListLocations {
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
 
@@ -183,6 +183,10 @@ query FindLocation($id: Int!) {
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
 
@@ -193,9 +197,9 @@ query ListCollections {
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -207,9 +211,9 @@ query FindCollection($id: Int!) {
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -221,8 +225,8 @@ query ListMedia {
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
 
@@ -233,8 +237,8 @@ query FindMedia($id: Int!) {
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
 
@@ -268,7 +272,7 @@ query ListMessages {
     id
     idSender
     idTransaction
-    type
+    variant
     content
     sent_at
     updatedAt
@@ -281,7 +285,7 @@ query FindMessage($id: Int!) {
     id
     idSender
     idTransaction
-    type
+    variant
     content
     sent_at
     updatedAt

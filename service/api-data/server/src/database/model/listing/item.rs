@@ -72,19 +72,30 @@ pub enum ItemCondition {
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Item {
     pub id: i64,
-    pub type_: ItemType,
-    pub intent_action: ItemIntentAction,
-    pub status: ItemStatus,
+    #[graphql(default)]
+    pub variant: Option<ItemType>,
+    #[graphql(default)]
+    pub intent_action: Option<ItemIntentAction>,
+    #[graphql(default)]
+    pub status: Option<ItemStatus>,
+    #[graphql(default)]
     pub title: Option<String>,
+    #[graphql(default)]
     pub description: Option<String>,
+    #[graphql(default)]
     pub category: Option<i64>,
-    pub condition: ItemCondition,
+    #[graphql(default)]
+    pub condition: Option<ItemCondition>,
+    #[graphql(default)]
     pub location: Option<i64>,
+    #[graphql(default = 0)]
     pub views_count: i64,
+    #[graphql(default = false)]
     pub is_reported: bool,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
+    #[graphql(default)]
     pub updated_at: Option<OffsetDateTime>,
+    #[graphql(default)]
     pub created_by: Option<Uuid>,
 }
 
@@ -92,7 +103,7 @@ impl From<Row> for Item {
     fn from(row: Row) -> Self {
         Self {
             id: row.get("id"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             intent_action: row.get("intent_action"),
             status: row.get("status"),
             title: row.get("title"),

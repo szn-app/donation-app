@@ -14,5 +14,5 @@ SELECT
     position,
     added_by,
     posted_on
-FROM listing.publish
+FROM "listing"."publish"
 ORDER BY posted_on DESC; 

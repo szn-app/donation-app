@@ -1,7 +1,7 @@
 -- Get items by category
 SELECT 
     id,
-    type,
+    variant,
     intent_action,
     status,
     title,

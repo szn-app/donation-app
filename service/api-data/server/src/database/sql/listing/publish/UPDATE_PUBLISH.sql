@@ -1,5 +1,5 @@
 -- Update publish entry
-UPDATE listing.publish
+UPDATE "listing"."publish"
 SET note = $3, 
     position = $4,
     updated_at = $5

@@ -156,3 +156,5 @@ Supported XML tags:
 * SQL operation must be consistent with the schema fields and naming.
 * Use appropriate RETURN clauses. 
 * Use UPPERCASE convention for SQL filenames.
+* For UPDATE sql files always support partial updates with COALESCE.
+

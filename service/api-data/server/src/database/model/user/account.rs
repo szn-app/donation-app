@@ -7,8 +7,8 @@ use uuid::Uuid;
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Account {
     pub id: Uuid,
+    #[graphql(default)]
     pub remarks: Option<String>,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
 }
 

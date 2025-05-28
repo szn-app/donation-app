@@ -1,6 +1,7 @@
 use crate::access_control;
 use crate::api::graphql::service::{DataContext, GlobalContext};
 use async_graphql::{Context, ErrorExtensions, Guard, ResultExt, TypeDirective};
+use http;
 
 /**
  * Using async_graphql guards to enforce authorization, while using type system directives for metadata to mark graphql objects which require authentication
@@ -48,6 +49,17 @@ impl<'a> Guard for AuthorizeUser<'a> {
 
         log::debug!("app-user-id = {:?}", &c.user_id);
 
+        #[cfg(debug_assertions)]
+        {
+            // DEBUG MODE - bypass check
+            if let Some(headers) = ctx.data_opt::<http::HeaderMap>() {
+                if let Some(value) = headers.get("debug-app-bypass-auth") {
+                    log::debug!("`debug-app-bypass-auth` header: {}", "on");
+                    return Ok(());
+                }
+            }
+        }
+
         let user_id = c.user_id.as_ref().ok_or_else(|| {
             const ERROR_MESSAGE: &str = "Not authenticated & No user header detected";
             log::error!("{}", ERROR_MESSAGE);
@@ -82,8 +94,20 @@ pub struct AuthorizeRelationTuple<'a> {
 impl<'a> Guard for AuthorizeRelationTuple<'a> {
     async fn check(&self, ctx: &Context<'_>) -> async_graphql::Result<()> {
         log::debug!("--> Guard for AuthorizeRelationTuple @ graphql resolver");
+
         let g = ctx.data::<GlobalContext>()?;
         let keto_client = g.keto_channel_group.read.clone();
+
+        #[cfg(debug_assertions)]
+        {
+            // DEBUG MODE - bypass check
+            if let Some(headers) = ctx.data_opt::<http::HeaderMap>() {
+                if let Some(value) = headers.get("debug-app-bypass-auth") {
+                    log::debug!("`debug-app-bypass-auth` header: {}", "on");
+                    return Ok(());
+                }
+            }
+        }
 
         let r = if self.subject_namespace.is_none() && self.subject_relation.is_none() {
             // If only object is provided, use check_permission_for_subject

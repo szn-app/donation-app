@@ -3,7 +3,7 @@ mutation CreateAccount($id: UUID!, $remarks: String) {
   createAccount(id: $id, remarks: $remarks) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
 
@@ -11,7 +11,7 @@ mutation UpdateAccount($id: UUID!, $remarks: String) {
   updateAccount(id: $id, remarks: $remarks) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
 
@@ -23,28 +23,38 @@ mutation DeleteAccount($id: UUID!) {
 mutation CreateProfile(
   $idAccount: UUID!
   $name: String!
-  $description: String!
+  $description: String
 ) {
   createProfile(idAccount: $idAccount, name: $name, description: $description) {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
 }
 
-mutation UpdateProfile($id: Int!, $name: String!, $description: String!) {
-  updateProfile(id: $id, name: $name, description: $description) {
+mutation UpdateProfile(
+  $id: Int!
+  $name: String!
+  $description: String
+  $variant: ProfileType
+) {
+  updateProfile(
+    id: $id
+    name: $name
+    description: $description
+    variant: $variant
+  ) {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -57,22 +67,22 @@ mutation DeleteProfile($id: Int!) {
 # Community mutations
 mutation CreateCommunity(
   $name: String!
-  $description: String!
-  $type: CommunityType!
+  $description: String
+  $variant: CommunityType!
   $createdBy: UUID!
 ) {
   createCommunity(
     name: $name
     description: $description
-    type: $type
+    variant: $variant
     createdBy: $createdBy
   ) {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -81,21 +91,21 @@ mutation CreateCommunity(
 mutation UpdateCommunity(
   $id: Int!
   $title: String!
-  $description: String!
-  $type: CommunityType!
+  $description: String
+  $variant: CommunityType!
 ) {
   updateCommunity(
     id: $id
     title: $title
     description: $description
-    type: $type
+    variant: $variant
   ) {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -151,15 +161,13 @@ mutation CreateCategory($name: String!, $description: String!, $parentId: Int) {
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
 
 mutation UpdateCategory(
   $id: Int!
-  $name: String!
-  $description: String!
+  $name: String
+  $description: String
   $parentId: Int
 ) {
   updateCategory(
@@ -172,8 +180,6 @@ mutation UpdateCategory(
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
 
@@ -183,22 +189,24 @@ mutation DeleteCategory($id: Int!) {
 
 # Location mutations
 mutation CreateLocation(
-  $name: String!
-  $address: String!
+  $addressLine1: String!
+  $addressLine2: String
   $city: String!
   $state: String!
+  $district: String
   $country: String!
-  $postalCode: String!
-  $idProfile: UUID!
+  $coordinates: CoordinatesInput
+  $entranceNote: String
 ) {
   createLocation(
-    name: $name
-    address: $address
+    addressLine1: $addressLine1
+    addressLine2: $addressLine2
     city: $city
     state: $state
+    district: $district
     country: $country
-    postalCode: $postalCode
-    idProfile: $idProfile
+    coordinates: $coordinates
+    entranceNote: $entranceNote
   ) {
     id
     addressLine1
@@ -209,26 +217,34 @@ mutation CreateLocation(
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
 
 mutation UpdateLocation(
   $id: Int!
-  $name: String!
-  $address: String!
-  $city: String!
-  $state: String!
-  $country: String!
-  $postalCode: String!
+  $addressLine1: String
+  $addressLine2: String
+  $city: String
+  $state: String
+  $district: String
+  $country: String
+  $coordinates: CoordinatesInput
+  $entranceNote: String
 ) {
   updateLocation(
     id: $id
-    name: $name
-    address: $address
+    addressLine1: $addressLine1
+    addressLine2: $addressLine2
     city: $city
     state: $state
+    district: $district
     country: $country
-    postalCode: $postalCode
+    coordinates: $coordinates
+    entranceNote: $entranceNote
   ) {
     id
     addressLine1
@@ -239,6 +255,10 @@ mutation UpdateLocation(
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
 
@@ -248,17 +268,18 @@ mutation DeleteLocation($id: Int!) {
 
 # Item mutations
 mutation CreateItem(
-  $type: ItemType!
+  $variant: ItemType!
   $intentAction: ItemIntentAction!
-  $title: String!
-  $description: String!
-  $category: Int!
+  $title: String
+  $description: String
+  $category: Int
   $condition: ItemCondition!
-  $location: Int!
-  $createdBy: UUID!
+  $location: Int
+  $createdBy: UUID
+  $status: ItemStatus
 ) {
   createItem(
-    type: $type
+    variant: $variant
     intentAction: $intentAction
     title: $title
     description: $description
@@ -266,9 +287,10 @@ mutation CreateItem(
     condition: $condition
     location: $location
     createdBy: $createdBy
+    status: $status
   ) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -278,7 +300,7 @@ mutation CreateItem(
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -286,11 +308,11 @@ mutation CreateItem(
 
 mutation UpdateItem(
   $id: Int!
-  $title: String!
-  $description: String!
-  $category: Int!
+  $title: String
+  $description: String
+  $category: Int
   $condition: ItemCondition!
-  $location: Int!
+  $location: Int
   $status: ItemStatus!
 ) {
   updateItem(
@@ -303,7 +325,7 @@ mutation UpdateItem(
     status: $status
   ) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -313,7 +335,7 @@ mutation UpdateItem(
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -326,7 +348,7 @@ mutation DeleteItem($id: Int!) {
 mutation ReportItem($id: Int!) {
   reportItem(id: $id) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -336,7 +358,7 @@ mutation ReportItem($id: Int!) {
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -347,23 +369,23 @@ mutation CreateCollection(
   $idCommunity: Int!
   $title: String!
   $visibility: CollectionVisibility!
-  $type: CollectionType!
+  $variant: CollectionType!
   $position: Int!
 ) {
   createCollection(
     idCommunity: $idCommunity
     title: $title
     visibility: $visibility
-    type: $type
+    variant: $variant
     position: $position
   ) {
     id
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -372,23 +394,23 @@ mutation UpdateCollection(
   $id: Int!
   $title: String!
   $visibility: CollectionVisibility!
-  $type: CollectionType!
+  $variant: CollectionType!
   $position: Int!
 ) {
   updateCollection(
     id: $id
     title: $title
     visibility: $visibility
-    type: $type
+    variant: $variant
     position: $position
   ) {
     id
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -414,24 +436,24 @@ mutation CreateMedia(
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
 
 mutation UpdateMedia(
   $id: Int!
-  $url: String!
-  $mediaType: MediaType!
-  $position: Int!
+  $url: String
+  $mediaType: MediaType
+  $position: Int
 ) {
   updateMedia(id: $id, url: $url, mediaType: $mediaType, position: $position) {
     id
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
 
@@ -443,7 +465,7 @@ mutation DeleteMedia($id: Int!) {
 mutation CreatePublish(
   $idItem: Int!
   $idCollection: Int!
-  $note: String!
+  $note: String
   $position: Int!
   $createdBy: UUID!
 ) {
@@ -466,7 +488,7 @@ mutation CreatePublish(
 mutation UpdatePublish(
   $idItem: Int!
   $idCollection: Int!
-  $note: String!
+  $note: String
   $position: Int!
 ) {
   updatePublish(
@@ -486,4 +508,40 @@ mutation UpdatePublish(
 
 mutation DeletePublish($idItem: Int!, $idCollection: Int!) {
   deletePublish(idItem: $idItem, idCollection: $idCollection)
+}
+
+# Message mutations
+mutation CreateMessage(
+  $idTransaction: Int!
+  $idSender: UUID!
+  $variant: MessageType!
+  $content: String!
+) {
+  create(
+    idTransaction: $idTransaction
+    idSender: $idSender
+    variant: $variant
+    content: $content
+  ) {
+    id
+    idSender
+    idTransaction
+    variant
+    content
+    sent_at
+    updatedAt
+  }
+}
+
+# Transaction mutations
+mutation UpdateTransaction($id: Int!, $status: TransactionStatus!) {
+  update(id: $id, status: $status) {
+    id
+    idPledge
+    idSchedule
+    idLocation
+    status
+    createdAt
+    updatedAt
+  }
 }

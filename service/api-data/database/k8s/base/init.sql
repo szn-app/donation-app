@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS "user"."profile" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(100),
     description TEXT,
-    type profile_type NULL,
+    variant profile_type NULL,
     owner UUID NOT NULL REFERENCES "user"."account"(id),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS "user"."community" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title VARCHAR(150),
     description TEXT,
-    type community_type NOT NULL DEFAULT 'solo',
+    variant community_type NOT NULL DEFAULT 'solo',
     owner UUID NOT NULL REFERENCES "user"."account"(id),
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ NULL,
@@ -116,7 +116,7 @@ CREATE TYPE item_status AS ENUM ('draft', 'active', 'disabled', 'archived');
 CREATE TYPE item_condition AS ENUM ('brand_new', 'pre_owned_barely_used', 'pre_owned_usable', 'pre_owned_damaged');
 CREATE TABLE IF NOT EXISTS "listing"."item" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    type item_type NOT NULL,
+    variant item_type NOT NULL,
     intent_action item_intent_action NOT NULL,
     status item_status NOT NULL DEFAULT 'draft',
     title VARCHAR(150) NULL,
@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS "listing"."collection" (
     id_community BIGINT REFERENCES "user"."community"(id) ON DELETE SET NULL,
     title VARCHAR(150) NULL,
     visibility collection_visibility NOT NULL,
-    type collection_type NULL,
+    variant collection_type NULL,
     position INT4 NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ NULL
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS "listing"."media" (
     id_item BIGINT REFERENCES "listing"."item"(id) ON DELETE CASCADE,
     caption VARCHAR(150) NULL,
     url VARCHAR(2048) NOT NULL,
-    type media_type NOT NULL, 
+    variant media_type NOT NULL, 
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS "interaction"."message" (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_sender BIGINT REFERENCES "user"."profile"(id) ON DELETE SET NULL,
     id_transaction BIGINT REFERENCES "interaction"."transaction"(id) ON DELETE CASCADE,
-    type message_type NULL,
+    variant message_type NULL,
     content TEXT NOT NULL,
     sent_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMPTZ NULL, 

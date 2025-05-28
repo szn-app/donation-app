@@ -15,7 +15,7 @@ import { useAuth } from "react-oidc-context";
  * @returns Configured graphql-request GraphQLClient instance
  */
 export function createGraphQLClient(token?: string): GraphQLClient {
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+  const headers = token ? { "Authorization": `Bearer ${token}` } : undefined;
   const endpoint = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 
   return new GraphQLClient(endpoint, { headers });

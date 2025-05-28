@@ -21,12 +21,12 @@ impl CollectionMutation {
         id_community: i64,
         title: String,
         visibility: CollectionVisibility,
-        type_: CollectionType,
+        variant: CollectionType,
         position: i32,
     ) -> Result<Collection> {
         let collection_repository = CollectionRepository::new(self.postgres_pool_group.clone());
         let collection = collection_repository
-            .create(id_community, title, visibility, type_, position)
+            .create(id_community, title, visibility, variant, position)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -43,13 +43,13 @@ impl CollectionMutation {
         id: i64,
         title: String,
         visibility: CollectionVisibility,
-        type_: CollectionType,
+        variant: CollectionType,
         position: i32,
     ) -> FieldResult<Collection> {
         debug!("Updating collection: id={}", id);
         let repository = CollectionRepository::new(self.postgres_pool_group.clone());
         let collection = repository
-            .update(id, title, visibility, type_, position)
+            .update(id, title, visibility, variant, position)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(collection)

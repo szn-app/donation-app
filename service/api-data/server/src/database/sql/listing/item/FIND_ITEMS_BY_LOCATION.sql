@@ -1,7 +1,7 @@
 -- Get items by location
 SELECT 
     id,
-    type,
+    variant,
     intent_action,
     status,
     title,

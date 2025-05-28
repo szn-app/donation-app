@@ -1,1 +1,1 @@
-DELETE FROM "user".community WHERE id = $1 
+DELETE FROM "user"."community" WHERE id = $1 

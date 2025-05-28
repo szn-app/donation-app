@@ -1,17 +1,14 @@
 type Account {
 	id: UUID!
 	remarks: String
-	created_at: DateTime!
+	createdAt: DateTime!
 }
-
 
 type Category {
 	id: Int!
 	title: String!
 	description: String
 	categoryParent: Int
-	createdAt: DateTime!
-	updatedAt: DateTime!
 }
 
 type Collection {
@@ -19,9 +16,9 @@ type Collection {
 	idCommunity: Int
 	title: String
 	visibility: CollectionVisibility!
-	type: CollectionType
+	variant: CollectionType
 	position: Int!
-	created_at: DateTime!
+	createdAt: DateTime!
 	updatedAt: DateTime
 }
 
@@ -51,9 +48,9 @@ type Community {
 	id: Int!
 	title: String!
 	description: String
-	type: CommunityType!
+	variant: CommunityType!
 	owner: UUID!
-	created_at: DateTime!
+	createdAt: DateTime!
 	updatedAt: DateTime
 	createdBy: UUID!
 }
@@ -61,6 +58,21 @@ type Community {
 enum CommunityType {
 	solo
 	organized
+}
+
+"""
+Convertion flow:
+- CoordinatesInput -> GeoPoint -> PostGisPoint -> Database
+- Database -> PostGisPoint -> GeoPoint -> Coordinates (for GraphQL)
+"""
+type Coordinates {
+	longitude: Float!
+	latitude: Float!
+}
+
+input CoordinatesInput {
+	longitude: Float!
+	latitude: Float!
 }
 
 """
@@ -73,22 +85,19 @@ format, but it is always normalized to the UTC (Z) offset, e.g.
 """
 scalar DateTime
 
-
-
-
 type Item {
 	id: Int!
-	type: ItemType!
+	variant: ItemType!
 	intentAction: ItemIntentAction!
-	status: ItemStatus!
+	status: ItemStatus
 	title: String
 	description: String
 	category: Int
-	condition: ItemCondition!
+	condition: ItemCondition
 	location: Int
 	viewsCount: Int!
 	isReported: Boolean!
-	created_at: DateTime!
+	createdAt: DateTime!
 	updatedAt: DateTime
 	createdBy: UUID
 }
@@ -124,11 +133,12 @@ type Location {
 	addressLine1: String!
 	addressLine2: String
 	city: String!
-	state: String!
+	state: String
 	district: String
 	country: String!
 	entranceNote: String
 	createdAt: DateTime!
+	coordinates: Coordinates
 }
 
 type Media {
@@ -136,8 +146,8 @@ type Media {
 	idItem: Int!
 	caption: String
 	url: String!
-	type: MediaType!
-	created_at: DateTime!
+	variant: MediaType!
+	createdAt: DateTime!
 }
 
 enum MediaType {
@@ -150,7 +160,7 @@ type Message {
 	id: Int!
 	idSender: Int
 	idTransaction: Int!
-	type: MessageType
+	variant: MessageType
 	content: String!
 	sent_at: DateTime!
 	updatedAt: DateTime
@@ -165,39 +175,39 @@ enum MessageType {
 GraphQL Mutation Root
 """
 type Mutation {
-	createAccount(id: UUID!, remarks: String): Account!
-	updateAccount(id: UUID!, remarks: String): Account
-	deleteAccount(id: UUID!): Boolean!
-	createCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee!
-	updateCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee
-	deleteCommittee(idProfile: Int!, idCommunity: Int!): Boolean!
-	createCommunity(name: String!, description: String!, type: CommunityType!, createdBy: UUID!): Community!
-	updateCommunity(id: Int!, title: String!, description: String, type: CommunityType!): Community
-	deleteCommunity(id: Int!): Boolean!
-	createProfile(idAccount: UUID!, name: String!, description: String!): Profile!
-	updateProfile(id: Int!, name: String!, description: String, type: ProfileType): Profile
-	deleteProfile(id: Int!): Boolean!
-	createCategory(name: String!, description: String!, parentId: Int): Category!
-	updateCategory(id: Int!, name: String, description: String, parentId: Int): Category!
-	deleteCategory(id: Int!): Boolean!
-	createLocation(name: String!, address: String!, city: String!, state: String!, country: String!, postalCode: String!, idProfile: UUID!): Location!
-	updateLocation(id: Int!, name: String, address: String, city: String, state: String, country: String, postalCode: String): Location!
-	deleteLocation(id: Int!): Boolean!
-	createItem(type: ItemType!, intentAction: ItemIntentAction!, title: String, description: String, category: Int, condition: ItemCondition!, location: Int, createdBy: UUID): Item!
-	updateItem(id: Int!, title: String, description: String, category: Int, condition: ItemCondition!, location: Int, status: ItemStatus!): Item!
-	deleteItem(id: Int!): Boolean!
-	reportItem(id: Int!): Item
-	createCollection(idCommunity: Int!, title: String!, visibility: CollectionVisibility!, type: CollectionType!, position: Int!): Collection!
-	updateCollection(id: Int!, title: String!, visibility: CollectionVisibility!, type: CollectionType!, position: Int!): Collection!
-	deleteCollection(id: Int!): Boolean!
-	createMedia(idItem: Int!, url: String!, mediaType: MediaType!, position: Int!): Media!
-	updateMedia(id: Int!, url: String, mediaType: MediaType, position: Int): Media!
-	deleteMedia(id: Int!): Boolean!
-	createPublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, createdBy: UUID!): Publish!
-	updatePublish(idItem: Int!, idCollection: Int!, note: String, position: Int!): Publish!
-	deletePublish(idItem: Int!, idCollection: Int!): Boolean!
-	create(idTransaction: Int!, idSender: UUID!, type: MessageType!, content: String!): Message!
-	update(id: Int!, status: TransactionStatus!): Transaction!
+	createAccount(id: UUID!, remarks: String): Account! @auth(permission: "required_authorization")
+	updateAccount(id: UUID!, remarks: String): Account @auth(permission: "required_authorization")
+	deleteAccount(id: UUID!): Boolean! @auth(permission: "required_authorization")
+	createCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee! @auth(permission: "required_authorization")
+	updateCommittee(idProfile: Int!, idCommunity: Int!, memberRole: CommitteeRole!): Committee @auth(permission: "required_authorization")
+	deleteCommittee(idProfile: Int!, idCommunity: Int!): Boolean! @auth(permission: "required_authorization")
+	createCommunity(name: String!, description: String, variant: CommunityType!, createdBy: UUID!): Community! @auth(permission: "required_authorization")
+	updateCommunity(id: Int!, title: String, description: String, variant: CommunityType): Community @auth(permission: "required_authorization")
+	deleteCommunity(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createProfile(idAccount: UUID!, name: String!, description: String): Profile! @auth(permission: "required_authorization")
+	updateProfile(id: Int!, name: String!, description: String, variant: ProfileType): Profile @auth(permission: "required_authorization")
+	deleteProfile(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createCategory(name: String!, description: String!, parentId: Int): Category! @auth(permission: "required_authorization")
+	updateCategory(id: Int!, name: String, description: String, parentId: Int): Category! @auth(permission: "required_authorization")
+	deleteCategory(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createLocation(addressLine1: String!, addressLine2: String, city: String!, state: String, district: String, country: String!, coordinates: CoordinatesInput, entranceNote: String): Location! @auth(permission: "required_authorization")
+	updateLocation(id: Int!, addressLine1: String, addressLine2: String, city: String, state: String, district: String, country: String, coordinates: CoordinatesInput, entranceNote: String): Location! @auth(permission: "required_authorization")
+	deleteLocation(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createItem(variant: ItemType!, intentAction: ItemIntentAction!, title: String, description: String, category: Int, condition: ItemCondition!, location: Int, createdBy: UUID, status: ItemStatus): Item! @auth(permission: "required_authorization")
+	updateItem(id: Int!, title: String, description: String, category: Int, condition: ItemCondition, location: Int, status: ItemStatus): Item! @auth(permission: "required_authorization")
+	deleteItem(id: Int!): Boolean! @auth(permission: "required_authorization")
+	reportItem(id: Int!): Item @auth(permission: "required_authorization")
+	createCollection(idCommunity: Int!, title: String!, visibility: CollectionVisibility!, variant: CollectionType!, position: Int!): Collection! @auth(permission: "required_authorization")
+	updateCollection(id: Int!, title: String!, visibility: CollectionVisibility!, variant: CollectionType!, position: Int!): Collection! @auth(permission: "required_authorization")
+	deleteCollection(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createMedia(idItem: Int!, url: String!, mediaType: MediaType!, position: Int!): Media! @auth(permission: "required_authorization")
+	updateMedia(id: Int!, url: String, mediaType: MediaType, position: Int): Media! @auth(permission: "required_authorization")
+	deleteMedia(id: Int!): Boolean! @auth(permission: "required_authorization")
+	createPublish(idItem: Int!, idCollection: Int!, note: String, position: Int!, createdBy: UUID!): Publish! @auth(permission: "required_authorization")
+	updatePublish(idItem: Int!, idCollection: Int!, note: String, position: Int!): Publish! @auth(permission: "required_authorization")
+	deletePublish(idItem: Int!, idCollection: Int!): Boolean! @auth(permission: "required_authorization")
+	create(idTransaction: Int!, idSender: UUID!, variant: MessageType!, content: String!): Message! @auth(permission: "required_authorization")
+	update(id: Int!, status: TransactionStatus!): Transaction! @auth(permission: "required_authorization")
 }
 
 type Pledge {
@@ -225,11 +235,11 @@ enum PledgeStatus {
 
 type Profile {
 	id: Int!
-	name: String!
+	name: String
 	description: String
-	type: ProfileType
+	variant: ProfileType
 	owner: UUID!
-	created_at: DateTime!
+	createdAt: DateTime!
 	updatedAt: DateTime
 	createdBy: UUID!
 }
@@ -256,59 +266,59 @@ type Query {
 	"""
 	Get all accounts
 	"""
-	listAccounts: [Account!]!
+	listAccounts: [Account!]! @auth(permission: "required_authorization")
 	"""
 	Get account by ID
 	"""
-	findAccount(id: UUID!): Account
+	findAccount(id: UUID!): Account @auth(permission: "required_authorization")
 	"""
 	Get all committees
 	"""
-	listCommittees: [Committee!]!
+	listCommittees: [Committee!]! @auth(permission: "required_authorization")
 	"""
 	Get committee by ID
 	"""
-	findCommittee(id: UUID!): Committee
+	findCommittee(id: UUID!): Committee @auth(permission: "required_authorization")
 	"""
 	Get all communities
 	"""
-	listCommunities: [Community!]!
+	listCommunities: [Community!]! @auth(permission: "required_authorization")
 	"""
 	Get community by ID
 	"""
-	findCommunity(id: Int!): Community
+	findCommunity(id: Int!): Community @auth(permission: "required_authorization")
 	"""
 	Get all profiles
 	"""
-	listProfiles: [Profile!]!
+	listProfiles: [Profile!]! @auth(permission: "required_authorization")
 	"""
 	Get profile by ID
 	"""
-	findProfile(id: Int!): Profile
-	listCategories: [Category!]!
-	findCategory(id: Int!): Category
-	listLocations: [Location!]!
-	findLocation(id: Int!): Location
-	listItems: [Item!]!
-	findItem(id: Int!): Item
-	listCollections: [Collection!]!
-	findCollection(id: Int!): Collection
-	listMedia: [Media!]!
-	findMedia(id: Int!): Media
-	listPublishes: [Publish!]!
-	findPublish(id: Int!): Publish
-	listReviews: [Review!]!
-	listPledges: [Pledge!]!
-	findPledge(id: Int!): Pledge
-	listScheduleOpportunities: [ScheduleOpportunity!]!
-	findScheduleOpportunity(id: Int!): ScheduleOpportunity
-	listSchedules: [Schedule!]!
-	findSchedule(id: Int!): Schedule
-	listTransactions: [Transaction!]!
-	findTransaction(id: Int!): Transaction
-	listMessages: [Message!]!
-	findMessage(id: Int!): Message
-	listTests: [Test!]!
+	findProfile(id: Int!): Profile @auth(permission: "required_authorization")
+	listCategories: [Category!]! @auth(permission: "required_authorization")
+	findCategory(id: Int!): Category @auth(permission: "required_authorization")
+	listLocations: [Location!]! @auth(permission: "required_authorization")
+	findLocation(id: Int!): Location @auth(permission: "required_authorization")
+	listItems(status: ItemStatus): [Item!]! @auth(permission: "required_authorization")
+	findItem(id: Int!): Item @auth(permission: "required_authorization")
+	listCollections: [Collection!]! @auth(permission: "required_authorization")
+	findCollection(id: Int!): Collection @auth(permission: "required_authorization")
+	listMedia: [Media!]! @auth(permission: "required_authorization")
+	findMedia(id: Int!): Media @auth(permission: "required_authorization")
+	listPublishes: [Publish!]! @auth(permission: "required_authorization")
+	findPublish(id: Int!): Publish @auth(permission: "required_authorization")
+	listReviews: [Review!]! @auth(permission: "required_authorization")
+	listPledges: [Pledge!]! @auth(permission: "required_authorization")
+	findPledge(id: Int!): Pledge @auth(permission: "required_authorization")
+	listScheduleOpportunities: [ScheduleOpportunity!]! @auth(permission: "required_authorization")
+	findScheduleOpportunity(id: Int!): ScheduleOpportunity @auth(permission: "required_authorization")
+	listSchedules: [Schedule!]! @auth(permission: "required_authorization")
+	findSchedule(id: Int!): Schedule @auth(permission: "required_authorization")
+	listTransactions: [Transaction!]! @auth(permission: "required_authorization")
+	findTransaction(id: Int!): Transaction @auth(permission: "required_authorization")
+	listMessages: [Message!]! @auth(permission: "required_authorization")
+	findMessage(id: Int!): Message @auth(permission: "required_authorization")
+	listTests: [Test!]! @auth(permission: "required_authorization")
 	dummyTest: [String!]!
 	dummyTestRequestHeader: String!
 	dummyTestSecure: Test!
@@ -322,7 +332,7 @@ type Review {
 	reviewer: Int!
 	comment: String
 	score: Int!
-	created_at: DateTime!
+	createdAt: DateTime!
 }
 
 type Schedule {
@@ -336,7 +346,6 @@ type ScheduleOpportunity {
 	windowEnd: DateTime
 }
 
-
 type Test {
 	i: Int!
 	s: String!
@@ -349,7 +358,7 @@ type Transaction {
 	status: TransactionStatus!
 	idSchedule: Int
 	idLocation: Int
-	created_at: DateTime!
+	createdAt: DateTime!
 	updatedAt: DateTime
 }
 
@@ -367,13 +376,30 @@ entities without requiring a central allocating authority.
 # References
 
 * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
-* [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+* [RFC4122: A Universally Unique Identifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
 """
 scalar UUID
 
+"""
+* Using async_graphql guards to enforce authorization, while using type system directives for metadata to mark graphql objects which require authentication
+Authorization directive for marking fields or objects that require authorization.
+This directive only adds metadata and does not enforce authorization.
+
+# Parameters
+* `permission` - Optional permission required for authorization
+"""
 directive @auth(permission: String) on FIELD_DEFINITION | OBJECT
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
 directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
 directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+"""
+Provides a scalar specification URL for specifying the behavior of custom scalar types.
+"""
 directive @specifiedBy(url: String!) on SCALAR
 schema {
 	query: Query

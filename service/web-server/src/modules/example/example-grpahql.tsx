@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useMemo, useEffect } from "react";
 import { z } from "zod";
 import { useAuth } from "react-oidc-context";
 import { request } from "graphql-request";
@@ -27,15 +27,16 @@ export const E = ExampleGraphqlPartial;
 
 export function ExampleGraphqlPartial() {
   const auth = useAuth();
-  const token = auth?.user?.access_token;
 
-  const headers = React.useMemo<Record<string, string> | undefined>(() => 
-      token ? { "Authorization": `Bearer ${token}` } : undefined,
-      [token]
-    );
+  const headers = useMemo<Record<string, string> | undefined>(() => {
+      const token = auth?.user?.access_token;
+      return token ? { "Authorization": `Bearer ${token}` } : undefined; 
+    }, 
+    [auth]
+  );
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["cache-key-1", auth.isAuthenticated, token],
+    queryKey: ["cache-key-1", auth.isAuthenticated, auth?.user?.access_token],
     queryFn: async () => {
       return await request<GetTestListPartialQuery>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,

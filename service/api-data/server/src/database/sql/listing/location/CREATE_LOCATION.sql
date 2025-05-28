@@ -6,9 +6,8 @@
 -- $4: state (VARCHAR(50))
 -- $5: district (VARCHAR(100))
 -- $6: country (VARCHAR(50))
--- $7: longitude (FLOAT8) - X coordinate
--- $8: latitude (FLOAT8) - Y coordinate
--- $9: entrance_note (TEXT)
+-- $7: geom (GEOGRAPHY(Point, 4326))
+-- $8: entrance_note (TEXT)
 INSERT INTO "listing"."location" (
     address_line1,
     address_line2,
@@ -26,12 +25,8 @@ VALUES (
     $4,
     $5,
     $6,
-    CASE 
-        WHEN $7 IS NOT NULL AND $8 IS NOT NULL 
-        THEN ST_SetSRID(ST_MakePoint($7, $8), 4326)::geography
-        ELSE NULL 
-    END,
-    $9
+    $7,
+    $8
 )
 RETURNING 
     id,
@@ -41,8 +36,6 @@ RETURNING
     district,
     state,
     country,
-    ST_AsText(geom) as geom_text,
-    ST_X(geom::geometry) as longitude,
-    ST_Y(geom::geometry) as latitude,
+    geom,
     entrance_note,
     created_at; 

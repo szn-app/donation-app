@@ -240,12 +240,12 @@ SELECT
 
   COALESCE(m.message_count, 0) AS message_count
 
-FROM interaction.transaction t
-JOIN interaction.pledge p ON t.id_pledge = p.id
-JOIN listing.item i ON p.id_item = i.id
+FROM "interaction"."transaction" t
+JOIN "interaction"."pledge" p ON t.id_pledge = p.id
+JOIN "listing"."item" i ON p.id_item = i.id
 LEFT JOIN (
   SELECT id_transaction, COUNT(*) AS message_count
-  FROM interaction.message
+  FROM "interaction"."message"
   GROUP BY id_transaction
 ) m ON m.id_transaction = t.id
 

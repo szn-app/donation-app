@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.4 (Debian 17.4-1.pgdg110+2)
--- Dumped by pg_dump version 17.4
+-- Dumped from database version 17.5 (Debian 17.5-1.pgdg110+1)
+-- Dumped by pg_dump version 17.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -43,6 +43,15 @@ CREATE SCHEMA listing;
 
 
 ALTER SCHEMA listing OWNER TO "postgres-user";
+
+--
+-- Name: test; Type: SCHEMA; Schema: -; Owner: postgres-user
+--
+
+CREATE SCHEMA test;
+
+
+ALTER SCHEMA test OWNER TO "postgres-user";
 
 --
 -- Name: user; Type: SCHEMA; Schema: -; Owner: postgres-user
@@ -188,6 +197,7 @@ ALTER TYPE public.item_type OWNER TO postgres;
 --
 
 CREATE TYPE public.media_type AS ENUM (
+    'document',
     'image',
     'video'
 );
@@ -270,7 +280,7 @@ CREATE TABLE interaction.message (
     id bigint NOT NULL,
     id_sender bigint,
     id_transaction bigint,
-    type public.message_type,
+    variant public.message_type,
     content text NOT NULL,
     sent_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone,
@@ -454,7 +464,7 @@ CREATE TABLE listing.collection (
     id_community bigint,
     title character varying(150),
     visibility public.collection_visibility NOT NULL,
-    type public.collection_type,
+    variant public.collection_type,
     "position" integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone
@@ -483,7 +493,7 @@ ALTER TABLE listing.collection ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY 
 
 CREATE TABLE listing.item (
     id bigint NOT NULL,
-    type public.item_type NOT NULL,
+    variant public.item_type NOT NULL,
     intent_action public.item_intent_action NOT NULL,
     status public.item_status DEFAULT 'draft'::public.item_status NOT NULL,
     title character varying(150),
@@ -526,7 +536,7 @@ CREATE TABLE listing.location (
     address_line2 character varying(64),
     city character varying(50) NOT NULL,
     state character varying(50),
-    district bigint,
+    district character varying(100),
     country character varying(50) NOT NULL,
     geom extension.geography(Point,4326),
     entrance_note text,
@@ -560,7 +570,7 @@ CREATE TABLE listing.media (
     id_item bigint,
     caption character varying(150),
     url character varying(2048) NOT NULL,
-    type public.media_type NOT NULL,
+    variant public.media_type NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -598,15 +608,17 @@ CREATE TABLE listing.publish (
 ALTER TABLE listing.publish OWNER TO postgres;
 
 --
--- Name: test; Type: TABLE; Schema: public; Owner: postgres
+-- Name: test; Type: TABLE; Schema: test; Owner: postgres
 --
 
-CREATE TABLE public.test (
-    i integer
+CREATE TABLE test.test (
+    i integer,
+    s character varying(100),
+    d timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
-ALTER TABLE public.test OWNER TO postgres;
+ALTER TABLE test.test OWNER TO postgres;
 
 --
 -- Name: account; Type: TABLE; Schema: user; Owner: postgres
@@ -614,6 +626,7 @@ ALTER TABLE public.test OWNER TO postgres;
 
 CREATE TABLE "user".account (
     id uuid NOT NULL,
+    remarks text,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -642,7 +655,7 @@ CREATE TABLE "user".community (
     id bigint NOT NULL,
     title character varying(150),
     description text,
-    type public.community_type DEFAULT 'solo'::public.community_type NOT NULL,
+    variant public.community_type DEFAULT 'solo'::public.community_type NOT NULL,
     owner uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone,
@@ -675,7 +688,7 @@ CREATE TABLE "user".profile (
     id bigint NOT NULL,
     name character varying(100),
     description text,
-    type public.profile_type,
+    variant public.profile_type,
     owner uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone,
@@ -1121,10 +1134,10 @@ GRANT ALL ON TABLE listing.publish TO "postgres-user";
 
 
 --
--- Name: TABLE test; Type: ACL; Schema: public; Owner: postgres
+-- Name: TABLE test; Type: ACL; Schema: test; Owner: postgres
 --
 
-GRANT ALL ON TABLE public.test TO "postgres-user";
+GRANT ALL ON TABLE test.test TO "postgres-user";
 
 
 --
@@ -1174,6 +1187,13 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA interaction GRANT ALL ON TA
 --
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listing GRANT ALL ON TABLES TO "postgres-user";
+
+
+--
+-- Name: DEFAULT PRIVILEGES FOR TABLES; Type: DEFAULT ACL; Schema: test; Owner: postgres
+--
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA test GRANT ALL ON TABLES TO "postgres-user";
 
 
 --

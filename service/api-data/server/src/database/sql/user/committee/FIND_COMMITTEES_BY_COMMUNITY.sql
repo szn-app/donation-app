@@ -7,5 +7,5 @@
 -- $1: BIGINT - community id to search for
 
 SELECT id_profile, id_community, member_role, joined_at
-FROM "user".committee 
+FROM "user"."committee" 
 WHERE id_community = $1; 

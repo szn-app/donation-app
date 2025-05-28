@@ -51,6 +51,7 @@ Enum "collection_type" {
 }
 
 Enum "media_type" {
+  "document"
   "image"
   "video"
 }
@@ -147,7 +148,7 @@ Table "user"."profile" {
   "id" BIGINT [pk, increment]
   "name" VARCHAR(100)
   "description" TEXT
-  "type" profile_type
+  "variant" profile_type
   "owner" UUID [not null]
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" TIMESTAMPTZ
@@ -158,7 +159,7 @@ Table "user"."community" {
   "id" BIGINT [pk, increment]
   "title" VARCHAR(150)
   "description" TEXT
-  "type" community_type [not null, default: 'solo']
+  "variant" community_type [not null, default: 'solo']
   "owner" UUID [not null]
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" TIMESTAMPTZ
@@ -189,7 +190,7 @@ Table "listing"."location" {
   "address_line2" VARCHAR(64)
   "city" VARCHAR(50) [not null]
   "state" VARCHAR(50)
-  "district" BIGINT
+  "district" VARCHAR(100)
   "country" VARCHAR(50) [not null]
   "geom" extension.extension.GEOGRAPHY
   "entrance_note" TEXT
@@ -198,7 +199,7 @@ Table "listing"."location" {
 
 Table "listing"."item" {
   "id" BIGINT [pk, increment]
-  "type" item_type [not null]
+  "variant" item_type [not null]
   "intent_action" item_intent_action [not null]
   "status" item_status [not null, default: 'draft']
   "title" VARCHAR(150)
@@ -218,7 +219,7 @@ Table "listing"."collection" {
   "id_community" BIGINT
   "title" VARCHAR(150)
   "visibility" collection_visibility [not null]
-  "type" collection_type
+  "variant" collection_type
   "position" INT4 [not null, default: 0]
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" TIMESTAMPTZ
@@ -229,7 +230,7 @@ Table "listing"."media" {
   "id_item" BIGINT
   "caption" VARCHAR(150)
   "url" VARCHAR(2048) [not null]
-  "type" media_type [not null]
+  "variant" media_type [not null]
   "created_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
 }
 
@@ -277,7 +278,7 @@ Table "interaction"."message" {
   "id" BIGINT [pk, increment]
   "id_sender" BIGINT
   "id_transaction" BIGINT
-  "type" message_type
+  "variant" message_type
   "content" TEXT [not null]
   "sent_at" TIMESTAMPTZ [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" TIMESTAMPTZ

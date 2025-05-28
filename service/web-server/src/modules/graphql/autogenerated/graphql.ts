@@ -31,14 +31,14 @@ export type Scalars = {
    * # References
    *
    * * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
-   * * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+   * * [RFC4122: A Universally Unique Identifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
    */
   UUID: { input: string; output: string; }
 };
 
 export type Account = {
   __typename?: 'Account';
-  created_at: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['UUID']['output'];
   remarks?: Maybe<Scalars['String']['output']>;
 };
@@ -46,22 +46,20 @@ export type Account = {
 export type Category = {
   __typename?: 'Category';
   categoryParent?: Maybe<Scalars['Int']['output']>;
-  createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
 };
 
 export type Collection = {
   __typename?: 'Collection';
-  created_at: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   idCommunity?: Maybe<Scalars['Int']['output']>;
   position: Scalars['Int']['output'];
   title?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<CollectionType>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variant?: Maybe<CollectionType>;
   visibility: CollectionVisibility;
 };
 
@@ -90,14 +88,14 @@ export enum CommitteeRole {
 
 export type Community = {
   __typename?: 'Community';
+  createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['UUID']['output'];
-  created_at: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   owner: Scalars['UUID']['output'];
   title: Scalars['String']['output'];
-  type: CommunityType;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variant: CommunityType;
 };
 
 export enum CommunityType {
@@ -105,21 +103,37 @@ export enum CommunityType {
   Solo = 'solo'
 }
 
+/**
+ * Convertion flow:
+ * - CoordinatesInput -> GeoPoint -> PostGisPoint -> Database
+ * - Database -> PostGisPoint -> GeoPoint -> Coordinates (for GraphQL)
+ */
+export type Coordinates = {
+  __typename?: 'Coordinates';
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
+};
+
+export type CoordinatesInput = {
+  latitude: Scalars['Float']['input'];
+  longitude: Scalars['Float']['input'];
+};
+
 export type Item = {
   __typename?: 'Item';
   category?: Maybe<Scalars['Int']['output']>;
-  condition: ItemCondition;
+  condition?: Maybe<ItemCondition>;
+  createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<Scalars['UUID']['output']>;
-  created_at: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   intentAction: ItemIntentAction;
   isReported: Scalars['Boolean']['output'];
   location?: Maybe<Scalars['Int']['output']>;
-  status: ItemStatus;
+  status?: Maybe<ItemStatus>;
   title?: Maybe<Scalars['String']['output']>;
-  type: ItemType;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variant: ItemType;
   viewsCount: Scalars['Int']['output'];
 };
 
@@ -154,22 +168,23 @@ export type Location = {
   addressLine1: Scalars['String']['output'];
   addressLine2?: Maybe<Scalars['String']['output']>;
   city: Scalars['String']['output'];
+  coordinates?: Maybe<Coordinates>;
   country: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   district?: Maybe<Scalars['String']['output']>;
   entranceNote?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  state: Scalars['String']['output'];
+  state?: Maybe<Scalars['String']['output']>;
 };
 
 export type Media = {
   __typename?: 'Media';
   caption?: Maybe<Scalars['String']['output']>;
-  created_at: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   idItem: Scalars['Int']['output'];
-  type: MediaType;
   url: Scalars['String']['output'];
+  variant: MediaType;
 };
 
 export enum MediaType {
@@ -185,8 +200,8 @@ export type Message = {
   idSender?: Maybe<Scalars['Int']['output']>;
   idTransaction: Scalars['Int']['output'];
   sent_at: Scalars['DateTime']['output'];
-  type?: Maybe<MessageType>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variant?: Maybe<MessageType>;
 };
 
 export enum MessageType {
@@ -238,7 +253,7 @@ export type MutationCreateArgs = {
   content: Scalars['String']['input'];
   idSender: Scalars['UUID']['input'];
   idTransaction: Scalars['Int']['input'];
-  type: MessageType;
+  variant: MessageType;
 };
 
 
@@ -262,7 +277,7 @@ export type MutationCreateCollectionArgs = {
   idCommunity: Scalars['Int']['input'];
   position: Scalars['Int']['input'];
   title: Scalars['String']['input'];
-  type: CollectionType;
+  variant: CollectionType;
   visibility: CollectionVisibility;
 };
 
@@ -278,9 +293,9 @@ export type MutationCreateCommitteeArgs = {
 /** GraphQL Mutation Root */
 export type MutationCreateCommunityArgs = {
   createdBy: Scalars['UUID']['input'];
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  type: CommunityType;
+  variant: CommunityType;
 };
 
 
@@ -292,20 +307,22 @@ export type MutationCreateItemArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   intentAction: ItemIntentAction;
   location?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<ItemStatus>;
   title?: InputMaybe<Scalars['String']['input']>;
-  type: ItemType;
+  variant: ItemType;
 };
 
 
 /** GraphQL Mutation Root */
 export type MutationCreateLocationArgs = {
-  address: Scalars['String']['input'];
+  addressLine1: Scalars['String']['input'];
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
   city: Scalars['String']['input'];
+  coordinates?: InputMaybe<CoordinatesInput>;
   country: Scalars['String']['input'];
-  idProfile: Scalars['UUID']['input'];
-  name: Scalars['String']['input'];
-  postalCode: Scalars['String']['input'];
-  state: Scalars['String']['input'];
+  district?: InputMaybe<Scalars['String']['input']>;
+  entranceNote?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -320,7 +337,7 @@ export type MutationCreateMediaArgs = {
 
 /** GraphQL Mutation Root */
 export type MutationCreateProfileArgs = {
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   idAccount: Scalars['UUID']['input'];
   name: Scalars['String']['input'];
 };
@@ -432,7 +449,7 @@ export type MutationUpdateCollectionArgs = {
   id: Scalars['Int']['input'];
   position: Scalars['Int']['input'];
   title: Scalars['String']['input'];
-  type: CollectionType;
+  variant: CollectionType;
   visibility: CollectionVisibility;
 };
 
@@ -449,31 +466,33 @@ export type MutationUpdateCommitteeArgs = {
 export type MutationUpdateCommunityArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  title: Scalars['String']['input'];
-  type: CommunityType;
+  title?: InputMaybe<Scalars['String']['input']>;
+  variant?: InputMaybe<CommunityType>;
 };
 
 
 /** GraphQL Mutation Root */
 export type MutationUpdateItemArgs = {
   category?: InputMaybe<Scalars['Int']['input']>;
-  condition: ItemCondition;
+  condition?: InputMaybe<ItemCondition>;
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   location?: InputMaybe<Scalars['Int']['input']>;
-  status: ItemStatus;
+  status?: InputMaybe<ItemStatus>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 /** GraphQL Mutation Root */
 export type MutationUpdateLocationArgs = {
-  address?: InputMaybe<Scalars['String']['input']>;
+  addressLine1?: InputMaybe<Scalars['String']['input']>;
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
   city?: InputMaybe<Scalars['String']['input']>;
+  coordinates?: InputMaybe<CoordinatesInput>;
   country?: InputMaybe<Scalars['String']['input']>;
+  district?: InputMaybe<Scalars['String']['input']>;
+  entranceNote?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
-  postalCode?: InputMaybe<Scalars['String']['input']>;
   state?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -492,7 +511,7 @@ export type MutationUpdateProfileArgs = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['Int']['input'];
   name: Scalars['String']['input'];
-  type?: InputMaybe<ProfileType>;
+  variant?: InputMaybe<ProfileType>;
 };
 
 
@@ -530,14 +549,14 @@ export enum PledgeStatus {
 
 export type Profile = {
   __typename?: 'Profile';
+  createdAt: Scalars['DateTime']['output'];
   createdBy: Scalars['UUID']['output'];
-  created_at: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   owner: Scalars['UUID']['output'];
-  type?: Maybe<ProfileType>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  variant?: Maybe<ProfileType>;
 };
 
 export enum ProfileType {
@@ -696,10 +715,16 @@ export type QueryFindTransactionArgs = {
   id: Scalars['Int']['input'];
 };
 
+
+/** GraphQL Query Root */
+export type QueryListItemsArgs = {
+  status?: InputMaybe<ItemStatus>;
+};
+
 export type Review = {
   __typename?: 'Review';
   comment?: Maybe<Scalars['String']['output']>;
-  created_at: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
   idSubjectProfile: Scalars['Int']['output'];
   idTransaction: Scalars['Int']['output'];
   reviewer: Scalars['Int']['output'];
@@ -728,7 +753,7 @@ export type Test = {
 
 export type Transaction = {
   __typename?: 'Transaction';
-  created_at: Scalars['DateTime']['output'];
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['Int']['output'];
   idLocation?: Maybe<Scalars['Int']['output']>;
   idPledge: Scalars['Int']['output'];
@@ -754,7 +779,7 @@ export type CreateAccountMutationVariables = Exact<{
 }>;
 
 
-export type CreateAccountMutation = { __typename?: 'Mutation', createAccount: { __typename?: 'Account', id: string, remarks?: string | null, created_at: Date } };
+export type CreateAccountMutation = { __typename?: 'Mutation', createAccount: { __typename?: 'Account', id: string, remarks?: string | null, createdAt: Date } };
 
 export type UpdateAccountMutationVariables = Exact<{
   id: Scalars['UUID']['input'];
@@ -762,7 +787,7 @@ export type UpdateAccountMutationVariables = Exact<{
 }>;
 
 
-export type UpdateAccountMutation = { __typename?: 'Mutation', updateAccount?: { __typename?: 'Account', id: string, remarks?: string | null, created_at: Date } | null };
+export type UpdateAccountMutation = { __typename?: 'Mutation', updateAccount?: { __typename?: 'Account', id: string, remarks?: string | null, createdAt: Date } | null };
 
 export type DeleteAccountMutationVariables = Exact<{
   id: Scalars['UUID']['input'];
@@ -774,20 +799,21 @@ export type DeleteAccountMutation = { __typename?: 'Mutation', deleteAccount: bo
 export type CreateProfileMutationVariables = Exact<{
   idAccount: Scalars['UUID']['input'];
   name: Scalars['String']['input'];
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, name: string, description?: string | null, type?: ProfileType | null, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } };
+export type CreateProfileMutation = { __typename?: 'Mutation', createProfile: { __typename?: 'Profile', id: number, name?: string | null, description?: string | null, variant?: ProfileType | null, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } };
 
 export type UpdateProfileMutationVariables = Exact<{
   id: Scalars['Int']['input'];
   name: Scalars['String']['input'];
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  variant?: InputMaybe<ProfileType>;
 }>;
 
 
-export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'Profile', id: number, name: string, description?: string | null, type?: ProfileType | null, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } | null };
+export type UpdateProfileMutation = { __typename?: 'Mutation', updateProfile?: { __typename?: 'Profile', id: number, name?: string | null, description?: string | null, variant?: ProfileType | null, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } | null };
 
 export type DeleteProfileMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -798,23 +824,23 @@ export type DeleteProfileMutation = { __typename?: 'Mutation', deleteProfile: bo
 
 export type CreateCommunityMutationVariables = Exact<{
   name: Scalars['String']['input'];
-  description: Scalars['String']['input'];
-  type: CommunityType;
+  description?: InputMaybe<Scalars['String']['input']>;
+  variant: CommunityType;
   createdBy: Scalars['UUID']['input'];
 }>;
 
 
-export type CreateCommunityMutation = { __typename?: 'Mutation', createCommunity: { __typename?: 'Community', id: number, title: string, description?: string | null, type: CommunityType, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } };
+export type CreateCommunityMutation = { __typename?: 'Mutation', createCommunity: { __typename?: 'Community', id: number, title: string, description?: string | null, variant: CommunityType, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } };
 
 export type UpdateCommunityMutationVariables = Exact<{
   id: Scalars['Int']['input'];
   title: Scalars['String']['input'];
-  description: Scalars['String']['input'];
-  type: CommunityType;
+  description?: InputMaybe<Scalars['String']['input']>;
+  variant: CommunityType;
 }>;
 
 
-export type UpdateCommunityMutation = { __typename?: 'Mutation', updateCommunity?: { __typename?: 'Community', id: number, title: string, description?: string | null, type: CommunityType, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } | null };
+export type UpdateCommunityMutation = { __typename?: 'Mutation', updateCommunity?: { __typename?: 'Community', id: number, title: string, description?: string | null, variant: CommunityType, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } | null };
 
 export type DeleteCommunityMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -856,17 +882,17 @@ export type CreateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date } };
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null } };
 
 export type UpdateCategoryMutationVariables = Exact<{
   id: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  description: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   parentId?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date } };
+export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null } };
 
 export type DeleteCategoryMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -876,30 +902,33 @@ export type DeleteCategoryMutationVariables = Exact<{
 export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory: boolean };
 
 export type CreateLocationMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  address: Scalars['String']['input'];
+  addressLine1: Scalars['String']['input'];
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
   city: Scalars['String']['input'];
   state: Scalars['String']['input'];
+  district?: InputMaybe<Scalars['String']['input']>;
   country: Scalars['String']['input'];
-  postalCode: Scalars['String']['input'];
-  idProfile: Scalars['UUID']['input'];
+  coordinates?: InputMaybe<CoordinatesInput>;
+  entranceNote?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type CreateLocationMutation = { __typename?: 'Mutation', createLocation: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date } };
+export type CreateLocationMutation = { __typename?: 'Mutation', createLocation: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state?: string | null, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date, coordinates?: { __typename?: 'Coordinates', longitude: number, latitude: number } | null } };
 
 export type UpdateLocationMutationVariables = Exact<{
   id: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  address: Scalars['String']['input'];
-  city: Scalars['String']['input'];
-  state: Scalars['String']['input'];
-  country: Scalars['String']['input'];
-  postalCode: Scalars['String']['input'];
+  addressLine1?: InputMaybe<Scalars['String']['input']>;
+  addressLine2?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
+  district?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  coordinates?: InputMaybe<CoordinatesInput>;
+  entranceNote?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type UpdateLocationMutation = { __typename?: 'Mutation', updateLocation: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date } };
+export type UpdateLocationMutation = { __typename?: 'Mutation', updateLocation: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state?: string | null, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date, coordinates?: { __typename?: 'Coordinates', longitude: number, latitude: number } | null } };
 
 export type DeleteLocationMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -909,31 +938,32 @@ export type DeleteLocationMutationVariables = Exact<{
 export type DeleteLocationMutation = { __typename?: 'Mutation', deleteLocation: boolean };
 
 export type CreateItemMutationVariables = Exact<{
-  type: ItemType;
+  variant: ItemType;
   intentAction: ItemIntentAction;
-  title: Scalars['String']['input'];
-  description: Scalars['String']['input'];
-  category: Scalars['Int']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['Int']['input']>;
   condition: ItemCondition;
-  location: Scalars['Int']['input'];
-  createdBy: Scalars['UUID']['input'];
+  location?: InputMaybe<Scalars['Int']['input']>;
+  createdBy?: InputMaybe<Scalars['UUID']['input']>;
+  status?: InputMaybe<ItemStatus>;
 }>;
 
 
-export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'Item', id: number, type: ItemType, intentAction: ItemIntentAction, status: ItemStatus, title?: string | null, description?: string | null, category?: number | null, condition: ItemCondition, location?: number | null, viewsCount: number, isReported: boolean, created_at: Date, updatedAt?: Date | null, createdBy?: string | null } };
+export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
 
 export type UpdateItemMutationVariables = Exact<{
   id: Scalars['Int']['input'];
-  title: Scalars['String']['input'];
-  description: Scalars['String']['input'];
-  category: Scalars['Int']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['Int']['input']>;
   condition: ItemCondition;
-  location: Scalars['Int']['input'];
+  location?: InputMaybe<Scalars['Int']['input']>;
   status: ItemStatus;
 }>;
 
 
-export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'Item', id: number, type: ItemType, intentAction: ItemIntentAction, status: ItemStatus, title?: string | null, description?: string | null, category?: number | null, condition: ItemCondition, location?: number | null, viewsCount: number, isReported: boolean, created_at: Date, updatedAt?: Date | null, createdBy?: string | null } };
+export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
 
 export type DeleteItemMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -947,29 +977,29 @@ export type ReportItemMutationVariables = Exact<{
 }>;
 
 
-export type ReportItemMutation = { __typename?: 'Mutation', reportItem?: { __typename?: 'Item', id: number, type: ItemType, intentAction: ItemIntentAction, status: ItemStatus, title?: string | null, description?: string | null, category?: number | null, condition: ItemCondition, location?: number | null, viewsCount: number, isReported: boolean, created_at: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
+export type ReportItemMutation = { __typename?: 'Mutation', reportItem?: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
 
 export type CreateCollectionMutationVariables = Exact<{
   idCommunity: Scalars['Int']['input'];
   title: Scalars['String']['input'];
   visibility: CollectionVisibility;
-  type: CollectionType;
+  variant: CollectionType;
   position: Scalars['Int']['input'];
 }>;
 
 
-export type CreateCollectionMutation = { __typename?: 'Mutation', createCollection: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, type?: CollectionType | null, position: number, created_at: Date, updatedAt?: Date | null } };
+export type CreateCollectionMutation = { __typename?: 'Mutation', createCollection: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, variant?: CollectionType | null, position: number, createdAt: Date, updatedAt?: Date | null } };
 
 export type UpdateCollectionMutationVariables = Exact<{
   id: Scalars['Int']['input'];
   title: Scalars['String']['input'];
   visibility: CollectionVisibility;
-  type: CollectionType;
+  variant: CollectionType;
   position: Scalars['Int']['input'];
 }>;
 
 
-export type UpdateCollectionMutation = { __typename?: 'Mutation', updateCollection: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, type?: CollectionType | null, position: number, created_at: Date, updatedAt?: Date | null } };
+export type UpdateCollectionMutation = { __typename?: 'Mutation', updateCollection: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, variant?: CollectionType | null, position: number, createdAt: Date, updatedAt?: Date | null } };
 
 export type DeleteCollectionMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -986,17 +1016,17 @@ export type CreateMediaMutationVariables = Exact<{
 }>;
 
 
-export type CreateMediaMutation = { __typename?: 'Mutation', createMedia: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, type: MediaType, created_at: Date } };
+export type CreateMediaMutation = { __typename?: 'Mutation', createMedia: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, variant: MediaType, createdAt: Date } };
 
 export type UpdateMediaMutationVariables = Exact<{
   id: Scalars['Int']['input'];
-  url: Scalars['String']['input'];
-  mediaType: MediaType;
-  position: Scalars['Int']['input'];
+  url?: InputMaybe<Scalars['String']['input']>;
+  mediaType?: InputMaybe<MediaType>;
+  position?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type UpdateMediaMutation = { __typename?: 'Mutation', updateMedia: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, type: MediaType, created_at: Date } };
+export type UpdateMediaMutation = { __typename?: 'Mutation', updateMedia: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, variant: MediaType, createdAt: Date } };
 
 export type DeleteMediaMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -1008,7 +1038,7 @@ export type DeleteMediaMutation = { __typename?: 'Mutation', deleteMedia: boolea
 export type CreatePublishMutationVariables = Exact<{
   idItem: Scalars['Int']['input'];
   idCollection: Scalars['Int']['input'];
-  note: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
   position: Scalars['Int']['input'];
   createdBy: Scalars['UUID']['input'];
 }>;
@@ -1019,7 +1049,7 @@ export type CreatePublishMutation = { __typename?: 'Mutation', createPublish: { 
 export type UpdatePublishMutationVariables = Exact<{
   idItem: Scalars['Int']['input'];
   idCollection: Scalars['Int']['input'];
-  note: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
   position: Scalars['Int']['input'];
 }>;
 
@@ -1034,41 +1064,59 @@ export type DeletePublishMutationVariables = Exact<{
 
 export type DeletePublishMutation = { __typename?: 'Mutation', deletePublish: boolean };
 
+export type CreateMessageMutationVariables = Exact<{
+  idTransaction: Scalars['Int']['input'];
+  idSender: Scalars['UUID']['input'];
+  variant: MessageType;
+  content: Scalars['String']['input'];
+}>;
+
+
+export type CreateMessageMutation = { __typename?: 'Mutation', create: { __typename?: 'Message', id: number, idSender?: number | null, idTransaction: number, variant?: MessageType | null, content: string, sent_at: Date, updatedAt?: Date | null } };
+
+export type UpdateTransactionMutationVariables = Exact<{
+  id: Scalars['Int']['input'];
+  status: TransactionStatus;
+}>;
+
+
+export type UpdateTransactionMutation = { __typename?: 'Mutation', update: { __typename?: 'Transaction', id: number, idPledge: number, idSchedule?: number | null, idLocation?: number | null, status: TransactionStatus, createdAt: Date, updatedAt?: Date | null } };
+
 export type ListAccountsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListAccountsQuery = { __typename?: 'Query', listAccounts: Array<{ __typename?: 'Account', id: string, remarks?: string | null, created_at: Date }> };
+export type ListAccountsQuery = { __typename?: 'Query', listAccounts: Array<{ __typename?: 'Account', id: string, remarks?: string | null, createdAt: Date }> };
 
 export type FindAccountQueryVariables = Exact<{
   id: Scalars['UUID']['input'];
 }>;
 
 
-export type FindAccountQuery = { __typename?: 'Query', findAccount?: { __typename?: 'Account', id: string, remarks?: string | null, created_at: Date } | null };
+export type FindAccountQuery = { __typename?: 'Query', findAccount?: { __typename?: 'Account', id: string, remarks?: string | null, createdAt: Date } | null };
 
 export type ListProfilesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListProfilesQuery = { __typename?: 'Query', listProfiles: Array<{ __typename?: 'Profile', id: number, name: string, description?: string | null, type?: ProfileType | null, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string }> };
+export type ListProfilesQuery = { __typename?: 'Query', listProfiles: Array<{ __typename?: 'Profile', id: number, name?: string | null, description?: string | null, variant?: ProfileType | null, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string }> };
 
 export type FindProfileQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindProfileQuery = { __typename?: 'Query', findProfile?: { __typename?: 'Profile', id: number, name: string, description?: string | null, type?: ProfileType | null, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } | null };
+export type FindProfileQuery = { __typename?: 'Query', findProfile?: { __typename?: 'Profile', id: number, name?: string | null, description?: string | null, variant?: ProfileType | null, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } | null };
 
 export type ListCommunitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListCommunitiesQuery = { __typename?: 'Query', listCommunities: Array<{ __typename?: 'Community', id: number, title: string, description?: string | null, type: CommunityType, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string }> };
+export type ListCommunitiesQuery = { __typename?: 'Query', listCommunities: Array<{ __typename?: 'Community', id: number, title: string, description?: string | null, variant: CommunityType, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string }> };
 
 export type FindCommunityQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindCommunityQuery = { __typename?: 'Query', findCommunity?: { __typename?: 'Community', id: number, title: string, description?: string | null, type: CommunityType, owner: string, created_at: Date, updatedAt?: Date | null, createdBy: string } | null };
+export type FindCommunityQuery = { __typename?: 'Query', findCommunity?: { __typename?: 'Community', id: number, title: string, description?: string | null, variant: CommunityType, owner: string, createdAt: Date, updatedAt?: Date | null, createdBy: string } | null };
 
 export type ListCommitteesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1085,62 +1133,62 @@ export type FindCommitteeQuery = { __typename?: 'Query', findCommittee?: { __typ
 export type ListCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListCategoriesQuery = { __typename?: 'Query', listCategories: Array<{ __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date }> };
+export type ListCategoriesQuery = { __typename?: 'Query', listCategories: Array<{ __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null }> };
 
 export type FindCategoryQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindCategoryQuery = { __typename?: 'Query', findCategory?: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null, createdAt: Date, updatedAt: Date } | null };
+export type FindCategoryQuery = { __typename?: 'Query', findCategory?: { __typename?: 'Category', id: number, title: string, description?: string | null, categoryParent?: number | null } | null };
 
 export type ListItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListItemsQuery = { __typename?: 'Query', listItems: Array<{ __typename?: 'Item', id: number, type: ItemType, intentAction: ItemIntentAction, status: ItemStatus, title?: string | null, description?: string | null, category?: number | null, condition: ItemCondition, location?: number | null, viewsCount: number, isReported: boolean, created_at: Date, updatedAt?: Date | null, createdBy?: string | null }> };
+export type ListItemsQuery = { __typename?: 'Query', listItems: Array<{ __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null }> };
 
 export type FindItemQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindItemQuery = { __typename?: 'Query', findItem?: { __typename?: 'Item', id: number, type: ItemType, intentAction: ItemIntentAction, status: ItemStatus, title?: string | null, description?: string | null, category?: number | null, condition: ItemCondition, location?: number | null, viewsCount: number, isReported: boolean, created_at: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
+export type FindItemQuery = { __typename?: 'Query', findItem?: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
 
 export type ListLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListLocationsQuery = { __typename?: 'Query', listLocations: Array<{ __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date }> };
+export type ListLocationsQuery = { __typename?: 'Query', listLocations: Array<{ __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state?: string | null, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date, coordinates?: { __typename?: 'Coordinates', longitude: number, latitude: number } | null }> };
 
 export type FindLocationQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindLocationQuery = { __typename?: 'Query', findLocation?: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state: string, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date } | null };
+export type FindLocationQuery = { __typename?: 'Query', findLocation?: { __typename?: 'Location', id: number, addressLine1: string, addressLine2?: string | null, city: string, state?: string | null, country: string, district?: string | null, entranceNote?: string | null, createdAt: Date, coordinates?: { __typename?: 'Coordinates', longitude: number, latitude: number } | null } | null };
 
 export type ListCollectionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListCollectionsQuery = { __typename?: 'Query', listCollections: Array<{ __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, type?: CollectionType | null, position: number, created_at: Date, updatedAt?: Date | null }> };
+export type ListCollectionsQuery = { __typename?: 'Query', listCollections: Array<{ __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, variant?: CollectionType | null, position: number, createdAt: Date, updatedAt?: Date | null }> };
 
 export type FindCollectionQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindCollectionQuery = { __typename?: 'Query', findCollection?: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, type?: CollectionType | null, position: number, created_at: Date, updatedAt?: Date | null } | null };
+export type FindCollectionQuery = { __typename?: 'Query', findCollection?: { __typename?: 'Collection', id: number, idCommunity?: number | null, title?: string | null, visibility: CollectionVisibility, variant?: CollectionType | null, position: number, createdAt: Date, updatedAt?: Date | null } | null };
 
 export type ListMediaQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMediaQuery = { __typename?: 'Query', listMedia: Array<{ __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, type: MediaType, created_at: Date }> };
+export type ListMediaQuery = { __typename?: 'Query', listMedia: Array<{ __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, variant: MediaType, createdAt: Date }> };
 
 export type FindMediaQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindMediaQuery = { __typename?: 'Query', findMedia?: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, type: MediaType, created_at: Date } | null };
+export type FindMediaQuery = { __typename?: 'Query', findMedia?: { __typename?: 'Media', id: number, idItem: number, caption?: string | null, url: string, variant: MediaType, createdAt: Date } | null };
 
 export type ListPublishesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1157,19 +1205,19 @@ export type FindPublishQuery = { __typename?: 'Query', findPublish?: { __typenam
 export type ListMessagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListMessagesQuery = { __typename?: 'Query', listMessages: Array<{ __typename?: 'Message', id: number, idSender?: number | null, idTransaction: number, type?: MessageType | null, content: string, sent_at: Date, updatedAt?: Date | null }> };
+export type ListMessagesQuery = { __typename?: 'Query', listMessages: Array<{ __typename?: 'Message', id: number, idSender?: number | null, idTransaction: number, variant?: MessageType | null, content: string, sent_at: Date, updatedAt?: Date | null }> };
 
 export type FindMessageQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindMessageQuery = { __typename?: 'Query', findMessage?: { __typename?: 'Message', id: number, idSender?: number | null, idTransaction: number, type?: MessageType | null, content: string, sent_at: Date, updatedAt?: Date | null } | null };
+export type FindMessageQuery = { __typename?: 'Query', findMessage?: { __typename?: 'Message', id: number, idSender?: number | null, idTransaction: number, variant?: MessageType | null, content: string, sent_at: Date, updatedAt?: Date | null } | null };
 
 export type GetAccountListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAccountListQuery = { __typename?: 'Query', listAccounts: Array<{ __typename?: 'Account', id: string, created_at: Date }> };
+export type GetAccountListQuery = { __typename?: 'Query', listAccounts: Array<{ __typename?: 'Account', id: string, createdAt: Date }> };
 
 export type GetTestListQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1208,7 +1256,7 @@ export const CreateAccountDocument = new TypedDocumentString(`
   createAccount(id: $id, remarks: $remarks) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<CreateAccountMutation, CreateAccountMutationVariables>;
@@ -1217,7 +1265,7 @@ export const UpdateAccountDocument = new TypedDocumentString(`
   updateAccount(id: $id, remarks: $remarks) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<UpdateAccountMutation, UpdateAccountMutationVariables>;
@@ -1227,28 +1275,33 @@ export const DeleteAccountDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteAccountMutation, DeleteAccountMutationVariables>;
 export const CreateProfileDocument = new TypedDocumentString(`
-    mutation CreateProfile($idAccount: UUID!, $name: String!, $description: String!) {
+    mutation CreateProfile($idAccount: UUID!, $name: String!, $description: String) {
   createProfile(idAccount: $idAccount, name: $name, description: $description) {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
 }
     `) as unknown as TypedDocumentString<CreateProfileMutation, CreateProfileMutationVariables>;
 export const UpdateProfileDocument = new TypedDocumentString(`
-    mutation UpdateProfile($id: Int!, $name: String!, $description: String!) {
-  updateProfile(id: $id, name: $name, description: $description) {
+    mutation UpdateProfile($id: Int!, $name: String!, $description: String, $variant: ProfileType) {
+  updateProfile(
+    id: $id
+    name: $name
+    description: $description
+    variant: $variant
+  ) {
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1260,33 +1313,38 @@ export const DeleteProfileDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteProfileMutation, DeleteProfileMutationVariables>;
 export const CreateCommunityDocument = new TypedDocumentString(`
-    mutation CreateCommunity($name: String!, $description: String!, $type: CommunityType!, $createdBy: UUID!) {
+    mutation CreateCommunity($name: String!, $description: String, $variant: CommunityType!, $createdBy: UUID!) {
   createCommunity(
     name: $name
     description: $description
-    type: $type
+    variant: $variant
     createdBy: $createdBy
   ) {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
 }
     `) as unknown as TypedDocumentString<CreateCommunityMutation, CreateCommunityMutationVariables>;
 export const UpdateCommunityDocument = new TypedDocumentString(`
-    mutation UpdateCommunity($id: Int!, $title: String!, $description: String!, $type: CommunityType!) {
-  updateCommunity(id: $id, title: $title, description: $description, type: $type) {
+    mutation UpdateCommunity($id: Int!, $title: String!, $description: String, $variant: CommunityType!) {
+  updateCommunity(
+    id: $id
+    title: $title
+    description: $description
+    variant: $variant
+  ) {
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1337,13 +1395,11 @@ export const CreateCategoryDocument = new TypedDocumentString(`
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
     `) as unknown as TypedDocumentString<CreateCategoryMutation, CreateCategoryMutationVariables>;
 export const UpdateCategoryDocument = new TypedDocumentString(`
-    mutation UpdateCategory($id: Int!, $name: String!, $description: String!, $parentId: Int) {
+    mutation UpdateCategory($id: Int!, $name: String, $description: String, $parentId: Int) {
   updateCategory(
     id: $id
     name: $name
@@ -1354,8 +1410,6 @@ export const UpdateCategoryDocument = new TypedDocumentString(`
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
     `) as unknown as TypedDocumentString<UpdateCategoryMutation, UpdateCategoryMutationVariables>;
@@ -1365,15 +1419,16 @@ export const DeleteCategoryDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteCategoryMutation, DeleteCategoryMutationVariables>;
 export const CreateLocationDocument = new TypedDocumentString(`
-    mutation CreateLocation($name: String!, $address: String!, $city: String!, $state: String!, $country: String!, $postalCode: String!, $idProfile: UUID!) {
+    mutation CreateLocation($addressLine1: String!, $addressLine2: String, $city: String!, $state: String!, $district: String, $country: String!, $coordinates: CoordinatesInput, $entranceNote: String) {
   createLocation(
-    name: $name
-    address: $address
+    addressLine1: $addressLine1
+    addressLine2: $addressLine2
     city: $city
     state: $state
+    district: $district
     country: $country
-    postalCode: $postalCode
-    idProfile: $idProfile
+    coordinates: $coordinates
+    entranceNote: $entranceNote
   ) {
     id
     addressLine1
@@ -1384,19 +1439,25 @@ export const CreateLocationDocument = new TypedDocumentString(`
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
     `) as unknown as TypedDocumentString<CreateLocationMutation, CreateLocationMutationVariables>;
 export const UpdateLocationDocument = new TypedDocumentString(`
-    mutation UpdateLocation($id: Int!, $name: String!, $address: String!, $city: String!, $state: String!, $country: String!, $postalCode: String!) {
+    mutation UpdateLocation($id: Int!, $addressLine1: String, $addressLine2: String, $city: String, $state: String, $district: String, $country: String, $coordinates: CoordinatesInput, $entranceNote: String) {
   updateLocation(
     id: $id
-    name: $name
-    address: $address
+    addressLine1: $addressLine1
+    addressLine2: $addressLine2
     city: $city
     state: $state
+    district: $district
     country: $country
-    postalCode: $postalCode
+    coordinates: $coordinates
+    entranceNote: $entranceNote
   ) {
     id
     addressLine1
@@ -1407,6 +1468,10 @@ export const UpdateLocationDocument = new TypedDocumentString(`
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
     `) as unknown as TypedDocumentString<UpdateLocationMutation, UpdateLocationMutationVariables>;
@@ -1416,9 +1481,9 @@ export const DeleteLocationDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteLocationMutation, DeleteLocationMutationVariables>;
 export const CreateItemDocument = new TypedDocumentString(`
-    mutation CreateItem($type: ItemType!, $intentAction: ItemIntentAction!, $title: String!, $description: String!, $category: Int!, $condition: ItemCondition!, $location: Int!, $createdBy: UUID!) {
+    mutation CreateItem($variant: ItemType!, $intentAction: ItemIntentAction!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int, $createdBy: UUID, $status: ItemStatus) {
   createItem(
-    type: $type
+    variant: $variant
     intentAction: $intentAction
     title: $title
     description: $description
@@ -1426,9 +1491,10 @@ export const CreateItemDocument = new TypedDocumentString(`
     condition: $condition
     location: $location
     createdBy: $createdBy
+    status: $status
   ) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -1438,14 +1504,14 @@ export const CreateItemDocument = new TypedDocumentString(`
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
 }
     `) as unknown as TypedDocumentString<CreateItemMutation, CreateItemMutationVariables>;
 export const UpdateItemDocument = new TypedDocumentString(`
-    mutation UpdateItem($id: Int!, $title: String!, $description: String!, $category: Int!, $condition: ItemCondition!, $location: Int!, $status: ItemStatus!) {
+    mutation UpdateItem($id: Int!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int, $status: ItemStatus!) {
   updateItem(
     id: $id
     title: $title
@@ -1456,7 +1522,7 @@ export const UpdateItemDocument = new TypedDocumentString(`
     status: $status
   ) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -1466,7 +1532,7 @@ export const UpdateItemDocument = new TypedDocumentString(`
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1481,7 +1547,7 @@ export const ReportItemDocument = new TypedDocumentString(`
     mutation ReportItem($id: Int!) {
   reportItem(id: $id) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -1491,48 +1557,48 @@ export const ReportItemDocument = new TypedDocumentString(`
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
 }
     `) as unknown as TypedDocumentString<ReportItemMutation, ReportItemMutationVariables>;
 export const CreateCollectionDocument = new TypedDocumentString(`
-    mutation CreateCollection($idCommunity: Int!, $title: String!, $visibility: CollectionVisibility!, $type: CollectionType!, $position: Int!) {
+    mutation CreateCollection($idCommunity: Int!, $title: String!, $visibility: CollectionVisibility!, $variant: CollectionType!, $position: Int!) {
   createCollection(
     idCommunity: $idCommunity
     title: $title
     visibility: $visibility
-    type: $type
+    variant: $variant
     position: $position
   ) {
     id
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
     `) as unknown as TypedDocumentString<CreateCollectionMutation, CreateCollectionMutationVariables>;
 export const UpdateCollectionDocument = new TypedDocumentString(`
-    mutation UpdateCollection($id: Int!, $title: String!, $visibility: CollectionVisibility!, $type: CollectionType!, $position: Int!) {
+    mutation UpdateCollection($id: Int!, $title: String!, $visibility: CollectionVisibility!, $variant: CollectionType!, $position: Int!) {
   updateCollection(
     id: $id
     title: $title
     visibility: $visibility
-    type: $type
+    variant: $variant
     position: $position
   ) {
     id
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -1554,20 +1620,20 @@ export const CreateMediaDocument = new TypedDocumentString(`
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<CreateMediaMutation, CreateMediaMutationVariables>;
 export const UpdateMediaDocument = new TypedDocumentString(`
-    mutation UpdateMedia($id: Int!, $url: String!, $mediaType: MediaType!, $position: Int!) {
+    mutation UpdateMedia($id: Int!, $url: String, $mediaType: MediaType, $position: Int) {
   updateMedia(id: $id, url: $url, mediaType: $mediaType, position: $position) {
     id
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<UpdateMediaMutation, UpdateMediaMutationVariables>;
@@ -1577,7 +1643,7 @@ export const DeleteMediaDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteMediaMutation, DeleteMediaMutationVariables>;
 export const CreatePublishDocument = new TypedDocumentString(`
-    mutation CreatePublish($idItem: Int!, $idCollection: Int!, $note: String!, $position: Int!, $createdBy: UUID!) {
+    mutation CreatePublish($idItem: Int!, $idCollection: Int!, $note: String, $position: Int!, $createdBy: UUID!) {
   createPublish(
     idItem: $idItem
     idCollection: $idCollection
@@ -1595,7 +1661,7 @@ export const CreatePublishDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<CreatePublishMutation, CreatePublishMutationVariables>;
 export const UpdatePublishDocument = new TypedDocumentString(`
-    mutation UpdatePublish($idItem: Int!, $idCollection: Int!, $note: String!, $position: Int!) {
+    mutation UpdatePublish($idItem: Int!, $idCollection: Int!, $note: String, $position: Int!) {
   updatePublish(
     idItem: $idItem
     idCollection: $idCollection
@@ -1616,12 +1682,43 @@ export const DeletePublishDocument = new TypedDocumentString(`
   deletePublish(idItem: $idItem, idCollection: $idCollection)
 }
     `) as unknown as TypedDocumentString<DeletePublishMutation, DeletePublishMutationVariables>;
+export const CreateMessageDocument = new TypedDocumentString(`
+    mutation CreateMessage($idTransaction: Int!, $idSender: UUID!, $variant: MessageType!, $content: String!) {
+  create(
+    idTransaction: $idTransaction
+    idSender: $idSender
+    variant: $variant
+    content: $content
+  ) {
+    id
+    idSender
+    idTransaction
+    variant
+    content
+    sent_at
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<CreateMessageMutation, CreateMessageMutationVariables>;
+export const UpdateTransactionDocument = new TypedDocumentString(`
+    mutation UpdateTransaction($id: Int!, $status: TransactionStatus!) {
+  update(id: $id, status: $status) {
+    id
+    idPledge
+    idSchedule
+    idLocation
+    status
+    createdAt
+    updatedAt
+  }
+}
+    `) as unknown as TypedDocumentString<UpdateTransactionMutation, UpdateTransactionMutationVariables>;
 export const ListAccountsDocument = new TypedDocumentString(`
     query ListAccounts {
   listAccounts {
     id
     remarks
-    created_at
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<ListAccountsQuery, ListAccountsQueryVariables>;
@@ -1630,7 +1727,7 @@ export const FindAccountDocument = new TypedDocumentString(`
   findAccount(id: $id) {
     id
     remarks
-    created_at
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<FindAccountQuery, FindAccountQueryVariables>;
@@ -1640,9 +1737,9 @@ export const ListProfilesDocument = new TypedDocumentString(`
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1654,9 +1751,9 @@ export const FindProfileDocument = new TypedDocumentString(`
     id
     name
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1668,9 +1765,9 @@ export const ListCommunitiesDocument = new TypedDocumentString(`
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1682,9 +1779,9 @@ export const FindCommunityDocument = new TypedDocumentString(`
     id
     title
     description
-    type
+    variant
     owner
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1717,8 +1814,6 @@ export const ListCategoriesDocument = new TypedDocumentString(`
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
     `) as unknown as TypedDocumentString<ListCategoriesQuery, ListCategoriesQueryVariables>;
@@ -1729,8 +1824,6 @@ export const FindCategoryDocument = new TypedDocumentString(`
     title
     description
     categoryParent
-    createdAt
-    updatedAt
   }
 }
     `) as unknown as TypedDocumentString<FindCategoryQuery, FindCategoryQueryVariables>;
@@ -1738,7 +1831,7 @@ export const ListItemsDocument = new TypedDocumentString(`
     query ListItems {
   listItems {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -1748,7 +1841,7 @@ export const ListItemsDocument = new TypedDocumentString(`
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1758,7 +1851,7 @@ export const FindItemDocument = new TypedDocumentString(`
     query FindItem($id: Int!) {
   findItem(id: $id) {
     id
-    type
+    variant
     intentAction
     status
     title
@@ -1768,7 +1861,7 @@ export const FindItemDocument = new TypedDocumentString(`
     location
     viewsCount
     isReported
-    created_at
+    createdAt
     updatedAt
     createdBy
   }
@@ -1786,6 +1879,10 @@ export const ListLocationsDocument = new TypedDocumentString(`
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
     `) as unknown as TypedDocumentString<ListLocationsQuery, ListLocationsQueryVariables>;
@@ -1801,6 +1898,10 @@ export const FindLocationDocument = new TypedDocumentString(`
     district
     entranceNote
     createdAt
+    coordinates {
+      longitude
+      latitude
+    }
   }
 }
     `) as unknown as TypedDocumentString<FindLocationQuery, FindLocationQueryVariables>;
@@ -1811,9 +1912,9 @@ export const ListCollectionsDocument = new TypedDocumentString(`
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -1825,9 +1926,9 @@ export const FindCollectionDocument = new TypedDocumentString(`
     idCommunity
     title
     visibility
-    type
+    variant
     position
-    created_at
+    createdAt
     updatedAt
   }
 }
@@ -1839,8 +1940,8 @@ export const ListMediaDocument = new TypedDocumentString(`
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<ListMediaQuery, ListMediaQueryVariables>;
@@ -1851,8 +1952,8 @@ export const FindMediaDocument = new TypedDocumentString(`
     idItem
     caption
     url
-    type
-    created_at
+    variant
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<FindMediaQuery, FindMediaQueryVariables>;
@@ -1886,7 +1987,7 @@ export const ListMessagesDocument = new TypedDocumentString(`
     id
     idSender
     idTransaction
-    type
+    variant
     content
     sent_at
     updatedAt
@@ -1899,7 +2000,7 @@ export const FindMessageDocument = new TypedDocumentString(`
     id
     idSender
     idTransaction
-    type
+    variant
     content
     sent_at
     updatedAt
@@ -1910,7 +2011,7 @@ export const GetAccountListDocument = new TypedDocumentString(`
     query GetAccountList {
   listAccounts {
     id
-    created_at
+    createdAt
   }
 }
     `) as unknown as TypedDocumentString<GetAccountListQuery, GetAccountListQueryVariables>;

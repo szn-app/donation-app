@@ -27,7 +27,6 @@ pub struct Transaction {
     pub status: TransactionStatus,
     pub id_schedule: Option<i64>,
     pub id_location: Option<i64>,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
     pub updated_at: Option<OffsetDateTime>,
 }

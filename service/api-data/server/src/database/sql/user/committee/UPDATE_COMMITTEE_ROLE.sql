@@ -8,7 +8,7 @@
 -- $2: BIGINT - community id
 -- $3: committee_role - new member role ('organizer' or 'member')
 
-UPDATE "user".committee 
+UPDATE "user"."committee" 
 SET member_role = $3 
 WHERE id_profile = $1 AND id_community = $2 
 RETURNING id_profile, id_community, member_role, joined_at 

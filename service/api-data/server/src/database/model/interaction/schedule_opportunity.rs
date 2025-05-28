@@ -6,7 +6,9 @@ use tokio_postgres::Row;
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct ScheduleOpportunity {
     pub id: i64,
+    #[graphql(default)]
     pub window_start: Option<OffsetDateTime>,
+    #[graphql(default)]
     pub window_end: Option<OffsetDateTime>,
 }
 

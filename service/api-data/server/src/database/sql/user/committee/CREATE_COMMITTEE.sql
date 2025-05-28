@@ -9,6 +9,6 @@
 -- $2: BIGINT - community id
 -- $3: committee_role - member role ('organizer' or 'member')
 
-INSERT INTO user.committee (id_profile, id_community, member_role)
+INSERT INTO "user"."committee" (id_profile, id_community, member_role)
 VALUES ($1, $2, $3)
 RETURNING id_profile, id_community, member_role, joined_at; 

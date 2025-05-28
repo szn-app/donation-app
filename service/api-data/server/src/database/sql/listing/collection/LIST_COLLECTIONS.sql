@@ -4,7 +4,7 @@ SELECT
     id_community,
     title,
     visibility,
-    type,
+    variant,
     position,
     created_at,
     updated_at

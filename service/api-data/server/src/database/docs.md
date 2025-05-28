@@ -16,3 +16,6 @@ used strictly for data access (no business logic & services)
 
 # notes: 
 - derive macros (decorators) for structs and enums map the exact name - case sensitive - of the Postgres and graphql equivalent definitions (struct, enum, fields); https://docs.rs/postgres-types/latest/postgres_types/
+
+- PostGIS extension + Rust postgis crate: provide support for geographic binary format support; or string-based conversion using WKT/WKB crates functions. The EWKB extended binary format of WKB. WKT is textual format. PostGIS EWKB format with SRID 4326 geographic coordinate system standard
+   - geo-types support convertion with postgres-types to Postgresql built-in geometric types (POINT, PATH, BOX). e.g. geo_types::Point<f64> ↔ PostgreSQL POINT

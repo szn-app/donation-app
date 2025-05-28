@@ -5,5 +5,5 @@
 -- Parameters:
 -- $1: UUID - account id to delete
 
-DELETE FROM account
+DELETE FROM "user"."account"
 WHERE id = $1 

@@ -32,8 +32,7 @@ pub struct Media {
     pub id_item: i64,
     pub caption: Option<String>,
     pub url: String,
-    pub type_: MediaType,
-    #[graphql(name = "created_at")]
+    pub variant: MediaType,
     pub created_at: OffsetDateTime,
 }
 
@@ -44,8 +43,8 @@ impl From<Row> for Media {
             id_item: row.get("id_item"),
             caption: row.get("caption"),
             url: row.get("url"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             created_at: row.get("created_at"),
         }
     }
-} 
+}

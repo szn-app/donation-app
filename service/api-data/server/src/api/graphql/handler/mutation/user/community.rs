@@ -20,13 +20,13 @@ impl CommunityMutation {
         &self,
         _ctx: &Context<'_>,
         name: String,
-        description: String,
-        type_: CommunityType,
+        description: Option<String>,
+        variant: CommunityType,
         created_by: Uuid,
     ) -> Result<Community> {
         let community_repository = CommunityRepository::new(self.postgres_pool_group.clone());
         let community = community_repository
-            .create(name, Some(description), type_, created_by, created_by)
+            .create(name, description, variant, created_by, created_by)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
@@ -41,14 +41,14 @@ impl CommunityMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
-        title: String,
+        title: Option<String>,
         description: Option<String>,
-        type_: CommunityType,
+        variant: Option<CommunityType>,
     ) -> FieldResult<Option<Community>> {
         log::debug!("--> update_community @ graphql resolver");
         let repository = CommunityRepository::new(self.postgres_pool_group.clone());
         let community = repository
-            .update(id, title, description, type_)
+            .update(id, title, description, variant)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
         Ok(community)

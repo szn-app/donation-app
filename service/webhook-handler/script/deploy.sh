@@ -53,7 +53,7 @@ build_container#package_hook@webhook-handler() {
 # IMPORTANT! used by docker image build; & github workflow
 install.system-dependency@webhook-handler() {
     # Rust protobuf compiler dependency
-    apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev
+    apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev apt-utils
     # Kafka Rust dependency compiler requirements
     apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev
 }

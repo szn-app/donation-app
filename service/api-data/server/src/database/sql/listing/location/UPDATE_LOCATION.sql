@@ -7,23 +7,18 @@
 -- $5: state (VARCHAR(50))
 -- $6: district (VARCHAR(100))
 -- $7: country (VARCHAR(50))
--- $8: longitude (FLOAT8) - X coordinate
--- $9: latitude (FLOAT8) - Y coordinate
--- $10: entrance_note (TEXT)
+-- $8: geom (GEOGRAPHY(Point, 4326))
+-- $9: entrance_note (TEXT)
 UPDATE "listing"."location"
 SET 
-    address_line1 = $2,
-    address_line2 = $3,
-    city = $4,
-    state = $5,
-    district = $6,
-    country = $7,
-    geom = CASE 
-        WHEN $8 IS NOT NULL AND $9 IS NOT NULL 
-        THEN ST_SetSRID(ST_MakePoint($8, $9), 4326)::geography
-        ELSE geom 
-    END,
-    entrance_note = $10
+    address_line1 = COALESCE($2, address_line1),
+    address_line2 = COALESCE($3, address_line2),
+    city = COALESCE($4, city),
+    state = COALESCE($5, state),
+    district = COALESCE($6, district),
+    country = COALESCE($7, country),
+    geom = COALESCE($8, geom),
+    entrance_note = COALESCE($9, entrance_note)
 WHERE id = $1
 RETURNING 
     id,
@@ -33,8 +28,6 @@ RETURNING
     district,
     state,
     country,
-    ST_AsText(geom) as geom_text,
-    ST_X(geom::geometry) as longitude,
-    ST_Y(geom::geometry) as latitude,
+    geom,
     entrance_note,
     created_at; 

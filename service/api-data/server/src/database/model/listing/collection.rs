@@ -31,13 +31,17 @@ pub enum CollectionType {
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Collection {
     pub id: i64,
+    #[graphql(default)]
     pub id_community: Option<i64>,
+    #[graphql(default)]
     pub title: Option<String>,
     pub visibility: CollectionVisibility,
-    pub type_: Option<CollectionType>,
+    #[graphql(default)]
+    pub variant: Option<CollectionType>,
+    #[graphql(default = 0)]
     pub position: i32,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
+    #[graphql(default)]
     pub updated_at: Option<OffsetDateTime>,
 }
 
@@ -48,10 +52,10 @@ impl From<Row> for Collection {
             id_community: row.get("id_community"),
             title: row.get("title"),
             visibility: row.get("visibility"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             position: row.get("position"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
         }
     }
-} 
+}

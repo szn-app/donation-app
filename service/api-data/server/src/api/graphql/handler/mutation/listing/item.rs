@@ -1,7 +1,8 @@
-use async_graphql::{Context, Error, Result};
+use async_graphql::{Context, Error, ErrorExtensions, Result, ResultExt};
 use tracing::{debug, instrument};
 
 use crate::api::graphql::guard::{auth, AuthorizeUser};
+use crate::api::graphql::service::{DataContext, GlobalContext};
 use crate::database::model::listing::{
     Item, ItemCondition, ItemIntentAction, ItemStatus, ItemType,
 };
@@ -23,20 +24,34 @@ impl ItemMutation {
     )]
     pub async fn create_item(
         &self,
-        _ctx: &Context<'_>,
-        type_: ItemType,
-        intent_action: ItemIntentAction,
+        ctx: &Context<'_>,
+        variant: Option<ItemType>,
+        intent_action: Option<ItemIntentAction>,
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
-        condition: ItemCondition,
+        condition: Option<ItemCondition>,
         location: Option<i64>,
         created_by: Option<Uuid>,
+        status: Option<ItemStatus>,
     ) -> Result<Item> {
+        let c = ctx.data::<DataContext>()?;
+
+        let user_id = c.user_id.as_ref().ok_or_else(|| {
+            const ERROR_MESSAGE: &str = "Not authenticated & No user header detected";
+            log::error!("{}", ERROR_MESSAGE);
+            async_graphql::Error::new(ERROR_MESSAGE).extend_with(|err, e| {
+                e.set("code", 401);
+            })
+        })?;
+
+        let created_by =
+            Some(Uuid::parse_str(user_id).expect("user_id needs to be a valid UUID string"));
+
         let item_repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = item_repository
             .create(
-                type_,
+                variant,
                 intent_action,
                 title,
                 description,
@@ -44,6 +59,7 @@ impl ItemMutation {
                 condition,
                 location,
                 created_by,
+                status,
             )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
@@ -62,9 +78,9 @@ impl ItemMutation {
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
-        condition: ItemCondition,
+        condition: Option<ItemCondition>,
         location: Option<i64>,
-        status: ItemStatus,
+        status: Option<ItemStatus>,
     ) -> FieldResult<Item> {
         debug!("Updating item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());

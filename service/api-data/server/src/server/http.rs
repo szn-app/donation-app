@@ -7,6 +7,30 @@ use serde_json;
 use tokio;
 use tower_http;
 
+// Debug middleware function that modifies headers
+async fn debug_header_middleware(
+    mut request: axum::extract::Request,
+    next: axum::middleware::Next,
+) -> axum::response::Response {
+    // Only apply this middleware in debug mode
+    #[cfg(debug_assertions)]
+    {
+        let headers = request.headers_mut();
+
+        // overwride user id from header, if provided
+        if let Some(source_value) = headers.get("debug-app-user-id") {
+            if let Ok(modified_value) = http::HeaderValue::from_str(&format!(
+                "{}",
+                source_value.to_str().expect("header value issue")
+            )) {
+                headers.insert(http::HeaderName::from_static("app-user-id"), modified_value);
+            }
+        }
+    }
+
+    next.run(request).await
+}
+
 pub async fn start_http_server(
     postgres_pool_group: PostgresPool,
     keto_channel_group: KetoChannelGroup,
@@ -37,7 +61,8 @@ pub async fn start_http_server(
     let http_app = axum::Router::new()
         .nest("/rest", rest_routes)
         .nest("/graphql", graphql_routes)
-        .merge(fallback_router);
+        .merge(fallback_router)
+        .layer(axum::middleware::from_fn(debug_header_middleware));
 
     let listener = tokio::net::TcpListener::bind(http_addr).await?;
 

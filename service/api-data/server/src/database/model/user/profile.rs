@@ -24,12 +24,15 @@ pub enum ProfileType {
 #[derive(Debug, Serialize, Deserialize, Clone, SimpleObject)]
 pub struct Profile {
     pub id: i64,
-    pub name: String,
+    #[graphql(default)]
+    pub name: Option<String>,
+    #[graphql(default)]
     pub description: Option<String>,
-    pub type_: Option<ProfileType>,
+    #[graphql(default)]
+    pub variant: Option<ProfileType>,
     pub owner: Uuid,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
+    #[graphql(default)]
     pub updated_at: Option<OffsetDateTime>,
     pub created_by: Uuid,
 }
@@ -40,11 +43,11 @@ impl From<Row> for Profile {
             id: row.get("id"),
             name: row.get("name"),
             description: row.get("description"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             owner: row.get("owner"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),
             created_by: row.get("created_by"),
         }
     }
-} 
+}

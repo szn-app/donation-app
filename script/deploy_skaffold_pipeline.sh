@@ -132,12 +132,12 @@ production_mode.skaffold#task@monorepo() {
 
 services.production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile development --module monorepo-services-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold run --profile development --module monorepo-services-only --port-forward --cleanup=false
 }
 
 scaffold.production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --cleanup=false
 }
 
 delete.skaffold#task@monorepo() {

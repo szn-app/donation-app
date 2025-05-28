@@ -20,15 +20,15 @@ impl MessageMutation {
         _ctx: &Context<'_>,
         id_transaction: i64,
         id_sender: Uuid,
-        type_: MessageType,
+        variant: MessageType,
         content: String,
     ) -> Result<Message> {
         let message_repository = MessageRepository::new(self.postgres_pool_group.clone());
         let message = message_repository
-            .create(id_transaction, id_sender, type_, content)
+            .create(id_transaction, id_sender, variant, content)
             .await
             .map_err(|e| Error::new(e.to_string()))?;
 
         Ok(message)
     }
-} 
+}

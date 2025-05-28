@@ -90,6 +90,8 @@ where
             let context = DataContext::from_request(&req);
 
             let req = req.map(Body::new);
+            #[cfg(debug_assertions)]
+            let headers = req.headers().clone();
 
             let is_accept_multipart_mixed = req
                 .headers()
@@ -106,7 +108,15 @@ where
                         Ok(req) => req,
                         Err(err) => return Ok(err.into_response()),
                     };
-                let req = req.0.data(context);
+
+                // add data context
+                let mut req = req.0.data(context);
+                // add headers to context only in debug mode
+                #[cfg(debug_assertions)]
+                {
+                    req = req.data(headers);
+                }
+
                 let stream = executor.execute_stream(req, None);
                 let body = Body::from_stream(
                     create_multipart_mixed_stream(stream, Duration::from_secs(30))
@@ -126,7 +136,15 @@ where
                     Ok(req) => req,
                     Err(err) => return Ok(err.into_response()),
                 };
-                let req = req.0.data(context);
+
+                // add data context
+                let mut req = req.0.data(context);
+                // add headers to context only in debug mode
+                #[cfg(debug_assertions)]
+                {
+                    req = req.data(headers);
+                }
+
                 Ok(GraphQLResponse(executor.execute_batch(req).await).into_response())
             }
         })

@@ -22,11 +22,12 @@ pub enum CommunityType {
 pub struct Community {
     pub id: i64,
     pub title: String,
+    #[graphql(default)]
     pub description: Option<String>,
-    pub type_: CommunityType,
+    pub variant: CommunityType,
     pub owner: Uuid,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
+    #[graphql(default)]
     pub updated_at: Option<OffsetDateTime>,
     pub created_by: Uuid,
 }
@@ -37,7 +38,7 @@ impl From<Row> for Community {
             id: row.get("id"),
             title: row.get("title"),
             description: row.get("description"),
-            type_: row.get("type"),
+            variant: row.get("variant"),
             owner: row.get("owner"),
             created_at: row.get("created_at"),
             updated_at: row.get("updated_at"),

@@ -10,7 +10,6 @@ pub struct Review {
     pub reviewer: i64,
     pub comment: Option<String>,
     pub score: i16,
-    #[graphql(name = "created_at")]
     pub created_at: OffsetDateTime,
 }
 

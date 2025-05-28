@@ -22,12 +22,12 @@ impl MediaRepository {
         id_item: i64,
         caption: Option<String>,
         url: String,
-        type_: MediaType,
+        variant: MediaType,
     ) -> Result<Media, Box<dyn Error + Send + Sync>> {
         debug!("Creating media for item {}", id_item);
         let client = self.pool.rw.get().await?;
         let row = client
-            .query_one(CREATE_MEDIA, &[&id_item, &caption, &url, &type_])
+            .query_one(CREATE_MEDIA, &[&id_item, &caption, &url, &variant])
             .await?;
         Ok(Media::from(row))
     }
@@ -54,13 +54,13 @@ impl MediaRepository {
         id: i64,
         caption: Option<String>,
         url: String,
-        type_: MediaType,
+        variant: MediaType,
     ) -> Result<Media, Box<dyn Error + Send + Sync>> {
         debug!("Updating media {}", id);
         let client = self.pool.rw.get().await?;
         let now = OffsetDateTime::now_utc();
         let row = client
-            .query_opt(UPDATE_MEDIA, &[&id, &caption, &url, &type_, &now])
+            .query_opt(UPDATE_MEDIA, &[&id, &caption, &url, &variant, &now])
             .await?;
         let media = row.map(Media::from).ok_or("No record found to update")?;
 

@@ -1,6 +1,6 @@
-use crate::database::model::listing::Location;
+use crate::database::model::listing::{Location, GeoPoint, PostGisPoint};
 use crate::database::sql::listing::location::{
-    CREATE_LOCATION, DELETE_LOCATION, LIST_LOCATIONS, FIND_LOCATIONS_BY_PROFILE, FIND_LOCATION,
+    CREATE_LOCATION, DELETE_LOCATION, LIST_LOCATIONS, FIND_LOCATION,
     UPDATE_LOCATION,
 };
 use crate::server::connection::PostgresPool;
@@ -8,7 +8,6 @@ use deadpool_postgres::PoolError;
 use std::error::Error;
 use tokio_postgres::Row;
 use tracing::debug;
-use uuid::Uuid;
 
 pub struct LocationRepository {
     pool: PostgresPool,
@@ -33,41 +32,35 @@ impl LocationRepository {
         Ok(row.map(Location::from))
     }
 
-    pub async fn find_by_profile(
-        &self,
-        id_profile: Uuid,
-    ) -> Result<Vec<Location>, Box<dyn Error + Send + Sync>> {
-        debug!("Getting locations by profile: {}", id_profile);
-        let client = self.pool.r.get().await?;
-        let rows = client
-            .query(FIND_LOCATIONS_BY_PROFILE, &[&id_profile])
-            .await?;
-        Ok(rows.into_iter().map(Location::from).collect())
-    }
-
     pub async fn create(
         &self,
-        name: &str,
-        address: &str,
-        city: &str,
-        state: &str,
-        country: &str,
-        postal_code: &str,
-        id_profile: Uuid,
+        address_line1: String,
+        address_line2: Option<String>,
+        city: String,
+        state: String,
+        district: Option<String>,
+        country: String,
+        geom: Option<GeoPoint>,
+        entrance_note: Option<String>,
     ) -> Result<Location, Box<dyn Error + Send + Sync>> {
-        debug!("Adding location: {}", name);
+        debug!("Adding location: {}", address_line1);
         let client = self.pool.rw.get().await?;
+        
+        // Convert GeoPoint to PostGisPoint and then to the inner PostGIS point
+        let postgis_point = geom.map(PostGisPoint::from).map(PostGisPoint::into_inner);
+        
         let row = client
             .query_one(
                 CREATE_LOCATION,
                 &[
-                    &name,
-                    &address,
+                    &address_line1,
+                    &address_line2,
                     &city,
                     &state,
+                    &district,
                     &country,
-                    &postal_code,
-                    &id_profile,
+                    &postgis_point,
+                    &entrance_note,
                 ],
             )
             .await?;
@@ -77,19 +70,35 @@ impl LocationRepository {
     pub async fn update(
         &self,
         id: i64,
-        name: Option<String>,
-        address: Option<String>,
+        address_line1: Option<String>,
+        address_line2: Option<String>,
         city: Option<String>,
         state: Option<String>,
+        district: Option<String>,
         country: Option<String>,
-        postal_code: Option<String>,
+        geom: Option<GeoPoint>,
+        entrance_note: Option<String>,
     ) -> Result<Location, Box<dyn Error + Send + Sync>> {
         debug!("Updating location: {}", id);
         let client = self.pool.rw.get().await?;
+        
+        // Convert GeoPoint to PostGisPoint and then to the inner PostGIS point
+        let postgis_point = geom.map(PostGisPoint::from).map(PostGisPoint::into_inner);
+        
         let row = client
             .query_one(
                 UPDATE_LOCATION,
-                &[&id, &name, &address, &city, &state, &country, &postal_code],
+                &[
+                    &id,
+                    &address_line1,
+                    &address_line2,
+                    &city,
+                    &state,
+                    &district,
+                    &country,
+                    &postgis_point,
+                    &entrance_note,
+                ],
             )
             .await?;
         Ok(Location::from(row))

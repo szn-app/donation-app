@@ -1,14 +1,14 @@
+use log::debug;
 use time::OffsetDateTime;
 use uuid::Uuid;
-use log::debug;
 
 use crate::database::model::user::community::{Community, CommunityType};
 use crate::database::sql::user::community::{
-    CREATE_COMMUNITY, DELETE_COMMUNITY, LIST_COMMUNITIES, FIND_COMMUNITIES_BY_OWNER, FIND_COMMUNITY,
-    UPDATE_COMMUNITY,
+    CREATE_COMMUNITY, DELETE_COMMUNITY, FIND_COMMUNITIES_BY_OWNER, FIND_COMMUNITY,
+    LIST_COMMUNITIES, UPDATE_COMMUNITY,
 };
-use std::error::Error;
 use crate::server::connection::PostgresPool;
+use std::error::Error;
 
 pub struct CommunityRepository {
     pool: PostgresPool,
@@ -51,39 +51,41 @@ impl CommunityRepository {
         &self,
         title: String,
         description: Option<String>,
-        type_: CommunityType,
+        variant: CommunityType,
         owner: Uuid,
         created_by: Uuid,
     ) -> Result<Community, Box<dyn Error + Send + Sync>> {
         debug!(
             "Creating new community with title: {}, description: {:?}, type: {:?}, owner: {}, created_by: {}",
-            title, description, type_, owner, created_by
+            title, description, variant, owner, created_by
         );
         let client = self.pool.rw.get().await?;
         let row = client
             .query_one(
                 CREATE_COMMUNITY,
-                &[&title, &description, &type_, &owner, &created_by],
+                &[&title, &description, &variant, &owner, &created_by],
             )
             .await?;
         Ok(Community::from(row))
     }
 
     /// Updates an existing community.
+    /// All fields except id are optional to support partial updates.
     pub async fn update(
         &self,
         id: i64,
-        title: String,
+        title: Option<String>,
         description: Option<String>,
-        type_: CommunityType,
+        variant: Option<CommunityType>,
     ) -> Result<Option<Community>, Box<dyn Error + Send + Sync>> {
         debug!(
-            "Updating community {} with title: {}, description: {:?}, type: {:?}",
-            id, title, description, type_
+            "Updating community {} with title: {:?}, description: {:?}, type: {:?}",
+            id, title, description, variant
         );
         let client = self.pool.rw.get().await?;
+        let now = OffsetDateTime::now_utc();
         let row = client
-            .query_opt(UPDATE_COMMUNITY, &[&id, &title, &description, &type_])
+            .query_opt(UPDATE_COMMUNITY, &[&id, &title, &description, &variant, &now])
             .await?;
         Ok(row.map(Community::from))
     }

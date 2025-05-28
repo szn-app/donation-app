@@ -1,2 +1,2 @@
-SELECT * FROM publish 
+SELECT * FROM "listing"."publish" 
 WHERE id = $1 

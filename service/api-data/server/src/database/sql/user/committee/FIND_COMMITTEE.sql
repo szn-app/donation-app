@@ -1,1 +1,1 @@
-SELECT * FROM committee WHERE id = $1 
+SELECT * FROM "user"."committee" WHERE id = $1 

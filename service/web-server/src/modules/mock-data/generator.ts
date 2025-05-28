@@ -26,7 +26,7 @@ export class MockDataGenerator {
   static generateAccount(): Account {
     return {
       id: faker.string.uuid(),
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
       remarks: faker.lorem.sentence(),
     };
   }
@@ -36,14 +36,14 @@ export class MockDataGenerator {
       id: faker.number.int(),
       name: faker.person.fullName(),
       description: faker.lorem.paragraph(),
-      type: faker.helpers.arrayElement([
+      variant: faker.helpers.arrayElement([
         ProfileType.Individual,
         ProfileType.Company,
         ProfileType.Organization,
       ]),
       owner: accountId,
       createdBy: accountId,
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }
@@ -53,13 +53,13 @@ export class MockDataGenerator {
       id: faker.number.int(),
       title: faker.company.name(),
       description: faker.lorem.paragraph(),
-      type: faker.helpers.arrayElement([
+      variant: faker.helpers.arrayElement([
         CommunityType.Organized,
         CommunityType.Solo,
       ]),
       owner: accountId,
       createdBy: accountId,
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }
@@ -82,8 +82,6 @@ export class MockDataGenerator {
       title: faker.commerce.department(),
       description: faker.lorem.sentence(),
       categoryParent: parentId,
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
     };
   }
 
@@ -110,7 +108,7 @@ export class MockDataGenerator {
       id: faker.number.int(),
       title: faker.commerce.productName(),
       description: faker.lorem.paragraph(),
-      type: faker.helpers.arrayElement([
+      variant: faker.helpers.arrayElement([
         ItemType.Inkind,
         ItemType.Monetary,
         ItemType.Service,
@@ -135,7 +133,7 @@ export class MockDataGenerator {
       category: categoryId,
       location: locationId,
       createdBy: createdBy,
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
       viewsCount: faker.number.int({ min: 0, max: 1000 }),
       isReported: faker.datatype.boolean(),
@@ -146,14 +144,14 @@ export class MockDataGenerator {
     return {
       id: faker.number.int(),
       idItem: itemId,
-      type: faker.helpers.arrayElement([
+      variant: faker.helpers.arrayElement([
         MediaType.Image,
         MediaType.Video,
         MediaType.Document,
       ]),
       url: faker.image.url(),
       caption: faker.lorem.sentence(),
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
     };
   }
 
@@ -162,7 +160,7 @@ export class MockDataGenerator {
       id: faker.number.int(),
       idCommunity: communityId,
       title: faker.commerce.productName(),
-      type: faker.helpers.arrayElement([
+      variant: faker.helpers.arrayElement([
         CollectionType.Featured,
         CollectionType.Regular,
       ]),
@@ -171,7 +169,7 @@ export class MockDataGenerator {
         CollectionVisibility.Restricted,
       ]),
       position: faker.number.int({ min: 1, max: 100 }),
-      created_at: faker.date.past(),
+      createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
     };
   }

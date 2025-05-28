@@ -38,11 +38,14 @@ pub struct Pledge {
     pub id_profile: i64,
     pub id_item: i64,
     pub intent_action: PledgeIntentAction,
+    #[graphql(default)]
     pub message: Option<String>,
     pub status: PledgeStatus,
     #[graphql(name = "pledged_at")]
     pub pledged_at: OffsetDateTime,
+    #[graphql(default)]
     pub updated_at: Option<OffsetDateTime>,
+    #[graphql(default)]
     pub updated_by: Option<Uuid>,
 }
 

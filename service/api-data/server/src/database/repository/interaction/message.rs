@@ -51,7 +51,7 @@ impl MessageRepository {
         &self,
         id_transaction: i64,
         id_sender: Uuid,
-        type_: MessageType,
+        variant: MessageType,
         content: String,
     ) -> Result<Message, Box<dyn Error + Send + Sync>> {
         debug!("Adding message to transaction: {}", id_transaction);
@@ -59,7 +59,7 @@ impl MessageRepository {
         let row = client
             .query_one(
                 CREATE_MESSAGE,
-                &[&id_transaction, &id_sender, &type_, &content],
+                &[&id_transaction, &id_sender, &variant, &content],
             )
             .await?;
         Ok(Message::from(row))

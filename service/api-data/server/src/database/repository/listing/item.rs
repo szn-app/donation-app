@@ -23,14 +23,15 @@ impl ItemRepository {
 
     pub async fn create(
         &self,
-        type_: ItemType,
-        intent_action: ItemIntentAction,
+        variant: Option<ItemType>,
+        intent_action: Option<ItemIntentAction>,
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
-        condition: ItemCondition,
+        condition: Option<ItemCondition>,
         location: Option<i64>,
         created_by: Option<Uuid>,
+        status: Option<ItemStatus>,
     ) -> Result<Item, Box<dyn Error + Send + Sync>> {
         debug!("Creating new item with title: {:?}", title);
         let client = self.pool.rw.get().await?;
@@ -38,8 +39,9 @@ impl ItemRepository {
             .query_one(
                 CREATE_ITEM,
                 &[
-                    &type_,
+                    &variant,
                     &intent_action,
+                    &status,
                     &title,
                     &description,
                     &category,
@@ -62,10 +64,13 @@ impl ItemRepository {
     pub async fn find_by_category(
         &self,
         category: i64,
+        status: Option<ItemStatus>,
     ) -> Result<Vec<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Getting items by category: {}", category);
         let client = self.pool.r.get().await?;
-        let rows = client.query(FIND_ITEMS_BY_CATEGORY, &[&category]).await?;
+        let rows = client
+            .query(FIND_ITEMS_BY_CATEGORY, &[&category, &status])
+            .await?;
         Ok(rows.into_iter().map(Item::from).collect())
     }
 
@@ -75,9 +80,9 @@ impl ItemRepository {
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
-        condition: ItemCondition,
+        condition: Option<ItemCondition>,
         location: Option<i64>,
-        status: ItemStatus,
+        status: Option<ItemStatus>,
     ) -> Result<Item, Box<dyn Error + Send + Sync>> {
         debug!("Updating item {} with title: {:?}", id, title);
         let client = self.pool.rw.get().await?;
@@ -127,10 +132,13 @@ impl ItemRepository {
         Ok(rows_affected > 0)
     }
 
-    pub async fn list(&self) -> Result<Vec<Item>, Box<dyn Error + Send + Sync>> {
+    pub async fn list(
+        &self,
+        status: Option<ItemStatus>,
+    ) -> Result<Vec<Item>, Box<dyn Error + Send + Sync>> {
         debug!("Getting all items");
         let client = self.pool.r.get().await?;
-        let rows = client.query(LIST_ITEMS, &[]).await?;
+        let rows = client.query(LIST_ITEMS, &[&status]).await?;
         Ok(rows.into_iter().map(Item::from).collect())
     }
 }
