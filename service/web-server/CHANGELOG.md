@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.0.80](https://github.com/szn-app/donation-app/compare/web-server@v0.0.79...web-server@v0.0.80) (2025-05-29)
+
+
+### Features
+
+* add graphql basic operations (query/mutation) ([7305dcc](https://github.com/szn-app/donation-app/commit/7305dccc0081fdfae4ae69cd7f084c8ee57240c6))
+* auth header react hook ([8fd7f6f](https://github.com/szn-app/donation-app/commit/8fd7f6f99a6d27af402cbf2bcc3f870ab8d7d8e3))
+* complete CRUD functionality across layers including frontend ([5fe28d9](https://github.com/szn-app/donation-app/commit/5fe28d9729752f83be1295c97b1da081983affd8))
+* CORS headers implementation on gateway level ([f7067ef](https://github.com/szn-app/donation-app/commit/f7067efe4822ed8b4e2be7b41bbf15df6c480f50))
+* implement CRUD SQL operations for all schemas following consistent LLM instructions ([89367d5](https://github.com/szn-app/donation-app/commit/89367d54e9a3f6427627dda2c732cd4a8e123668))
+* mock data for graphql endpoint testing ([75765b0](https://github.com/szn-app/donation-app/commit/75765b0e38b63f4a43fcaca568de3bc5fb5f16f1))
+* mock display page for database generated data ([5bc743c](https://github.com/szn-app/donation-app/commit/5bc743caa50ffed8121996f79d5967a68c8c2ffd))
+* sync frontend and backend with postgresql database schema throught with generate graphql schema ([da91a6f](https://github.com/szn-app/donation-app/commit/da91a6f480c8d9febdb56a538f649d501c57beb7))
+
+
+### Bug Fixes
+
+* autgen script and modify to supported DateTime graphql schema scalar ([4487c71](https://github.com/szn-app/donation-app/commit/4487c71228353f7d6043fa4cb5826b9e56b09c52))
+* authorization headers for tanstack query calls ([7b03100](https://github.com/szn-app/donation-app/commit/7b03100e1ab7eefc03514e3a9de1beb273487f76))
+
 ## [0.0.79](https://github.com/szn-app/donation-app/compare/web-server@v0.0.78...web-server@v0.0.79) (2025-05-15)
 
 

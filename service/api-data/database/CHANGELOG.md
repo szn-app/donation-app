@@ -1,5 +1,15 @@
 # Changelog
 
+## [17.5.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.4.0...api-data-database@v17.5.0) (2025-05-29)
+
+
+### Features
+
+* complete CRUD functionality across layers including frontend ([5fe28d9](https://github.com/szn-app/donation-app/commit/5fe28d9729752f83be1295c97b1da081983affd8))
+* complete CRUD graphql implementation across layers to datbase and following naming conventions ([95af829](https://github.com/szn-app/donation-app/commit/95af829e9d7966b5d544e603792aa4b2e083cdc8))
+* sync frontend and backend with postgresql database schema throught with generate graphql schema ([da91a6f](https://github.com/szn-app/donation-app/commit/da91a6f480c8d9febdb56a538f649d501c57beb7))
+* update sql operations as well as Rust models corresponding to db schema changes ([86faaf3](https://github.com/szn-app/donation-app/commit/86faaf3553ccf54a907d7e7476162fc7516200ae))
+
 ## [17.4.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.3.2...api-data-database@v17.4.0) (2025-05-15)
 
 

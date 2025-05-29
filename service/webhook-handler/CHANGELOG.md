@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.5](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.4...webhook-handler@v0.0.5) (2025-05-29)
+
+
+### Features
+
+* complete CRUD functionality across layers including frontend ([5fe28d9](https://github.com/szn-app/donation-app/commit/5fe28d9729752f83be1295c97b1da081983affd8))
+
+
+### Bug Fixes
+
+* models assign propert postgres field names ([80ac87a](https://github.com/szn-app/donation-app/commit/80ac87aff2780535dd239143e6055e401b5664c6))
+* webhook-handler protobuf dependency in distroless image ([be01b8c](https://github.com/szn-app/donation-app/commit/be01b8cb4f496c0f4da62320aec6c1904e47c28b))
+
 ## [0.0.4](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.3...webhook-handler@v0.0.4) (2025-05-15)
 
 
