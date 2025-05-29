@@ -1505,6 +1505,54 @@
       "dependsOn": [],
       "problemMatcher": [],
       "runOptions": {}
+    },
+    {
+      "label": "create_snapshot.hetzner.cloud#provision#task@infrastructure",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && create_snapshot.hetzner.cloud#provision#task@infrastructure"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) create_snapshot.hetzner.cloud#provision#task@infrastructure"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "hetzner.scaffold.production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && hetzner.scaffold.production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) hetzner.scaffold.production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
     }
   ]
 }
