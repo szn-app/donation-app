@@ -140,6 +140,12 @@ scaffold.production_mode.skaffold#task@monorepo() {
     skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --cleanup=false
 }
 
+hetzner.scaffold.production_mode.skaffold#task@monorepo() {
+    kubectl ctx k3s
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold run --profile production --tail
+}
+
 delete.skaffold#task@monorepo() {
     skaffold delete --profile development
     skaffold delete --profile local-production
