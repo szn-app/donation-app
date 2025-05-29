@@ -1,35 +1,49 @@
 #!/bin/bash
 
+delete.hetzner.cloud#provision#task@infrastructure() { 
+    pushd infrastructure
+      ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
+      find . -name "*.tfvars"
+      set -a && source ".env" && set +a # export TF_TOKEN_app_terraform_io="" 
+
+      printf "Destroying infrastructure...\n"
+      terraform init
+      terraform destroy -auto-approve
+    popd
+}
+
+# create snapshots with kube-hetzner binaries (idempotent can be executed in existing project)
+# executed one time 
+create_snapshot.hetzner.cloud#provision#task@infrastructure() {(
+  pushd infrastructure
+
+  tmp_script=$(mktemp)
+  curl -sSL -o "${tmp_script}" https://raw.githubusercontent.com/kube-hetzner/terraform-hcloud-kube-hetzner/master/scripts/create.sh
+  chmod +x "${tmp_script}" 
+  "${tmp_script}"
+  rm "${tmp_script}"
+
+  echo "TODO: manulaly next update terraform.tfvars with snapshot ids"
+
+  popd
+)}
+
+check_tools_versions() { 
+  hcloud version && kubectl version && packer --version
+  tofu --version && terraform version # either tools should work
+  helm version && cilium version
+  k9s version && kubectl krew version
+  kubectl krew list | grep ctx && kubectl krew list | grep ns 
+}
+
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner
 hetzner.cloud#provision#task@infrastructure() {
-    action=${1:-"install"}
-
     if ! command -v kubectl-ctx &> /dev/null; then
         echo "kubectl ctx is not installed. Exiting."
         return
     fi
 
-    if [ "$action" == "delete" ]; then
-      pushd infrastructure
-        ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
-        find . -name "*.tfvars"
-        set -a && source ".env" && set +a # export TF_TOKEN_app_terraform_io="" 
-
-        printf "Destroying infrastructure...\n"
-        terraform init
-        terraform destroy -auto-approve
-      popd
-      return 
-    fi
-
-    {
-      hcloud version && kubectl version && packer --version
-      tofu --version && terraform version # either tools should work
-      helm version && cilium version
-      k9s version && kubectl krew version
-      kubectl krew list | grep ctx && kubectl krew list | grep ns 
-
-    }
+  check_tools_versions
 
   # remove warnings and logs from coredns
   remove_warnings_logs() { 
@@ -55,21 +69,8 @@ EOF
       # Generate an ed25519 SSH key pair - will also be used to log into the machines using ssh
       ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
       
-
-      # create snapshots with kube-hetzner binaries (idempotent can be executed in existing project)
-      create_snapshot() {
-          pushd infrastructure
-
-          tmp_script=$(mktemp)
-          curl -sSL -o "${tmp_script}" https://raw.githubusercontent.com/kube-hetzner/terraform-hcloud-kube-hetzner/master/scripts/create.sh
-          chmod +x "${tmp_script}" 
-          "${tmp_script}"
-          rm "${tmp_script}"
-
-          popd
-      }
-      create_snapshot
-    }  
+      create_snapshot.hetzner.cloud#provision#task@infrastructure
+    }
     
     ### handle terraform 
     {
@@ -173,7 +174,7 @@ EOF
 
       }
 
-      hcloud context create "k8s-project"
+      hcloud context create "k8s-project" || true
 
       ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
       find . -name "*.tfvars"
@@ -197,8 +198,10 @@ EOF
       install_kubernetes_dashboard  
       install_gateway_api_cilium  # [previous implementation] # installation_gateway_controller_nginx 
       cert_manager_related  # must be restarted after installation of Gateway Api
+
       sleep 30
       install_storage_class 
+
       # TODO: check resource limits and prevent contention when using monitoring tools - check notes in install_monitoring.sh
       # install_monitoring
 

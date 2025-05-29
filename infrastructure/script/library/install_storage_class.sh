@@ -1,4 +1,4 @@
-install_storage_class() { 
+install_storage_class() {
   printf "Installing Longhorn storage class...\n"
 
   kubectl get storageclasses.storage.k8s.io
@@ -33,7 +33,7 @@ install_storage_class() {
 EOT
 )
 
-    agent_node_names=($(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/control-plane"] | not) | .metadata.name'))
+    agent_node_names=($(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/worker"] | not) | .metadata.name'))
     for node_name in "${agent_node_names[@]}"; do
       echo "annotating node $node_name" 
       kubectl annotate node "$node_name" "node.longhorn.io/default-disks-config=$config" --overwrite   
@@ -62,7 +62,7 @@ EOT
 
     }
 
-    sleep 25
+    sleep 5 
 
     # Longhorn add tags (longhorn tag) for workers from the Kubernetes labels (synchronize K8s labels to Longhorn tags)
     # NOTE: this tags only nodes that can run pods (if control node is not set to run workloads it will print error message)
@@ -71,7 +71,7 @@ EOT
       LABEL_KEY="role" # Label key to match in Kubernetes nodes
 
       # Iterate through nodes and apply tags
-      for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+      for node in $(kubectl get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[*].metadata.name}'); do
         # Get the value of the label
         LABEL_VALUE=$(kubectl get node $node -o jsonpath="{.metadata.labels['$LABEL_KEY']}")
 
@@ -86,7 +86,6 @@ EOT
         fi
       done  
     }
-
   }
 
   ###

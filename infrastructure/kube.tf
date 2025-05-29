@@ -1,11 +1,11 @@
-### Resource configuration
+### main Resource configuration
 # Original template from https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/blob/master/kube.tf.example
 
 # https://registry.terraform.io/modules/kube-hetzner/kube-hetzner/hcloud
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/blob/master/docs/terraform.md
 module "kube-hetzner" {
   source = "kube-hetzner/kube-hetzner/hcloud"
-  version = "2.16.1"
+  version = "2.17.1"
   providers = {
     hcloud = hcloud
   }
