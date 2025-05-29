@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "predev": "pnpm generate-graphql",
-    "prebuild": "pnpm generate-graphql",
     "dev": "vite dev",
     "dev-service-port": "vite dev --port 80 --host 0.0.0.0",
     "build": "tsc && vite build",
