@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.4.30](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.29...donation-app@v0.4.30) (2025-05-29)
+
+
+### Features
+
+* complete CRUD functionality across layers including frontend ([5fe28d9](https://github.com/szn-app/donation-app/commit/5fe28d9729752f83be1295c97b1da081983affd8))
+* complete CRUD graphql implementation across layers to datbase and following naming conventions ([95af829](https://github.com/szn-app/donation-app/commit/95af829e9d7966b5d544e603792aa4b2e083cdc8))
+* CORS headers implementation on gateway level ([f7067ef](https://github.com/szn-app/donation-app/commit/f7067efe4822ed8b4e2be7b41bbf15df6c480f50))
+* preserve consistency across layers : schema, sql ops, rust structs, rust data access ([657f290](https://github.com/szn-app/donation-app/commit/657f290a7861835ec2589c92ca579ee746223666))
+* update sql operations as well as Rust models corresponding to db schema changes ([86faaf3](https://github.com/szn-app/donation-app/commit/86faaf3553ccf54a907d7e7476162fc7516200ae))
+
+
+### Bug Fixes
+
+* autgen script and modify to supported DateTime graphql schema scalar ([4487c71](https://github.com/szn-app/donation-app/commit/4487c71228353f7d6043fa4cb5826b9e56b09c52))
+* **authorization:** fix keto authorize for graphql guard ([c799412](https://github.com/szn-app/donation-app/commit/c799412038f0b5f85a34ccad0d815b01b4a97440))
+* **dummy:** trigger release ([5563934](https://github.com/szn-app/donation-app/commit/5563934b2de180a97b0671c9eec720c3011e44c4))
+* graphql requests with user id header naming ([8a22372](https://github.com/szn-app/donation-app/commit/8a22372acc77de3329ca8b6b95bf23bc0165ca9e))
+* models assign propert postgres field names ([80ac87a](https://github.com/szn-app/donation-app/commit/80ac87aff2780535dd239143e6055e401b5664c6))
+* properly pass app-user-id header for all the access-control settings; handle CORS properly for browsers by explicit headers/methods listings ([7749b95](https://github.com/szn-app/donation-app/commit/7749b959253d6f6614765d0872b95651811392e3))
+* user id header propagation through gateway & oathkeeper authorizer;  Call keto with read-only grpc functions; ([ffeee99](https://github.com/szn-app/donation-app/commit/ffeee99d3ecc23d2b31623e2ee481e3806294c2f))
+* webhook-handler protobuf dependency in distroless image ([be01b8c](https://github.com/szn-app/donation-app/commit/be01b8cb4f496c0f4da62320aec6c1904e47c28b))
+
 ## [0.4.29](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.28...donation-app@v0.4.29) (2025-05-15)
 
 
