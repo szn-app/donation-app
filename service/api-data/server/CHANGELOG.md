@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.8](https://github.com/szn-app/donation-app/compare/api-data@v0.0.7...api-data@v0.0.8) (2025-05-29)
+
+
+### Bug Fixes
+
+* **build:** trigger release for fixing builds ([b302b09](https://github.com/szn-app/donation-app/commit/b302b096f68c9de86d0f869cebb3f57f4edf8ed8))
+
 ## [0.0.7](https://github.com/szn-app/donation-app/compare/api-data@v0.0.6...api-data@v0.0.7) (2025-05-29)
 
 
