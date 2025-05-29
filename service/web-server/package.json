@@ -1,7 +1,7 @@
 {
   "name": "web-server",
   "private": true,
-  "version": "0.0.81",
+  "version": "0.0.82",
   "type": "module",
   "scripts": {
     "predev": "pnpm generate-graphql",
