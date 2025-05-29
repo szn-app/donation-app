@@ -1,6 +1,14 @@
 #!/bin/bash
 
+# IMPORTANT: used in github workflow
+test#ci-hook#workflow@api-data-server() {
+    echo "Running tests..."
+    cargo test -q server::connection::postgresql::tests::test_postgres_config_new
+    TEST_STATUS=$?
+}
+
 test@api-data() { 
+    cargo test -- --list
     cargo test -q test_main -- --nocapture
     cargo test -q tests::test_db_connection_and_query -- --nocapture
     cargo test --features run_dev_test -q tests::test_db_connection_and_query -- --nocapture
