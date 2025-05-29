@@ -2,11 +2,11 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 import { loadConfig } from "graphql-config";
 import { z } from "zod";
 
-const c = await loadConfig({});
+const c = loadConfig({});
 
 const config: CodegenConfig = {
-  schema: c?.getDefault().schema,
-  documents: c?.getDefault().documents,
+  schema: (await c)?.getDefault().schema,
+  documents: (await c)?.getDefault().documents,
   overwrite: true,
   ignoreNoDocuments: true,
   // root-level config will apply to all generates enteries
