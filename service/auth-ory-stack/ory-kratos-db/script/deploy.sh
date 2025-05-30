@@ -1,4 +1,4 @@
-generate_database_credentials@ory-kratos-db() {( # use subshell to avoid change variables
+generate_database_credentials#predeploy-hook@ory-kratos-db() {( # use subshell to avoid change variables
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     local filename="./k8s/overlays/prod/user.env.local"
@@ -22,9 +22,9 @@ EOF
 func#predeploy-skaffold-hook@ory-kratos-db() {
     local environment=$1
 
-    if [ "$environment" != "development" ]; then
-        generate_database_credentials@ory-kratos-db
-    fi
+    # if [ "$environment" != "development" ]; then
+    #     generate_database_credentials@ory-kratos-db
+    # fi
 }
 
 func#postdeploy-skaffold-hook@ory-kratos-db() {

@@ -1,4 +1,4 @@
-generate_database_credentials@api-data-database() {( # use subshell to avoid change variables
+generate_database_credentials#predeploy-hook@api-data-database() {( # use subshell to avoid change variables
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     local filename="./k8s/overlays/prod/user.env.local"
@@ -33,9 +33,9 @@ func#predeploy-skaffold-hook@api-data-database() {
         fi
     }
 
-    if [ "$environment" != "development" ]; then
-        generate_database_credentials@api-data-database
-    fi
+    # if [ "$environment" != "development" ]; then
+    #     generate_database_credentials@api-data-database
+    # fi
 }
 
 func#postdeploy-skaffold-hook@api-data-database() {

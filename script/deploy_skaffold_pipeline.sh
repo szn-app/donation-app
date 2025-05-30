@@ -140,8 +140,12 @@ scaffold.production_mode.skaffold#task@monorepo() {
     skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --cleanup=false
 }
 
-hetzner.scaffold.production_mode.skaffold#task@monorepo() {
+hetzner.skaffold.production_mode.skaffold#task@monorepo() {
     kubectl ctx k3s
+
+    execute.util '#setup' '#mount-bind' # ensure mounts are setup
+    execute.util '#predeploy-hook' # prepare for deployment
+
     wait_for_terminating_resources.kubernetes#utility
     skaffold run --profile production --tail
 }

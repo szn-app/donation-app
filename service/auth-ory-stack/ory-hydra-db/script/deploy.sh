@@ -1,4 +1,4 @@
-generate_database_credentials@ory-hydra-db() {( # use subshell to avoid change variables
+generate_database_credentials#predeploy-hook@ory-hydra-db() {( # use subshell to avoid change variables
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     local filename="./k8s/overlays/prod/user.env.local"
@@ -22,9 +22,9 @@ EOF
 func#predeploy-skaffold-hook@ory-hydra-db() {
     local environment=$1
 
-    if [ "$environment" != "development" ]; then
-        generate_database_credentials@ory-hydra-db
-    fi
+    # if [ "$environment" != "development" ]; then
+    #     generate_database_credentials@ory-hydra-db
+    # fi
 }
 
 func#postdeploy-skaffold-hook@ory-hydra-db() {

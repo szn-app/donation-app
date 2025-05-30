@@ -1531,12 +1531,12 @@
       "runOptions": {}
     },
     {
-      "label": "hetzner.scaffold.production_mode.skaffold#task@monorepo",
+      "label": "hetzner.skaffold.production_mode.skaffold#task@monorepo",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && hetzner.scaffold.production_mode.skaffold#task@monorepo"
+        "source ${workspaceFolder}/script.sh && hetzner.skaffold.production_mode.skaffold#task@monorepo"
       ],
       "presentation": {
         "reveal": "always",
@@ -1546,7 +1546,7 @@
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
-          "label": "$(run) hetzner.scaffold.production_mode.skaffold#task@monorepo"
+          "label": "$(run) hetzner.skaffold.production_mode.skaffold#task@monorepo"
         }
       },
       "dependsOrder": "parallel",

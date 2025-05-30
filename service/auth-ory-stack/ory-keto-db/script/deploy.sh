@@ -1,4 +1,4 @@
-generate_database_credentials@ory-keto-db() {( # use subshell to avoid change variables
+generate_database_credentials#predeploy-hook@ory-keto-db() {( # use subshell to avoid change variables
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
     local filename="./k8s/overlays/prod/user.env.local"
@@ -22,9 +22,9 @@ EOF
 func#predeploy-skaffold-hook@ory-keto-db() {
     local environment=$1
 
-    if [ "$environment" != "development" ]; then
-        generate_database_credentials@ory-keto-db
-    fi
+    # if [ "$environment" != "development" ]; then
+    #     generate_database_credentials@ory-keto-db
+    # fi
 }
 
 func#postdeploy-skaffold-hook@ory-keto-db() {

@@ -2,6 +2,8 @@ skaffold@auth-ui() {
     skaffold dev --profile development --port-forward --auto-build=true --auto-deploy=true --cleanup=false
     
     skaffold run --profile production --port-forward --tail
+
+    skaffold render --profile production | grep -C 10 auth-ui
 }
 
 generate_config@auth-ui() {(
@@ -33,13 +35,13 @@ EOF
     popd
 )}
 
-func#predeploy-hook@auth-ui() {
+func#predeploy-skaffold-hook@auth-ui() {
     local environment=${1:-development}
 
     generate_config@auth-ui $1
 }
 
-func#postdeploy-hook@auth-ui() {
+func#postdeploy-skaffold-hook@auth-ui() {
     local environment=${1:-development}
     echo "$environment"
 }
