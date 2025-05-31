@@ -24,27 +24,6 @@ profiles:
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
-  name: kafka-ui--no-dep
-
-requires:
-  - path: .
-    configs: [kafka-ui-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
-
-profiles:
-  - name: development
-  - name: local-production
-  - name: production
-
----
-
-apiVersion: skaffold/v4beta13
-kind: Config
-metadata:
   name: kafka-ui-k8s
 
 deploy:
@@ -153,3 +132,24 @@ profiles:
           createNamespace: true
           valuesFiles:
             - config/values.yaml.local
+
+---
+
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: kafka-ui--no-dep
+
+requires:
+  - path: .
+    configs: [kafka-ui-generic]
+    activeProfiles:                                     
+      - name: development
+        activatedBy: [development, local-production]
+      - name: production                               
+        activatedBy: [production]
+
+profiles:
+  - name: development
+  - name: local-production
+  - name: production

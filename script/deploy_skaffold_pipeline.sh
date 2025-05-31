@@ -153,6 +153,7 @@ hetzner.skaffold.production_mode.skaffold#task@monorepo() {
 delete.skaffold#task@monorepo() {
     skaffold delete --profile development
     skaffold delete --profile local-production
+    skaffold delete --profile production
 
     execute.util '#task' '#manual-delete'
 }

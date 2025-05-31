@@ -30,6 +30,25 @@ delete#task#manual-delete@kafka-message-queue() {
     kubectl delete pvc -l strimzi.io/name=my-cluster-kafka -n kafka-message-queue # new kafka instances may fail trying to use the same pvc
 }
 
+force.delete@kafka-message-queue() { 
+    NAMESPACE="kafka-message-queue"
+    echo "Forcing deletion of namespace: $NAMESPACE"
+
+    # Get namespace JSON
+    kubectl get namespace "$NAMESPACE" -o json > tmp-namespace.json
+
+    # Remove finalizers
+    jq 'del(.spec.finalizers)' tmp-namespace.json > tmp-namespace-no-finalizers.json
+
+    # Apply the modified namespace
+    kubectl replace --raw "/api/v1/namespaces/$NAMESPACE/finalize" -f tmp-namespace-no-finalizers.json
+
+    # Cleanup temp files
+    rm tmp-namespace.json tmp-namespace-no-finalizers.json
+
+    echo "Namespace '$NAMESPACE' deletion forced (finalizers removed)."
+}
+
 manual.verify_functionality#example@kafka-message-queue() {
     local bootstrap_cluster_name="kafka-message-queue-cluster-kafka-bootstrap"
     local namespace="kafka-message-queue"

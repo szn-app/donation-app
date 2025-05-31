@@ -1,9 +1,18 @@
 # Strimzi Kafka operator https://strimzi.io/quickstarts/
 install.kafka-operator#task@infrastructure() {
     local operator_namespace="kafka-operator"
-
+    local strimzi_deployment_name="strimzi-cluster-operator"
+    
     # Create the namespace for the Kafka Operator
-    kubectl create namespace "$operator_namespace" || true
+    kubectl create namespace "$operator_namespace" 2>/dev/null || true    
+
+    # Check if the Strimzi Cluster Operator deployment exists
+    if kubectl get deployment -n "$operator_namespace" "$strimzi_deployment_name" &> /dev/null; then
+        echo "Strimzi Cluster Operator '${strimzi_deployment_name}' already exists in namespace '${operator_namespace}'. Skipping installation."
+        return 0 # Exit the function if already installed
+    else
+        echo "Strimzi Cluster Operator '${strimzi_deployment_name}' not found. Proceeding with installation."
+    fi
 
     # Patch operator installation to watch all namespaces - https://strimzi.io/docs/operators/latest/full/deploying.html#deploying-cluster-operator-to-watch-whole-cluster-str
     tmp_dir=$(mktemp -d)

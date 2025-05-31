@@ -267,4 +267,35 @@ EOF
       }
 
     }
+
+    echo "Successfully setup Hetzner cloud."
+}
+
+delete.longhorn-system@provision-script() { 
+  NAMESPACE="longhorn-system"
+
+  echo "Checking if namespace '$NAMESPACE' is stuck in Terminating..."
+
+  # Check if namespace exists and is terminating
+  STATUS=$(kubectl get namespace "$NAMESPACE" -o jsonpath='{.status.phase}' 2>/dev/null)
+
+  if [[ "$STATUS" != "Active" && -n "$STATUS" ]]; then
+      echo "Namespace '$NAMESPACE' is in status: $STATUS. Proceeding with force delete..."
+
+      echo "Dumping current namespace definition..."
+      kubectl get namespace "$NAMESPACE" -o json > ns.json
+
+      echo "Removing finalizers..."
+      jq 'del(.spec.finalizers)' ns.json > ns-clean.json
+
+      echo "Sending request to remove finalizers..."
+      kubectl replace --raw "/api/v1/namespaces/$NAMESPACE/finalize" -f ns-clean.json
+
+      echo "Namespace '$NAMESPACE' force deleted (finalizers removed)."
+
+      # Cleanup
+      rm ns.json ns-clean.json
+  else
+      echo "Namespace '$NAMESPACE' is not terminating or does not exist. Status: $STATUS"
+  fi
 }
