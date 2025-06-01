@@ -27,7 +27,9 @@ spec:
   # Storage configuration
   # use local machine storage (performant, durability achieved by replication) & not network distributed storage (reschedualable); cnpg automates to schedule lost pods, thus performance is the main concern
   storage:
-    size: 5Gi
+    #TODO: production-ready config
+    # size: 5Gi
+    size: 1Gi
     storageClass: longhorn-local-ext4-strict-locality
     resizeInUseVolumes: true
     # pvcTemplate: # optionally provide a PVC kubernetes tempate

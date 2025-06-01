@@ -1,6 +1,31 @@
 #!/bin/bash
 
-delete.hetzner.cloud#provision#task@infrastructure() { 
+disbale-volume_protection#provision@infrastructure() {
+    if ! hcloud server list &> /dev/null; then
+        echo "❌ hcloud CLI is not authenticated. export HCLOUD_TOKEN=..."
+        echo "ERROR: Failed to retrieve server list from Hetzner Cloud."
+        echo "       Please check your HCLOUD_TOKEN or hcloud CLI configuration."
+        return 1
+    fi 
+ 
+  # Get a list of all volume IDs
+  VOLUME_IDS=$(hcloud volume list -o json | jq -r '.[].id')
+
+  # Loop through each volume ID and disable delete protection
+  for VOL_ID in $VOLUME_IDS; do
+    echo "Disabling delete protection for volume ID: $VOL_ID"
+    hcloud volume disable-protection "$VOL_ID" delete
+    if [ $? -eq 0 ]; then
+      echo "Successfully disabled protection for $VOL_ID"
+    else
+      echo "Failed to disable protection for $VOL_ID"
+    fi
+  done
+}
+
+delete.hetzner.cloud#provision#task@infrastructure() {
+    # disbale-volume_protection#provision@infrastructure
+    
     pushd infrastructure
       ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
       find . -name "*.tfvars"
@@ -189,31 +214,50 @@ EOF
       t_plan="$(mktemp).tfplan" && terraform plan -no-color -out $t_plan
       terraform apply -auto-approve $t_plan
 
-      generate_kubeconfig
-      
-      kubectl ctx k3s
+      echo "Successfully setup Hetzner cloud resources."
 
-      remove_warnings_logs
-      sleep 1 
-      install_kubernetes_dashboard  
-      install_gateway_api_cilium  # [previous implementation] # installation_gateway_controller_nginx 
-      cert_manager_related  # must be restarted after installation of Gateway Api
+      {
+        read -p "Do you want to continue with infrastructure kubernetes services installations ? (y/n): " yn
+        case $yn in
+            [Yy]* ) echo "Continuing..."; echo "";;
+            [Nn]* ) echo "Exiting script."; return;;
+            * ) echo "Please answer yes (y) or no (n).";;
+        esac
+      }
 
-      sleep 30
-      install_storage_class 
+      install_kubernetes_resources() { 
+        generate_kubeconfig
+        
+        kubectl ctx k3s
 
-      # TODO: check resource limits and prevent contention when using monitoring tools - check notes in install_monitoring.sh
-      # install_monitoring
+        remove_warnings_logs
+        sleep 1 
+        install_kubernetes_dashboard  
+        install_gateway_api_cilium  # [previous implementation] # installation_gateway_controller_nginx 
+        cert_manager_related  # must be restarted after installation of Gateway Api
 
-      popd 
+        sleep 30
+        install_storage_class 
 
-      install_envoy_gateway_class
-      # DEPRECATED_install_stackgres_operator
-      install_cloudnativepg_operator
-      install_minio_operator
-      install.kafka-operator#task@infrastructure
+        # TODO: check resource limits and prevent contention when using monitoring tools - check notes in install_monitoring.sh
+        # install_monitoring
+
+        popd 
+
+        install_envoy_gateway_class
+        # DEPRECATED_install_stackgres_operator
+        install_cloudnativepg_operator
+        install_minio_operator
+        install.kafka-operator#task@infrastructure
+
+        echo "Successfully setup Hetzner cloud + kubernetes core app services."
+      }
+
+      install_kubernetes_resources
 
       verify_installation() {
+        echo "export HCLOUD_TOKEN=<...>"
+
         k9s # https://k9scli.io/topics/commands/
         kubectl get all -A 
         kubectl --kubeconfig $kubeconfig get all -A 
@@ -235,6 +279,28 @@ EOF
 
         # load balancer hetzner manager (Hetzner Cloud Controller Manager (CCM))
         kubectl logs -n kube-system -l app=hcloud-cloud-controller-manager
+
+        # volumes: pvc < pv < volumeattachment
+        # [NOTE ISSUE - volume stuck on terminating state] usaully have protection finalizers; most likely CSI driver has not released the volume
+        kubectl get volume -n longhorn-system
+        kubectl get pvc -A
+        kubectl get pods -A -o wide
+        # CSI storage drivers logs
+        kubectl get pods --all-namespaces | grep csi
+        kubectl get volumeattachments.storage.k8s.io -o custom-columns="NAME:.metadata.name,ATTACHER:.spec.attacher,PV:.spec.source.persistentVolumeName,NODE:.spec.nodeName,ATTACHED:.status.attached"
+        kubectl get csidrivers
+        # Longhorn Manager logs - longhorn-engine and volumes
+        kubectl get engines -n longhorn-system
+        # kubectl describe engine pvc-... -n longhorn-system
+        # kubectl get volumes.longhorn.io -n longhorn-system | grep pvc-..
+        # kubectl describe volume -n longhorn-system pvc-...
+        kubectl get crds | grep longhorn
+        kubectl get volumes.longhorn.io -n longhorn-system
+        kubectl get engines.longhorn.io -n longhorn-system
+        kubectl get replicas.longhorn.io -n longhorn-system
+        kubectl get nodes.longhorn.io -n longhorn-system
+        kubectl get instancemanagers.longhorn.io -n longhorn-system
+        kubectl get backingimages.longhorn.io -n longhorn-system
 
         # check cpu/mem utilization
         kubectl get node && kubectl top nodes && kubectl describe node
@@ -267,8 +333,6 @@ EOF
       }
 
     }
-
-    echo "Successfully setup Hetzner cloud."
 }
 
 delete.longhorn-system@provision-script() { 
@@ -298,4 +362,64 @@ delete.longhorn-system@provision-script() {
   else
       echo "Namespace '$NAMESPACE' is not terminating or does not exist. Status: $STATUS"
   fi
+}
+
+info.kubernetes@infrastructure() { 
+  kubectl get pvc --all-namespaces
+  kubectl get storageclass
+  kubectl get nodes -o wide
+}
+
+storage.info.kubernetes@infrastructure() { 
+  if ! hcloud server list &> /dev/null; then
+    echo "❌ hcloud CLI is not authenticated. Please check your HCLOUD_TOKEN."
+    echo "ERROR: Failed to retrieve server list from Hetzner Cloud."
+    echo "       Please check your HCLOUD_TOKEN or hcloud CLI configuration."
+    return 1
+
+  fi 
+
+  # Get all server public IPv4 addresses
+  # .[] | .public_net.ipv4.ip will extract the IP from each server object in the array
+  SERVER_IPS=$(hcloud server list --output json 2>/dev/null | jq -r '.[] | .public_net.ipv4.ip')
+
+  if [ $? -ne 0 ]; then
+      echo "ERROR: Failed to retrieve server list from Hetzner Cloud."
+      echo "       Please check your HCLOUD_TOKEN or hcloud CLI configuration."
+      return 1
+  fi
+
+  # Convert string of IPs to an array (readarray is more reliable than IFS+read combo)
+  readarray -t ips_array <<< "$SERVER_IPS"
+
+  if [ ${#ips_array[@]} -eq 0 ]; then
+      echo "WARNING: No Hetzner Cloud server public IPv4 addresses found."
+      return  0
+  fi
+
+  echo "Found ${#ips_array[@]} server IP(s)."
+  echo "--------------------------------------------------"
+
+  # Loop through each IP and execute the command
+  for ip_address in "${ips_array[@]}"; do
+      if [ -z "$ip_address" ] || [ "$ip_address" == "null" ]; then
+          echo "Skipping empty or null IP address."
+          continue
+      fi
+
+      echo "Executing command for IP: $ip_address"
+      echo "-----------------------------------"
+
+      # ssh -p 2220 root@$ip_address df -h
+      
+      echo "➤ Calculating total storage usage percentage on $ip_address..."
+      ssh -p 2220 root@"$ip_address" \
+        "df -B1 | awk '\$1 ~ /^\/dev\// {used+=\$3; total+=\$2} END {if (total > 0) printf(\"Total used: %.2f%%\n\", used/total*100); else print \"No data.\"}'"
+
+      echo ""
+      echo "➤ Showing individual volume usage (% used per mounted volume) on $ip_address..."
+      ssh -p 2220 root@"$ip_address" \
+        "df -h --output=source,pcent,target | grep -E '^/dev/'"
+
+  done; 
 }

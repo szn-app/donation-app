@@ -41,5 +41,34 @@ delete_pvc@ory-kratos-db() {
         kubectl get pvc -n auth -o name | xargs -I {} kubectl patch {} -n auth --type=merge -p '{"metadata":{"finalizers":null}}'
         kubectl delete pvc --all -n auth --force
     fi
+}
 
+
+info.cnpg@ory-kratos-db() { 
+    local cluster_name="kratos--cluster-db"
+    local namespace="auth"
+
+    kubectl get pvc -n $namespace -l cnpg.io/cluster=$cluster_name
+
+    echo "Describing Cluster resource..."
+    kubectl describe cluster/$cluster_name -n $namespace
+
+    echo "Listing Pods with wide output..."
+    kubectl get pods -l cnpg.io/cluster=$cluster_name -n $namespace -o wide
+
+    # Get the first Pod name related to the cluster
+    pod_name=$(kubectl get pods -l cnpg.io/cluster=$cluster_name -n $namespace -o jsonpath='{.items[0].metadata.name}')
+
+    echo "Describing Pod: $pod_name..."
+    kubectl describe pod "$pod_name" -n "$namespace"
+
+    echo "Fetching logs from Pod: $pod_name (all containers)..."
+    kubectl logs "$pod_name" -n "$namespace" --all-containers=true
+
+    echo "Fetching recent Events in namespace $namespace..."
+    kubectl get events -n "$namespace" --sort-by='.metadata.creationTimestamp'
+
+    # check for pods that may lead to pvc dependency issue
+    kubectl get pods -l cnpg.io/cluster=$cluster_name -n $namespace -o wide
+    # kubectl describe pod <pod_name> -n auth
 }

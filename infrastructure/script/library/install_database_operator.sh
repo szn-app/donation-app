@@ -76,6 +76,9 @@ EOF
         kubectl get deployment -n cnpg-system cnpg-controller-manager
         kubectl get pods -n cnpg-system
         kubectl get crds | grep cnpg
+
+        kubectl -n longhorn-system get volumes.longhorn.io
+        kubectl get pvc -n auth -l cnpg.io/cluster=kratos--cluster-db
     }
 }
 

@@ -14,10 +14,12 @@ spec:
       - id: 0
         type: persistent-claim
         class: longhorn-local-ext4-1replica
-        size: 10Gi
+        # size: 10Gi
+        size: 1Gi
         kraftMetadata: shared
-        deleteClaim: false    
-         
+        # NOTE: Kafka Strimzi generates cluster id  which is not configurable and must match existing volume; thus attaching to existing volume fails.
+        deleteClaim: true    
+        
 ---
 
 apiVersion: kafka.strimzi.io/v1beta2
@@ -36,7 +38,9 @@ spec:
       - id: 0
         type: persistent-claim
         class: longhorn-network-xfs-1replica # xfs optimized for sequential writes; suboptimal: network mounted storage adds latency;
-        size: 10Gi
+        # size: 10Gi
+        size: 1Gi
         kraftMetadata: shared
-        deleteClaim: false
+        # NOTE: Kafka Strimzi generates cluster id  which is not configurable and must match existing volume; thus attaching to existing volume fails.
+        deleteClaim: true
 

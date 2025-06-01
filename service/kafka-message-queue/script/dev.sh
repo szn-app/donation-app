@@ -1,10 +1,18 @@
 #!/bin/bash
 set -e
 
-skaffold#task@kafka-message-queue() { 
+skaffold#task@kafka-message-queue() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
     
-    skaffold dev --module kafka-message-queue-generic --profile development --port-forward --tail
+    skaffold dev --module kafka-message-queue --profile development --port-forward --tail
+
+    popd
+}
+
+production.skaffold#task@kafka-message-queue() {
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+    
+    skaffold run --module kafka-message-queue --profile production
 
     popd
 }
@@ -15,8 +23,17 @@ render.skaffold#task@kafka-message-queue() {
     popd
 }
 
-delete.skaffold@kafka-message-queue() {
+delete.skaffold#task@kafka-message-queue() {(
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+
+    skaffold delete --profile production
     skaffold delete --profile development
+
+    popd
+)}
+
+delete.pvc#task#manual-delete-pvc@kafka-message-queue() {
+    kubectl delete pvc -l strimzi.io/name=my-cluster-kafka -n kafka-message-queue # new kafka instances may fail trying to use the same pvc
 }
 
 delete#task#manual-delete@kafka-message-queue() {
@@ -27,10 +44,9 @@ delete#task#manual-delete@kafka-message-queue() {
     else
         echo "No Strimzi resources found in namespace kafka-message-queue."
     fi
-    kubectl delete pvc -l strimzi.io/name=my-cluster-kafka -n kafka-message-queue # new kafka instances may fail trying to use the same pvc
 }
 
-force.delete@kafka-message-queue() { 
+force.delete@kafka-message-queue() {
     NAMESPACE="kafka-message-queue"
     echo "Forcing deletion of namespace: $NAMESPACE"
 
@@ -71,7 +87,7 @@ EOF
 
     # send message to kafka topic
     { # terminal A 
-        kubectl -n "$namespace" run kafka-producer --image=quay.io/strimzi/kafka:0.45.0-kafka-3.9.0 --restart=Never --command -- sleep 3600
+        kubectl -n "$namespace" run kafka-producer --image=quay.io/strimzi/kafka:0.46.0-kafka-4.0.0 --restart=Never --command -- sleep 3600
         kubectl wait --for=condition=Ready pod/kafka-producer -n "$namespace" --timeout=60s
         
         kubectl cp "$config_file" "$namespace/kafka-producer:/tmp/client.properties"
@@ -83,7 +99,7 @@ EOF
 
     # consume message from kafka topic at `kafka-message-queue-cluster-kafka-bootstrap:9092`
     { # terminal B
-        kubectl -n "$namespace" run kafka-consumer --image=quay.io/strimzi/kafka:0.45.0-kafka-3.9.0 --restart=Never --command -- sleep 3600
+        kubectl -n "$namespace" run kafka-consumer --image=quay.io/strimzi/kafka:0.46.0-kafka-4.0.0 --restart=Never --command -- sleep 3600
         kubectl wait --for=condition=Ready pod/kafka-consumer -n "$namespace" --timeout=60s
         
         kubectl cp "$config_file" "$namespace/kafka-consumer:/tmp/client.properties"

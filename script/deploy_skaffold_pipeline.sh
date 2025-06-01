@@ -156,6 +156,13 @@ delete.skaffold#task@monorepo() {
     skaffold delete --profile production
 
     execute.util '#task' '#manual-delete'
+    execute.util '#task' '#manual-delete-pvc'
+}
+
+delete.production.skaffold#task@monorepo() {
+    skaffold delete --profile production
+
+    execute.util '#task' '#manual-delete'
 }
 
 # NOTE: ABANDANONED DUE TO ISSUES WITH NONE DRIVER when running baremetal to solve inotify issues

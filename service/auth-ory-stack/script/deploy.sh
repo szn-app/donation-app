@@ -14,23 +14,9 @@ func#postdeploy_hook@auth-ory-stack() {
     echo "Posthook $environment"
 }
 
-# https://k8s.ory.sh/helm/
-delete.skaffold#task#manual-delete@auth-ory-stack() {
-    set e+
-
-    # Uninstall Ory components
-    helm uninstall kratos -n auth || echo "Failed to uninstall Kratos, may not exist"
-    helm uninstall hydra -n auth || echo "Failed to uninstall Hydra, may not exist"
-    helm uninstall keto -n auth || echo "Failed to uninstall Keto, may not exist" 
-    helm uninstall oathkeeper -n auth || echo "Failed to uninstall Oathkeeper, may not exist"
-
+# NOTE: in hetzner environment deleting pvc with this apporach causes resource cleanup issues 
+delete.pvc#manual-delete-pvc@auth-ory-stack() { 
     minikube ssh -- "sudo rm -rf /tmp/hostpath-provisioner/auth/"
-
-    # Delete Hydra OAuth client secrets - continue even if they don't exist
-    kubectl delete secret ory-hydra-client--frontend-client-oauth -n auth 2>/dev/null || echo "Secret ory-hydra-client--frontend-client-oauth not found or couldn't be deleted"
-    kubectl delete secret ory-hydra-client--frontend-client -n auth 2>/dev/null || echo "Secret ory-hydra-client--frontend-client not found or couldn't be deleted"
-    kubectl delete secret ory-hydra-client--internal-communication -n auth 2>/dev/null || echo "Secret ory-hydra-client--internal-communication not found or couldn't be deleted"
-    kubectl delete secret ory-hydra-client--oathkeeper-introspection -n auth 2>/dev/null || echo "Secret ory-hydra-client--oathkeeper-introspection not found or couldn't be deleted"
 
     # delete protection finalizers
     kubectl get pv -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.finalizers}{"\n"}{end}' | awk '{print $1}' | xargs -I {} kubectl patch pv {} -p '{"metadata":{"finalizers":null}}'
@@ -53,12 +39,31 @@ delete.skaffold#task#manual-delete@auth-ory-stack() {
         kubectl get pvc -n auth -o name | xargs -I {} kubectl patch {} -n auth --type=merge -p '{"metadata":{"finalizers":null}}'
         kubectl delete pvc --all -n auth --force
     fi
+
+    delete_pvc#task@auth-ory-stack
 }
 
 delete_pvc#task@auth-ory-stack() {
     delete_pvc@ory-kratos-db
     delete_pvc@ory-keto-db
     delete_pvc@ory-hydra-db
+}
+
+# https://k8s.ory.sh/helm/
+delete.skaffold#task#manual-delete@auth-ory-stack() {
+    set e+
+
+    # Uninstall Ory components
+    helm uninstall kratos -n auth || echo "Failed to uninstall Kratos, may not exist"
+    helm uninstall hydra -n auth || echo "Failed to uninstall Hydra, may not exist"
+    helm uninstall keto -n auth || echo "Failed to uninstall Keto, may not exist" 
+    helm uninstall oathkeeper -n auth || echo "Failed to uninstall Oathkeeper, may not exist"
+
+    # Delete Hydra OAuth client secrets - continue even if they don't exist
+    kubectl delete secret ory-hydra-client--frontend-client-oauth -n auth 2>/dev/null || echo "Secret ory-hydra-client--frontend-client-oauth not found or couldn't be deleted"
+    kubectl delete secret ory-hydra-client--frontend-client -n auth 2>/dev/null || echo "Secret ory-hydra-client--frontend-client not found or couldn't be deleted"
+    kubectl delete secret ory-hydra-client--internal-communication -n auth 2>/dev/null || echo "Secret ory-hydra-client--internal-communication not found or couldn't be deleted"
+    kubectl delete secret ory-hydra-client--oathkeeper-introspection -n auth 2>/dev/null || echo "Secret ory-hydra-client--oathkeeper-introspection not found or couldn't be deleted"
 }
 
 manual_verify#example@auth-ory-stack() {

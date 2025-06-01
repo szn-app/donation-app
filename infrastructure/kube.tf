@@ -68,7 +68,7 @@ module "kube-hetzner" {
   disable_network_policy = true
   ingress_controller = "none"
   cni_plugin = "cilium"
-  cilium_version = "v1.16.6"
+  cilium_version = "v1.17.4"  # upgdated from "v1.16.6"
   cilium_routing_mode = "native"
   # NOTE: if Cilium UI enabled it can be accessed using ssh tunnel
   cilium_hubble_enabled = false
@@ -187,7 +187,7 @@ module "kube-hetzner" {
   # enable longhorn and dependency drivers
   enable_iscsid = true
   enable_longhorn = true # add Longhorn as storage class in kuberenetes
-  longhorn_version = "v1.8.0" # previous "v1.7.2"
+  longhorn_version = "v1.9.0" # previous "v1.8.0", "v1.7.2"
   # TODO: fix[requires PR]: the module doesn't install all required dependeices on control nodes and prevents Longhorn from being able to create disks and schedule on cotnrol nodes (thus leaving network longhorn volumes only for worker nodes )
   longhorn_helmchart_bootstrap = false # if to run on control-plane nodes too
   longhorn_fstype = "ext4" # "xfs"
@@ -198,7 +198,7 @@ module "kube-hetzner" {
   # Cert-manager for automatic TLS certificates
   enable_cert_manager = true
   cert_manager_helmchart_bootstrap = false # run on control-plane nodes too
-  cert_manager_version = "v1.15.3" # NOTE: downgraded from 1.16.3 to resolve a bug https://github.com/cert-manager/cert-manager/issues/7337
+  cert_manager_version = "v1.17.2" # NOTE: downgraded from 1.16.3 to v1.15.3 resolve a bug https://github.com/cert-manager/cert-manager/issues/7337  ; checking v1.17.2 if fixed
   cert_manager_values = local.helm_values_file["cert-manager"]
 
   # NOTE: `extra_kustomize_deployment_commands` doesn't get to run unless there is ./extra-manifests/kustomization.yaml.tpl file this is a bug and error prone better to use post-terraform shell scripts with the kubeconfig file for connection

@@ -19,8 +19,7 @@ install.kafka-operator#task@infrastructure() {
     pushd "$tmp_dir"
     {
         # Download Strimzi installation files into the temporary directory
-        # TODO: update to 0.46.0 to support kafka
-        local strimzi_version="0.45.0"
+        local strimzi_version="0.46.0"
         curl -L "https://github.com/strimzi/strimzi-kafka-operator/releases/download/$strimzi_version/strimzi-$strimzi_version.zip" -o strimzi-$strimzi_version.zip && unzip strimzi-$strimzi_version.zip
         pushd "strimzi-$strimzi_version"
         {

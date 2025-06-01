@@ -8,11 +8,11 @@ requires:
   - path: service/scaffold
     configs: [scaffold]
 
-  - path: service/web-server
-    configs: [web-server]
+  # - path: service/web-server
+  #   configs: [web-server]
 
-  - path: service/api-data
-    configs: [api-data]  
+  # - path: service/api-data
+  #   configs: [api-data]  
 
 ---
 

@@ -274,7 +274,7 @@ persistentVolume:
 
   ## pgAdmin4 Persistent Volume Size
   ##
-  size: 10Gi
+  size: 1Gi
 
   ## pgAdmin4 Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
@@ -283,7 +283,7 @@ persistentVolume:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: "-"
+  storageClass: "longhorn-local-ext4-1replica"
   # existingClaim: ""
 
   ## Subdirectory of pgAdmin4 Persistent Volume to mount

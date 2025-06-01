@@ -1,5 +1,7 @@
 ### cert-manager installation is done through kube-hetzner module
 cert_manager_related() { 
+  echo "# Performing Cert-Manager related operations and restart cert-manager service"
+
   restart_cert_manager() { 
     printf "Restarting cert-manager...\n"
 
@@ -48,7 +50,7 @@ EOF
 
   # used for cert-manager challenge routes to always return 200 (hackish way to overcome limitations in Gateway API configuration) 
   # allows to probe with $`curl -i cert-manager-health-endpoint.cert-manager/livez`
-  expose_status_endpoint() { 
+  expose_status_endpoint() {
     t=$(mktemp) && cat <<"EOF" > "$t"
 apiVersion: v1
 kind: Service

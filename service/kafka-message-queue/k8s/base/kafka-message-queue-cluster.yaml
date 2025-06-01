@@ -1,6 +1,6 @@
 # NOTE: Apache Kafka with Raft-based implementation is still under development and has some limitations. For instance, scaling of controller node or JBOD storage (you can specify type: jbod storage in Strimzi custom resources, but it should contain only a single volume) are not supported.
 
-# https://strimzi.io/docs/operators/latest/full/configuring#api_reference-str
+# https://strimzi.io/docs/operators/latest/full/configuring#type-KafkaClusterSpec-reference
 
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
@@ -12,9 +12,8 @@ metadata:
 
 spec:
   kafka:
-    # TODO: migrate to 4.0.0 when Kafka Strimzi operator new version is released which supports Kafka 4.0.0 check releases support at https://strimzi.io/downloads/
-    version: 3.9.0 
-    metadataVersion: 3.9-IV0
+    version: 4.0.0
+    metadataVersion: "4.0"
 
     listeners:
       # NOTE: communication is assumed to be network-level encrypted by Cilium

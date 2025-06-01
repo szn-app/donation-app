@@ -33,11 +33,11 @@ install_storage_class() {
 EOT
 )
 
-    agent_node_names=($(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/worker"] | not) | .metadata.name'))
+    agent_node_names=($(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/worker"] == null) | .metadata.name'))
     for node_name in "${agent_node_names[@]}"; do
       echo "annotating node $node_name" 
       kubectl annotate node "$node_name" "node.longhorn.io/default-disks-config=$config" --overwrite   
-    done 
+    done
 
     sleep 10
 
@@ -62,7 +62,7 @@ EOT
 
     }
 
-    sleep 5 
+    sleep 10
 
     # Longhorn add tags (longhorn tag) for workers from the Kubernetes labels (synchronize K8s labels to Longhorn tags)
     # NOTE: this tags only nodes that can run pods (if control node is not set to run workloads it will print error message)
@@ -70,13 +70,15 @@ EOT
       NAMESPACE="longhorn-system" # Namespace for Longhorn
       LABEL_KEY="role" # Label key to match in Kubernetes nodes
 
-      # Iterate through nodes and apply tags
-      for node in $(kubectl get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[*].metadata.name}'); do
+      # Iterate through nodes and apply tags for worker server only 
+      for node in $(kubectl get nodes -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/control-plane"] == null) | .metadata.name'); do
         # Get the value of the label
         LABEL_VALUE=$(kubectl get node $node -o jsonpath="{.metadata.labels['$LABEL_KEY']}")
 
         if [ -n "$LABEL_VALUE" ]; then
           echo "Applying Longhorn tag '$LABEL_VALUE' to node '$node'"
+  
+          sleep 5 
 
           # Patch the Longhorn node with the label value as a tag (this uses a longhorn specific approach)
           printf "kubectl -n $NAMESPACE patch nodes.longhorn.io $node --type='merge' -p \"{\"spec\":{\"tags\":[\"$LABEL_VALUE\"]}}\" \n"
@@ -85,6 +87,8 @@ EOT
           echo "Node '$node' does not have label '$LABEL_KEY', skipping."
         fi
       done  
+
+      echo "✅ All eligible nodes have been tagged in Longhorn."    
     }
   }
 
@@ -247,32 +251,35 @@ EOF
   annotate_nodes
   sleep 10
   define_storage_classes
-
-  # [manually] verify that cloud volumes are attached to each nodes at /mnt/longhorn and check longhorn disk in /var/lib/longhorn
-  verify_mount_inside_server() {
-    kubectl get storageclasses.storage.k8s.io
-
-    lsblk 
-    mount | grep longhorn
-    df -h
-    du -sh /var/lib/longhorn # disk usage
-
-    # for debugging purposes if persistent volumes are not being created
-    kubectl logs -n longhorn-system -l app=longhorn-manager
-    kubectl get events -n longhorn-system
-    kubectl get sc
-    kubectl get pv -o yaml
-    kubectl get pvc
-
-    # check nodes as registered by Longhorn and which tags Longhorn internally sees for each of the nodes
-    kubectl -n longhorn-system get nodes.longhorn.io
-    node_name="" 
-    kubectl -n longhorn-system get nodes.longhorn.io $node_name -o yaml
-
-    # expose longhorn UI dashboard (create tunnel) 
-    kubectl port-forward -n longhorn-system service/longhorn-frontend 8082:80
-  }
 }
+
+# [manually] verify that cloud volumes are attached to each nodes at /mnt/longhorn and check longhorn disk in /var/lib/longhorn
+verify_mount_inside_server@infrastructure() {
+  kubectl get storageclasses.storage.k8s.io
+
+  kubectl get nodes.longhorn.io -A -o json | jq '.items[] | {name: .metadata.name, tags: .spec.tags}'
+
+  lsblk 
+  mount | grep longhorn
+  df -h
+  du -sh /var/lib/longhorn # disk usage
+
+  # for debugging purposes if persistent volumes are not being created
+  kubectl logs -n longhorn-system -l app=longhorn-manager
+  kubectl get events -n longhorn-system
+  kubectl get sc
+  kubectl get pv -o yaml
+  kubectl get pvc
+
+  # check nodes as registered by Longhorn and which tags Longhorn internally sees for each of the nodes
+  kubectl -n longhorn-system get nodes.longhorn.io
+  node_name="" 
+  kubectl -n longhorn-system get nodes.longhorn.io $node_name -o yaml
+
+  # expose longhorn UI dashboard (create tunnel) 
+  kubectl port-forward -n longhorn-system service/longhorn-frontend 8082:80
+}
+
 
 minikube_mock_storage_classes() {
     t="$(mktemp).yaml" && cat <<-EOF > "$t" # must be .yaml to pass validation

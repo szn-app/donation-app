@@ -98,6 +98,8 @@ debug-cluster#example@api-data-database() {
 
     echo "Fetching recent Events in namespace $namespace..."
     kubectl get events -n "$namespace" --sort-by='.metadata.creationTimestamp'
+
+    kubectl get pvc -n $namespace -l cnpg.io/cluster=$cluster_name
 }
 
 test_installation_of_new_extensions#docker@api-data-database() { 

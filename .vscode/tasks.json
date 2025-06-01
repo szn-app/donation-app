@@ -1553,6 +1553,150 @@
       "dependsOn": [],
       "problemMatcher": [],
       "runOptions": {}
+    },
+    {
+      "label": "delete.production.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.production.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.production.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "delete.pvc#task#manual-delete-pvc@kafka-message-queue",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.pvc#task#manual-delete-pvc@kafka-message-queue"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.pvc#task#manual-delete-pvc@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "delete.production.skaffold#task@ory-kratos",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.production.skaffold#task@ory-kratos"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.production.skaffold#task@ory-kratos"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "production.skaffold#task@kafka-message-queue",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production.skaffold#task@kafka-message-queue"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production.skaffold#task@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "production.skaffold#task@ory-kratos",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production.skaffold#task@ory-kratos"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production.skaffold#task@ory-kratos"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "delete.skaffold#task@kafka-message-queue",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.skaffold#task@kafka-message-queue"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.skaffold#task@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
     }
   ]
 }
