@@ -19,7 +19,7 @@ images:
     newName: ghcr.io/szn-app/donation-app/web-server
     ### automatically updated - TODO: fix and use ArgoCD or other deployment tool
     # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
-    newTag: v0.0.74 # x-release-please-version
+    newTag: v0.0.81 # x-release-please-version
 
 patches:
   - patch: |-
