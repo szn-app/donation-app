@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.31](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.30...donation-app@v0.4.31) (2025-06-03)
+
+
+### Bug Fixes
+
+* production deployment configurations and scripts ([b369710](https://github.com/szn-app/donation-app/commit/b369710f4f78ee76eafc3c813a67bb4856db6cc1))
+* scripts and configs for production deployment ([a0b2b8c](https://github.com/szn-app/donation-app/commit/a0b2b8c4f5043a44196e9453d88d498d672a4ee4))
+
 ## [0.4.30](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.29...donation-app@v0.4.30) (2025-05-29)
 
 

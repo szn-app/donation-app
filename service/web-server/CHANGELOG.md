@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.83](https://github.com/szn-app/donation-app/compare/web-server@v0.0.82...web-server@v0.0.83) (2025-06-03)
+
+
+### Bug Fixes
+
+* production deployment configurations and scripts ([b369710](https://github.com/szn-app/donation-app/commit/b369710f4f78ee76eafc3c813a67bb4856db6cc1))
+
 ## [0.0.82](https://github.com/szn-app/donation-app/compare/web-server@v0.0.81...web-server@v0.0.82) (2025-05-29)
 
 

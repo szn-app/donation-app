@@ -1,5 +1,17 @@
 # Changelog
 
+## [17.6.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.5.0...api-data-database@v17.6.0) (2025-06-03)
+
+
+### Features
+
+* api-data server load environment for username and password for database connection ([0a656dc](https://github.com/szn-app/donation-app/commit/0a656dc0e056de0b0d4d8f3c6ba611414bde571c))
+
+
+### Bug Fixes
+
+* production deployment configurations and scripts ([b369710](https://github.com/szn-app/donation-app/commit/b369710f4f78ee76eafc3c813a67bb4856db6cc1))
+
 ## [17.5.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.4.0...api-data-database@v17.5.0) (2025-05-29)
 
 
