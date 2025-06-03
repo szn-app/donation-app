@@ -1,4 +1,5 @@
 use deadpool_postgres;
+use std::env;
 use std::error::Error;
 use std::net::SocketAddr;
 use std::net::ToSocketAddrs;
@@ -68,33 +69,37 @@ impl PostgresConfigGroup {
         ro: &SocketAddr,
         r: &SocketAddr,
     ) -> Result<PostgresConfigGroup, Box<dyn Error>> {
-        let mut rw_config = {
+        let username =
+            env::var("POSTGRESQL_USERNAME").unwrap_or_else(|_| "postgres-user".to_string());
+        let password = env::var("POSTGRESQL_PASSWORD").unwrap_or_else(|_| "postgres".to_string());
+
+        let rw_config = {
             let mut c = tokio_postgres::Config::new();
             c.host(rw.ip().to_string());
             c.port(rw.port());
             c.dbname("app");
-            c.user("postgres-user");
-            c.password("postgres");
+            c.user(&username);
+            c.password(&password);
             c
         };
 
-        let mut ro_config = {
+        let ro_config = {
             let mut c = tokio_postgres::Config::new();
             c.host(ro.ip().to_string());
             c.port(ro.port());
             c.dbname("app");
-            c.user("postgres-user");
-            c.password("postgres");
+            c.user(&username);
+            c.password(&password);
             c
         };
 
-        let mut r_config = {
+        let r_config = {
             let mut c = tokio_postgres::Config::new();
             c.host(r.ip().to_string());
             c.port(r.port());
             c.dbname("app");
-            c.user("postgres-user");
-            c.password("postgres");
+            c.user(&username);
+            c.password(&password);
             c
         };
 

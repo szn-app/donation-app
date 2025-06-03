@@ -7,6 +7,7 @@ generate_database_credentials#predeploy-hook@api-data-database() {( # use subshe
         t=$(mktemp) && cat <<EOF > "$t"
 # must be same as username for database defined in cluster yaml config
 username=postgres-user
+# username="${POSTGRESQL_USERNAME:-pguser_$(openssl rand -hex 4)}"
 password=$(openssl rand -base64 32 | tr -dc 'A-Za-z0-9')
 EOF
 
