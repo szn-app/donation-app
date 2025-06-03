@@ -35,11 +35,11 @@ func#postdeploy-skaffold-hook@ory-kratos-db() {
         local cluster_name="kratos--cluster-db"
         local namespace="auth"
         
-        kubectl wait --for=condition=Ready --timeout=120s Cluster/$cluster_name -n $namespace \
+        kubectl wait --for=condition=Ready --timeout=260s Cluster/$cluster_name -n $namespace \
             && echo "Cluster is ready." \
             || echo "Warning: Timed out waiting for cluster readiness."
 
-        kubectl wait --for=condition=Ready pods -l cnpg.io/cluster=$cluster_name -n $namespace --timeout=120s \
+        kubectl wait --for=condition=Ready pods -l cnpg.io/cluster=$cluster_name -n $namespace --timeout=260s \
             && echo "All CNPG pods are ready." \
             || echo "Warning: Timed out waiting for CNPG pods readiness."
     }

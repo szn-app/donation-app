@@ -87,7 +87,9 @@ install.minikube#provision#task@infrastructure() {
         # fix issue with docker cli plugins where symlinks are corrupted and invalid
         rm ~/.docker/cli-plugins/*
     }
-    minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker # note: resource limitations directly translate to docker resource settings 
+    # note: resource limitations directly translate to docker resource settings 
+    # cni flag prepares node for cilium installation # TODO: add 'minikube --cni=cilium' but handle ingress controller alternative
+    minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker  
     # minikube start --driver=docker
     check_resource_usage_within() {
         # shows you the resources that Kubernetes itself sees and can allocate on the node

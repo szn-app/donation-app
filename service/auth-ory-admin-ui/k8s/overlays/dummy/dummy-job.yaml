@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kustomize-dummy
+spec:
+  ttlSecondsAfterFinished: 0   # auto-deletes the Job as soon as it finishes
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: dummy
+          image: busybox
+          command: ["sh", "-c", "echo 'Kustomize dummy job ran'; sleep 1"]

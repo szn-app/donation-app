@@ -28,7 +28,7 @@ deploy:
   helm: {}
   kubectl: {}
   statusCheck: true
-  
+
 portForward:
   - resourceType: Service
     namespace: default

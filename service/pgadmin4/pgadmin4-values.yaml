@@ -310,14 +310,14 @@ containerSecurityContext:
 ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 ##
 livenessProbe:
-  initialDelaySeconds: 30
+  initialDelaySeconds: 5
   periodSeconds: 60
   timeoutSeconds: 15
   successThreshold: 1
   failureThreshold: 3
 
 readinessProbe:
-  initialDelaySeconds: 30
+  initialDelaySeconds: 5
   periodSeconds: 60
   timeoutSeconds: 15
   successThreshold: 1
@@ -436,13 +436,15 @@ test:
     repository: busybox
     tag: latest
   ## Resources request/limit for test-connection Pod
-  resources: {}
-    # limits:
-    #   cpu: 50m
-    #   memory: 32Mi
-    # requests:
-    #   cpu: 25m
-    #   memory: 16Mi
+  # pgadmin usage is indended for debugging purposes, thus low constraints work just fine.
+  # TODO: apply constraints to production only
+  resources: 
+    limits:
+      cpu: 50m
+      memory: 32Mi
+    requests:
+      cpu: 25m
+      memory: 16Mi
   ## Security context for test-connection Pod
   securityContext:
     runAsUser: 5051

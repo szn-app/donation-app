@@ -21,3 +21,4 @@
 - for a decoupled microservices api, use GraphQL federation as the gateway entrypoint for all the other microsrevices exposed GraphQL endpoints. 
 - [drawback] Move from single initialization script (single sql migraiton) to a version-controlled structured system. 
 - Production-ready: increase volume Gibibyte storage (look for commented "Gi")
+- setup proper resource limitations on deployments for production to avoid CPU/Memory starvation and cascading failure when a service/deployment is fails or misconfigured. 

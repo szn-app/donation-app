@@ -44,4 +44,5 @@ profiles:
   manifests:
     kustomize:
       paths:
-      - k8s/overlays/prod
+      # fix issue probably with exceeded resources usage causing kubernetes node failure
+      - k8s/overlays/dummy

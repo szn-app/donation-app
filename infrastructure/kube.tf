@@ -1,10 +1,10 @@
 ### main Resource configuration
 # Original template from https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/blob/master/kube.tf.example
 
-# https://registry.terraform.io/modules/kube-hetzner/kube-hetzner/hcloud
 # https://github.com/kube-hetzner/terraform-hcloud-kube-hetzner/blob/master/docs/terraform.md
 module "kube-hetzner" {
   source = "kube-hetzner/kube-hetzner/hcloud"
+  # https://registry.terraform.io/modules/kube-hetzner/kube-hetzner/hcloud
   version = "2.17.1"
   providers = {
     hcloud = hcloud
@@ -110,7 +110,7 @@ module "kube-hetzner" {
   agent_nodepools = [
     {
       name        = "worker-small",
-      count       = 1, 
+      count       = 0, 
       server_type = var.instance_size.small,
       location    = var.network_location[0].region[0],
       placement_group = "worker"
@@ -121,7 +121,7 @@ module "kube-hetzner" {
 
     {
       name        = "worker-medium",
-      count       = 1
+      count       = 2
       server_type = var.instance_size.medium,
       location    = var.network_location[0].region[0],
       placement_group = "worker"
@@ -182,14 +182,14 @@ module "kube-hetzner" {
   # local k3s basic storage class
   enable_local_storage = true
   # cloud network storage: 
-  disable_hetzner_csi = false # Hetzner Cloud Volumes (block storage) as Kubernetes storage class 
+  disable_hetzner_csi = false # Hetzner Cloud Volumes (block storage) as Kubernetes storage class; when enabled volumes can be automatially created on Hetzner Cloud and associated with servers.
 
   # enable longhorn and dependency drivers
   enable_iscsid = true
   enable_longhorn = true # add Longhorn as storage class in kuberenetes
   longhorn_version = "v1.9.0" # previous "v1.8.0", "v1.7.2"
   # TODO: fix[requires PR]: the module doesn't install all required dependeices on control nodes and prevents Longhorn from being able to create disks and schedule on cotnrol nodes (thus leaving network longhorn volumes only for worker nodes )
-  longhorn_helmchart_bootstrap = false # if to run on control-plane nodes too
+  longhorn_helmchart_bootstrap = false # if to run on control-plane nodes too 
   longhorn_fstype = "ext4" # "xfs"
   longhorn_replica_count = 2 # defaults to 3
   # effects of options: only run on labelled nodes; # adjust to autoscaler if active in the cluster; /var/lib/longhorn local storage path (NOTE: /mnt/longhorn is the default for Hetzner cloud volume mount in kube-hetzner module); cleanup & prevent volume locks by setting policy: ensure pod is moved to an healthy node if current node is down;
@@ -198,7 +198,7 @@ module "kube-hetzner" {
   # Cert-manager for automatic TLS certificates
   enable_cert_manager = true
   cert_manager_helmchart_bootstrap = false # run on control-plane nodes too
-  cert_manager_version = "v1.17.2" # NOTE: downgraded from 1.16.3 to v1.15.3 resolve a bug https://github.com/cert-manager/cert-manager/issues/7337  ; checking v1.17.2 if fixed
+  cert_manager_version = "v1.17.2" # TODO: v1.17.2  NOTE: downgraded from 1.16.3 to v1.15.3 resolve a bug https://github.com/cert-manager/cert-manager/issues/7337  ; checking v1.17.2 if fixed
   cert_manager_values = local.helm_values_file["cert-manager"]
 
   # NOTE: `extra_kustomize_deployment_commands` doesn't get to run unless there is ./extra-manifests/kustomization.yaml.tpl file this is a bug and error prone better to use post-terraform shell scripts with the kubeconfig file for connection

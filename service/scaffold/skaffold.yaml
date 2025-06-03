@@ -40,35 +40,35 @@ requires:
       - name: production                               
         activatedBy: [production]
 
-  # - path: ../cilium-gateway
-  #   configs: [cilium-gateway]                 
+  - path: ../cilium-gateway
+    configs: [cilium-gateway]                 
 
-  # - path: ../envoy-proxy
-  #   configs: [envoy-proxy]                 
+  - path: ../envoy-proxy
+    configs: [envoy-proxy]                 
 
-  # - path: ../auth-ory-stack
-  #   configs: [auth-ory-stack]
+  - path: ../auth-ory-stack
+    configs: [auth-ory-stack]
 
-  # - path: ../auth-ory-admin-ui
-  #   configs: [auth-ory-admin-ui]                 
+  - path: ../auth-ui
+    configs: [auth-ui]                 
 
-  # - path: ../auth-ui
-  #   configs: [auth-ui]                 
+  - path: ../auth-token-exchange
+    configs: [auth-token-exchange]                 
 
-  # - path: ../auth-token-exchange
-  #   configs: [auth-token-exchange]                 
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]                 
 
-  # - path: ../pgadmin4
-  #   configs: [pgadmin4]                 
+  - path: ../webhook-handler
+    configs: [webhook-handler]                 
 
-  # - path: ../kafka-message-queue
-  #   configs: [kafka-message-queue]                 
+  - path: ../kafka-ui
+    configs: [kafka-ui]                 
 
-  # - path: ../webhook-handler
-  #   configs: [webhook-handler]                 
+  - path: ../pgadmin4
+    configs: [pgadmin4]                 
 
-  # - path: ../kafka-ui
-  #   configs: [kafka-ui]                 
+  - path: ../auth-ory-admin-ui
+    configs: [auth-ory-admin-ui]                 
 
 profiles:
   - name: development

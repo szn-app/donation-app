@@ -24,7 +24,7 @@ disbale-volume_protection#provision@infrastructure() {
 }
 
 delete.hetzner.cloud#provision#task@infrastructure() {
-    # disbale-volume_protection#provision@infrastructure
+    echo "NOTE: run 'disbale-volume_protection#provision@infrastructure' first"
     
     pushd infrastructure
       ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
@@ -53,7 +53,7 @@ create_snapshot.hetzner.cloud#provision#task@infrastructure() {(
   popd
 )}
 
-check_tools_versions() { 
+check_tools_versions() {
   hcloud version && kubectl version && packer --version
   tofu --version && terraform version # either tools should work
   helm version && cilium version
@@ -140,7 +140,8 @@ EOF
         kubectl config get-contexts
       }
 
-      patch_init_tf_file() { 
+      # TODO: refactor and document hackish approach 
+      patch_init_tf_file() {
         # Install CRDs required by Cilium Gateway API support (required CRDs before Cilium installation) https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/ 
         #     IMPORTANT: Cilium Gateway API controller must be installed BEFORE Cilium installation, otherwise even a restart won't work
         #!/bin/bash
@@ -233,7 +234,7 @@ EOF
         remove_warnings_logs
         sleep 1 
         install_kubernetes_dashboard  
-        install_gateway_api_cilium  # [previous implementation] # installation_gateway_controller_nginx 
+        install_gateway_api_cilium  # [previous implementation] installation_gateway_controller_nginx 
         cert_manager_related  # must be restarted after installation of Gateway Api
 
         sleep 30
@@ -282,6 +283,7 @@ EOF
 
         # volumes: pvc < pv < volumeattachment
         # [NOTE ISSUE - volume stuck on terminating state] usaully have protection finalizers; most likely CSI driver has not released the volume
+        # NOTE: could be caused by OOM-Kill - Out Of Memory Kill when processes exceed allocatable capacity for their pods
         kubectl get volume -n longhorn-system
         kubectl get pvc -A
         kubectl get pods -A -o wide
@@ -301,6 +303,7 @@ EOF
         kubectl get nodes.longhorn.io -n longhorn-system
         kubectl get instancemanagers.longhorn.io -n longhorn-system
         kubectl get backingimages.longhorn.io -n longhorn-system
+        kubectl top pod -n longhorn-system
 
         # check cpu/mem utilization
         kubectl get node && kubectl top nodes && kubectl describe node
@@ -365,9 +368,25 @@ delete.longhorn-system@provision-script() {
 }
 
 info.kubernetes@infrastructure() { 
+  hcloud server list
+  kubectl top pod -A --sort-by='memory'
+  kubectl top node --show-capacity=true
+
+  kubectl cluster-info
+  cilium status
+
   kubectl get pvc --all-namespaces
   kubectl get storageclass
   kubectl get nodes -o wide
+  kubectl get daemonset -A
+
+  helm list -A
+
+  {
+    hcloud server metrics "k3s-worker-small-tty" --type cpu
+    
+    kubectl drain "k3s-worker-small-ydb" --ignore-daemonsets --delete-emptydir-data
+  }
 }
 
 storage.info.kubernetes@infrastructure() { 
@@ -422,4 +441,20 @@ storage.info.kubernetes@infrastructure() {
         "df -h --output=source,pcent,target | grep -E '^/dev/'"
 
   done; 
+}
+
+
+info.diagnose_cluster_health_issues.kubernetes@infrastructure() {
+  kubectl get nodes -o wide
+  kubectl get pods -A -o wide
+
+  kubectl events
+  hcloud server list
+  kubectl get nodes -o wide
+  kubectl get pods -A -o wide
+  kubectl get httproute -A
+
+  kubectl -n kube-system logs -l app.kubernetes.io/name=cilium-operator
+  kubectl -n kube-system get configmap cilium-config -o yaml
+  helm get values cilium -n kube-system
 }

@@ -1531,30 +1531,6 @@
       "runOptions": {}
     },
     {
-      "label": "hetzner.skaffold.production_mode.skaffold#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && hetzner.skaffold.production_mode.skaffold#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) hetzner.skaffold.production_mode.skaffold#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": [],
-      "runOptions": {}
-    },
-    {
       "label": "delete.production.skaffold#task@monorepo",
       "type": "shell",
       "command": "bash",
@@ -1579,12 +1555,12 @@
       "runOptions": {}
     },
     {
-      "label": "delete.pvc#task#manual-delete-pvc@kafka-message-queue",
+      "label": "delete.pvc#task#pvc-manual-delete@kafka-message-queue",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && delete.pvc#task#manual-delete-pvc@kafka-message-queue"
+        "source ${workspaceFolder}/script.sh && delete.pvc#task#pvc-manual-delete@kafka-message-queue"
       ],
       "presentation": {
         "reveal": "always",
@@ -1594,7 +1570,7 @@
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
-          "label": "$(run) delete.pvc#task#manual-delete-pvc@kafka-message-queue"
+          "label": "$(run) delete.pvc#task#pvc-manual-delete@kafka-message-queue"
         }
       },
       "dependsOrder": "parallel",
@@ -1691,6 +1667,54 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) delete.skaffold#task@kafka-message-queue"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "production.skaffold#hetzner#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production.skaffold#hetzner#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production.skaffold#hetzner#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "pvc.delete.production#example#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && pvc.delete.production#example#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) pvc.delete.production#example#task@monorepo"
         }
       },
       "dependsOrder": "parallel",

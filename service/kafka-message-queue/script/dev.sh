@@ -26,18 +26,18 @@ render.skaffold#task@kafka-message-queue() {
 delete.skaffold#task@kafka-message-queue() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
 
-    skaffold delete --profile production
-    skaffold delete --profile development
+    skaffold delete --profile production --module kafka-message-queue
+    skaffold delete --profile development --module kafka-message-queue
 
     popd
 )}
 
-delete.pvc#task#manual-delete-pvc@kafka-message-queue() {
+delete.pvc#task#pvc-manual-delete@kafka-message-queue() {
     kubectl delete pvc -l strimzi.io/name=my-cluster-kafka -n kafka-message-queue # new kafka instances may fail trying to use the same pvc
 }
 
 delete#task#manual-delete@kafka-message-queue() {
-    delete.skaffold@kafka-message-queue
+    delete.skaffold#task@kafka-message-queue
     
     if kubectl get strimzi -n kafka-message-queue --no-headers 2>/dev/null | grep -q .; then
       kubectl -n kafka-message-queue delete $(kubectl get strimzi -o name -n kafka-message-queue)

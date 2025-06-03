@@ -62,7 +62,7 @@ EOT
 
     }
 
-    sleep 10
+    sleep 25
 
     # Longhorn add tags (longhorn tag) for workers from the Kubernetes labels (synchronize K8s labels to Longhorn tags)
     # NOTE: this tags only nodes that can run pods (if control node is not set to run workloads it will print error message)
@@ -270,6 +270,7 @@ verify_mount_inside_server@infrastructure() {
   kubectl get sc
   kubectl get pv -o yaml
   kubectl get pvc
+  kubectl get svc longhorn-admission-webhook -n longhorn-system # check if webhook service is running and reachable
 
   # check nodes as registered by Longhorn and which tags Longhorn internally sees for each of the nodes
   kubectl -n longhorn-system get nodes.longhorn.io
@@ -342,3 +343,92 @@ EOF
 
   kubectl apply -f $t
 }
+
+
+# script intended to test longhorn setup after deployment
+test.longhorn_functionality@infrastructure() {(
+  NAMESPACE="default"
+  STORAGE_CLASSES=(
+    # "hcloud-volumes" # requires disabling volume protection `hcloud volume disable-protection <...> delete`
+
+    "local-path"
+    "longhorn"
+    "longhorn-static"
+    
+    "longhorn-network-storage"
+    "longhorn-network-storage-1replica"
+    "longhorn-local-ext4-1replica"
+    "longhorn-local-ext4"
+    "longhorn-local-ext4-2replica"
+    "longhorn-local-xfs"
+    "longhorn-network-xfs-1replica"
+    "longhorn-local-ext4-strict-locality"
+    "longhorn-local-ext4-disabled-locality"
+  )
+
+  for STORAGE_CLASS in "${STORAGE_CLASSES[@]}"; do
+    TEST_ID=$(echo $STORAGE_CLASS | tr -cd '[:alnum:]') # Sanitize name
+    TEST_PVC="test-pvc-$TEST_ID"
+    TEST_POD="test-pod-$TEST_ID"
+
+    echo "🔍 Verifying Longhorn functionality for storage class: $STORAGE_CLASS..."
+
+    # Step 1: Create a test PVC
+    cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: $TEST_PVC
+  namespace: $NAMESPACE
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: $STORAGE_CLASS
+  resources:
+    requests:
+      storage: 1Gi
+EOF
+
+    # NOTE: do not wait when volumeBindingMode: WaitForFirstConsumer is set
+    # Wait for PVC to be bound
+    # echo "⏳ Waiting for PVC to bind..."
+    # kubectl wait --for=condition=Bound pvc/$TEST_PVC --timeout=60s -n $NAMESPACE
+
+    # Step 2: Deploy a pod using the PVC
+    cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: $TEST_POD
+  namespace: $NAMESPACE
+spec:
+  containers:
+  - name: test-container
+    image: busybox
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'hello-volume-$TEST_ID' > /data/test && grep 'hello-volume-$TEST_ID' /data/test && sleep 10"]
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: $TEST_PVC
+  restartPolicy: Never
+EOF
+
+    while [[ "$(kubectl get pod $TEST_POD -n $NAMESPACE -o jsonpath='{.status.phase}')" != "Succeeded" ]]; do
+      echo "⏳ Waiting for pod $TEST_POD to complete..."
+      sleep 2
+    done
+
+    echo "✅ Longhorn volume mounted and verified successfully for $STORAGE_CLASS!"
+
+    # Step 3: Cleanup
+    echo "🧹 Cleaning up test resources for $STORAGE_CLASS..."
+    kubectl delete pod/$TEST_POD -n $NAMESPACE --wait
+    kubectl delete pvc/$TEST_PVC -n $NAMESPACE --wait
+  done
+
+  echo "🎉 All Longhorn storage class tests completed successfully."
+)}

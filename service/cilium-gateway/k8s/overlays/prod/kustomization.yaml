@@ -109,8 +109,9 @@ patches:
   - target:
       kind: Gateway
       name: gateway
+    # remove two listeners begining from #3
     patch: |-
       - op: remove
         path: /spec/listeners/3
       - op: remove
-        path: /spec/listeners/4
+        path: /spec/listeners/3

@@ -13,7 +13,7 @@
 - setup Firefox exception for local _.dev domains avoiding SSL certificate warning in the browser. Add new string in about:config > security.exception.siteList = _.dev
 - go to about:preferences#privacy and view certificate and add to exception button.
 - For github packages turn on "Inherit access from source repository (recommended)" from pacakge settings.
-- Manual Cloudflare infrastructure setup required.
+- Manual Cloudflare infrastructure setup required -  dash.cloudflare.com to update kubernetes deployment node loadbalancer ips from Hetzner
 - Manual Google OIDC client registration.
 - Browser dev tools: React Developer Tools extension
 - repository: settings > secrets and variables > actions; add repository secret for ACTIONS_STEP_DEBUG = true and ACTIONS_RUNNER_DEBUG = true

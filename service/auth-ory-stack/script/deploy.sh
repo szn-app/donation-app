@@ -15,7 +15,7 @@ func#postdeploy_hook@auth-ory-stack() {
 }
 
 # NOTE: in hetzner environment deleting pvc with this apporach causes resource cleanup issues 
-delete.pvc#manual-delete-pvc@auth-ory-stack() { 
+delete.pvc#pvc-manual-delete@auth-ory-stack() { 
     minikube ssh -- "sudo rm -rf /tmp/hostpath-provisioner/auth/"
 
     # delete protection finalizers
