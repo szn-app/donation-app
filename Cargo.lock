@@ -141,7 +141,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "donation-app"
-version = "0.4.30"
+version = "0.4.31"
 
 [[package]]
 name = "either"
@@ -683,7 +683,7 @@ dependencies = [
 
 [[package]]
 name = "shared_protobuf_keto"
-version = "0.4.30"
+version = "0.4.31"
 dependencies = [
  "prost",
  "prost-types",
@@ -694,7 +694,7 @@ dependencies = [
 
 [[package]]
 name = "shared_protobuf_webhook"
-version = "0.4.30"
+version = "0.4.31"
 dependencies = [
  "prost",
  "prost-types",

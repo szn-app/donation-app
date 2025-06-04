@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.9](https://github.com/szn-app/donation-app/compare/api-data@v0.0.8...api-data@v0.0.9) (2025-06-03)
+
+
+### Features
+
+* api-data server load environment for username and password for database connection ([0a656dc](https://github.com/szn-app/donation-app/commit/0a656dc0e056de0b0d4d8f3c6ba611414bde571c))
+
 ## [0.0.8](https://github.com/szn-app/donation-app/compare/api-data@v0.0.7...api-data@v0.0.8) (2025-05-29)
 
 
