@@ -41,10 +41,10 @@ requires:
         activatedBy: [production]
 
   - path: ../cilium-gateway
-    configs: [cilium-gateway]                 
+    configs: [cilium-gateway]            
 
   - path: ../envoy-proxy
-    configs: [envoy-proxy]                 
+    configs: [envoy-proxy]
 
   - path: ../auth-ory-stack
     configs: [auth-ory-stack]

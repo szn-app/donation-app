@@ -29,7 +29,7 @@ install-resources.minikube@infrastructure() {
         }
     }
     {
-        install_envoy_gateway_class
+        install.envoy_gateway_class
     }
     {
         # Ingress k8s resource controllers
@@ -89,14 +89,8 @@ install.minikube#provision#task@infrastructure() {
     }
     # note: resource limitations directly translate to docker resource settings 
     # cni flag prepares node for cilium installation # TODO: add 'minikube --cni=cilium' but handle ingress controller alternative
-    minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker  
-    # minikube start --driver=docker
-    check_resource_usage_within() {
-        # shows you the resources that Kubernetes itself sees and can allocate on the node
-        kubectl describe node minikube
-        
-        docker inspect minikube
-    }
+    minikube start --cpus=max --memory=30251MiB --disk-size=100g --driver=docker # --cni=cilium
+    # minikube start --driver=docker 
 
     install-resources.minikube@infrastructure
 
@@ -107,20 +101,27 @@ install.minikube#provision#task@infrastructure() {
     # install_domain_dns_systemd_resolved_for_dev_domains
     # NOTE: careful of minikube dns caching and limitations, if dns name is not resolved after a change, an entire restart of minikube and probably disable/enable addons is required. 
 
-    # some tools must be installed separately (check corresponding scripts)
-    verify() { 
-        minikube kubectl -- get po -A # for a separate version kubectl install
-        # or 
-        kubetcl ctx minikube
-        kubectl cluster-info 
-        kubectl get nodes
-        
-        lazydocker --version
-        lazygit --version
-        
-        kubectl cnpg version
-    }
+}
 
+info.resources.minikube@infrastructure() {
+    # shows you the resources that Kubernetes itself sees and can allocate on the node
+    kubectl describe node minikube
+    
+    docker inspect minikube
+}
+
+# some tools must be installed separately (check corresponding scripts)
+verify.minikube@infrastructure() { 
+    minikube kubectl -- get po -A # for a separate version kubectl install
+    # or 
+    kubetcl ctx minikube
+    kubectl cluster-info 
+    kubectl get nodes
+    
+    lazydocker --version
+    lazygit --version
+    
+    kubectl cnpg version
 }
 
 # NOTE: ABANDONED DUE TO ISSUES WITH NONE DRIVER and installation of required dependencies

@@ -5,5 +5,6 @@
 source ../../script/module/utility.sh
 
 load_scripts_recursive.util "./script/" 
+load_scripts_recursive.util "./k8s/" 
 
 call_function "$@"

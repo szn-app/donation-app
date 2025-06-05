@@ -417,12 +417,12 @@
       "problemMatcher": []
     },
     {
-      "label": "start.minikube#bootstrap#task@monorepo",
+      "label": "setup.minikube#bootstrap#task@monorepo",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "source ${workspaceFolder}/script.sh && start.minikube#bootstrap#task@monorepo"
+        "source ${workspaceFolder}/script.sh && setup.minikube#bootstrap#task@monorepo"
       ],
       "presentation": {
         "reveal": "always",
@@ -432,7 +432,7 @@
       "options": {
         "cwd": "${workspaceFolder}/",
         "statusbar": {
-          "label": "$(run) start.minikube#bootstrap#task@monorepo"
+          "label": "$(run) setup.minikube#bootstrap#task@monorepo"
         }
       },
       "dependsOrder": "parallel",
@@ -1715,6 +1715,78 @@
         "cwd": "${workspaceFolder}/",
         "statusbar": {
           "label": "$(run) pvc.delete.production#example#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "delete.production_mode.skaffold#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && delete.production_mode.skaffold#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) delete.production_mode.skaffold#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "production.skaffold#minikube#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production.skaffold#minikube#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production.skaffold#minikube#task@monorepo"
+        }
+      },
+      "dependsOrder": "parallel",
+      "dependsOn": [],
+      "problemMatcher": [],
+      "runOptions": {}
+    },
+    {
+      "label": "production_mode.local.skaffold#minikube#task@monorepo",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "source ${workspaceFolder}/script.sh && production_mode.local.skaffold#minikube#task@monorepo"
+      ],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "group": "none",
+      "options": {
+        "cwd": "${workspaceFolder}/",
+        "statusbar": {
+          "label": "$(run) production_mode.local.skaffold#minikube#task@monorepo"
         }
       },
       "dependsOrder": "parallel",

@@ -77,5 +77,5 @@ EOF
 
 # NOTE: version should match the installation of cert-manager through terraform kube-hetzner equivalent module
 minikube_install_cert_manager() {
-  helm upgrade --debug --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.15.3 -f ./infrastructure/helm_values/cert-manager-values.yaml --set nodeSelector=null
+  helm upgrade --debug --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.2 -f ./infrastructure/helm_values/cert-manager-values.yaml --set nodeSelector=null
 } 

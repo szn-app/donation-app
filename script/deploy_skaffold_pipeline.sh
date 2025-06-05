@@ -18,7 +18,7 @@ start_minikube_services_only#task() {
 }
 
 # run & expose gateway with minimum scaffold services
-start.minikube#bootstrap#task@monorepo() {
+setup.minikube#bootstrap#task@monorepo() {
     # sudo echo "" # prompt for sudo password
 
     run_minikube() {
@@ -61,12 +61,11 @@ start.minikube#bootstrap#task@monorepo() {
     
     set_user_inotify_limit
     fix_sync_issue
-
+    
     execute.util '#setup' '#mount-bind' # ensure mounts are setup
     execute.util '#predeploy-hook' # prepare for deployment
-    production_mode.skaffold#task@monorepo
 
-    start.tunnel.minikube#task@monorepo -v
+    echo "successfully setup Minikube vM"
 }
 
 # remove docker images and cleanup disk space
@@ -99,7 +98,7 @@ development_mode.skaffold#task@monorepo() {
     }
     
     wait_for_terminating_resources.kubernetes#utility
-    # start.minikube#bootstrap#task@monorepo
+    # setup.minikube#bootstrap#task@monorepo
 
     skaffold dev --profile development  --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
@@ -110,19 +109,18 @@ development_mode.skaffold#task@monorepo() {
     }
 }
 
+delete.production_mode.skaffold#task@monorepo() {
+    skaffold delete --profile local-production
+}
+
 production_mode.skaffold#task@monorepo() {
-    delete() {
-        skaffold delete --profile local-production
-    }
-
-    expose_domain() {
-        start.tunnel.minikube#task@monorepo -v
-    }
-
+    setup.minikube#bootstrap#task@monorepo
+    
     wait_for_terminating_resources.kubernetes#utility
-    # start.minikube#bootstrap#task@monorepo
 
     skaffold run --profile local-production  --module monorepo # --port-forward --tail
+
+    start.tunnel.minikube#task@monorepo -v
 }
 
 services.production_mode.skaffold#task@monorepo() {
@@ -133,6 +131,27 @@ services.production_mode.skaffold#task@monorepo() {
 scaffold.production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     skaffold run --profile local-production --module monorepo-scaffold-only --port-forward --cleanup=false
+}
+
+production_mode.local.skaffold#minikube#task@monorepo() {
+    setup.minikube#bootstrap#task@monorepo
+    
+    wait_for_terminating_resources.kubernetes#utility
+
+    skaffold run --profile local-production  --module monorepo --cleanup=false # --port-forward --tail
+
+    start.tunnel.minikube#task@monorepo -v
+}
+
+production.skaffold#minikube#task@monorepo() {
+    setup.minikube#bootstrap#task@monorepo
+    
+    wait_for_terminating_resources.kubernetes#utility
+
+    skaffold run --profile production --module monorepo --cleanup=false # --port-forward
+    # --profile prod-env --profile prebuilt
+
+    start.tunnel.minikube#task@monorepo -v
 }
 
 delete.skaffold#task@monorepo() {
@@ -305,13 +324,14 @@ verify#example@monorepo() {
     kubectl -n kube-system edit configmap cilium-config
 }
 
-skaffold_scripts#example@monorepo() { 
+skaffold_scripts#example@monorepo() {
     kubectl config view
     skaffold config list
     TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile development > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
     TEMP_FILE=$(mktemp -t skaffold_diagnose_XXXXXX.log) && skaffold diagnose > "$TEMP_FILE" 2>&1 && echo "Skaffold diagnose output saved to: $TEMP_FILE"
     skaffold inspect profile list | jq 
     skaffold diagnose --module scaffold-generic --profile local-production | grep -C 10 scaffold-k8s
+    skaffold render --module scaffold-generic --profile local-production
 
     skaffold delete --profile development
     skaffold build -v debug 

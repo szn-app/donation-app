@@ -6,16 +6,15 @@ metadata:
 requires:
   - path: .
     configs: [cilium-gateway-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    # activeProfiles:                                     
+    #   - name: development
+    #     activatedBy: [dev-env]
+    #   - name: production                               
+    #     activatedBy: [prod-env]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-env
+  - name: prod-env
 
 ---
 
@@ -24,21 +23,19 @@ kind: Config
 metadata:
   name: cilium-gateway-generic
 
+deploy:
+  kubectl: {}
+  statusCheck: true
+
 profiles:
 
-- name: development
-  deploy:
-    kubectl: {}
-    statusCheck: true
+- name: dev-env
   manifests:
     kustomize:
       paths:
       - k8s/overlays/dev
 
-- name: production
-  deploy:
-    kubectl: {}
-    statusCheck: true
+- name: prod-env
   manifests:
     kustomize:
       paths:

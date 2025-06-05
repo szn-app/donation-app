@@ -26,6 +26,14 @@ disbale-volume_protection#provision@infrastructure() {
 delete.hetzner.cloud#provision#task@infrastructure() {
     echo "NOTE: run 'disbale-volume_protection#provision@infrastructure' first"
     
+    # Confirm deletion
+    echo -n "Delete Hetzner K3S production cloud cluster? (y/n): " && read -r answer
+    if [[ "${answer,,}" != "y" ]]; then
+        echo "Aborted."
+        return 1
+    fi
+    echo "Deleting Hetzner resources..."
+
     pushd infrastructure
       ### [manual] set variables using "terraform.tfvars" or CLI argument or equivalent env variables (with `TF_TOKEN_*` prefix)
       find . -name "*.tfvars"
@@ -245,7 +253,7 @@ EOF
 
         popd 
 
-        install_envoy_gateway_class
+        install.envoy_gateway_class
         # DEPRECATED_install_stackgres_operator
         install_cloudnativepg_operator
         install_minio_operator
@@ -256,87 +264,89 @@ EOF
 
       install_kubernetes_resources
 
-      verify_installation() {
-        echo "export HCLOUD_TOKEN=<...>"
-
-        k9s # https://k9scli.io/topics/commands/
-        kubectl get all -A 
-        kubectl --kubeconfig $kubeconfig get all -A 
-        kubectl get configmap -A
-        kubectl get secrets -A
-        kubectl api-resources
-        kubectl api-versions
-        kubectl get gatewayclasses
-        hcloud all list
-        terraform show
-        terraform state list
-        terraform state show type_of_resource.label_of_resource
-
-        helm list -A --all-namespaces 
-        helm get values --all nginx -n nginx 
-        helm get manifest nginx -n nginx 
-        
-        journalctl -r -n 200
-
-        # load balancer hetzner manager (Hetzner Cloud Controller Manager (CCM))
-        kubectl logs -n kube-system -l app=hcloud-cloud-controller-manager
-
-        # volumes: pvc < pv < volumeattachment
-        # [NOTE ISSUE - volume stuck on terminating state] usaully have protection finalizers; most likely CSI driver has not released the volume
-        # NOTE: could be caused by OOM-Kill - Out Of Memory Kill when processes exceed allocatable capacity for their pods
-        kubectl get volume -n longhorn-system
-        kubectl get pvc -A
-        kubectl get pods -A -o wide
-        # CSI storage drivers logs
-        kubectl get pods --all-namespaces | grep csi
-        kubectl get volumeattachments.storage.k8s.io -o custom-columns="NAME:.metadata.name,ATTACHER:.spec.attacher,PV:.spec.source.persistentVolumeName,NODE:.spec.nodeName,ATTACHED:.status.attached"
-        kubectl get csidrivers
-        # Longhorn Manager logs - longhorn-engine and volumes
-        kubectl get engines -n longhorn-system
-        # kubectl describe engine pvc-... -n longhorn-system
-        # kubectl get volumes.longhorn.io -n longhorn-system | grep pvc-..
-        # kubectl describe volume -n longhorn-system pvc-...
-        kubectl get crds | grep longhorn
-        kubectl get volumes.longhorn.io -n longhorn-system
-        kubectl get engines.longhorn.io -n longhorn-system
-        kubectl get replicas.longhorn.io -n longhorn-system
-        kubectl get nodes.longhorn.io -n longhorn-system
-        kubectl get instancemanagers.longhorn.io -n longhorn-system
-        kubectl get backingimages.longhorn.io -n longhorn-system
-        kubectl top pod -n longhorn-system
-
-        # check cpu/mem utilization
-        kubectl get node && kubectl top nodes && kubectl describe node
-        kubectl get pods -o wide -A 
-        kubectl get pods -n longhorn-system -l app.kubernetes.io/name=longhorn -o wide 
-          # NOTE: memory reporting it seems because of cilium is not reported correctly. (discrepancies found between linux command reported memory and kubectl command one)
-        kubectl top pods --containers=true -A --sort-by memory
-        kubectl get pods -o wide --all-namespaces | grep k3s-control-plane-wug
-        HIGHEST_CPU_NODE=$(kubectl top nodes | awk 'NR>1 {print $1, $2+0}' | sort -k2 -nr | head -n 1 | awk '{print $1}')
-        kubectl top pods -A -n $HIGHEST_CPU_NODE --sort-by cpu
-        # list all pods of controller nodes: 
-        {
-          for node in $(kubectl get nodes -l role=control-plane -o jsonpath='{.items[*].metadata.name}'); do
-            echo "Pods on node: $node"
-            kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=$node
-          done
-        }
-
-        hcloud server list
-        {
-          free | awk '/Mem:/ {printf "Memory Usage: %.2f%%\n", $3/$2 * 100}'
-        }
-
-        ### ssh into remove machines
-        # echo "" > ~/.ssh/known_hosts # clear known hosts to permit connection for same assigned IP to different server
-        ip_address=$(hcloud server list --output json | jq -r '.[0].public_net.ipv4.ip')
-        ssh -p 2220 root@$ip_address
-        ip_address=$(hcloud server list --output json | jq -r '.[0].public_net.ipv6.ip' | sed 's/\/.*/1/')
-        ssh -p 2220 root@$ip_address 
-      }
-
     }
 }
+
+verify_k8s_resource_installation.hetzner.cloud@infrastructure() {
+  echo "export HCLOUD_TOKEN=<...>"
+
+  k9s # https://k9scli.io/topics/commands/
+  kubectl get all -A 
+  kubectl --kubeconfig $kubeconfig get all -A 
+  kubectl get configmap -A
+  kubectl get secrets -A
+  kubectl api-resources
+  kubectl api-versions
+  kubectl get gatewayclasses
+  hcloud all list
+  terraform show
+  terraform state list
+  terraform state show type_of_resource.label_of_resource
+
+  helm list -A --all-namespaces 
+  helm get values --all nginx -n nginx 
+  helm get manifest nginx -n nginx 
+  
+  journalctl -r -n 200
+
+  # load balancer hetzner manager (Hetzner Cloud Controller Manager (CCM))
+  kubectl logs -n kube-system -l app=hcloud-cloud-controller-manager
+
+  # volumes: pvc < pv < volumeattachment
+  # [NOTE ISSUE - volume stuck on terminating state] usaully have protection finalizers; most likely CSI driver has not released the volume
+  # NOTE: could be caused by OOM-Kill - Out Of Memory Kill when processes exceed allocatable capacity for their pods
+  kubectl get volume -n longhorn-system
+  kubectl get pvc -A
+  kubectl get pods -A -o wide
+  # CSI storage drivers logs
+  kubectl get pods --all-namespaces | grep csi
+  kubectl get volumeattachments.storage.k8s.io -o custom-columns="NAME:.metadata.name,ATTACHER:.spec.attacher,PV:.spec.source.persistentVolumeName,NODE:.spec.nodeName,ATTACHED:.status.attached"
+  kubectl get csidrivers
+  # Longhorn Manager logs - longhorn-engine and volumes
+  kubectl get engines -n longhorn-system
+  # kubectl describe engine pvc-... -n longhorn-system
+  # kubectl get volumes.longhorn.io -n longhorn-system | grep pvc-..
+  # kubectl describe volume -n longhorn-system pvc-...
+  kubectl get crds | grep longhorn
+  kubectl get volumes.longhorn.io -n longhorn-system
+  kubectl get engines.longhorn.io -n longhorn-system
+  kubectl get replicas.longhorn.io -n longhorn-system
+  kubectl get nodes.longhorn.io -n longhorn-system
+  kubectl get instancemanagers.longhorn.io -n longhorn-system
+  kubectl get backingimages.longhorn.io -n longhorn-system
+  kubectl top pod -n longhorn-system
+
+  # check cpu/mem utilization
+  kubectl get node && kubectl top nodes && kubectl describe node
+  kubectl get pods -o wide -A 
+  kubectl get pods -n longhorn-system -l app.kubernetes.io/name=longhorn -o wide 
+    # NOTE: memory reporting it seems because of cilium is not reported correctly. (discrepancies found between linux command reported memory and kubectl command one)
+  kubectl top pods --containers=true -A --sort-by memory
+  kubectl get pods -o wide --all-namespaces | grep k3s-control-plane-wug
+  HIGHEST_CPU_NODE=$(kubectl top nodes | awk 'NR>1 {print $1, $2+0}' | sort -k2 -nr | head -n 1 | awk '{print $1}')
+  kubectl top pods -A -n $HIGHEST_CPU_NODE --sort-by cpu
+  # list all pods of controller nodes: 
+  {
+    for node in $(kubectl get nodes -l role=control-plane -o jsonpath='{.items[*].metadata.name}'); do
+      echo "Pods on node: $node"
+      kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=$node
+    done
+  }
+
+  hcloud server list
+  {
+    free | awk '/Mem:/ {printf "Memory Usage: %.2f%%\n", $3/$2 * 100}'
+  }
+
+  ### ssh into remove machines
+  # echo "" > ~/.ssh/known_hosts # clear known hosts to permit connection for same assigned IP to different server
+  ip_address=$(hcloud server list --output json | jq -r '.[0].public_net.ipv4.ip')
+  ssh -p 2220 root@$ip_address
+  ip_address=$(hcloud server list --output json | jq -r '.[0].public_net.ipv6.ip' | sed 's/\/.*/1/')
+  ssh -p 2220 root@$ip_address 
+}
+
+
 
 delete.longhorn-system@provision-script() { 
   NAMESPACE="longhorn-system"

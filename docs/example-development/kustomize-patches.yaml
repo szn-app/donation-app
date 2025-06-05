@@ -1,0 +1,15 @@
+patches: 
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: auth-ui
+        
+      spec:
+        template:
+          spec:
+            containers:
+              - name: auth-ui
+                env:
+                - name: NODE_ENV
+                  value: "production"

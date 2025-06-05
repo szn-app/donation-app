@@ -22,3 +22,4 @@
 - [drawback] Move from single initialization script (single sql migraiton) to a version-controlled structured system. 
 - Production-ready: increase volume Gibibyte storage (look for commented "Gi")
 - setup proper resource limitations on deployments for production to avoid CPU/Memory starvation and cascading failure when a service/deployment is fails or misconfigured. 
+- properly distinguish between longhorn on network volume vs longhorn on local stroage vs local storage vs Hetzner network storage

@@ -6,6 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [auth-ui-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -14,14 +36,16 @@ kind: Config
 metadata:
   name: auth-ui-generic
 
-requires:
-  - path: ../auth-ory-stack
-    configs: [auth-ory-stack]                 
+# TODO:
+# requires:
+#   - path: ../auth-ory-stack
+#     configs: [auth-ory-stack]                 
 
 build:
   local: 
-    push: false
     useBuildkit: true
+    push: false
+    tryImportMissing: false
   tagPolicy:
     sha256: {} 
 
@@ -37,17 +61,75 @@ portForward:
 
 profiles:
 
-- name: development
+- name: dev-env
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
+
+  deploy:
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui dev"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui dev"]
+              dir: .
+
+- name: staging-env
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/staging
+
+  deploy:
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui staging"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui staging"]
+              dir: .
+
+- name: prod-env
+
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+
+  deploy: 
+    kubectl:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui prod"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui prod"]
+              dir: .
+
+- name: watch
   # activation:
   #   - kubeContext: minikube
-      
-  build: 
+
+  build:
     artifacts:
     - image: auth-ui
       context: ./kratos-selfservice-ui-node
       docker:
-        target: development
+        target: debug
         dockerfile: Dockerfile
+        noCache: false
         buildArgs: {}
       # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
       sync:
@@ -58,64 +140,35 @@ profiles:
         - src: "kratos-selfservice-ui-node/src/**/*.ts"
           dest: .
           strip: 'kratos-selfservice-ui-node'
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@auth-ui development"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@auth-ui development"]
-              dir: .
 
-- name: local-production
+- name: rebuild-debug
 
-  build: 
-    local: 
-      push: false 
-      tryImportMissing: false
+  build:
     artifacts:
     - image: auth-ui
       context: ./kratos-selfservice-ui-node
       docker:
-        target: production
+        target: debug
         dockerfile: Dockerfile
+        noCache: false
         buildArgs: {}
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@auth-ui production"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@auth-ui production"]
-              dir: .
 
-- name: production
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@auth-ui production"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@auth-ui production"]
-              dir: .
+- name: rebuild-release
+
+  build:
+    artifacts:
+    - image: auth-ui
+      context: ./kratos-selfservice-ui-node
+      docker:
+        target: release
+        dockerfile: Dockerfile
+        noCache: false
+        buildArgs: {}
+
+- name: prebuilt
+  build: {}
+
+
+
+
+

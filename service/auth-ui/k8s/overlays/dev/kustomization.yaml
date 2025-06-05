@@ -4,19 +4,8 @@ kind: Kustomization
 resources:
   - ../../base
 
-# namespace: auth # using customization transformers instead (which provides more options)
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: auth
-    unsetOnly: true
-
-images:
-  - name: auth-ui
-    newTag: latest
+components: 
+- ../components/namespace
 
 configMapGenerator:
   - name: properties-map-auth-ui

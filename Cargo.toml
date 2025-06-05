@@ -3,7 +3,6 @@ name = "donation-app"
 version = "0.4.30"
 edition = "2021"
 
-
 [workspace]
 members = ["shared/protobuf-webhook", "shared/protobuf-keto"]
 exclude = [
