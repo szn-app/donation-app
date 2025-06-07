@@ -36,10 +36,9 @@ kind: Config
 metadata:
   name: auth-ui-generic
 
-# TODO:
-# requires:
-#   - path: ../auth-ory-stack
-#     configs: [auth-ory-stack]                 
+requires:
+  - path: ../auth-ory-stack
+    configs: [auth-ory-stack]                 
 
 build:
   local: 

@@ -60,3 +60,6 @@ notes:
 - write SQL ⟶ Resolvers -(manually using a script)⟶ DSL ⟶ Client call wrappers
   - Implement common limit, filter, sort and pagination arguments for resolvers with SQL modification (otherwise, the default arguments supported by the server tool will be handled in Rust instead of optimized DB queries).
 - [NOTE] CORS blocked requests in browser can be caused because of an invalid security certificate which should be trusted for each of the subdomains. (manually achieved by visiting and accepting risk button)
+
+# misc. toolings related: 
+- distinction between explicit profile and config activated profiles: direct profile in skaffold commands gets propagated by default; activated commands are local for the required skaffold config.

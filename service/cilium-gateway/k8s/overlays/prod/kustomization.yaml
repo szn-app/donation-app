@@ -4,15 +4,24 @@ kind: Kustomization
 resources:
   - ../../base
 
-# namespace: donation-app # using customization transformers instead (which provides more options)
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: donation-app
-    unsetOnly: true
+components: 
+- ../components/namespace
+- ../components/domain
+- ../components/remove-test-listner
+
+configMapGenerator:
+- name: app-domain-config
+  literals:
+    - root=wosoom.com
+    - api=api.wosoom.com
+    - auth=auth.wosoom.com
+    - longhorn=longhorn.k8s.wosoom.com
+    - dashboard=dashboard.k8s.wosoom.com
+    - hubble=hubble.k8s.wosoom.com
+    - ory_admin=ory-admin.k8s.wosoom.com
+    - minio=minio.k8s.wosoom.com
+    - pgadmin4=pgadmin4.k8s.wosoom.com
+    - kafka=kafka.k8s.wosoom.com
 
 patches:
   - target:
@@ -23,95 +32,3 @@ patches:
       - op: replace
         path: /metadata/annotations/cert-manager.io~1cluster-issuer
         value: "production-cluster-issuer"
-
-  - target:
-      kind: Gateway
-      name: gateway
-    patch: |-
-      - op: replace
-        path: /spec/listeners/1/hostname
-        value: "wosoom.com"
-      - op: replace
-        path: /spec/listeners/2/hostname
-        value: "wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/3/hostname
-        value: "test.wosoom.com"
-      - op: replace
-        path: /spec/listeners/4/hostname
-        value: "test.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/5/hostname
-        value: "api.wosoom.com"
-      - op: replace
-        path: /spec/listeners/6/hostname
-        value: "api.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/7/hostname
-        value: "auth.wosoom.com"
-      - op: replace
-        path: /spec/listeners/8/hostname
-        value: "auth.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/9/hostname
-        value: "longhorn.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/10/hostname
-        value: "longhorn.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/11/hostname
-        value: "dashboard.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/12/hostname
-        value: "dashboard.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/13/hostname
-        value: "hubble.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/14/hostname
-        value: "hubble.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/15/hostname
-        value: "ory-admin.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/16/hostname
-        value: "ory-admin.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/17/hostname
-        value: "minio.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/18/hostname
-        value: "minio.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/19/hostname
-        value: "pgadmin4.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/20/hostname
-        value: "pgadmin4.k8s.wosoom.com"
-
-      - op: replace
-        path: /spec/listeners/21/hostname
-        value: "kafka.k8s.wosoom.com"
-      - op: replace
-        path: /spec/listeners/22/hostname
-        value: "kafka.k8s.wosoom.com"
-
-  # remove test listeners from production
-  - target:
-      kind: Gateway
-      name: gateway
-    # remove two listeners begining from #3
-    patch: |-
-      - op: remove
-        path: /spec/listeners/3
-      - op: remove
-        path: /spec/listeners/3

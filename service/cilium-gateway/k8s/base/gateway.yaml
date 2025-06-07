@@ -10,8 +10,34 @@ metadata:
 
 spec:
   gatewayClassName: cilium
-  # NOTE: order is important as kustomize targets indecies of listners
   listeners:
+    ###
+
+    # must be in position 0 (removed using index)
+    - name: https-test
+      protocol: HTTPS
+      port: 443
+      hostname: "test.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All # required for letsecrypt
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-test
+            group: ""
+    # must be in position 1 (removed using index)
+    - name: http-test
+      protocol: HTTP
+      port: 80
+      hostname: "test.donation-app.local"
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    ###
+
     - name: direct-ip
       protocol: HTTP
       port: 80
@@ -21,7 +47,6 @@ spec:
 
     ###
 
-    #1
     - name: https
       protocol: HTTPS
       port: 443
@@ -46,32 +71,6 @@ spec:
 
     ###
 
-    #3
-    - name: https-test
-      protocol: HTTPS
-      port: 443
-      hostname: "test.donation-app.local"
-      allowedRoutes:
-        namespaces:
-          from: All # required for letsecrypt
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - kind: Secret
-            name: tls-certificate-test
-            group: ""
-
-    - name: http-test
-      protocol: HTTP
-      port: 80
-      hostname: "test.donation-app.local"
-      allowedRoutes:
-        namespaces:
-          from: All
-
-    ###
-
-    #5
     - name: https-api
       protocol: HTTPS
       port: 443
@@ -96,7 +95,6 @@ spec:
 
     ###
 
-    #7
     - name: https-auth
       protocol: HTTPS
       port: 443
@@ -121,7 +119,6 @@ spec:
 
     ###
 
-    #9
     - name: https-k8s-longhorn
       protocol: HTTPS
       port: 443
@@ -146,7 +143,6 @@ spec:
 
     ###
 
-    #11
     - name: https-k8s-dashboard
       protocol: HTTPS
       port: 443
@@ -171,7 +167,6 @@ spec:
 
     ###
 
-    #13
     - name: https-k8s-hubble
       protocol: HTTPS
       port: 443
@@ -196,7 +191,6 @@ spec:
 
     ###
 
-    #15
     - name: https-k8s-ory-admin
       protocol: HTTPS
       port: 443
@@ -221,7 +215,6 @@ spec:
 
     ###
 
-    #17
     - name: https-k8s-minio
       protocol: HTTPS
       port: 443
@@ -246,7 +239,6 @@ spec:
 
     ###
 
-    #19
     - name: https-k8s-pgadmin4
       protocol: HTTPS
       port: 443
@@ -271,7 +263,6 @@ spec:
 
     ###
 
-    #21
     - name: https-k8s-kafka
       protocol: HTTPS
       port: 443
