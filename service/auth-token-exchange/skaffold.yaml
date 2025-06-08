@@ -6,16 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [auth-token-exchange-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -47,16 +59,52 @@ portForward:
 
 profiles:
 
-- name: development
-  # activation:
-  #   - kubeContext: minikube
+- name: dev-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/dev
       
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy_hook@auth-token-exchange dev"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy_hook@auth-token-exchange dev"]
+              dir: .
+
+- name: staging-env
+
+- name: prod-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+
+  deploy: 
+    kubectl: 
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy_hook@auth-token-exchange prod"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy_hook@auth-token-exchange prod"]
+              dir: .
+
+
+- name: watch
   build: 
     artifacts:
     - image: auth-token-exchange
       context: .
       docker:
-        target: development
+        target: debug
         dockerfile: Dockerfile
         buildArgs: {}
       # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
@@ -64,36 +112,30 @@ profiles:
         manual:
         - src: "src/**/*.rs"
           dest: .
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange development"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange development"]
-              dir: .
 
-- name: production
+- name: rebuild-debug
 
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy_hook@auth-token-exchange production"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy_hook@auth-token-exchange production"]
-              dir: .
+  build:
+    artifacts:
+    - image: auth-token-exchange
+      context: .
+      docker:
+        target: debug
+        dockerfile: Dockerfile
+        noCache: false
+        buildArgs: {}
+
+- name: rebuild-release
+
+  build:
+    artifacts:
+    - image: auth-token-exchange
+      context: .
+      docker:
+        target: release
+        dockerfile: Dockerfile
+        noCache: false
+        buildArgs: {}
+
+- name: prebuilt
+  build: {}

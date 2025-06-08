@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
         - name: auth-token-exchange
-          image: auth-token-exchange:latest
+          image: ghcr.io/szn-app/donation-app/auth-token-exchange:latest
+          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 3000
               name: auth-token-ex

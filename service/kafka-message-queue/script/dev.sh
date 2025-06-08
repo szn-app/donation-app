@@ -125,3 +125,11 @@ verify_running#example@kafka-message-queue() {
     # check kubernetes RBAC permission
     kubectl auth can-i create statefulset --as=system:serviceaccount:$namespace:strimzi-cluster-operator -n $namespace
 }
+
+diagnose.skaffold@kafka-message-queue() { 
+    skaffold diagnose --module kafka-message-queue --profile prod
+
+    skaffold render --module kafka-message-queue --profile staging-rebuild | grep -C 10 auth-ui
+
+    kubectl kustomize ./k8s/overlays/staging
+}

@@ -58,3 +58,21 @@ skaffold@auth-token-exchange() {
     
     skaffold run --profile production --port-forward
 }
+
+diagnose.skaffold@auth-token-exchange() {
+    skaffold diagnose --module auth-token-exchange --profile prod
+
+    skaffold render --module auth-token-exchange --profile staging-rebuild | grep -C 10 auth-token-exchange
+
+    kubectl kustomize ./k8s/overlays/staging
+}
+
+misc@auth-token-exchange() { 
+    cargo build 
+    cargo run 
+    cargo build --release
+}
+
+run_container@auth-token-exchange() {
+    docker run -d -p 80:3000 auth-token-exchange
+}

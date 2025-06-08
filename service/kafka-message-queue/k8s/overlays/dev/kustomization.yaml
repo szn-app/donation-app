@@ -5,15 +5,8 @@ resources:
   - ../../base
   - kafka-pool.yaml
 
-# namespace: kafka-message-queue # using customization transformers instead (which provides more options)
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: kafka-message-queue
-    unsetOnly: true
+components: 
+- ../components/namespace
 
 # patches:
   # - patch: |-
