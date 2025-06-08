@@ -1,6 +1,6 @@
 #!/bin/bash
 
-skaffold@auth-ui() {     
+skaffold@auth-ui() {   
     skaffold dev --module auth-ui --profile dev-watch --port-forward --auto-build=true --auto-deploy=true --cleanup=false --namespace=auth
     skaffold run --module auth-ui --profile dev-rebuild --port-forward --tail --namespace=auth
     skaffold build --module auth-ui --profile staging-rebuild --namespace=auth

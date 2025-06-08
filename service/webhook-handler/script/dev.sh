@@ -14,6 +14,14 @@ run_container@webhook-handler() {
     docker run -d -p 80:3010 webhook-handler
 }
 
+diagnose.skaffold@webhook-handler() { 
+    skaffold diagnose --module webhook-handler --profile prod
+
+    skaffold render --module webhook-handler --profile staging-rebuild | grep -C 10 auth-ui
+
+    kubectl kustomize ./k8s/overlays/staging
+}
+
 # NOTE: used for docker command
 hot_reload@webhook-handler() {
     cargo watch -q -c -w src/ -x run

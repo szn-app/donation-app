@@ -30,25 +30,26 @@ func#postdeploy_hook@webhook-handler() {
 }
 
 # IMPORTANT! used by release.yaml workflow
-build_container#package_hook@webhook-handler() { 
+build_container#package_hook@webhook-handler() {
     # NOTE: uses buildx (instead of the legacy build)
     docker build . -t webhook-handler:latest
-
-    verify() {
-        eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
-
-        docker build -t webhook-handler:latest --target production . 
-
-        # check if build works with current Cargo.toml options
-        docker run -it -v $(pwd):/app -w /app rust /bin/bash
-
-        docker run -it --entrypoint "/bin/ls" -v $(pwd):/app -w /app webhook-handler:latest -al
-    }
-
-    ldd_discover_binary_dependencies(){
-        ldd ./target/debug/webhook-handler
-    }
 }
+
+verify.container@webhook-handler() {
+    eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
+
+    docker build -t webhook-handler:latest --target production . 
+
+    # check if build works with current Cargo.toml options
+    docker run -it -v $(pwd):/app -w /app rust /bin/bash
+
+    docker run -it --entrypoint "/bin/ls" -v $(pwd):/app -w /app webhook-handler:latest -al
+}
+
+diagnose.ldd_discover_binary_dependencies@webhook-handler(){
+    ldd ./target/debug/webhook-handler
+}
+
 
 # IMPORTANT! used by docker image build; & github workflow
 install.system-dependency@webhook-handler() {

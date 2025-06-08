@@ -6,16 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [pgadmin4-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -37,8 +49,7 @@ portForward:
 
 profiles:
 
-- name: development
-
+- name: dev-env
   manifests:
     kustomize:
       paths:
@@ -57,16 +68,40 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@pgadmin4 development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 dev"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@pgadmin4 development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 dev"]
               dir: .
 
+- name: staging-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/staging
+  
+  deploy: 
+    helm:
+      releases:
+        - name: pgadmin4
+          remoteChart: runix/pgadmin4
+          namespace: default
+          createNamespace: true
+          valuesFiles:
+            - pgadmin4-values.yaml
 
-- name: production
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 staging"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 staging"]
+              dir: .
 
+- name: prod-env
   manifests:
     kustomize:
       paths:
@@ -85,10 +120,9 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@pgadmin4 production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 prod"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@pgadmin4 production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 prod"]
               dir: .
-        

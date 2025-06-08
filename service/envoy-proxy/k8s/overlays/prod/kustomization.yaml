@@ -4,16 +4,5 @@ kind: Kustomization
 resources:
   - ../../base
 
-patches:
-  - target:
-      kind: SecurityPolicy
-      name: internal-gateway
-
-    patch: |-
-      - op: replace
-        path: /spec/cors/allowOrigins/0
-        value: "https://wosoom.com"
-
-      - op: replace
-        path: /spec/cors/allowOrigins/1
-        value: "https://api.wosoom.com"
+components: 
+- ../components/domain

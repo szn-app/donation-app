@@ -15,10 +15,11 @@ spec:
     spec:
       containers:
         - name: webhook-handler
-          image: webhook-handler:latest
+          image: ghcr.io/szn-app/donation-app/webhook-handler:latest
           ports:
             - containerPort: 3010
               name: webhook-handler
+              imagePullPolicy: IfNotPresent
 
           env:
             - name: API_DATA_ENDPOINT

@@ -45,9 +45,8 @@ spec:
       # Additional new headers (while co-existing will already be overriden) to be added to the original request when forward for the backend service after authorization
       headersToBackend: 
         - app-user-id
-        # TODO: for better enforcement, only allow in dev (templetize this yaml)
-        - debug-app-bypass-auth
-        - debug-app-user-id
+        # NOTE: additional headers added by overlays
+
   cors:
     allowOrigins:
       - "https://donation-app.local"

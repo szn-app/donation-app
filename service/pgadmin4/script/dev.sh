@@ -27,3 +27,11 @@ delete.skaffold#task#manual-delete@pgadmin4() {
     printf "deleting secret $secret_name"
     kubectl delete secret $secret_name -n $namespace || true
 }
+
+diagnose.skaffold@pgadmin4() { 
+    skaffold diagnose --module pgadmin4 --profile prod
+
+    skaffold render --module pgadmin4 --profile staging-rebuild | grep -C 10 auth-ui
+
+    kubectl kustomize ./k8s/overlays/staging
+}

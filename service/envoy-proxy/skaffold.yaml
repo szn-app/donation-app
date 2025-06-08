@@ -6,15 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [envoy-proxy-generic]
-    # activeProfiles:                                     
-    #   - name: development
-    #     activatedBy: [dev-env]
-    #   - name: production                               
-    #     activatedBy: [prod-env]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: dev-env
-  - name: prod-env
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -32,7 +45,13 @@ profiles:
     kustomize:
       paths:
       - k8s/overlays/dev
-  
+
+- name: staging-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/staging
+
 - name: prod-env
   manifests:
     kustomize:
