@@ -16,3 +16,11 @@ render.skaffold#task@kafka-ui() {
     temp_file=$(mktemp) && skaffold render --profile development > "$temp_file" && echo "$temp_file"
     popd
 }
+
+diagnose.skaffold@kafka-ui() {
+    skaffold diagnose --module kafka-ui --profile prod
+
+    skaffold render --module kafka-ui --profile staging-rebuild | grep -C 10 kafka-ui
+
+    kubectl kustomize ./k8s/overlays/staging
+}

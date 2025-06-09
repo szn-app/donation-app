@@ -32,8 +32,7 @@ generate_config#predeploy-skaffold-hook@kafka-ui() {(
 func#predeploy-skaffold-hook@kafka-ui() {
     local environment=$1
 
-    helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
-    
+    helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts   
 }
 
 func#postdeploy-skaffold-hook@kafka-ui() {
