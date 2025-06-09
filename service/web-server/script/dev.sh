@@ -17,6 +17,14 @@ skaffold#task@web-server() {
     popd
 }
 
+diagnose.skaffold@web-server() {
+    skaffold diagnose --module web-server --profile prod
+
+    skaffold render --module web-server --profile staging-rebuild | grep -C 10 web-server
+
+    kubectl kustomize ./k8s/overlays/staging
+}
+
 delete.skaffold#task@web-server() {
     skaffold delete --module web-server --profile development
 }

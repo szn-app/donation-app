@@ -10,7 +10,7 @@ components:
 - ../components/remove-test-listner
 
 configMapGenerator:
-- name: app-domain-config
+- name: app-cilium-domain-config
   literals:
     - root=wosoom.com
     - api=api.wosoom.com

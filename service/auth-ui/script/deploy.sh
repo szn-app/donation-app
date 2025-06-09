@@ -17,5 +17,4 @@ func#predeploy-skaffold-hook@auth-ui() {
 
 func#postdeploy-skaffold-hook@auth-ui() {
     local environment=${1:-dev}
-    echo "$environment"
 }

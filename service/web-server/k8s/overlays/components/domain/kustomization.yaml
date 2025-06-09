@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+configMapGenerator:
+  - name: web-server-domain
+    literals:
+      - root=wosoom.com
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: pgadmin4-domain
+      fieldPath: data.pgadmin4
+      
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: http-redirect
+        fieldPaths:
+          - spec.hostnames.[=donation-app.local]
+        options:
+          create: false
+          
+      - select:
+          kind: HTTPRoute
+          name: https-web-server
+        fieldPaths:
+          - spec.hostnames.[=donation-app.local]
+        options:
+          create: false

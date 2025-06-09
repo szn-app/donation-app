@@ -3,3 +3,7 @@ kind: Kustomization
 
 resources:
   - ./namespace.yaml
+  - ./route
+
+configurations:
+  - ./name-reference.kustomize-config.yaml

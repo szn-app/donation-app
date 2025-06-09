@@ -10,14 +10,6 @@ components:
 # namePrefix: prod-
 # nameSuffix: -v1
 
-configMapGenerator:
-- name: app-scaffold-domain-config
-  literals:
-    - test=test.wosoom.com
-    - longhorn=longhorn.k8s.wosoom.com
-    - dashboard=dashboard.k8s.wosoom.com
-    - hubble=hubble.k8s.wosoom.com
-
 patches:
   - target:
       kind: Deployment

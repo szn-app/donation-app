@@ -4,7 +4,7 @@ kind: Component
 replacements:
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.root
     targets:
       - select:
@@ -15,7 +15,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.api
     targets:
       - select:
@@ -26,7 +26,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.auth
     targets:
       - select:
@@ -37,7 +37,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.longhorn
     targets:
       - select:
@@ -48,7 +48,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.dashboard
     targets:
       - select:
@@ -59,7 +59,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.hubble
     targets:
       - select:
@@ -70,7 +70,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.ory_admin
     targets:
       - select:
@@ -81,7 +81,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.minio
     targets:
       - select:
@@ -92,7 +92,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.pgadmin4
     targets:
       - select:
@@ -103,7 +103,7 @@ replacements:
 
   - source:
       kind: ConfigMap
-      name: app-domain-config
+      name: app-cilium-domain-config
       fieldPath: data.kafka
     targets:
       - select:

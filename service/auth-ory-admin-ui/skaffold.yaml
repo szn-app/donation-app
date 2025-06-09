@@ -6,16 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [auth-ory-admin-ui-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -34,15 +46,22 @@ deploy:
 
 profiles:
 
-- name: development
+- name: dev-env
   manifests:
     kustomize:
       paths:
       - k8s/overlays/dev
 
-- name: production
+- name: staging-env
   manifests:
     kustomize:
       paths:
-      # fix issue probably with exceeded resources usage causing kubernetes node failure
-      - k8s/overlays/dummy
+      - k8s/overlays/staging
+
+- name: prod-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/prod
+      # # fix issue probably with exceeded resources usage causing kubernetes node failure
+      # - k8s/overlays/dummy

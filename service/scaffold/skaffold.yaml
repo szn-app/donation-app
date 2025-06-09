@@ -1,7 +1,71 @@
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
-  name: scaffold-k8s
+  name: scaffold
+
+requires:
+  - path: .
+    configs: [scaffold-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: scaffold-generic
+
+requires: 
+  - path: ../cilium-gateway
+    configs: [cilium-gateway]
+
+  - path: ../envoy-proxy
+    configs: [envoy-proxy]
+
+  - path: ../auth-ory-stack
+    configs: [auth-ory-stack]
+
+  - path: ../auth-ui
+    configs: [auth-ui]            
+
+  - path: ../auth-token-exchange
+    configs: [auth-token-exchange]
+
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]
+
+  - path: ../webhook-handler
+    configs: [webhook-handler]
+
+  - path: ../kafka-ui
+    configs: [kafka-ui]
+
+  - path: ../pgadmin4
+    configs: [pgadmin4]    
+
+  - path: ../auth-ory-admin-ui
+    configs: [auth-ory-admin-ui]
 
 build:
   local: {}
@@ -12,65 +76,20 @@ deploy:
   statusCheck: true
 
 profiles:
-  - name: development
+  - name: dev-env
     manifests:
       kustomize:
         paths:
         - ./k8s/overlays/dev
 
-  - name: production
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+        - ./k8s/overlays/staging
+
+  - name: prod-env
     manifests:
       kustomize:
         paths:
         - ./k8s/overlays/prod
-
----
-
-apiVersion: skaffold/v4beta13
-kind: Config
-metadata:
-  name: scaffold
-
-requires:
-  - path: .
-    configs: [scaffold-k8s]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
-
-  - path: ../cilium-gateway
-    configs: [cilium-gateway]            
-
-  - path: ../envoy-proxy
-    configs: [envoy-proxy]
-
-  - path: ../auth-ory-stack
-    configs: [auth-ory-stack]
-
-  - path: ../auth-ui
-    configs: [auth-ui]                 
-
-  - path: ../auth-token-exchange
-    configs: [auth-token-exchange]                 
-
-  - path: ../kafka-message-queue
-    configs: [kafka-message-queue]                 
-
-  - path: ../webhook-handler
-    configs: [webhook-handler]                 
-
-  - path: ../kafka-ui
-    configs: [kafka-ui]                 
-
-  - path: ../pgadmin4
-    configs: [pgadmin4]                 
-
-  - path: ../auth-ory-admin-ui
-    configs: [auth-ory-admin-ui]                 
-
-profiles:
-  - name: development
-  - name: local-production
-  - name: production

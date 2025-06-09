@@ -4,10 +4,6 @@ kind: Kustomization
 resources:
   - ../../base
   
-  - ../../route
-  
 # namePrefix: prod-
 # nameSuffix: -v1
 
-configurations:
-  - ./name-reference.kustomize-config.yaml
