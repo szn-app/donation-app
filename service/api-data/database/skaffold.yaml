@@ -6,16 +6,29 @@ metadata:
 requires:
   - path: .
     configs: [api-data-database-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: []
+      - name: prod-env
+        activatedBy: [prod, staging-rebuild, staging-prebuilt]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
 
 ---
 
@@ -26,8 +39,9 @@ metadata:
 
 build:
   local: 
-    push: false
     useBuildkit: true
+    push: false
+    tryImportMissing: false
   tagPolicy:
     # sha256: {} 
     gitCommit: {}
@@ -44,8 +58,7 @@ portForward:
 
 profiles:
 
-- name: development
-
+- name: dev-env
   build:
     tagPolicy:
       envTemplate:
@@ -68,14 +81,14 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-database development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@api-data-database dev"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-database development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database dev"]
               dir: .
-
-- name: production
+  
+- name: prod-env
   manifests:
     kustomize:
       paths:
@@ -86,9 +99,9 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-database production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@api-data-database prod"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-database production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database prod"]
               dir: .

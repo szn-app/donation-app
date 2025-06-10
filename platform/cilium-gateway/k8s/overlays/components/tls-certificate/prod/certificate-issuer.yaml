@@ -1,0 +1,20 @@
+### by default http-01 challenge certificates are issued (supporting single domain name, not wildcard)
+# (NOTE: certificates for rotation are generated with postfix and then applied on the main certificate with the correct name)
+
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: production-cluster-issuer
+  namespace: "gateway" # this will be ignored as it is a ClusterIssuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: production-letsencrypt-private-key
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - kind: Gateway
+                name: gateway
+                namespace: gateway

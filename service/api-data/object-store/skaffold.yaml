@@ -6,16 +6,28 @@ metadata:
 requires:
   - path: .
     configs: [api-data-object-store-generic]
-    activeProfiles:                                     
-      - name: development
-        activatedBy: [development, local-production]
-      - name: production                               
-        activatedBy: [production]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-  - name: development
-  - name: local-production
-  - name: production
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
 
@@ -39,8 +51,7 @@ portForward:
 
 profiles:
 
-- name: development
-
+- name: dev-env
   manifests:
     kustomize:
       paths:
@@ -51,11 +62,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-object-store development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@api-data-object-store dev"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-object-store development"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@api-data-object-store dev"]
               dir: .
         
       releases:
@@ -67,8 +78,34 @@ profiles:
             - minio-tenant-values.yaml
             - values.dev.yaml      
 
-- name: production
+- name: staging-env
+  manifests:
+    kustomize:
+      paths:
+      - k8s/overlays/staging
 
+  deploy: 
+    helm:
+      hooks:
+        before:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@api-data-object-store staging"]
+              dir: .
+        after:
+          - host:
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@api-data-object-store staging"]
+              dir: .
+        
+      releases:
+        - name: minio-object-store
+          remoteChart: minio-operator/tenant
+          namespace: api-data
+          createNamespace: true
+          valuesFiles:
+            - minio-tenant-values.yaml
+            - config/values.prod.yaml.local
+
+- name: prod-env
   manifests:
     kustomize:
       paths:
@@ -79,11 +116,11 @@ profiles:
       hooks:
         before:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#predeploy-skaffold-hook@api-data-object-store production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@api-data-object-store prod"]
               dir: .
         after:
           - host:
-              command: ["bash", "-it", "-c", "source ./script/deploy.sh && func#postdeploy-skaffold-hook@api-data-object-store production"]
+              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@api-data-object-store prod"]
               dir: .
         
       releases:

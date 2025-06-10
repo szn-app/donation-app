@@ -4,7 +4,7 @@ set -e
 skaffold#task@kafka-message-queue() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
     
-    skaffold dev --module kafka-message-queue --profile development --port-forward --tail
+    skaffold dev --module kafka-message-queue --profile dev-watch --port-forward --tail
 
     popd
 }
@@ -12,22 +12,22 @@ skaffold#task@kafka-message-queue() {
 production.skaffold#task@kafka-message-queue() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
     
-    skaffold run --module kafka-message-queue --profile production
+    skaffold run --module kafka-message-queue --profile prod
 
     popd
 }
 
 render.skaffold#task@kafka-message-queue() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
-    temp_file=$(mktemp) && skaffold render --profile development > "$temp_file" && echo "$temp_file"
+    temp_file=$(mktemp) && skaffold render --profile dev-watch > "$temp_file" && echo "$temp_file"
     popd
 }
 
 delete.skaffold#task@kafka-message-queue() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
 
-    skaffold delete --profile production --module kafka-message-queue
-    skaffold delete --profile development --module kafka-message-queue
+    skaffold delete --profile prod --module kafka-message-queue
+    skaffold delete --profile dev-watch --module kafka-message-queue
 
     popd
 )}

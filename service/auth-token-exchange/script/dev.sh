@@ -54,9 +54,9 @@ bootstrap@auth-token-exchange() {
 }
 
 skaffold@auth-token-exchange() {     
-    skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold dev --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false
     
-    skaffold run --profile production --port-forward
+    skaffold run --profile prod --port-forward
 }
 
 diagnose.skaffold@auth-token-exchange() {

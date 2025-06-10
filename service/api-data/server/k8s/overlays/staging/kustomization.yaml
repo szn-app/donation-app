@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+components: 
+- ../components/namespace
+- ../components/secret
+
+images:
+  - name: api-data
+    ### automatically updated
+    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
+    newTag: v0.0.8 # x-release-please-version
+
+configMapGenerator:
+  - name: properties-map-api-data-server
+    env: .properties
+
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-data
+        
+      spec:
+        template:
+          spec:
+            containers:
+            - name: api-data
+              imagePullPolicy: Always
+

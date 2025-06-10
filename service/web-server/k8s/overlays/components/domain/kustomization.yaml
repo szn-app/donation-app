@@ -9,8 +9,8 @@ configMapGenerator:
 replacements:
   - source:
       kind: ConfigMap
-      name: pgadmin4-domain
-      fieldPath: data.pgadmin4
+      name: web-server-domain
+      fieldPath: data.root
       
     targets:
       - select:

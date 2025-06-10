@@ -54,7 +54,7 @@ setup.minikube#bootstrap#task@monorepo() {
     }
 
     run_scaffold_only() {
-        pushd scaffold && skaffold run --profile development && popd
+        pushd scaffold && skaffold run --profile dev-watch && popd
     }
 
     run_minikube
@@ -89,7 +89,7 @@ minikube#aggregate_cleanup#task@monorepo() {
 
 development_mode.skaffold#task@monorepo() {
     delete() {
-        skaffold delete --profile development 
+        skaffold delete --profile dev-watch 
     }
 
     # run on separate shell
@@ -100,7 +100,7 @@ development_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
     # setup.minikube#bootstrap#task@monorepo
 
-    skaffold dev --profile development  --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --profile dev-watch  --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     dev_expose_service() { 
         source ./script.sh
@@ -125,7 +125,7 @@ production_mode.skaffold#task@monorepo() {
 
 services.production_mode.skaffold#task@monorepo() {
     wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile development --module monorepo-services-only --port-forward --cleanup=false
+    skaffold run --profile dev-watch --module monorepo-services-only --port-forward --cleanup=false
 }
 
 scaffold.production_mode.skaffold#task@monorepo() {
@@ -148,16 +148,16 @@ production.skaffold#minikube#task@monorepo() {
     
     wait_for_terminating_resources.kubernetes#utility
 
-    skaffold run --profile production --module monorepo --cleanup=false # --port-forward
+    skaffold run --profile prod --module monorepo --cleanup=false # --port-forward
     # --profile prod-env --profile prebuilt
 
     start.tunnel.minikube#task@monorepo -v
 }
 
 delete.skaffold#task@monorepo() {
-    skaffold delete --profile development
+    skaffold delete --profile dev-watch
     skaffold delete --profile local-production
-    skaffold delete --profile production
+    skaffold delete --profile prod
 
     execute.util '#task' '#manual-delete'
     execute.util '#task' '#pvc-manual-delete'
@@ -170,11 +170,11 @@ production.skaffold#hetzner#task@monorepo() {
     execute.util '#predeploy-hook' # prepare for deployment
 
     wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile production --module monorepo
+    skaffold run --profile prod --module monorepo
 }
 
 delete.production.skaffold#task@monorepo() {
-    skaffold delete --profile production --module monorepo
+    skaffold delete --profile prod --module monorepo
 
     execute.util '#task' '#manual-delete'
 }
@@ -327,15 +327,15 @@ verify#example@monorepo() {
 skaffold_scripts#example@monorepo() {
     kubectl config view
     skaffold config list
-    TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile development > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
+    TEMP_FILE=$(mktemp -t skaffold_render_XXXXXX.log) && skaffold render --profile dev-watch > "$TEMP_FILE" 2>&1 && echo "Skaffold render output saved to: $TEMP_FILE"
     TEMP_FILE=$(mktemp -t skaffold_diagnose_XXXXXX.log) && skaffold diagnose > "$TEMP_FILE" 2>&1 && echo "Skaffold diagnose output saved to: $TEMP_FILE"
     skaffold inspect profile list | jq 
     skaffold diagnose --module scaffold-generic --profile local-production | grep -C 10 scaffold-k8s
     skaffold render --module scaffold-generic --profile local-production
 
-    skaffold delete --profile development
+    skaffold delete --profile dev-watch
     skaffold build -v debug 
-    skaffold dev --tail --profile development --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
+    skaffold dev --tail --profile dev-watch --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false 
     skaffold dev --port-forward -v debug
     skaffold debug
     skaffold run

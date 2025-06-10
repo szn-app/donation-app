@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+  - target:
+      kind: SecurityPolicy
+      name: internal-gateway
+    patch: |-
+      - op: add
+        path: /spec/extAuth
+        value: 
+            headersToExtAuth:
+              - X-Forwarded-Proto
+              - Authorization
+              - Proxy-Authorization
+              - Accept
+              - Cookie
+            failOpen: false
+            http:
+              path: "/decisions" # https://www.ory.sh/docs/oathkeeper/reference/api#tag/api/operation/decisions
+              backendRefs:
+                - name: oathkeeper-api
+                  namespace: auth
+                  port: 80
+              # Additional new headers (while co-existing will already be overriden) to be added to the original request when forward for the backend service after authorization
+              headersToBackend:
+                - app-user-id
+                # NOTE: additional headers added by overlays

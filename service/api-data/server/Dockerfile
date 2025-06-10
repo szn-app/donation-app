@@ -20,7 +20,7 @@ RUN chmod +x /bin/api-data
 # ---
 
 # image hosting application (required glibc for rust)
-FROM gcr.io/distroless/cc AS production
+FROM gcr.io/distroless/cc AS release
 
 # ISSUE: github container registry doesn't pick up org.opencontainers.image.source value to associate automatically the image with the repo.
 LABEL org.opencontainers.image.source="https://github.com/szn-app/donation-app"
@@ -32,7 +32,7 @@ ENTRYPOINT ["/bin/api-data"]
 
 # ---
 
-FROM rust:latest AS development
+FROM rust:latest AS debug
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 # ENV PATH="/root/.cargo/bin:${PATH}"
 # fixes cargo build error on volume mounted code - https://github.com/rust-lang/rustup/issues/2949

@@ -120,9 +120,9 @@ bootstrap@webhook-handler() {
 }
 
 skaffold#task@webhook-handler() {
-    skaffold dev --module webhook-handler-generic --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold dev --module webhook-handler-generic --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false
 }
 
 delete.skaffold#task@webhook-handler() {
-    skaffold delete --module webhook-handler-generic --profile development
+    skaffold delete --module webhook-handler-generic --profile dev-watch
 }

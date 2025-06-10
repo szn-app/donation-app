@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
         - name: api-data
-          image: api-data:latest
+          image: ghcr.io/szn-app/donation-app/api-data:latest
+          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 8081
               name: api-data-http

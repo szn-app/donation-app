@@ -4,21 +4,21 @@ set -e
 skaffold#task@api-data-database() { 
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
     
-    skaffold dev --module api-data-database --profile development --port-forward --tail
+    skaffold dev --module api-data-database --profile dev-watch --port-forward --tail
 
     popd
 }
 
 render.skaffold#task@api-data-database() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
-    temp_file=$(mktemp) && skaffold render --module api-data-database --profile development > "$temp_file" && echo "$temp_file"
+    temp_file=$(mktemp) && skaffold render --module api-data-database --profile dev-watch > "$temp_file" && echo "$temp_file"
     popd
 }
 
 delete.skaffold#task@api-data-database() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
 
-    skaffold delete --module api-data-database --profile development
+    skaffold delete --module api-data-database --profile dev-watch
 
     popd
 )}

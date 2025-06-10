@@ -12,8 +12,8 @@ dev@web-server() {
 
 skaffold#task@web-server() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" 
-    # skaffold dev --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false
-    skaffold dev --module web-server --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=true
+    # skaffold dev --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false
+    skaffold dev --module web-server --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=true
     popd
 }
 
@@ -26,7 +26,7 @@ diagnose.skaffold@web-server() {
 }
 
 delete.skaffold#task@web-server() {
-    skaffold delete --module web-server --profile development
+    skaffold delete --module web-server --profile dev-watch
 }
 
 bootstrap@web_server() { 

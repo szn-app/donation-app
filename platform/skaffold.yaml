@@ -1,0 +1,31 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: platform
+
+requires:
+  - path: .
+    configs: [scaffold-generic]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: platform-generic
+
+requires:
+  - path: ../cilium-gateway
+    configs: [cilium-gateway]
+
+  - path: ../envoy-proxy
+    configs: [envoy-proxy]
+
+  - path: ../scaffold
+    configs: [scaffold]

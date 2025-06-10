@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - certificate-issuer.yaml
+
+patches:
+  # automatically create and renew Let's Encrypt certificates.
+  - target:
+      kind: Gateway
+      name: gateway
+    # when testing to avoid Let's Encrypt rate limit of `production-cluster-issuer`
+    patch: |-
+
+      - op: add
+        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+        value: staging-cluster-issuer

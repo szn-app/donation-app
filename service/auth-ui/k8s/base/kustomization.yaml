@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
+  - route.yaml
 
 # adds labels to all resources (including selector and template fields)
 labels:
@@ -53,3 +54,5 @@ patches:
                 operator: "Equal"
                 value: "peak-workloads"
                 effect: "NoExecute"
+
+

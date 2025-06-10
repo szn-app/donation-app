@@ -38,7 +38,7 @@ build_container#package_hook@webhook-handler() {
 verify.container@webhook-handler() {
     eval $(minikube --profile minikube docker-env) # use docker daemon inside minikube
 
-    docker build -t webhook-handler:latest --target production . 
+    docker build -t webhook-handler:latest --target release . 
 
     # check if build works with current Cargo.toml options
     docker run -it -v $(pwd):/app -w /app rust /bin/bash

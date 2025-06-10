@@ -115,16 +115,16 @@ shared-mount-point#setup#mount-bind@api-data-server() {(
 skaffold#task@api-data-server() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
 
-    skaffold dev --module api-data-server --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+    skaffold dev --module api-data-server --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 
     no-dep() {
-        skaffold dev --module api-data-server--no-dep --profile development --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
+        skaffold dev --module api-data-server--no-dep --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
     }
 
     verify() {
-        skaffold render --profile production
-        skaffold delete --profile development
-        skaffold run --profile production --port-forward
+        skaffold render --profile prod
+        skaffold delete --profile dev-watch
+        skaffold run --profile prod --port-forward
     }
 
     popd
@@ -133,7 +133,7 @@ skaffold#task@api-data-server() {(
 delete.skaffold#task@api-data-server() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
     
-    skaffold delete --profile development
+    skaffold delete --profile dev-watch
     
     popd
 )}

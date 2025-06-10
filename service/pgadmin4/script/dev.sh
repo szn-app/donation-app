@@ -1,11 +1,11 @@
 skaffold#task@pgadmin4() { 
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
     
-    skaffold dev --profile development --port-forward --tail
+    skaffold dev --profile dev-watch --port-forward --tail
 
     verify() {
-        skaffold render --profile production
-        skaffold delete --profile development
+        skaffold render --profile prod
+        skaffold delete --profile dev-watch
     }
 
     popd
