@@ -4,9 +4,9 @@ kind: Kustomization
 resources:
   - ../../base
 
-components: 
-- ../components/namespace
-- ../components/secret
+components:
+  - ../../components/namespace
+  - ../../components/secret
 
 images:
   - name: api-data
@@ -31,4 +31,3 @@ patches:
             containers:
             - name: api-data
               imagePullPolicy: Always
-

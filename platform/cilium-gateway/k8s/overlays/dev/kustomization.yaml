@@ -8,8 +8,8 @@ resources:
   # - ingress.yaml
 
 components:
-  - ../components/namespace
-  - ../components/tls-certificate/dev
+  - ../../components/namespace
+  - ../../components/tls-certificate/dev
 
 patches:
   - target:

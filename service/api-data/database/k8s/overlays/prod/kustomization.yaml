@@ -5,11 +5,11 @@ resources:
   - ./secret.yaml
   - ../../base
 
-components: 
-- ../components/namespace
+components:
+  - ../../components/namespace
 
 configurations:
-  - name-reference.kustomize-config.yaml 
+  - name-reference.kustomize-config.yaml
 
 secretGenerator:
   - name: postgresql-credentials-user

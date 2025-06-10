@@ -8,6 +8,7 @@ components:
   - ../../components/dashboard
   - ../../components/hubble
   - ../../components/longhorn
+  - ../../components/ory-stack
 
 # namePrefix: prod-
 # nameSuffix: -v1

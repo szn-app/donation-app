@@ -5,10 +5,10 @@ resources:
   - ../../base
 
 components:
-  - ../components/namespace
-  - ../components/domain
-  - ../components/remove-test-listner
-  - ../components/tls-certificate/prod
+  - ../../components/namespace
+  - ../../components/domain
+  - ../../components/remove-test-listner
+  - ../../components/tls-certificate/prod
 
 configMapGenerator:
   - name: app-cilium-domain-config

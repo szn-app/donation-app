@@ -5,8 +5,8 @@ resources:
   - secret.yaml
   - ../../base
 
-components: 
-- ../components/namespace
+components:
+  - ../../components/namespace
 
 secretGenerator:
   - name: postgresql-credentials-user
@@ -18,7 +18,6 @@ secretGenerator:
     behavior: merge
 
 patches:
-
   - patch: |-
       apiVersion: postgresql.cnpg.io/v1
       kind: Cluster
@@ -38,7 +37,7 @@ patches:
         superuserSecret: 
           name: postgresql-credentials-superuser
 
-  - target: 
+  - target:
       group: postgresql.cnpg.io
       version: v1
       kind: Cluster

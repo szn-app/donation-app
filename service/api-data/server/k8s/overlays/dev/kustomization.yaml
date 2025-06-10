@@ -4,8 +4,8 @@ kind: Kustomization
 resources:
   - ../../base
 
-components: 
-- ../components/namespace
+components:
+  - ../../components/namespace
 
 configMapGenerator:
   - name: properties-map-api-data-server

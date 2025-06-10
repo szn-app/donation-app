@@ -1,0 +1,99 @@
+# manifest config for the actual app configuration
+# https://www.ory.sh/docs/hydra/reference/configuration
+# https://raw.githubusercontent.com/ory/hydra/master/.schema/config.schema.json
+
+hydra:
+  config:
+    
+    {% if environment == "dev" %}
+    log:
+      level: debug
+      leak_sensitive_values: true
+    {% endif %}
+    
+    # dsn: memory # NOTE: use for development only
+    dsn: "postgresql://{{ DB_USER }}:{{ DB_PASSWORD }}@{{ DB_HOST }}:5432/{{ DB_NAME }}?sslmode=disable&max_conns=20&max_idle_conns=4"
+
+    serve:
+      public:
+        port: 4444
+
+        {% if environment == "dev" %}
+        cors:
+          enabled: true
+          allow_credentials: true
+          allowed_origins:
+          # - "*" # NOTE: use for debug only
+          - {{ APP_URL }}
+          - {{ AUTH_BASE_URL }}
+          - {{ WILDCARD_SUBDOMAIN_APP_URL }}
+          allowed_headers:
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - Content-Type
+        {% endif %}
+        
+      admin:
+        port: 4445
+        request_log:
+          disable_for_health: false # can be disabled for improved performance
+
+      cookies:
+        same_site_mode: Lax
+
+      tls:
+        allow_termination_from:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+
+    secrets:
+      system:
+        - secret_must_be_overriden # overwritten using helm --set argument
+      cookie:
+        - secret_must_be_overriden # overwritten using helm --set argument
+
+    urls:
+      self:
+        issuer: {{ AUTHORIZATION_URL }}
+        public: {{ AUTHORIZATION_URL }}
+      login: {{ AUTH_BASE_URL }}/login
+      logout: {{ AUTH_BASE_URL }}/logout
+      # NOTE: this value could be overriden by the requester
+      post_logout_redirect: {{ AUTHENTICATION_URL }}/callback/logout
+      consent: {{ AUTH_BASE_URL }}/consent # Must matche auth_ui consent endpoint
+      identity_provider:
+        url: http://kratos-admin
+        publicUrl: http://kratos-public
+      error: {{ AUTH_BASE_URL }}/error
+
+    ttl:
+      login_consent_request: 1h
+      access_token: 1h
+      refresh_token: 1h
+      id_token: 1h
+      auth_code: 1h
+
+    strategies:
+      access_token: jwt
+      jwt:
+        scope_claim: list
+
+    # for token customization or debugging
+    oauth2:
+      {% if environment == "dev" %}
+      expose_internal_errors: true 
+      {% elif environment == 'prod' %}
+      expose_internal_errors: false
+      {% endif %}
+      
+    #   token_hook: http://kratos-custom-webhook-charts.auth/add_claims
+
+    oidc:
+      subject_identifiers:
+        supported_types:
+          - public
+        #   - pairwise
+        # pairwise:
+        #   salt: youReallyNeedToChangeThis

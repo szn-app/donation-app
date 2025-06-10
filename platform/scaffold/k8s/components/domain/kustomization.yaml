@@ -86,6 +86,15 @@ replacements:
         fieldPaths:
           - spec.hostnames.[=longhorn.k8s.donation-app.local] # note: quotes are an exaact match, otherwise it will match substring
 
-
-
-
+  - source:
+      kind: ConfigMap
+      name: app-scaffold-domain-config
+      fieldPath: data.auth
+    targets:
+      - select:
+          kind: HTTPRoute
+          name: http-auth-redirect
+        fieldPaths:
+          - spec.hostnames.[=auth.donation-app.local]
+        options:
+          create: false

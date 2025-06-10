@@ -5,8 +5,8 @@ resources:
   - ../../base
 
 components:
-- ../components/namespace
-- ../components/domain
+  - ../../components/namespace
+  - ../../components/domain
 
 images:
   - name: web-server
@@ -28,7 +28,7 @@ patches:
             - name: web-server
               imagePullPolicy: Always
 
-# set readiness probe that is supported with nginx
+  # set readiness probe that is supported with nginx
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment
@@ -48,39 +48,39 @@ patches:
                 periodSeconds: 5        # Check every 5 seconds
 
 # set security context
-  # - patch: |-
-  #     apiVersion: apps/v1
-  #     kind: Deployment
-  #     metadata:
-  #       name: web-server
+# - patch: |-
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     metadata:
+#       name: web-server
 
-  #     spec:
-  #       template:
-  #         spec:
-  #           containers:
-  #           - name: web-server
-  #             securityContext:
-  #               runAsUser: 101 # nginx
-  #               runAsNonRoot: true
-  #               readOnlyRootFilesystem: true
-  #               allowPrivilegeEscalation: false
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: web-server
+#             securityContext:
+#               runAsUser: 101 # nginx
+#               runAsNonRoot: true
+#               readOnlyRootFilesystem: true
+#               allowPrivilegeEscalation: false
 
 # set resource limits
-  # - patch: |-
-  #     apiVersion: apps/v1
-  #     kind: Deployment
-  #     metadata:
-  #       name: web-server
+# - patch: |-
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     metadata:
+#       name: web-server
 
-  #     spec:
-  #       template:
-  #         spec:
-  #           containers:
-  #           - name: web-server
-  #             resources:
-  #               limits:
-  #                 cpu: 50m
-  #                 memory: 128Mi
-  #               requests:
-  #                 cpu: 10m
-  #                 memory: 64Mi
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: web-server
+#             resources:
+#               limits:
+#                 cpu: 50m
+#                 memory: 128Mi
+#               requests:
+#                 cpu: 10m
+#                 memory: 64Mi

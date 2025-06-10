@@ -1,0 +1,132 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-hydra-db
+
+requires:
+  - path: .
+    configs: [ory-hydra-db-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-hydra-db-generic
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: auth
+    resourceName: hydra--cluster-db-rw
+    port: 5432
+
+profiles:
+  - name: dev-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-hydra-db dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-hydra-db dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-hydra-db staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-hydra-db staging",
+                  ]
+                dir: .
+
+  - name: prod-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-hydra-db prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-hydra-db prod",
+                  ]
+                dir: .

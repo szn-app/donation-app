@@ -1,8 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-# no-op dummy deployment
-configMapGenerator:
-  - name: dummy
-    literals:
-      - info='dummy deployment to prevent skaffold nothing to deploy message'

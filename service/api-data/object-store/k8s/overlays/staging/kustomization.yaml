@@ -4,5 +4,5 @@ kind: Kustomization
 resources:
   - ../../base
 
-components: 
-- ../components/namespace
+components:
+  - ../../components/namespace

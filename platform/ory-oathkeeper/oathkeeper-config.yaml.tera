@@ -1,0 +1,132 @@
+# https://www.ory.sh/docs/oathkeeper/reference/configuration
+# https://github.com/ory/oathkeeper/blob/master/internal/config/.oathkeeper.yaml
+# https://www.ory.sh/docs/oathkeeper#decision-engine
+oathkeeper:
+  config:
+
+    {% if environment == "dev" %}
+    log:
+      level: debug
+      format: json
+      leak_sensitive_values: true
+    {% endif %}
+
+    serve:
+      proxy:
+        port: 4455
+      api:
+        port: 4456
+      prometheus:
+        port: 9000
+
+    # access rules endsup in a configmap in kubernetes
+    # https://www.ory.sh/docs/oathkeeper/api-access-rules
+    # https://www.ory.sh/docs/oathkeeper/pipeline/authn
+    # https://gateway.envoyproxy.io/docs/api/extension_types/#extauth
+    # https://github.com/ory/oathkeeper/blob/master/.schema/config.schema.json
+    access_rules:
+      matching_strategy: regexp # `regexp` or `glob` Regular expressions (or glob patterns) are encapsulated in brackets < and >; verify regex at https://regex101.com/
+      repositories:
+        - file:///etc/rules/access-rules.json
+
+    # https://www.ory.sh/docs/oauth2-oidc/authorization-code-flow
+    # https://www.ory.sh/docs/oathkeeper/pipeline/authn
+    authenticators:
+      anonymous:
+        enabled: true
+        config:
+          subject: guest
+
+      # authenticate user with a cookie session that Kratos has issued and the browser sends with each request
+      # it looks for a cookie named `ory_kratos_session` and sends a request to Kratos to validate the session
+      cookie_session:
+        enabled: true
+        config:
+          check_session_url: "http://kratos-public/sessions/whoami"
+          preserve_path: true
+          only: ["ory_kratos_session"]
+      
+      # checks authenticity of JWT tokens that they were actually signed by Hydra issuer (does not check the validity of the token, only signature)
+      jwt:
+        enabled: true
+        config:
+          jwks_urls:
+            - http://hydra-public/.well-known/jwks.json
+          jwks_max_wait: 5s
+          # jwks_ttl: 120s
+
+      # externally using Hydra validating the authenticity, validity, and authorization (simple scope based RBAC) attributes of the access token issued (does extra validation than jwt handler, including revocation checks)
+      oauth2_introspection:
+        enabled: true
+        config:
+          introspection_url: http://hydra-admin/admin/oauth2/introspect
+          introspection_request_headers:
+            Authorization: Basic {{ OATHKEEPER_CLIENT_CREDENTIALS }} # credentials used internally for introspection between Oathkeeper and Hydra endpoint
+
+          # NOTE: this approach is not required with Keto
+          # can be configured to match check the roles/scopes of tokens
+          # scope_strategy: exact
+          # required_scope: ["posts"]
+          # target_audience: ["frontend"]
+
+    # https://www.ory.sh/docs/oathkeeper/pipeline/authz
+
+    # https://www.ory.sh/docs/oathkeeper/pipeline/authz#allow-configuration
+    authorizers:
+      # can be used in tandem with oathkeeper and delegating authorization to oathkeeper simple RBAC
+      allow:
+        enabled: true
+      deny:
+        enabled: true
+
+      # enforces access control policies (keto relationships and roles) based on the result of the authenticators
+      # https://www.ory.sh/docs/keto
+      # https://www.ory.sh/docs/oathkeeper/pipeline#session
+      # https://www.ory.sh/docs/oathkeeper/pipeline/authz#remote_json
+      # https://github.com/ory/oathkeeper/blob/5a385d45bb84bace3fe9f8143ddf55b90c4cc1d5/.schemas/authorizers.remote_json.schema.json
+      remote_json:
+        enabled: true
+        config:
+          remote: http://keto-read:80/relation-tuples/check
+          # headers:
+          #   Y-Api-Key: '{% raw %}{{ .MatchContext.Header.Get "X-Api-Key" }}'{% endraw %}
+          # headers: 
+          #   app-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
+          #   x-user-email: "{% raw %}{{ print .Extra.identity.traits.email }}{% endraw %}"
+          #   x-user-name: "{% raw %}{{ print .Extra.identity.traits.name }}{% endraw %}"
+          #   app-user-id-a: "{% raw %}{{ index .Extra 'id' }}{% endraw %}"
+          #   app-user-id-b: "{% raw %}{{ index .Extra \"id\" }}{% endraw %}"
+          # https://www.ory.sh/docs/keto/reference/rest-api#tag/permission/operation/postCheckPermissionOrError 
+          # https://github.com/ory/oathkeeper/blob/master/pipeline/authn/authenticator.go#L40
+          # example:           
+          payload: |
+            {
+              "subject": "{% raw %}{{ print .Subject }}{% endraw %}",
+              "resource": "{% raw %}{{ printIndex .MatchContext.RegexpCaptureGroups 0 }}{% endraw %}"
+            }
+      
+      # NOTE: This is for pre-zanzibar keto implementation, not useful - use 'remote_json' instead
+      keto_engine_acp_ory:
+        enabled: false 
+
+    # https://www.ory.sh/docs/oathkeeper/pipeline/mutator
+    # NOTE: access-rules.json override this config.
+    mutators:
+      header:
+        enabled: true
+        config:
+          headers:
+            app-user-id: "{% raw %}{{ print .Subject }}{% endraw %}"
+      noop:
+        enabled: true
+      # id_token:
+      #   enabled: true
+      #   config:
+      #     issuer_url: http://hydra-admin/
+      #     jwks_url: http://overriden_by_helm_argument/ # a jwks.json file which gets overriden by helm argument     --set-file 'oathkeeper.mutatorIdTokenJWKs=./path/to/jwks.json'
+
+    errors:
+      handlers:
+        json:
+          enabled: true
+          config: {}

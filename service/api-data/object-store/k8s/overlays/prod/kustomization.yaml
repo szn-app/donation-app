@@ -4,9 +4,9 @@ kind: Kustomization
 resources:
   - ../../base
 
-components: 
-- ../components/namespace
-- ../components/domain
+components:
+  - ../../components/namespace
+  - ../../components/domain
 
 configMapGenerator:
   - name: api-data-object-store-domain

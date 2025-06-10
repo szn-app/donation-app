@@ -34,7 +34,7 @@ func#predeploy-skaffold-hook@api-data-database() {
         fi
     }
 
-    # if [ "$environment" != "development" ]; then
+    # if [ "$environment" != "dev" ]; then
     #     generate_database_credentials@api-data-database
     # fi
 }

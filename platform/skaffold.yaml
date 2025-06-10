@@ -29,3 +29,30 @@ requires:
 
   - path: ../scaffold
     configs: [scaffold]
+
+  - path: ./ory-kratos
+    configs: [ory-kratos]
+
+  - path: ./ory-hydra
+    configs: [ory-hydra]
+
+  - path: ./ory-keto
+    configs: [ory-keto]
+
+  - path: ./ory-oathkeeper
+    configs: [ory-oathkeeper]
+
+  - path: ../auth-ui
+    configs: [auth-ui]
+
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]
+
+  - path: ../kafka-ui
+    configs: [kafka-ui]
+
+  - path: ../pgadmin4
+    configs: [pgadmin4]
+
+  - path: ../auth-ory-admin-ui
+    configs: [auth-ory-admin-ui]

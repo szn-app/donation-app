@@ -1,0 +1,111 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-hydra
+
+requires:
+  - path: .
+    configs: [ory-hydra-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-hydra-generic
+
+requires:
+  - path: ../ory-hydra-db
+    configs: [ory-hydra-db]
+
+manifests:
+  kustomize:
+    paths:
+      - k8s/base
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+profiles:
+  - name: dev-env
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#predeploy_hook@ory-hydra dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#postdeploy_hook@ory-hydra dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#predeploy_hook@ory-hydra staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#postdeploy_hook@ory-hydra staging",
+                  ]
+                dir: .
+
+  - name: prod-env
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#predeploy_hook@ory-hydra prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && func#postdeploy_hook@ory-hydra prod",
+                  ]
+                dir: .

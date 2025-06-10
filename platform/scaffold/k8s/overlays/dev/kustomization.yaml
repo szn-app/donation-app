@@ -11,3 +11,4 @@ components:
   - ../../components/dashboard
   - ../../components/hubble
   - ../../components/longhorn
+  - ../../components/ory-stack

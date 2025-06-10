@@ -8,6 +8,7 @@ components:
   - ../../components/dashboard
   - ../../components/hubble
   - ../../components/longhorn
+  - ../../components/ory-stack
   - ../../components/domain
 
 # namePrefix: prod-
@@ -20,6 +21,7 @@ configMapGenerator:
       - longhorn=longhorn.k8s.wosoom.com
       - dashboard=dashboard.k8s.wosoom.com
       - hubble=hubble.k8s.wosoom.com
+      - auth=auth.wosoom.com
 
 patches:
   - target:
