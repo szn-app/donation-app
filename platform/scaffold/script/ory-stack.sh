@@ -92,7 +92,7 @@ manual_verify#example@auth-ory-stack() {
 
     # verify database:
     set -a
-    source service/auth-ory-stack/ory-kratos/db_kratos_secret.env
+    source platform/ory-kratos/db_kratos_secret.env
     set +a
     kubectl run -it --rm --image=postgres debug-pod --namespace auth --env DB_USER=$DB_USER --env DB_PASSWORD=$DB_PASSWORD -- /bin/bash
     {

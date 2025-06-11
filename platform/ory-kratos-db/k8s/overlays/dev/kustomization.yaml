@@ -10,11 +10,11 @@ components:
 
 secretGenerator:
   - name: kratos--postgresql-credentials-user
-    env: user.env.development
+    env: user.env.dev
     behavior: merge
 
   - name: kratos--postgresql-credentials-superuser
-    env: superuser.env.development
+    env: superuser.env.dev
     behavior: merge
 
 patches:

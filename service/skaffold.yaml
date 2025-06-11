@@ -1,0 +1,26 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: service
+
+requires:
+  - path: auth-token-exchange
+    configs: [auth-token-exchange]
+
+  - path: auth-ui
+    configs: [auth-ui]
+
+  - path: webhook-handler
+    configs: [webhook-handler]
+
+  - path: web-server
+    configs: [web-server]
+
+  - path: api-data-database
+    configs: [api-data-database]
+
+  - path: api-data-object-store
+    configs: [api-data-object-store]
+
+  - path: api-data-server
+    configs: [api-data-server]

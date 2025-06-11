@@ -1,0 +1,95 @@
+name: api-data-server.release
+
+on:
+    workflow_call:
+        inputs:
+            tag-name:
+                required: true
+                type: string
+    workflow_dispatch:
+
+jobs:
+    publish-package:
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: false
+
+        runs-on: "ubuntu-latest"
+
+        defaults:
+            run:
+                shell: bash
+                working-directory: ./service/api-data-server
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Create Dummy Release for Debugging
+              env:
+                  GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+              run: |
+                  if [ "${{ inputs.tag-name }}" = "dummy" ]; then
+                      if ! gh release view "dummy" &>/dev/null; then
+                          gh release create "dummy" --title "dummy" --notes "Auto-created dummy tag for debugging"
+                      fi
+                  fi
+
+            # find release ID given the associated tag and pass it to Tauri build in following step (bc it seems like tauri-action fails to find the release id sometimes)
+            - name: Find Release ID
+              id: find_release_id
+              env:
+                  GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+              run: |
+                  release_id=$(gh release view ${{ inputs.tag-name }} --json databaseId | jq -r '.databaseId')
+                  echo "release_id=$release_id" >> $GITHUB_OUTPUT
+                  if [[ -z "$release_id" ]]; then
+                      echo "Error: release id retrieval failed for tagname: ${{ inputs.tag-name }}"
+                      exit 1;
+                  else 
+                      echo "release_id=$release_id"
+                  fi
+
+            - name: install dependency
+              run: |
+                  chmod +x script.sh
+                  sudo ./script.sh install.system-dependency@api-data-server
+
+            - name: prepare repo
+              run: |
+                  chmod +x script.sh
+                  ./script.sh shared-mount-point#setup#mount-bind@api-data-server
+
+            - name: build api-data server container
+              working-directory: ./service/api-data-server
+              run: |
+                  chmod +x ./script.sh
+                  ./script.sh production.build_container#package_hook@api-data-server
+
+            - name: upload container to Github Container Registry
+              run: |
+                  echo "${{ secrets.PAT_GITHUB_CONTAINER_REGISTRY }}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
+                  TAG=api-data-server:latest
+                  docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
+                  docker push ghcr.io/szn-app/donation-app/$TAG
+                  VERSION_TAG=${{ inputs.tag-name }}
+                  MAPPED_VERSION="${VERSION_TAG//@/:}"
+                  docker tag $TAG ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+                  docker push ghcr.io/szn-app/donation-app/$MAPPED_VERSION
+
+            - name: Update release description
+              run: |
+                  release_desc=$(gh release view ${{ inputs.tag-name }} --json body | jq -r '.body')
+                  new_desc=$(cat <<EOF
+                  $release_desc
+                  ___
+                  ### Container:
+                  * [api-data-server:latest](https://ghcr.io/szn-app/donation-app/api-data-server:latest)
+                  EOF
+                  )
+                  gh release edit ${{ inputs.tag-name }} --notes "$new_desc"
+              env:
+                  GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}

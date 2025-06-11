@@ -5,36 +5,28 @@ metadata:
   name: monorepo
 
 requires:
-  - path: service/scaffold
-    configs: [scaffold]
+  - path: service
+    configs: [service]
 
-  - path: service/web-server
-    configs: [web-server]
-
-  - path: service/api-data
-    configs: [api-data]  
+  - path: platform
+    configs: [platform]
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
-  name: monorepo-services-only
+  name: monorepo-service-only
 
 requires:
-  - path: service/web-server
-    configs: [web-server--no-dep]
-
-  - path: service/api-data
-    configs: [api-data--no-dep]
+  - path: service
+    configs: [service]
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
-  name: monorepo-scaffold-only
+  name: monorepo-platform-only
 
 requires:
-  - path: service/scaffold
-    configs: [scaffold]          
+  - path: platform
+    configs: [platform-core]

@@ -440,8 +440,8 @@ verify#example@hydra() {
             {
                 # TODO: APPROACH NOT WOKRING INCOMPLETE
                 kubectl port-forward pod/debug-pod-client 5555:5555 --namespace auth
-                kubectl port-forward service/hydra-admin 5556:80 --namespace auth
-                kubectl port-forward service/hydra-public 5557:80 --namespace auth
+                kubectl port-forward hydra-admin 5556:80 --namespace auth
+                kubectl port-forward hydra-public 5557:80 --namespace auth
                 # echo "127.0.0.1 localhost:5556" | tee -a /etc/hosts
                 # sed -i '/127.0.0.1 example1.com/d' /etc/hosts
             }

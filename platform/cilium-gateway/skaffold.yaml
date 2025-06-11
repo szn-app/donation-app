@@ -13,6 +13,14 @@ requires:
         activatedBy: [staging-rebuild, staging-prebuilt]
       - name: prod-env
         activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
   - name: dev-watch
@@ -49,3 +57,8 @@ profiles:
       kustomize:
         paths:
           - k8s/overlays/prod
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

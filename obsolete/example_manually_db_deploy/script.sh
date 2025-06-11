@@ -27,7 +27,7 @@ database.install#example@hydra() {(
     helm repo add bitnami https://charts.bitnami.com/bitnami > /dev/null 2>&1 
     helm repo update > /dev/null 2>&1 
 
-    if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "development" ]; then
+    if helm list -n auth | grep -q 'postgres-hydra' && [ "$environment" = "dev" ]; then
         upgrade_db=false
     else
         upgrade_db=true

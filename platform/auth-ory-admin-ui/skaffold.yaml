@@ -30,38 +30,41 @@ profiles:
   - name: prod
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: auth-ory-admin-ui-generic
 
 requires:
-  - path: ../auth-ory-stack
-    configs: [auth-ory-stack]                 
+  - path: ../scaffold
+    configs: [scaffold]
 
 deploy:
   kubectl: {}
   statusCheck: false
 
 profiles:
+  - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
 
-- name: dev-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
 
-- name: staging-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/staging
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+        # # fix issue probably with exceeded resources usage causing kubernetes node failure
+        # - k8s/overlays/dummy
 
-- name: prod-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
-      # # fix issue probably with exceeded resources usage causing kubernetes node failure
-      # - k8s/overlays/dummy
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

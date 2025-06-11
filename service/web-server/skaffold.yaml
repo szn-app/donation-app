@@ -4,40 +4,39 @@ metadata:
   name: web-server
 
 requires:
-- path: .
-  configs: [web-server-generic]
-  activeProfiles:
-    - name: dev-env
-      activatedBy: [dev-watch, dev-rebuild]
-    - name: staging-env
-      activatedBy: [staging-rebuild, staging-prebuilt]
-    - name: prod-env
-      activatedBy: [prod]
-    - name: watch
-      activatedBy: [dev-watch]
-    - name: rebuild-debug
-      activatedBy: [dev-rebuild]
-    - name: rebuild-release
-      activatedBy: [staging-rebuild]
-    - name: prebuilt
-      activatedBy: [staging-prebuilt, prod]
+  - path: .
+    configs: [web-server-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
 
 profiles:
-- name: dev-watch
-- name: dev-rebuild
-- name: staging-rebuild
-- name: staging-prebuilt
-- name: prod
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: web-server-generic
 
 build:
-  local: 
+  local:
     useBuildkit: true
     push: false
     tryImportMissing: false
@@ -47,108 +46,143 @@ build:
 deploy:
   kubectl: {}
   statusCheck: true
-  
+
 portForward:
-- resourceType: Service
-  resourceName: web-server
-  namespace: donation-app
-  port: 80
+  - resourceType: Service
+    resourceName: web-server
+    namespace: donation-app
+    port: 80
 
 profiles:
+  - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
 
-- name: dev-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@web-server dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@web-server dev",
+                  ]
+                dir: .
 
-  deploy: 
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@web-server dev"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@web-server dev"]
-              dir: .
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
 
-- name: staging-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/staging
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@web-server staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@web-server staging",
+                  ]
+                dir: .
 
-  deploy: 
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@web-server staging"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@web-server staging"]
-              dir: .
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
 
-- name: prod-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@web-server prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@web-server prod",
+                  ]
+                dir: .
 
-  deploy: 
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@web-server prod"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@web-server prod"]
-              dir: .
+  - name: watch
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/web-server
+          context: .
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            buildArgs: {}
+          # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
+          sync:
+            manual:
+              - src: "src/**"
+                dest: .
+              - src: "src-tauri/**"
+                dest: .
 
-- name: watch
-  build:
-    artifacts:
-    - image: web-server
-      context: .
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        buildArgs: {}
-      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
-      sync:
-        manual:
-        - src: "src/**"
-          dest: .
-        - src: "src-tauri/**"
-          dest: .
+  - name: rebuild-debug
 
-- name: rebuild-debug
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/web-server
+          context: .
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            buildArgs:
+              CONFIG: dev
 
-  build: 
-    artifacts:
-    - image: web-server
-      context: .
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        buildArgs: 
-          CONFIG: dev
+  - name: rebuild-release
 
-- name: rebuild-release
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/web-server
+          context: .
+          docker:
+            target: release
+            dockerfile: Dockerfile
+            buildArgs: {}
 
-  build: 
-    artifacts:
-    - image: web-server
-      context: .
-      docker:
-        target: release
-        dockerfile: Dockerfile
-        buildArgs: {}
-
-- name: prebuilt
-  build: {}
+  - name: prebuilt
+    build: {}

@@ -16,11 +16,11 @@ spec:
       containers:
         - name: webhook-handler
           image: ghcr.io/szn-app/donation-app/webhook-handler:latest
+          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 3010
               name: webhook-handler
-              imagePullPolicy: IfNotPresent
-
           env:
             - name: API_DATA_ENDPOINT
               valueFrom:
@@ -46,8 +46,8 @@ spec:
                   optional: false
 
           # envFrom:
-            # - configMapRef:
-            #     name: properties-map-webhook-handler 
+          # - configMapRef:
+          #     name: properties-map-webhook-handler
 
-            # - secretRef:
-            #     name: kafka-user
+          # - secretRef:
+          #     name: kafka-user

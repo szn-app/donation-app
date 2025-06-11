@@ -30,28 +30,27 @@ profiles:
   - name: prod
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: auth-ui-generic
 
 requires:
-  - path: ../auth-ory-stack
-    configs: [auth-ory-stack]                 
+  - path: ../../platform/scaffold
+    configs: [scaffold]
 
 build:
-  local: 
+  local:
     useBuildkit: true
     push: false
     tryImportMissing: false
   tagPolicy:
-    sha256: {} 
+    sha256: {}
 
 deploy:
   kubectl: {}
   statusCheck: true
-  
+
 portForward:
   - resourceType: Service
     resourceName: auth-ui
@@ -59,115 +58,145 @@ portForward:
     port: 80
 
 profiles:
+  - name: dev-env
 
-- name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
 
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@auth-ui dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui dev",
+                  ]
+                dir: .
 
-  deploy:
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui dev"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui dev"]
-              dir: .
+  - name: staging-env
 
-- name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
 
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/staging
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@auth-ui staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui staging",
+                  ]
+                dir: .
 
-  deploy:
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui staging"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui staging"]
-              dir: .
+  - name: prod-env
 
-- name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
 
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@auth-ui prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui prod",
+                  ]
+                dir: .
 
-  deploy: 
-    kubectl:
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy-skaffold-hook@auth-ui prod"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy-skaffold-hook@auth-ui prod"]
-              dir: .
+  - name: watch
+    # activation:
+    #   - kubeContext: minikube
 
-- name: watch
-  # activation:
-  #   - kubeContext: minikube
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-ui
+          context: ./kratos-selfservice-ui-node
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            noCache: false
+            buildArgs: {}
+          # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
+          sync:
+            manual:
+              - src: "kratos-selfservice-ui-node/views/**/*.hbs"
+                dest: .
+                strip: "kratos-selfservice-ui-node"
+              - src: "kratos-selfservice-ui-node/src/**/*.ts"
+                dest: .
+                strip: "kratos-selfservice-ui-node"
 
-  build:
-    artifacts:
-    - image: auth-ui
-      context: ./kratos-selfservice-ui-node
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        noCache: false
-        buildArgs: {}
-      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
-      sync:
-        manual:
-        - src: "kratos-selfservice-ui-node/views/**/*.hbs"
-          dest: .
-          strip: 'kratos-selfservice-ui-node'
-        - src: "kratos-selfservice-ui-node/src/**/*.ts"
-          dest: .
-          strip: 'kratos-selfservice-ui-node'
+  - name: rebuild-debug
 
-- name: rebuild-debug
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-ui
+          context: ./kratos-selfservice-ui-node
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            noCache: false
+            buildArgs: {}
 
-  build:
-    artifacts:
-    - image: auth-ui
-      context: ./kratos-selfservice-ui-node
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        noCache: false
-        buildArgs: {}
+  - name: rebuild-release
 
-- name: rebuild-release
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-ui
+          context: ./kratos-selfservice-ui-node
+          docker:
+            target: release
+            dockerfile: Dockerfile
+            noCache: false
+            buildArgs: {}
 
-  build:
-    artifacts:
-    - image: auth-ui
-      context: ./kratos-selfservice-ui-node
-      docker:
-        target: release
-        dockerfile: Dockerfile
-        noCache: false
-        buildArgs: {}
-
-- name: prebuilt
-  build: {}
-
-
-
-
-
+  - name: prebuilt
+    build: {}

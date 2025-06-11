@@ -3,12 +3,12 @@ name: test--api-data-server
 on:
   pull_request:
     branches: [main]
-    paths: ['service/api-data/server/**']
+    paths: ['service/api-data-server/**']
   workflow_dispatch: 
     
 jobs:
     api-data-server:
-      needs: []
+      # needs: []
       # release-please PR originate from branches with `release-please--branches--*`
       if: ${{ !contains(github.event.pull_request.labels.*.name, 'automerge') || github.event_name == 'workflow_dispatch' }}
       

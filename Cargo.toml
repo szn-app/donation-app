@@ -6,12 +6,13 @@ edition = "2021"
 [workspace]
 members = ["shared/protobuf-webhook", "shared/protobuf-keto"]
 exclude = [
-    "service/auth-ory-stack/ory-hydra",
-    "service/auth-ory-stack/ory-keto",
-    "service/auth-ory-stack/ory-kratos",
-    "service/auth-ory-stack/ory-oathkeeper",
+    "platform/ory-hydra",
+    "platform/ory-keto",
+    "platform/ory-kratos",
+    "platform/ory-oathkeeper",
+
     "service/auth-token-exchange",
     "service/webhook-handler",
     "service/web-server/src-tauri",
-    "service/api-data/server",
+    "service/api-data-server",
 ]

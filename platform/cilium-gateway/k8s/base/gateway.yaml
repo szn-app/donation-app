@@ -21,7 +21,9 @@ spec:
           - kind: Secret
             name: tls-certificate-test
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     # must be in position 1 (removed using index)
     - name: http-test
@@ -47,7 +49,9 @@ spec:
           - kind: Secret
             name: tls-certificate-root
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http
       hostname: "donation-app.local"
@@ -66,7 +70,9 @@ spec:
           - kind: Secret
             name: tls-certificate-api
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-api
       hostname: "api.donation-app.local"
@@ -85,7 +91,9 @@ spec:
           - kind: Secret
             name: tls-certificate-auth
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-auth
       hostname: "auth.donation-app.local"
@@ -104,7 +112,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-longhorn
       hostname: "longhorn.k8s.donation-app.local"
@@ -123,7 +133,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-dashboard
       hostname: "dashboard.k8s.donation-app.local"
@@ -142,7 +154,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-hubble
       hostname: "hubble.k8s.donation-app.local"
@@ -161,7 +175,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-ory-admin
       hostname: "ory-admin.k8s.donation-app.local"
@@ -180,7 +196,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-minio
       hostname: "minio.k8s.donation-app.local"
@@ -199,7 +217,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-pgadmin4
       hostname: "pgadmin4.k8s.donation-app.local"
@@ -218,7 +238,9 @@ spec:
           - kind: Secret
             name: tls-certificate-k8s
             group: ""
-      allowedRoutes.namespaces.from: All
+      allowedRoutes:
+        namespaces:
+          from: All
 
     - name: http-k8s-kafka
       hostname: "kafka.k8s.donation-app.local"

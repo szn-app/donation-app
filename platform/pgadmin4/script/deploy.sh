@@ -1,7 +1,7 @@
 create_secret#predeploy-hook@pgadmin4() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    local filename="config/.env.development"
+    local filename="config/.env.dev"
     local secret_name="pgadmin4-credentials"
     local namespace="default"
     if [ ! -f "$filename" ]; then

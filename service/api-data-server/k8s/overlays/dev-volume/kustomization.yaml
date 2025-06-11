@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../dev
+
+components:
+  - ../../components/namespace
+
+configMapGenerator:
+  - name: properties-map-api-data-server
+    env: .properties
+
+secretGenerator:
+  - name: secrets-api-data-server
+    envs:
+      - .env
+
+# TODO:
+patches:
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-data-server
+
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api-data-server
+                volumeMounts:
+                  - name: volume-target
+                    mountPath: /app/
+            volumes:
+              - name: volume-target
+                hostPath: 
+                  type: Directory
+                  path: /mnt/repo-root/service/api-data-server

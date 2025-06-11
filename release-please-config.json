@@ -27,8 +27,8 @@
       "release-type": "rust",
       "exclude-paths": [
         "service/web-server",
-        "service/api-data/server",
-        "service/api-data/database",
+        "service/api-data-server",
+        "service/api-data-database",
         "service/auth-ui",
         "service/auth-token-exchange",
         "service/webhook-handler",
@@ -51,24 +51,24 @@
       ]
     },
 
-    "service/api-data/server": {
-      "component": "api-data",
+    "service/api-data-server": {
+      "component": "api-data-server",
       "release-type": "rust",
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/api-data/server/k8s/overlays/prod/kustomization.yaml",
+          "path": "service/api-data-server/k8s/overlays/prod/kustomization.yaml",
           "jsonpath": "$.images[0].newTag"
         }
       ]
     },
-    "service/api-data/database": {
+    "service/api-data-database": {
       "component": "api-data-database",
       "release-type": "simple",
       "extra-files": [
         {
           "type": "generic",
-          "path": "service/api-data/database/k8s/base/cluster-image-catalog.yaml",
+          "path": "service/api-data-database/k8s/base/cluster-image-catalog.yaml",
           "jsonpath": "$.spec.images[0].image"
         }
       ]

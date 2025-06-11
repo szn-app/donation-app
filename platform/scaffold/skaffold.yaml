@@ -35,13 +35,6 @@ kind: Config
 metadata:
   name: scaffold-generic
 
-requires:
-  - path: ../cilium-gateway
-    configs: [cilium-gateway]
-
-  - path: ../envoy-proxy
-    configs: [envoy-proxy]
-
 build:
   local: {}
   artifacts: []

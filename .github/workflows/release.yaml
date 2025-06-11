@@ -29,11 +29,11 @@ jobs:
       webhook-handler--release_created: ${{ steps.release-step.outputs['service/webhook-handler--release_created'] }}
       webhook-handler--tag_name: ${{ steps.release-step.outputs['service/webhook-handler--tag_name'] }}
 
-      api-data-server--release_created: ${{ steps.release-step.outputs['service/api-data/server--release_created'] }}
-      api-data-server--tag_name: ${{ steps.release-step.outputs['service/api-data/server--tag_name'] }}
+      api-data-server--release_created: ${{ steps.release-step.outputs['service/api-data-server--release_created'] }}
+      api-data-server--tag_name: ${{ steps.release-step.outputs['service/api-data-server--tag_name'] }}
 
-      api-data-database--release_created: ${{ steps.release-step.outputs['service/api-data/database--release_created'] }}
-      api-data-database--tag_name: ${{ steps.release-step.outputs['service/api-data/database--tag_name'] }}
+      api-data-database--release_created: ${{ steps.release-step.outputs['service/api-data-database--release_created'] }}
+      api-data-database--tag_name: ${{ steps.release-step.outputs['service/api-data-database--tag_name'] }}
 
     steps:
       - uses: googleapis/release-please-action@v4
@@ -66,13 +66,13 @@ jobs:
           echo "${{ steps.release-step.outputs['service/webhook-handler--release_created'] }}"
           echo "${{ steps.release-step.outputs['service/webhook-handler--tag_name'] }}"
 
-          echo "debug service/api-data/server path outputs:"
-          echo "${{ steps.release-step.outputs['service/api-data/server--release_created'] }}"
-          echo "${{ steps.release-step.outputs['service/api-data/server--tag_name'] }}"
+          echo "debug service/api-data-server path outputs:"
+          echo "${{ steps.release-step.outputs['service/api-data-server--release_created'] }}"
+          echo "${{ steps.release-step.outputs['service/api-data-server--tag_name'] }}"
 
-          echo "debug service/api-data/database path outputs:"
-          echo "${{ steps.release-step.outputs['service/api-data/database--release_created'] }}"
-          echo "${{ steps.release-step.outputs['service/api-data/database--tag_name'] }}"
+          echo "debug service/api-data-database path outputs:"
+          echo "${{ steps.release-step.outputs['service/api-data-database--release_created'] }}"
+          echo "${{ steps.release-step.outputs['service/api-data-database--tag_name'] }}"
 
   web-server:
     needs: [release-please]

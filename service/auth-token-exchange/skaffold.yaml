@@ -30,27 +30,27 @@ profiles:
   - name: prod
 
 ---
-
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: auth-token-exchange-generic
 
 requires:
-  - path: ../auth-ory-stack
-    configs: [auth-ory-stack]                 
+  - path: ../../platform/scaffold
+    configs: [scaffold]
 
 build:
-  local: 
-    push: false
+  local:
     useBuildkit: true
+    push: false
+    tryImportMissing: false
   tagPolicy:
-    sha256: {} 
+    sha256: {}
 
 deploy:
   kubectl: {}
   statusCheck: true
-  
+
 portForward:
   - resourceType: Service
     resourceName: auth-token-exchange
@@ -58,84 +58,106 @@ portForward:
     port: 80
 
 profiles:
+  - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
 
-- name: dev-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/dev
-      
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy_hook@auth-token-exchange dev"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy_hook@auth-token-exchange dev"]
-              dir: .
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy_hook@auth-token-exchange dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy_hook@auth-token-exchange dev",
+                  ]
+                dir: .
 
-- name: staging-env
+  - name: staging-env
 
-- name: prod-env
-  manifests:
-    kustomize:
-      paths:
-      - k8s/overlays/prod
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
 
-  deploy: 
-    kubectl: 
-      hooks:
-        before:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#predeploy_hook@auth-token-exchange prod"]
-              dir: .
-        after:
-          - host:
-              command: ["bash", "-it", "-c", "source ./script.sh && func#postdeploy_hook@auth-token-exchange prod"]
-              dir: .
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy_hook@auth-token-exchange prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy_hook@auth-token-exchange prod",
+                  ]
+                dir: .
 
+  - name: watch
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-token-exchange
+          context: .
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            buildArgs: {}
+          # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
+          sync:
+            manual:
+              - src: "src/**/*.rs"
+                dest: .
 
-- name: watch
-  build: 
-    artifacts:
-    - image: auth-token-exchange
-      context: .
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        buildArgs: {}
-      # NOTE: limitations https://skaffold.dev/docs/filesync/#limitations
-      sync:
-        manual:
-        - src: "src/**/*.rs"
-          dest: .
+  - name: rebuild-debug
 
-- name: rebuild-debug
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-token-exchange
+          context: .
+          docker:
+            target: debug
+            dockerfile: Dockerfile
+            noCache: false
+            buildArgs: {}
 
-  build:
-    artifacts:
-    - image: auth-token-exchange
-      context: .
-      docker:
-        target: debug
-        dockerfile: Dockerfile
-        noCache: false
-        buildArgs: {}
+  - name: rebuild-release
 
-- name: rebuild-release
+    build:
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/auth-token-exchange
+          context: .
+          docker:
+            target: release
+            dockerfile: Dockerfile
+            noCache: false
+            buildArgs: {}
 
-  build:
-    artifacts:
-    - image: auth-token-exchange
-      context: .
-      docker:
-        target: release
-        dockerfile: Dockerfile
-        noCache: false
-        buildArgs: {}
-
-- name: prebuilt
-  build: {}
+  - name: prebuilt
+    build: {}

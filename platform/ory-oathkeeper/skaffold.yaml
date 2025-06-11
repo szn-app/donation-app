@@ -36,8 +36,8 @@ metadata:
   name: ory-oathkeeper-generic
 
 requires:
-  - path: ./auth-ory-stack
-    configs: [auth-ory-stack]
+  - path: ../scaffold
+    configs: [scaffold]
 
 manifests:
   kustomize:
@@ -117,3 +117,8 @@ profiles:
                     "source ./script.sh && func#postdeploy_hook@ory-oathkeeper prod",
                   ]
                 dir: .
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

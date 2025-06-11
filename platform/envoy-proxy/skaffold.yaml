@@ -57,3 +57,8 @@ profiles:
       kustomize:
         paths:
           - k8s/overlays/prod
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

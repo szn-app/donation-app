@@ -21,7 +21,7 @@ jobs:
         defaults:
             run:
                 shell: bash
-                working-directory: ./service/api-data/database
+                working-directory: ./service/api-data-database
 
         steps:
         -   name: Checkout repo
@@ -55,7 +55,7 @@ jobs:
                 fi
 
         -   name: build api-data-database container
-            working-directory: ./service/api-data/database
+            working-directory: ./service/api-data-database
             run: |
                 chmod +x ./script.sh
                 ./script.sh build_container#package_hook@api-data-database

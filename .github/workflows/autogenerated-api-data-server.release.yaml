@@ -21,7 +21,7 @@ jobs:
         defaults:
             run:
                 shell: bash
-                working-directory: ./service/api-data/server
+                working-directory: ./service/api-data-server
 
         steps:
         -   name: Checkout repo
@@ -65,15 +65,15 @@ jobs:
                 ./script.sh shared-mount-point#setup#mount-bind@api-data-server
 
         -   name: build api-data server container
-            working-directory: ./service/api-data/server
+            working-directory: ./service/api-data-server
             run: |
                 chmod +x ./script.sh
-                ./script.sh build_container#package_hook@api-data-server production
+                ./script.sh production.build_container#package_hook@api-data-server
 
         -   name: upload container to Github Container Registry
             run: |
                 echo "${{ secrets.PAT_GITHUB_CONTAINER_REGISTRY }}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
-                TAG=api-data:latest
+                TAG=api-data-server:latest
                 docker tag $TAG ghcr.io/szn-app/donation-app/$TAG
                 docker push ghcr.io/szn-app/donation-app/$TAG
                 VERSION_TAG=${{ inputs.tag-name }}
@@ -88,7 +88,7 @@ jobs:
                 $release_desc
                 ___
                 ### Container:
-                * [api-data:latest](https://ghcr.io/szn-app/donation-app/api-data:latest)
+                * [api-data-server:latest](https://ghcr.io/szn-app/donation-app/api-data-server:latest)
                 EOF
                 )
                 gh release edit ${{ inputs.tag-name }} --notes "$new_desc"
