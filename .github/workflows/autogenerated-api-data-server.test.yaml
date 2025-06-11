@@ -24,7 +24,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: ./service/api-data/server
+        working-directory: ./service/api-data-server
 
     runs-on: ${{ matrix.platform }}
     steps:

@@ -1,0 +1,249 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: kafka-ui
+
+requires:
+  - path: ../kafka-message-queue
+    configs: [kafka-message-queue]
+  - path: .
+    configs: [kafka-ui-helm]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: kafka-ui-k8s
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+profiles:
+  - name: dev-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && generate_config#predeploy-skaffold-hook@kafka-ui dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && generate_config#predeploy-skaffold-hook@kafka-ui staging",
+                  ]
+                dir: .
+
+  - name: prod-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-c",
+                    "source ./script.sh && generate_config#predeploy-skaffold-hook@kafka-ui prod",
+                  ]
+                dir: .
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: kafka-ui-helm
+
+requires:
+  - path: .
+    configs: [kafka-ui-k8s]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+deploy:
+  helm: {}
+  statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: default
+    resourceName: kafka-ui
+    port: 80
+
+profiles:
+  - name: dev-env
+
+    deploy:
+      helm:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@kafka-ui dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@kafka-ui dev",
+                  ]
+                dir: .
+        releases:
+          - name: kafka-ui
+            remoteChart: kafka-ui/kafka-ui
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - config/values.yaml.local
+
+  - name: staging-env
+
+    deploy:
+      helm:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@kafka-ui staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@kafka-ui staging",
+                  ]
+                dir: .
+        releases:
+          - name: kafka-ui
+            remoteChart: kafka-ui/kafka-ui
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - config/values.yaml.local
+
+  - name: prod-env
+
+    deploy:
+      helm:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@kafka-ui prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@kafka-ui prod",
+                  ]
+                dir: .
+
+        releases:
+          - name: kafka-ui
+            remoteChart: kafka-ui/kafka-ui
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - config/values.yaml.local
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

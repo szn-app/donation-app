@@ -15,7 +15,9 @@ spec:
     spec:
       containers:
         - name: web-server
-          image: web-server:latest
+          image: ghcr.io/szn-app/donation-app/web-server:latest
+          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 80
               name: web-server

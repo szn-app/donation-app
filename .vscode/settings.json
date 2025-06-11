@@ -3,7 +3,7 @@
     "./service/auth-token-exchange/Cargo.toml",
     "./service/webhook-handler/Cargo.toml",
     "./service/web-server/src-tauri/Cargo.toml",
-    "./service/api-data/server/Cargo.toml",
+    "./service/api-data-server/Cargo.toml",
   ],
   "rust-analyzer.files.excludeDirs": [
     "**/dependency/",
@@ -164,5 +164,10 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "rust-analyzer.checkOnSave": true
+  "rust-analyzer.checkOnSave": true,
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#1F3220",
+    "titleBar.activeBackground": "#2B462C",
+    "titleBar.activeForeground": "#F9FBF9",
+  }
 }

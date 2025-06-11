@@ -1,0 +1,70 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: auth-ory-admin-ui
+
+requires:
+  - path: .
+    configs: [auth-ory-admin-ui-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: auth-ory-admin-ui-generic
+
+requires:
+  - path: ../scaffold
+    configs: [scaffold]
+
+deploy:
+  kubectl: {}
+  statusCheck: false
+
+profiles:
+  - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+        # # fix issue probably with exceeded resources usage causing kubernetes node failure
+        # - k8s/overlays/dummy
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

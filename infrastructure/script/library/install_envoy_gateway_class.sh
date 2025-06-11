@@ -1,21 +1,17 @@
+delete.envoy_gateway_class() { 
+  pushd ./infrastructure/helm_values
+  # permit forceful deletion of gatewayclass
+  kubectl delete envoyproxy envoy-proxy-config-internal -n envoy-gateway-system # --force
+  kubectl patch gatewayclass envoy-internal -n envoy-gateway-system -p '{"metadata":{"finalizers":[]}}' --type=merge 
+  kubectl delete gatewayclass envoy-internal -n envoy-gateway-system # --force
+  helm delete envoy-gateway -n envoy-gateway-system
+  popd
+
+}
+
 # installs an Envoy gateway class internal to the cluster (not exposed externally)
 # https://gateway.envoyproxy.io/docs/install/install-helm/
-install_envoy_gateway_class() {
-    
-    action=${1:-"install"}
-    {
-      if [ "$action" == "delete" ]; then
-          pushd ./infrastructure/helm_values
-          # permit forceful deletion of gatewayclass
-          kubectl delete envoyproxy envoy-proxy-config-internal -n envoy-gateway-system # --force
-          kubectl patch gatewayclass envoy-internal -n envoy-gateway-system -p '{"metadata":{"finalizers":[]}}' --type=merge 
-          kubectl delete gatewayclass envoy-internal -n envoy-gateway-system # --force
-          helm delete envoy-gateway -n envoy-gateway-system
-          popd
-          return
-      fi
-    }
-
+install.envoy_gateway_class() {
     pushd ./infrastructure/helm_values
 
     install_gateway_class() {
@@ -61,9 +57,9 @@ EOF
 
         kubectl apply -f $t -n envoy-gateway-system
 
-        verify() { 
+        verify() {
             # check schema
-            kubectl get crd envoyproxies.config.gateway.envoyproxy.io -o yaml
+            kubectl get crd envoyproxies.gateway.envoyproxy.io -o yaml
             kubectl explain envoyproxy.spec.provider.kubernetes
         }
     }

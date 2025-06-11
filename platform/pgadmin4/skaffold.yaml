@@ -1,0 +1,167 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: pgadmin4
+
+requires:
+  - path: .
+    configs: [pgadmin4-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: pgadmin4-generic
+
+deploy:
+  helm: {}
+  kubectl: {}
+  statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: default
+    resourceName: pgadmin4
+    port: 80
+
+profiles:
+  - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+    deploy:
+      helm:
+        releases:
+          - name: pgadmin4
+            remoteChart: runix/pgadmin4
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - pgadmin4-values.yaml
+
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+    deploy:
+      helm:
+        releases:
+          - name: pgadmin4
+            remoteChart: runix/pgadmin4
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - pgadmin4-values.yaml
+
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 staging",
+                  ]
+                dir: .
+
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
+    deploy:
+      helm:
+        releases:
+          - name: pgadmin4
+            remoteChart: runix/pgadmin4
+            namespace: default
+            createNamespace: true
+            valuesFiles:
+              - pgadmin4-values.yaml
+
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@pgadmin4 prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@pgadmin4 prod",
+                  ]
+                dir: .
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

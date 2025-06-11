@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-ory-admin-ui
+  namespace: auth
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: auth-ory-admin-ui
+  template:
+    metadata:
+      labels:
+        app: auth-ory-admin-ui
+    spec:
+      containers:
+        - name: auth-ory-admin-ui
+          image: ghcr.io/josxha/ory_admin:latest
+          imagePullPolicy: IfNotPresent
+          
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KRATOS_ADMIN_URL
+              value: http://kratos-admin:80
+            - name: KRATOS_PUBLIC_URL
+              value: http://kratos-public:80
+            - name: HYDRA_ADMIN_URL
+              value: http://hydra-admin:80
+            - name: HYDRA_PUBLIC_URL
+              value: http://hydra-public:80
+            - name: OATHKEEPER_API_URL
+              value: http://oathkeeper-api:80
+            # TODO: check how to disable tls verification for keto connection in the client of ory admin ui
+            - name: KETO_READ_URL
+              value: keto-read:80
+            - name: KETO_WRITE_URL
+              value: keto-write:80
+            - name: ENABLED_SERVICES
+              value: kratos,hydra,oathkeeper,keto
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "20Mi"
+            limits:
+              cpu: "50m"
+              memory: "100Mi"

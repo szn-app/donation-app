@@ -8,7 +8,7 @@ Online donation platform for physical items.
 ## Microservices:
 
 - web-server: Tauri-based React app for web
-- api-data: serves web, desktop, and mobile apps.
+- api-data-server: serves web, desktop, and mobile apps.
 - auth-ui
 - auth-token-exchange
 - webhook-handler
@@ -21,12 +21,12 @@ Node.js version: 22.13.0
 pnpm version: 10.11.0
 Rust version: 1.87.0
 Cargo version: 1.87.0
-Docker version: 28.1.1
-Minikube version: v1.34.0
+Docker version: 28.2.2
+Minikube version: v1.36.0
 Kubernetes version: 
 	Client Version::	v1.32.5
 	Kustomize Version::	v5.5.0
-	Server Version::	v1.32.5+k3s1
+	Server Version::	v1.33.1
 Kustomize version: v5.5.0
 kOps version: 1.30.3
 ---

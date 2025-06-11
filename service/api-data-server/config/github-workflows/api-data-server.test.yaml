@@ -1,0 +1,53 @@
+### run tests for microservice unit test and integration tests
+
+name: api-data-server.test
+
+on:
+  workflow_call:
+    # inputs:
+  workflow_dispatch:
+
+jobs:
+  test-cargo:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [
+            ### TODO: commented out to make testing faster
+            # macos-latest,
+            ubuntu-latest,
+            # windows-latest
+          ]
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./service/api-data-server
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: cache Rust
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./ -> target"
+
+      - name: install dependency
+        run: |
+          chmod +x script.sh
+          sudo ./script.sh install.system-dependency@api-data-server
+
+      - name: prepare repo
+        run: |
+          chmod +x script.sh
+          ./script.sh shared-mount-point#setup#mount-bind@api-data-server
+
+      - name: test rust
+        run: |
+          chmod +x script.sh
+          ./script.sh test#ci-hook#workflow@api-data-server

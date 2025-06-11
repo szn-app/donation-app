@@ -2,10 +2,10 @@
 {
   "folders": [
     {
-      "path": "service/api-data/database"
+      "path": "service/api-data-database"
     },
     {
-      "path": "service/api-data/server"
+      "path": "service/api-data-server"
     },
     {
       "path": "service/auth-token-exchange"

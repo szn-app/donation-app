@@ -9,16 +9,8 @@ resources:
 # namePrefix: prod-
 # nameSuffix: -v1
 
-# namespace: auth # using customization transformers instead (which provides more options)
-# NOTE: must be in auth namespace to access Hydra secrets
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: auth
-    unsetOnly: true
+components:
+  - ../components/namespace
 
 # adds labels to all resources (including selector and template fields)
 labels:

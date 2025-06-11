@@ -1,0 +1,278 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+
+metadata:
+  name: gateway # cilium adds a prefix "cilium-gateway-*"
+  namespace: gateway
+
+spec:
+  gatewayClassName: cilium
+
+  # NOTE: routes should be allowed bind to listners from any namespace for letsencrypt to work properly
+  listeners:
+    # must be in position 0 (removed using index)
+    - name: https-test
+      hostname: "test.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-test
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    # must be in position 1 (removed using index)
+    - name: http-test
+      hostname: "test.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: direct-ip
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https
+      hostname: "donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-root
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http
+      hostname: "donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-api
+      hostname: "api.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-api
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-api
+      hostname: "api.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-auth
+      hostname: "auth.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-auth
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-auth
+      hostname: "auth.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-longhorn
+      hostname: "longhorn.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-longhorn
+      hostname: "longhorn.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-dashboard
+      hostname: "dashboard.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-dashboard
+      hostname: "dashboard.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-hubble
+      hostname: "hubble.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-hubble
+      hostname: "hubble.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-ory-admin
+      hostname: "ory-admin.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-ory-admin
+      hostname: "ory-admin.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-minio
+      hostname: "minio.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-minio
+      hostname: "minio.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-pgadmin4
+      hostname: "pgadmin4.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-pgadmin4
+      hostname: "pgadmin4.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    - name: https-k8s-kafka
+      hostname: "kafka.k8s.donation-app.local"
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tls-certificate-k8s
+            group: ""
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: http-k8s-kafka
+      hostname: "kafka.k8s.donation-app.local"
+      protocol: HTTP
+      port: 80
+
+    ###
+
+    # # TODO: add http routes to this listener
+    # - name: https-k8s-grafana
+    #   protocol: HTTPS
+    #   hostname: "grafana.k8s.donation-app.local"
+    #   port: 443
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - kind: Secret
+    #         name: tls-certificate-k8s
+    #         group: ""
+
+    ###
+
+    # # TODO: add http routes to this listener
+    # - name: https-k8s-prometheus
+    #   protocol: HTTPS
+    #   hostname: "prometheus.k8s.donation-app.local"
+    #   port: 443
+    #   tls:
+    #     mode: Terminate
+    #     certificateRefs:
+    #       - kind: Secret
+    #         name: tls-certificate-k8s
+    #         group: ""
+
+    ###

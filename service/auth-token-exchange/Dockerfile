@@ -15,7 +15,7 @@ RUN chmod +x /bin/auth-token-exchange
 # ---
 
 # image hosting application (required glibc for rust)
-FROM gcr.io/distroless/cc AS production
+FROM gcr.io/distroless/cc AS release
 
 # ISSUE: github container registry doesn't pick up org.opencontainers.image.source value to associate automatically the image with the repo.
 LABEL org.opencontainers.image.source="https://github.com/szn-app/donation-app"
@@ -27,7 +27,7 @@ ENTRYPOINT ["/bin/auth-token-exchange"]
 
 # ---
 
-FROM rust AS development
+FROM rust AS debug
 RUN cargo install cargo-watch --locked
 
 COPY . /app

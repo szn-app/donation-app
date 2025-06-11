@@ -4,32 +4,19 @@ kind: Kustomization
 resources:
   - ../../base
 
-# namespace: auth # using customization transformers instead (which provides more options)
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: auth
-    unsetOnly: true
-
-images:
-  - name: auth-ui
-    newName: ghcr.io/szn-app/donation-app/auth-ui
-    ### automatically updated
-    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
-    newTag: v1.4.0 # x-release-please-version
+components:
+  - ../../components/namespace
+  - ../../components/secret
 
 configMapGenerator:
   - name: properties-map-auth-ui
     namespace: auth
     env: .properties
 
-secretGenerator:
-  - name: secrets-auth-ui
-    namespace: auth
-    env: .env.local
+images:
+  - name: auth-ui
+    ### automatically updated # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
+    newTag: v1.4.0 # x-release-please-version
 
 patches:
   - patch: |-
@@ -44,19 +31,3 @@ patches:
             containers:
             - name: auth-ui
               imagePullPolicy: Always
-
-  - patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: auth-ui
-      spec:
-        template:
-          spec:
-            containers:
-              - name: auth-ui
-                env:
-                - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
-                  value: "false"
-                - name: NODE_ENV
-                  value: "production"

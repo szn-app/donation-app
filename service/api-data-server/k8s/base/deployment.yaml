@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-data-server
+spec:
+  replicas: 2
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    spec:
+      containers:
+        - name: api-data-server
+          image: ghcr.io/szn-app/donation-app/api-data-server:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8081
+              name: api-data-http
+            - containerPort: 8082
+              name: api-data-grpc
+
+          env:
+            - name: POSTGRESQL_ENDPOINT_RW
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_ENDPOINT_RW
+                  optional: false
+            - name: POSTGRESQL_ENDPOINT_RO
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_ENDPOINT_RO
+                  optional: false
+            - name: POSTGRESQL_ENDPOINT_R
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-api-data-server
+                  key: POSTGRESQL_ENDPOINT_R
+                  optional: false
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets-api-data-server
+                  key: POSTGRESQL_USERNAME
+                  optional: false
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secrets-api-data-server
+                  key: POSTGRESQL_PASSWORD
+                  optional: false
+
+          envFrom:
+            - configMapRef:
+                name: properties-map-api-data-server
+            - secretRef:
+                name: secrets-api-data-server

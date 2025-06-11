@@ -15,18 +15,20 @@ spec:
     spec:
       containers:
         - name: auth-token-exchange
-          image: auth-token-exchange:latest
+          image: ghcr.io/szn-app/donation-app/auth-token-exchange:latest
+          imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 3000
               name: auth-token-ex
 
           env:
-          - name: HYDRA_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: ory-hydra-client--frontend-client
-                key: client_secret
-                optional: false
+            - name: HYDRA_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ory-hydra-client--frontend-client
+                  key: client_secret
+                  optional: false
 
           # envFrom:
           # - secretRef:
@@ -35,4 +37,3 @@ spec:
           # envFrom:
           #   - configMapRef:
           #       name: properties-auth-token-exchange
-

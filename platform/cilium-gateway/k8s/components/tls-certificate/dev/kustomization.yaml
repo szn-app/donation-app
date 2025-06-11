@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+  - certificate-issuer.yaml
+
+patches:
+  ### patches for tls certificateRefs
+  - target:
+      kind: Gateway
+      name: gateway
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/cert-manager.io~1cluster-issuer
+        value: "selfsigned-issuer"
+
+configMapGenerator:
+  - name: tls-secret-config
+    literals:
+      - secret=shared-tls-certificate
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: tls-secret-config
+      fieldPath: data.secret
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[name=https].tls.certificateRefs.[kind=Secret].name

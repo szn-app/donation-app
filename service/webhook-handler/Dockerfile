@@ -29,8 +29,8 @@ RUN chmod +x /bin/webhook-handler
 
 # image hosting application (if built with glibc, binary would require glibc and requires dependencies for tonic protobuf)
 # TODO: use slim version after satisfying protobuf requirements, possible by retrying to build with `musl` and install dependenices on a 'distroless' image
-# FROM rust:slim-bookworm AS production
-FROM rust:latest AS production
+# FROM rust:slim-bookworm AS release
+FROM rust:latest AS release
 
 # ISSUE: github container registry doesn't pick up org.opencontainers.image.source value to associate automatically the image with the repo.
 LABEL org.opencontainers.image.source="https://github.com/szn-app/donation-app"
@@ -42,7 +42,7 @@ ENTRYPOINT ["/bin/webhook-handler"]
 
 # ---
 
-FROM rust AS development
+FROM rust AS debug
 
 RUN cargo install cargo-watch --locked
 

@@ -15,8 +15,9 @@ spec:
     spec:
       containers:
         - name: auth-ui
-          image: auth-ui:latest
-
+          image: ghcr.io/szn-app/donation-app/auth-ui:latest
+          imagePullPolicy: IfNotPresent
+          
           ### for debugging purposes:
           # command: ["sleep"]
           # args: ["100000"]
@@ -65,11 +66,19 @@ spec:
                   name: secrets-auth-ui
                   key: CSRF_COOKIE_SECRET
                   optional: false
-            # [PATCHED] by kustomization for production
             - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
-              value: "true"
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-auth-ui
+                  key: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
+                  optional: true
             - name: NODE_ENV
-              value: "development"
+              valueFrom:
+                configMapKeyRef:
+                  name: properties-map-auth-ui
+                  key: NODE_ENV
+                  optional: false
+
           envFrom:
             - configMapRef:
                 name: properties-map-auth-ui # add additional values

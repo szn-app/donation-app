@@ -4,10 +4,6 @@ kind: Kustomization
 resources:
   - ../../base
 
-images:
-  - name: auth-token-exchange
-    newTag: latest
-
 patches:
   - patch: |-
       apiVersion: apps/v1

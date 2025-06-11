@@ -17,7 +17,7 @@ RUN if [ "$CONFIG" = "dev" ]; then pnpm run build-dev; else pnpm run build; fi
 # --- 
 
 # image hosting application
-FROM nginx:alpine AS production
+FROM nginx:alpine AS release
 # ISSUE: github container registry doesn't pick up org.opencontainers.image.source value to associate automatically the image with the repo.
 LABEL org.opencontainers.image.source="https://github.com/szn-app/donation-app"
 LABEL org.opencontainers.image.description="donation-app microservice"
@@ -39,7 +39,7 @@ ENTRYPOINT ["/bin/nginx.sh"]
 
 # --- 
 
-FROM node:lts AS development
+FROM node:lts AS debug
 
 RUN npm install -g pnpm
 

@@ -4,19 +4,12 @@ kind: Kustomization
 resources:
   - ../../base
 
-# namespace: donation-app # using customization transformers instead (which provides more options)
-transformers:
-  - |-
-    apiVersion: builtin
-    kind: NamespaceTransformer
-    metadata:
-      name: _not_important_here
-      namespace: donation-app
-    unsetOnly: true
+components:
+  - ../../components/namespace
+  - ../../components/domain
 
 images:
   - name: web-server
-    newName: ghcr.io/szn-app/donation-app/web-server
     ### automatically updated - TODO: fix and use ArgoCD or other deployment tool
     # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
     newTag: v0.0.82 # x-release-please-version
@@ -35,23 +28,7 @@ patches:
             - name: web-server
               imagePullPolicy: Always
 
-  - target:
-      kind: HTTPRoute
-      name: http-redirect
-    patch: |-
-      - op: replace
-        path: /spec/hostnames/0
-        value: "wosoom.com"
-
-  - target:
-      kind: HTTPRoute
-      name: https-web-server
-    patch: |-
-      - op: replace
-        path: /spec/hostnames/0
-        value: wosoom.com
-
-# set readiness probe that is supported with nginx
+  # set readiness probe that is supported with nginx
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment
@@ -71,39 +48,39 @@ patches:
                 periodSeconds: 5        # Check every 5 seconds
 
 # set security context
-  # - patch: |-
-  #     apiVersion: apps/v1
-  #     kind: Deployment
-  #     metadata:
-  #       name: web-server
+# - patch: |-
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     metadata:
+#       name: web-server
 
-  #     spec:
-  #       template:
-  #         spec:
-  #           containers:
-  #           - name: web-server
-  #             securityContext:
-  #               runAsUser: 101 # nginx
-  #               runAsNonRoot: true
-  #               readOnlyRootFilesystem: true
-  #               allowPrivilegeEscalation: false
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: web-server
+#             securityContext:
+#               runAsUser: 101 # nginx
+#               runAsNonRoot: true
+#               readOnlyRootFilesystem: true
+#               allowPrivilegeEscalation: false
 
 # set resource limits
-  # - patch: |-
-  #     apiVersion: apps/v1
-  #     kind: Deployment
-  #     metadata:
-  #       name: web-server
+# - patch: |-
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     metadata:
+#       name: web-server
 
-  #     spec:
-  #       template:
-  #         spec:
-  #           containers:
-  #           - name: web-server
-  #             resources:
-  #               limits:
-  #                 cpu: 50m
-  #                 memory: 128Mi
-  #               requests:
-  #                 cpu: 10m
-  #                 memory: 64Mi
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: web-server
+#             resources:
+#               limits:
+#                 cpu: 50m
+#                 memory: 128Mi
+#               requests:
+#                 cpu: 10m
+#                 memory: 64Mi

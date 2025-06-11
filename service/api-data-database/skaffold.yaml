@@ -1,0 +1,133 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: api-data-database
+
+requires:
+  - path: .
+    configs: [api-data-database-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: []
+      - name: prod-env
+        activatedBy: [prod, staging-rebuild, staging-prebuilt]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: api-data-database-generic
+
+build:
+  local:
+    useBuildkit: true
+    push: false
+    tryImportMissing: false
+  tagPolicy:
+    # sha256: {}
+    gitCommit: {}
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: api-data
+    resourceName: api-data--cluster-db-rw
+    port: 5432
+
+profiles:
+  - name: dev-env
+    build:
+      tagPolicy:
+        envTemplate:
+          template: "17.0.0-dev" # tag used in CNPG for local development (NOTE: CNPG doesn't accept 'latest' tag)
+      artifacts:
+        - image: ghcr.io/szn-app/donation-app/api-data-database
+          context: .
+          docker:
+            target: final
+            dockerfile: Dockerfile
+            buildArgs: {}
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@api-data-database dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database dev",
+                  ]
+                dir: .
+
+  - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@api-data-database prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database prod",
+                  ]
+                dir: .
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt

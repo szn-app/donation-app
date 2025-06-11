@@ -1,0 +1,69 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: platform
+
+requires:
+  - path: ./scaffold
+    configs: [scaffold]
+
+  - path: ./cilium-gateway
+    configs: [cilium-gateway]
+
+  - path: ./envoy-proxy
+    configs: [envoy-proxy]
+
+  - path: ./ory-kratos
+    configs: [ory-kratos]
+
+  - path: ./ory-hydra
+    configs: [ory-hydra]
+
+  - path: ./ory-keto
+    configs: [ory-keto]
+
+  - path: ./ory-oathkeeper
+    configs: [ory-oathkeeper]
+
+  - path: ./kafka-message-queue
+    configs: [kafka-message-queue]
+
+  - path: ./kafka-ui
+    configs: [kafka-ui]
+
+  - path: ./pgadmin4
+    configs: [pgadmin4]
+
+  - path: ./auth-ory-admin-ui
+    configs: [auth-ory-admin-ui]
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: platform-core
+
+requires:
+  - path: ./scaffold
+    configs: [scaffold]
+
+  - path: ./cilium-gateway
+    configs: [cilium-gateway]
+
+  - path: ./envoy-proxy
+    configs: [envoy-proxy]
+
+  - path: ./ory-kratos
+    configs: [ory-kratos]
+
+  - path: ./ory-hydra
+    configs: [ory-hydra]
+
+  - path: ./ory-keto
+    configs: [ory-keto]
+
+  - path: ./ory-oathkeeper
+    configs: [ory-oathkeeper]
+
+  - path: ./kafka-message-queue
+    configs: [kafka-message-queue]

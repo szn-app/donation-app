@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - secret.yaml
+  - ../../base
+
+components:
+  - ../../components/namespace
+
+secretGenerator:
+  - name: kratos--postgresql-credentials-user
+    env: user.env.dev
+    behavior: merge
+
+  - name: kratos--postgresql-credentials-superuser
+    env: superuser.env.dev
+    behavior: merge
+
+patches:
+  - patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: kratos--cluster-db
+        
+      spec:
+        instances: 1
+
+  - patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: kratos--cluster-db
+        
+      spec:
+        superuserSecret: 
+          name: kratos--postgresql-credentials-superuser

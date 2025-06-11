@@ -1,0 +1,113 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.root
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname="donation-app.local"].hostname # note: quotes are an exaact match, otherwise it will match substring
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.api
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=api.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.auth
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=auth.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.longhorn
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=longhorn.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.dashboard
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=dashboard.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.hubble
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=hubble.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.ory_admin
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=ory-admin.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.minio
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=minio.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.pgadmin4
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=pgadmin4.k8s.donation-app.local].hostname
+
+  - source:
+      kind: ConfigMap
+      name: app-cilium-domain-config
+      fieldPath: data.kafka
+    targets:
+      - select:
+          kind: Gateway
+          name: gateway
+        fieldPaths:
+          - spec.listeners.[hostname=kafka.k8s.donation-app.local].hostname

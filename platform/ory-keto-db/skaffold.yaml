@@ -1,0 +1,145 @@
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-keto-db
+
+requires:
+  - path: .
+    configs: [ory-keto-db-generic]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+profiles:
+  - name: dev-watch
+  - name: dev-rebuild
+  - name: staging-rebuild
+  - name: staging-prebuilt
+  - name: prod
+
+---
+apiVersion: skaffold/v4beta13
+kind: Config
+metadata:
+  name: ory-keto-db-generic
+
+deploy:
+  kubectl: {}
+  statusCheck: true
+
+portForward:
+  - resourceType: Service
+    namespace: auth
+    resourceName: keto--cluster-db-rw
+    port: 5432
+
+profiles:
+  - name: dev-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-keto-db dev",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-keto-db dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-keto-db staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-keto-db staging",
+                  ]
+                dir: .
+
+  - name: prod-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@ory-keto-db prod",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@ory-keto-db prod",
+                  ]
+                dir: .
+
+  - name: watch
+  - name: rebuild-debug
+  - name: rebuild-release
+  - name: prebuilt
