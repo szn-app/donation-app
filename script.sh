@@ -9,6 +9,7 @@ source ./script/module/utility.sh
 load_scripts_recursive.util "./script/" 
 load_scripts_recursive.util "./infrastructure/" 'script/'
 load_scripts_recursive.util "./service/" 'script/'
+load_scripts_recursive.util "./platform/" 'script/'
 
 # Call the function to register all Rust scripts
 find_and_register_rust_functions.util "./script"

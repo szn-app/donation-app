@@ -7,11 +7,15 @@ resources:
 
 components:
   - ../../components/namespace
-#
-# patches:
-# - patch: |-
-#     apiVersion: kafka.strimzi.io/v1beta2
-#     kind: Kafka
-#     metadata:
-#       name: kafka-message-queue-cluster
-#   ......
+
+patches:
+  - target:
+      kind: Kafka
+      name: kafka-message-queue-cluster
+    patch: |
+      - op: replace
+        path: /spec/kafka/config/default.replication.factor
+        value: 1
+      - op: replace
+        path: /spec/kafka/config/min.insync.replicas
+        value: 1

@@ -9,6 +9,15 @@ skaffold#task@kafka-message-queue() {
     popd
 }
 
+
+run.skaffold#task@kafka-message-queue() {
+    pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
+    
+    skaffold run --module kafka-message-queue --profile dev-rebuild
+
+    popd
+}
+
 production.skaffold#task@kafka-message-queue() {
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
     
@@ -26,8 +35,9 @@ render.skaffold#task@kafka-message-queue() {
 delete.skaffold#task@kafka-message-queue() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")"
 
-    skaffold delete --profile prod --module kafka-message-queue
-    skaffold delete --profile dev-watch --module kafka-message-queue
+    skaffold delete --module kafka-message-queue --profile dev-rebuild
+    # skaffold delete --profile prod --module kafka-message-queue
+    # skaffold delete --profile dev-watch --module kafka-message-queue
 
     popd
 )}
@@ -124,6 +134,12 @@ verify_running#example@kafka-message-queue() {
     kubectl get clusterrolebinding -l app=strimzi
     # check kubernetes RBAC permission
     kubectl auth can-i create statefulset --as=system:serviceaccount:$namespace:strimzi-cluster-operator -n $namespace
+
+    # get password
+    kubectl get secret kafka-user -n kafka-message-queue -o jsonpath='{.data.password}' | base64 -d
+
+    kubectl get kafka kafka-message-queue-cluster -n kafka-message-queue -o json | jq '.status'
+
 }
 
 diagnose.skaffold@kafka-message-queue() { 

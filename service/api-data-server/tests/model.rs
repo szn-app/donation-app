@@ -1,11 +1,11 @@
-use api_data::database::repository;
-use api_data::database::sql::LIST_ACCOUNTS;
+use api_data_server::database::repository;
+use api_data_server::database::sql::LIST_ACCOUNTS;
 use std::error::Error;
 use tokio_postgres::{self, NoTls};
 
 #[cfg(feature = "run_dev_test")]
 mod tests {
-    use api_data::server::connection::{self, PostgresPool};
+    use api_data_server::server::connection::{self, PostgresPool};
     use axum::routing::connect;
     use hyper::server::conn;
 

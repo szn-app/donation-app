@@ -1,16 +1,14 @@
-
 name: webhook-handler.release
 
 on:
-    workflow_call:
-      inputs:
-        tag-name:
-          required: true
-          type: string
-    workflow_dispatch:  
+  workflow_call:
+    inputs:
+      tag-name:
+        required: true
+        type: string
+  workflow_dispatch:
 
-jobs: 
-  
+jobs:
   publish-package:
     permissions:
       contents: write
@@ -30,15 +28,15 @@ jobs:
         with:
           submodules: recursive
 
-      -   name: Create Dummy Release for Debugging
-          env:
-              GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
-          run: |
-              if [ "${{ inputs.tag-name }}" = "dummy" ]; then
-                if ! gh release view "dummy" &>/dev/null; then
-                    gh release create "dummy" --title "dummy" --notes "Auto-created dummy tag for debugging"
-                fi
-              fi
+      - name: Create Dummy Release for Debugging
+        env:
+          GITHUB_TOKEN: ${{secrets.PAT_WORKFLOW}}
+        run: |
+          if [ "${{ inputs.tag-name }}" = "dummy" ]; then
+            if ! gh release view "dummy" &>/dev/null; then
+                gh release create "dummy" --title "dummy" --notes "Auto-created dummy tag for debugging"
+            fi
+          fi
 
       # find release ID given the associated tag and pass it to Tauri build in following step (bc it seems like tauri-action fails to find the release id sometimes)
       - name: Find Release ID
@@ -56,9 +54,9 @@ jobs:
           fi
 
       - name: install dependency
-        run: | 
+        run: |
           chmod +x script.sh
-          sudo ./script.sh install.system-dependency@webhook-handler
+          sudo ./script.sh install.system-dependency.kafka#docker@webhook-handler
 
       - name: prepare repo
         run: |

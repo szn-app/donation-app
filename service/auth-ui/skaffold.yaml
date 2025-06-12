@@ -35,9 +35,9 @@ kind: Config
 metadata:
   name: auth-ui-generic
 
-requires:
-  - path: ../../platform/scaffold
-    configs: [scaffold]
+# requires:
+#   - path: ../../platform/scaffold
+#     configs: [scaffold]
 
 build:
   local:

@@ -5,21 +5,19 @@ name: api-data-server.test
 on:
   workflow_call:
     # inputs:
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
-
   test-cargo:
-
     strategy:
       fail-fast: false
       matrix:
         platform: [
-          ### TODO: commented out to make testing faster
-          # macos-latest, 
-          ubuntu-latest, 
-          # windows-latest 
-        ]
+            ### TODO: commented out to make testing faster
+            # macos-latest,
+            ubuntu-latest,
+            # windows-latest
+          ]
 
     defaults:
       run:
@@ -37,7 +35,7 @@ jobs:
       - name: cache Rust
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './ -> target'
+          workspaces: "./ -> target"
 
       - name: install dependency
         run: |

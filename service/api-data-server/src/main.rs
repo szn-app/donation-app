@@ -1,4 +1,4 @@
-use api_data::server::{
+use api_data_server::server::{
     self,
     connection::{KetoEndpointConfig, PostgresEndpointConfig},
 };

@@ -30,12 +30,18 @@ spec:
       hostname: "test.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
     - name: direct-ip
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -57,6 +63,9 @@ spec:
       hostname: "donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -78,6 +87,9 @@ spec:
       hostname: "api.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -99,6 +111,9 @@ spec:
       hostname: "auth.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -120,6 +135,9 @@ spec:
       hostname: "longhorn.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -141,6 +159,9 @@ spec:
       hostname: "dashboard.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -162,6 +183,9 @@ spec:
       hostname: "hubble.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -183,6 +207,9 @@ spec:
       hostname: "ory-admin.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -204,6 +231,9 @@ spec:
       hostname: "minio.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -225,6 +255,9 @@ spec:
       hostname: "pgadmin4.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -246,6 +279,9 @@ spec:
       hostname: "kafka.k8s.donation-app.local"
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 
     ###
 
@@ -260,6 +296,9 @@ spec:
     #       - kind: Secret
     #         name: tls-certificate-k8s
     #         group: ""
+    # allowedRoutes:
+    #   namespaces:
+    #     from: All
 
     ###
 
@@ -274,5 +313,7 @@ spec:
     #       - kind: Secret
     #         name: tls-certificate-k8s
     #         group: ""
-
+    # allowedRoutes:
+    #   namespaces:
+    #     from: All
     ###

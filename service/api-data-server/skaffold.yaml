@@ -4,7 +4,7 @@ metadata:
   name: api-data-server
 
 requires:
-  - path: ../object-store
+  - path: ../api-data-object-store
     configs: [api-data-object-store]
 
   - path: ../api-data-database

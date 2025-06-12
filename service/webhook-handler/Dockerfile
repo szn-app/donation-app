@@ -13,7 +13,7 @@ SHELL ["/bin/bash", "-c"]
 COPY . /app
 WORKDIR /app
 
-RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@webhook-handler
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency.kafka#docker@webhook-handler
 
 # NOTE: distroless image lacks protobuf required dependencies; otherwise build with 'musl' relase target
 # RUN cargo build --release --locked --target x86_64-unknown-linux-musl
@@ -52,7 +52,7 @@ SHELL ["/bin/bash", "-c"]
 COPY . /app
 WORKDIR /app
 
-RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency@webhook-handler
+RUN chmod +x ./script/deploy.sh && source ./script/deploy.sh && install.system-dependency.kafka#docker@webhook-handler
 
 ENV RUST_LOG=debug
 

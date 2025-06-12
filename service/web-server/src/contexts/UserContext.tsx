@@ -94,6 +94,30 @@ export const oidcConfig: AuthProviderProps = {
   },
 };
 
+const REQUIRED_ENV_VARS = [
+  "VITE_AUTHORIZATION_URL",
+  "VITE_AUTHENTICATION_URL",
+  "VITE_APP_URL",
+  "VITE_AUTH_BASE_URL",
+  "VITE_DOMAIN_NAME",
+  "VITE_GRAPHQL_ENDPOINT",
+  "VITE_REST_ENDPOINT",
+];
+
+// validate that environment variables are set
+function validateRequiredEnv() {
+  const missing = REQUIRED_ENV_VARS.filter((key) => {
+    const val = import.meta.env[key];
+    return val === undefined || val === null || val === "";
+  });
+
+  if (missing.length > 0) {
+    throw new Error(
+      `Missing crucial environment variables: ${missing.join(", ")}`,
+    );
+  }
+}
+
 export function AuthContextProvider({ children }: PropsWithChildren<{}>) {
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -101,6 +125,8 @@ export function AuthContextProvider({ children }: PropsWithChildren<{}>) {
       Log.setLevel(Log.DEBUG);
     }
   }, []);
+
+  validateRequiredEnv();
 
   return <AuthProvider {...oidcConfig}>{children}</AuthProvider>;
 }

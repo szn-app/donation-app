@@ -11,9 +11,9 @@
 use std::fs;
 use std::path::Path;
 
-use api_data::api::graphql::handler::{EmptySubscription, Mutation, Query};
-use api_data::database::model::user::Account;
-use api_data::server::connection::PostgresPool;
+use api_data_server::api::graphql::handler::{EmptySubscription, Mutation, Query};
+use api_data_server::database::model::user::Account;
+use api_data_server::server::connection::PostgresPool;
 use async_graphql::Schema;
 
 // generates GraphQL schema SDL from the async_graphql code schema (which serves as origin for definition schema and also implementation of it)

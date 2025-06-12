@@ -1,5 +1,5 @@
-use api_data::api::graphql;
-use api_data::server::{
+use api_data_server::api::graphql;
+use api_data_server::server::{
     self,
     connection::{KetoChannelGroup, PostgresPool},
     http::handle_not_found,

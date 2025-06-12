@@ -67,7 +67,7 @@ hot_reload@api-data-server() {
 OBSOLETE_symlink_shared_components#setup#symlink@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    TARGET_DIR="../../../shared"
+    TARGET_DIR="../../shared"
     LINK_NAME="shared"
 
     if [ -d "$TARGET_DIR" ]; then
@@ -92,7 +92,7 @@ OBSOLETE_symlink_shared_components#setup#symlink@api-data-server() {(
 shared-mount-point#setup#mount-bind@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    local source_dir="../../../shared"
+    local source_dir="../../shared"
     local target="shared" # target mount point
 
     if mountpoint -q "$target"; then

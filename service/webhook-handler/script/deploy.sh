@@ -52,9 +52,20 @@ diagnose.ldd_discover_binary_dependencies@webhook-handler(){
 
 
 # IMPORTANT! used by docker image build; & github workflow
-install.system-dependency@webhook-handler() {
+install.system-dependency.kafka#docker@webhook-handler() {
     # Rust protobuf compiler dependency
     apt update && apt upgrade -y && apt install -y protobuf-compiler libprotobuf-dev apt-utils
     # Kafka Rust dependency compiler requirements
     apt update && apt install -y cmake libsasl2-modules-gssapi-mit libsasl2-dev
+}
+
+
+# FIX: check which are needed after removing gssapi rust crate rdkafka feature
+install.system-dependency.kafka#minikube@webhook-handler() {
+    sudo dnf groupinstall "Development Tools"
+    sudo dnf install cmake ccache -y
+    sudo dnf install openssl-devel -y
+    # sudo dnf install  # add support for rdkafaka dependent version of ssl
+
+    sudo yum install cyrus-sasl-gssapi cyrus-sasl-devel -y
 }

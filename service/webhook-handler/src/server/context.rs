@@ -20,12 +20,13 @@ pub fn create_kafka_producer(
     let mut kafka_config = ClientConfig::new();
 
     // https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
-    kafka_config
-        .set("bootstrap.servers", endpoint)
-        .set("security.protocol", "sasl_plaintext")
-        .set("sasl.mechanism", "SCRAM-SHA-512") // Matches your JAAS config
-        .set("sasl.username", username)
-        .set("sasl.password", password);
+    kafka_config.set("bootstrap.servers", endpoint);
+    // kafka_config
+    //     .set("bootstrap.servers", endpoint)
+    //     .set("security.protocol", "sasl_plaintext")
+    //     .set("sasl.mechanism", "SCRAM-SHA-512") // Matches your JAAS config
+    //     .set("sasl.username", username)
+    //     .set("sasl.password", password);
 
     kafka_config.create()
 }

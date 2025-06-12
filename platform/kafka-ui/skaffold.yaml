@@ -6,8 +6,25 @@ metadata:
 requires:
   - path: ../kafka-message-queue
     configs: [kafka-message-queue]
-  - path: .
-    configs: [kafka-ui-helm]
+
+  - configs: [kafka-ui-k8s]
+    activeProfiles:
+      - name: dev-env
+        activatedBy: [dev-watch, dev-rebuild]
+      - name: staging-env
+        activatedBy: [staging-rebuild, staging-prebuilt]
+      - name: prod-env
+        activatedBy: [prod]
+      - name: watch
+        activatedBy: [dev-watch]
+      - name: rebuild-debug
+        activatedBy: [dev-rebuild]
+      - name: rebuild-release
+        activatedBy: [staging-rebuild]
+      - name: prebuilt
+        activatedBy: [staging-prebuilt, prod]
+
+  - configs: [kafka-ui-helm]
     activeProfiles:
       - name: dev-env
         activatedBy: [dev-watch, dev-rebuild]
@@ -112,25 +129,6 @@ apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
   name: kafka-ui-helm
-
-requires:
-  - path: .
-    configs: [kafka-ui-k8s]
-    activeProfiles:
-      - name: dev-env
-        activatedBy: [dev-watch, dev-rebuild]
-      - name: staging-env
-        activatedBy: [staging-rebuild, staging-prebuilt]
-      - name: prod-env
-        activatedBy: [prod]
-      - name: watch
-        activatedBy: [dev-watch]
-      - name: rebuild-debug
-        activatedBy: [dev-rebuild]
-      - name: rebuild-release
-        activatedBy: [staging-rebuild]
-      - name: prebuilt
-        activatedBy: [staging-prebuilt, prod]
 
 deploy:
   helm: {}

@@ -5,7 +5,7 @@ metadata:
   labels:
     strimzi.io/cluster: kafka-message-queue-cluster
 spec:
-  replicas: 3
+  replicas: 1
   roles:
     - controller
     - broker
@@ -22,5 +22,5 @@ spec:
       # NOTE: use temporary storage to prevent re-deployment issue
       - id: 0
         type: ephemeral
-        sizeLimit: 2Gi
+        sizeLimit: 1Gi
         kraftMetadata: shared

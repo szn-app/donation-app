@@ -6,10 +6,9 @@ on:
       tag-name:
         required: true
         type: string
-  workflow_dispatch:  
+  workflow_dispatch:
 
-jobs: 
-
+jobs:
   publish-package:
     permissions:
       contents: write

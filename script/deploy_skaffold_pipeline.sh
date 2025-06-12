@@ -87,6 +87,11 @@ minikube#aggregate_cleanup#task@monorepo() {
     execute.util '#minikube_cleanup' '#task'
 }
 
+dev-rebuild.run.skaffold#task@monorepo() {
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold run --profile dev-rebuild --module monorepo
+}
+
 development_mode.skaffold#task@monorepo() {
     delete() {
         skaffold delete --profile dev-watch 
@@ -148,7 +153,7 @@ production.skaffold#minikube#task@monorepo() {
     
     wait_for_terminating_resources.kubernetes#utility
 
-    skaffold run --profile prod --module monorepo --cleanup=false # --port-forward
+    skaffold run --profile dev-rebuild --module monorepo # --port-forward
     # --profile prod-env --profile prebuilt
 
     start.tunnel.minikube#task@monorepo -v

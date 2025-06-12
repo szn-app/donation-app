@@ -5,11 +5,11 @@ metadata:
   name: monorepo
 
 requires:
-  - path: service
-    configs: [service]
-
   - path: platform
     configs: [platform]
+
+  - path: service
+    configs: [service]
 
 ---
 apiVersion: skaffold/v4beta13
