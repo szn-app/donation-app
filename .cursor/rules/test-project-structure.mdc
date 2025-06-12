@@ -9,7 +9,7 @@ alwaysApply: false
 - `src/`: Main source code directory
 - `service/`: Service-specific implementations
 - `dependency/`: External dependencies and integrations
-- `shared/`: Shared utilities and common code
+- `library/`: Shared utilities and common code
 - `infrastructure/`: Infrastructure and deployment configurations
 - `test/`: Test suites and test utilities
 - `docs/`: Project documentation
@@ -30,7 +30,7 @@ alwaysApply: false
 
 ## Best Practices
 1. Place new services in the `service/` directory
-2. Add shared utilities to `shared/` directory
+2. Add shared utilities to `library/` directory
 3. Keep configuration in `config/` directory
 4. Document all major architectural decisions
 5. Follow the existing project structure for consistency
