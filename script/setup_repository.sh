@@ -7,6 +7,11 @@ config#aggregate_setup#task@monorepo() {
     echo 'DONE successfully'
 }
 
+setup_repo_files@monorepo() { 
+    execute.util '#setup' '#mount-bind' # ensure mounts are setup
+    execute.util '#predeploy-hook' # prepare for deployment
+}
+
 config#post-clone#task@monorepo() {
     git submodule init
 }
