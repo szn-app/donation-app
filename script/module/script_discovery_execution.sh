@@ -119,3 +119,23 @@ find_and_register_rust_functions.util() {
         echo "Registered Rust script as function: $name from $script"
     done
 }
+
+
+# different appraoch: 
+registry_example() {
+    # registry.sh (auto-generated)
+    declare -A FUNC_REGISTRY=(
+    ["build"]="./service/api-data-server/script.sh"
+    ["test"]="./shared/test.sh"
+    )
+
+    call_function() {
+    local fn=$1
+    [[ -z ${FUNC_REGISTRY[$fn]} ]] && die "Function $fn not found"
+    source "${FUNC_REGISTRY[$fn]}" 
+    "$@"
+    }
+
+    # Generate registry
+    # find . -name "*.sh" -exec awk '/^### REGISTER-FUNCTION/ {print $2, FILENAME}' {} + > registry.txt
+}

@@ -5,8 +5,8 @@ edition = "2021"
 default-run = "api-data-server" # main.rs
 
 [dependencies]
-shared_protobuf_webhook = { path = "./shared/protobuf-webhook" }
-shared_protobuf_keto = { path = "./shared/protobuf-keto" }
+shared_protobuf_webhook = { path = "./library/protobuf-webhook" }
+shared_protobuf_keto = { path = "./library/protobuf-keto" }
 
 # async runtime
 tokio = { version = "1.43.0", features = ["full"] } # Event-driven, non-blocking I/O platform.

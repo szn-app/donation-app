@@ -39,38 +39,6 @@ profiles:
 apiVersion: skaffold/v4beta13
 kind: Config
 metadata:
-  name: api-data-server--no-dep
-
-requires:
-  - path: .
-    configs: [api-data-server-generic]
-    activeProfiles:
-      - name: dev-env
-        activatedBy: [dev-watch, dev-rebuild]
-      - name: staging-env
-        activatedBy: [staging-rebuild, staging-prebuilt]
-      - name: prod-env
-        activatedBy: [prod]
-      - name: watch
-        activatedBy: [dev-watch]
-      - name: rebuild-debug
-        activatedBy: [dev-rebuild]
-      - name: rebuild-release
-        activatedBy: [staging-rebuild]
-      - name: prebuilt
-        activatedBy: [staging-prebuilt, prod]
-
-profiles:
-  - name: dev-watch
-  - name: dev-rebuild
-  - name: staging-rebuild
-  - name: staging-prebuilt
-  - name: prod
-
----
-apiVersion: skaffold/v4beta13
-kind: Config
-metadata:
   name: api-data-server-generic
 
 build:

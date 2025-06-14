@@ -67,8 +67,8 @@ hot_reload@api-data-server() {
 OBSOLETE_symlink_shared_components#setup#symlink@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    TARGET_DIR="../../shared"
-    LINK_NAME="shared"
+    TARGET_DIR="../../library"
+    LINK_NAME="library"
 
     if [ -d "$TARGET_DIR" ]; then
     if [ ! -L "$LINK_NAME" ]; then
@@ -92,8 +92,8 @@ OBSOLETE_symlink_shared_components#setup#symlink@api-data-server() {(
 shared-mount-point#setup#mount-bind@api-data-server() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    local source_dir="../../shared"
-    local target="shared" # target mount point
+    local source_dir="../../library"
+    local target="library" # target mount point
 
     if mountpoint -q "$target"; then
         echo "Already mounted at $target"
@@ -116,10 +116,6 @@ skaffold#task@api-data-server() {(
     pushd "$(dirname "$(dirname "${BASH_SOURCE[0]}")")" # two levels up: from script directory to project root
 
     skaffold dev --module api-data-server --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
-
-    no-dep() {
-        skaffold dev --module api-data-server--no-dep --profile dev-watch --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
-    }
 
     verify() {
         skaffold render --profile prod

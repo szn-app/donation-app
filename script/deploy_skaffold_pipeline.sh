@@ -2,6 +2,7 @@
 # set -e
 
 setup_minikube() {
+    wait_for_terminating_resources.kubernetes#utility
     setup.minikube#bootstrap#task@monorepo
 }
 
@@ -12,22 +13,22 @@ expose_domain() {
 ### 
 
 dev-rebuild.run.skaffold#task@monorepo() {
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
     skaffold run --profile dev-rebuild --module monorepo
 }
 
 delete.dev-rebuild.run.skaffold#task@monorepo() {
     skaffold delete --profile dev-rebuild --module monorepo
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
 }
 
 dev-watch.skaffold#task@monorepo() {    
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
     skaffold dev --profile dev-watch --module monorepo --port-forward --auto-build=false --auto-deploy=false --cleanup=false --tail
 }
 
 staging-rebuild.skaffold#task@monorepo() {
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
     skaffold run --profile staging-rebuild  --module monorepo # --port-forward --tail
 }
 
@@ -36,12 +37,12 @@ delete.staging-rebuild.skaffold#task@monorepo() {
 }
 
 service-only.staging.skaffold#task@monorepo() {
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
     skaffold run --profile staging-rebuild --module monorepo-service-only --port-forward --cleanup=false
 }
 
 platform-only.staging.skaffold#task@monorepo() {
-    wait_for_terminating_resources.kubernetes#utility
+    setup_minikube
     skaffold run --profile staging-rebuild --module monorepo-platform-only --port-forward --cleanup=false
 }
 

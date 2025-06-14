@@ -5,6 +5,7 @@ resources:
   - certificate-issuer.yaml
 
 patches:
+  # NOTE: let's encrypt staging can only be used for valid tlds domains (.local is not).
   # automatically create and renew Let's Encrypt certificates.
   - target:
       kind: Gateway

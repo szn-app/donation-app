@@ -39,17 +39,17 @@ requires:
   - path: ../ory-hydra-db
     configs: [ory-hydra-db]
 
-manifests:
-  kustomize:
-    paths:
-      - k8s/base
-
 deploy:
   kubectl: {}
   statusCheck: true
 
 profiles:
   - name: dev-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/dev
+
     deploy:
       kubectl:
         hooks:
@@ -73,6 +73,11 @@ profiles:
                 dir: .
 
   - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
     deploy:
       kubectl:
         hooks:
@@ -96,6 +101,11 @@ profiles:
                 dir: .
 
   - name: prod-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/prod
+
     deploy:
       kubectl:
         hooks:

@@ -182,7 +182,9 @@ profiles:
           docker:
             target: release
             dockerfile: Dockerfile
-            buildArgs: {}
+            buildArgs:
+              # TODO: handle domain names for staging and different configs in `NODE_ENV=development VITE_DEV_MODE=true vite build --mode development`
+              CONFIG: dev
 
   - name: prebuilt
     build: {}

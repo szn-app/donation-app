@@ -5,17 +5,8 @@ kind: Kustomization
 
 resources:
   - ../../base
-  # - ingress.yaml
 
 components:
   - ../../components/namespace
   - ../../components/tls-certificate/dev
-
-patches:
-  - target:
-      kind: Gateway
-      name: gateway
-    patch: |-
-      - op: replace
-        path: /spec/gatewayClassName
-        value: "nginx"
+  - ../../components/nginx-gateway

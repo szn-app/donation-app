@@ -58,8 +58,8 @@ test#ci-hook#workflow@webhook-handler() {
 OBSOLETE_symlink_shared_components#setup#symlink@webhook-handler() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    TARGET_DIR="../../shared"
-    LINK_NAME="shared"
+    TARGET_DIR="../../library"
+    LINK_NAME="library"
 
     if [ -d "$TARGET_DIR" ]; then
     if [ ! -L "$LINK_NAME" ]; then
@@ -83,8 +83,8 @@ OBSOLETE_symlink_shared_components#setup#symlink@webhook-handler() {(
 shared-mount-point#setup#mount-bind@webhook-handler() {(
     pushd "$(realpath "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")"
 
-    local source_dir="../../shared"
-    local target="shared" # target mount point
+    local source_dir="../../library"
+    local target="library" # target mount point
 
     if mountpoint -q "$target"; then
         echo "Already mounted at $target"

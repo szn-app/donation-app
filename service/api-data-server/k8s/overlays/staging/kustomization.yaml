@@ -5,8 +5,8 @@ resources:
   - ../../base
 
 components:
-  - ../../components/namespace
   - ../../components/secret
+  - ../../components/namespace
 
 images:
   - name: api-data-server
@@ -17,17 +17,3 @@ images:
 configMapGenerator:
   - name: properties-map-api-data-server
     env: .properties
-
-patches:
-  - patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: api-data-server
-        
-      spec:
-        template:
-          spec:
-            containers:
-            - name: api-data-server
-              imagePullPolicy: Always

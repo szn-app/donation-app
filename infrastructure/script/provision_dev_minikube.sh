@@ -32,8 +32,8 @@ install-resources.minikube@infrastructure() {
         install.envoy_gateway_class
     }
     {
-        # Ingress k8s resource controllers
-        minikube addons enable ingress # NGINX Ingress controller
+        # Ingress k8s resource controllers for exposing services with external IP - necessary for loadbalancers to be assigned an IP.
+        minikube addons enable ingress # NGINX Ingress controller to assign external ip for NGINX gateway (based on kubeproxy, which cillium replaces)
         minikube addons enable ingress-dns 
 
         installation_gateway_controller_nginx

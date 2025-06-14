@@ -26,8 +26,6 @@ create_secret#predeploy-hook@pgadmin4() {(
 func#predeploy-skaffold-hook@pgadmin4() {
     local environment=$1
 
-    # create_secret#predeploy-hook@pgadmin4
-
     helm repo add runix https://helm.runix.net
 }
 

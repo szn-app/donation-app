@@ -537,8 +537,8 @@ statefulSet:
   #       value: "1"
 
   log:
-    format: {% if environment == "prod" %}"json"{% else %}"text"{% endif %}
-    level: {% if environment == "prod" %}"info"{% else %}"debug"{% endif %}
+    format: {% if environment == "prod" or environment == "staging" %}"json"{% else %}"text"{% endif %}
+    level: {% if environment == "prod" or environment == "staging" %}"info"{% else %}"debug"{% endif %}
 
     # -- Specify pod metadata, this metadata is added directly to the pod, and not higher objects
   podMetadata:

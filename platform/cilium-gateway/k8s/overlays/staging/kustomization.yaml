@@ -6,5 +6,7 @@ resources:
 
 components:
   - ../../components/namespace
-  - ../../components/remove-test-listner
-  - ../../components/tls-certificate/staging
+  # - ../../components/remove-test-listner
+  # - ../../components/tls-certificate/staging-valid-tld # cannot be used for .local domains
+  - ../../components/tls-certificate/dev
+  - ../../components/nginx-gateway

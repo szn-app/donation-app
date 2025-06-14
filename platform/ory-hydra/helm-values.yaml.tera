@@ -185,8 +185,8 @@ hydra:
     resources: {}
 
   # -- Enable dev mode, not secure in production environments
-  dev: {% if environment == 'prod' %} false {% else %} true {% endif %}
-  dangerousForceHttp: {% if environment == 'prod' %} false {% else %} true {% endif %}
+  dev: {% if environment == 'prod' or environment == 'staging' %} false {% else %} true {% endif %}
+  dangerousForceHttp: {% if environment == 'prod' or environment == 'staging' %} false {% else %} true {% endif %}
 
 ## -- Deployment specific config
 deployment:

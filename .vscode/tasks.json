@@ -211,30 +211,6 @@
       "problemMatcher": []
     },
     {
-      "label": "staging.skaffold#task@monorepo",
-      "label": "staging.skaffold#task@monorepo",
-      "type": "shell",
-      "command": "bash",
-      "args": [
-        "-c",
-        "source ${workspaceFolder}/script.sh && staging.skaffold#task@monorepo""source ${workspaceFolder}/script.sh && staging.skaffold#task@monorepo"
-      ],
-      "presentation": {
-        "reveal": "always",
-        "panel": "dedicated"
-      },
-      "group": "none",
-      "options": {
-        "cwd": "${workspaceFolder}/",
-        "statusbar": {
-          "label": "$(run) staging.skaffold#task@monorepo""label": "$(run) staging.skaffold#task@monorepo"
-        }
-      },
-      "dependsOrder": "parallel",
-      "dependsOn": [],
-      "problemMatcher": []
-    },
-    {
       "label": "setup.minikube#bootstrap#task@monorepo",
       "type": "shell",
       "command": "bash",

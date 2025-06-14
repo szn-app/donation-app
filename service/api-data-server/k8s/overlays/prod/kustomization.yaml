@@ -5,9 +5,9 @@ resources:
   - ../../base
 
 components:
+  - ../../components/secret
   - ../../components/namespace
   - ../../components/domain
-  - ../../components/secret
 
 images:
   - name: api-data-server

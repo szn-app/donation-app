@@ -28,25 +28,6 @@ patches:
             - name: web-server
               imagePullPolicy: Always
 
-  # set readiness probe that is supported with nginx
-  - patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: web-server
-
-      spec:
-        template:
-          spec:
-            containers:
-            - name: web-server
-              readinessProbe:
-                httpGet:
-                  path: /readyz  # Endpoint to check readiness
-                  port: web-server
-                initialDelaySeconds: 5  # Wait 5 seconds before checking
-                periodSeconds: 5        # Check every 5 seconds
-
 # set security context
 # - patch: |-
 #     apiVersion: apps/v1

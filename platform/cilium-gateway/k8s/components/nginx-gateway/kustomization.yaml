@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+# resources:
+# - ingress.yaml
+
+patches:
+  # minikube workaround to expose gateway ip (minikube doesn't support cillium gateway with ingress loadbalancer plugin)
+  - target:
+      kind: Gateway
+      name: gateway
+    patch: |-
+      - op: replace
+        path: /spec/gatewayClassName
+        value: "nginx"

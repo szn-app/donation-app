@@ -10,9 +10,9 @@ requires:
       - name: dev-env
         activatedBy: [dev-watch, dev-rebuild]
       - name: staging-env
-        activatedBy: []
+        activatedBy: [staging-rebuild, staging-prebuilt]
       - name: prod-env
-        activatedBy: [prod, staging-rebuild, staging-prebuilt]
+        activatedBy: [prod]
       - name: watch
         activatedBy: [dev-watch]
       - name: rebuild-debug
@@ -94,6 +94,36 @@ profiles:
                     "-it",
                     "-c",
                     "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database dev",
+                  ]
+                dir: .
+
+  - name: staging-env
+    manifests:
+      kustomize:
+        paths:
+          - k8s/overlays/staging
+
+    deploy:
+      kubectl:
+        hooks:
+          before:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#predeploy-skaffold-hook@api-data-database staging",
+                  ]
+                dir: .
+          after:
+            - host:
+                command:
+                  [
+                    "bash",
+                    "-it",
+                    "-c",
+                    "source ./script.sh && func#postdeploy-skaffold-hook@api-data-database staging",
                   ]
                 dir: .
 

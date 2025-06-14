@@ -18,7 +18,7 @@ hydra:
       public:
         port: 4444
 
-        {% if environment == "dev" %}
+        # must allow calls from root to auth subdomain
         cors:
           enabled: true
           allow_credentials: true
@@ -32,7 +32,6 @@ hydra:
             - Content-Type
           exposed_headers:
             - Content-Type
-        {% endif %}
         
       admin:
         port: 4445
@@ -84,7 +83,7 @@ hydra:
     oauth2:
       {% if environment == "dev" %}
       expose_internal_errors: true 
-      {% elif environment == 'prod' %}
+      {% else %} 
       expose_internal_errors: false
       {% endif %}
       

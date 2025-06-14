@@ -19,7 +19,7 @@ kratos:
       leak_sensitive_values: true
       redaction_text: ""
       format: json
-    {% elif environment == 'prod' %}
+    {% else %}
     log:
       leak_sensitive_values: false
       redaction_text: ""
