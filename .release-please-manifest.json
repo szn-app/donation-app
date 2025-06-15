@@ -1,6 +1,6 @@
 {
-  ".": "0.4.33",
-  "service/web-server": "0.0.84",
+  ".": "0.4.34",
+  "service/web-server": "0.0.85",
   "service/auth-ui": "1.5.0",
   "service/auth-token-exchange": "0.0.17",
   "service/webhook-handler": "0.0.7",

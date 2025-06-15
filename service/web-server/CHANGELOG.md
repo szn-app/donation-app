@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.85](https://github.com/szn-app/donation-app/compare/web-server@v0.0.84...web-server@v0.0.85) (2025-06-15)
+
+
+### Bug Fixes
+
+* missing production .env file in git ([80382ea](https://github.com/szn-app/donation-app/commit/80382ea69fa324ae3a562c5a9cf1666e077ea1a8))
+
 ## [0.0.84](https://github.com/szn-app/donation-app/compare/web-server@v0.0.83...web-server@v0.0.84) (2025-06-15)
 
 
