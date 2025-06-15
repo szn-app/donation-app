@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2025-06-15)
+
+
+### Features
+
+* Merge commit '49d668f9fc212636529a9540beef109ce96e2472' ([807407b](https://github.com/szn-app/donation-app/commit/807407bb3197f9c2cd0e66c851b455610b3765ca))
+
 ## [17.6.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.5.0...api-data-database@v17.6.0) (2025-06-03)
 
 
