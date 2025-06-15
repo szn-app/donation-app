@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.1...api-data-server@v0.1.2) (2025-06-15)
+
+
+### Bug Fixes
+
+* **dependencies:** update lock files ([6b56706](https://github.com/szn-app/donation-app/commit/6b56706864ebd96f59b298f9fb4489d88f7013cf))
+* **dependencies:** update lock files ([60f806a](https://github.com/szn-app/donation-app/commit/60f806a27938574b9f352ac7537f68439071aefb))
+
 ## [0.1.1](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.0...api-data-server@v0.1.1) (2025-06-15)
 
 

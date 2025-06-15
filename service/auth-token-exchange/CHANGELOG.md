@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.17](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.16...auth-token-exchange@v0.0.17) (2025-06-15)
+
+
+### Bug Fixes
+
+* **dependencies:** update lock files ([60f806a](https://github.com/szn-app/donation-app/commit/60f806a27938574b9f352ac7537f68439071aefb))
+
 ## [0.0.16](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.15...auth-token-exchange@v0.0.16) (2025-06-15)
 
 

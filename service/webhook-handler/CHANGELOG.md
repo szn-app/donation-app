@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.7](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.6...webhook-handler@v0.0.7) (2025-06-15)
+
+
+### Bug Fixes
+
+* **dependencies:** update lock files ([6b56706](https://github.com/szn-app/donation-app/commit/6b56706864ebd96f59b298f9fb4489d88f7013cf))
+
 ## [0.0.6](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.5...webhook-handler@v0.0.6) (2025-06-15)
 
 
