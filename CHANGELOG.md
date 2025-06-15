@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.34](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.33...donation-app@v0.4.34) (2025-06-15)
+
+
+### Bug Fixes
+
+* missing production .env file in git ([80382ea](https://github.com/szn-app/donation-app/commit/80382ea69fa324ae3a562c5a9cf1666e077ea1a8))
+
 ## [0.4.33](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.32...donation-app@v0.4.33) (2025-06-15)
 
 
