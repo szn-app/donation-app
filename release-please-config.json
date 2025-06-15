@@ -18,6 +18,16 @@
   "draft": false,
   "prerelease": false,
 
+  "changelog-sections": [
+    { "type": "feat", "section": "Features", "hidden": false },
+    { "type": "fix", "section": "Bug Fixes", "hidden": false },
+    { "type": "chore","section": "Miscellaneous Chores", "hidden": true, "bump": false},
+    { "type": "refactor", "section": "Code Refactoring", "hidden": false },
+    { "type": "test", "section": "Tests", "hidden": false },
+    { "type": "ci", "section": "Continuous Integration/Deployment", "hidden": false },
+    { "type": "docs", "section": "Documentation", "hidden": false }
+  ],
+
   "pull-request-header": "🤖 Release created:",
   "pull-request-footer": "_release-please generated PR_",
 

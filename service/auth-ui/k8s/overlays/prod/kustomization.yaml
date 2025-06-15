@@ -16,7 +16,7 @@ configMapGenerator:
 images:
   - name: auth-ui
     ### automatically updated # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
-    newTag: v1.4.0 # x-release-please-version
+    newTag: v1.5.0 # x-release-please-version
 
 patches:
   - patch: |-
