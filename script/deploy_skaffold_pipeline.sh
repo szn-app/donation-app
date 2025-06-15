@@ -17,6 +17,11 @@ dev-rebuild.run.skaffold#task@monorepo() {
     skaffold run --profile dev-rebuild --module monorepo
 }
 
+prod.run.skaffold#task@monorepo() {
+    setup_minikube
+    skaffold run --profile prod --module monorepo
+}
+
 delete.dev-rebuild.run.skaffold#task@monorepo() {
     skaffold delete --profile dev-rebuild --module monorepo
     setup_minikube

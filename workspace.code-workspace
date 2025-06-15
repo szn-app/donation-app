@@ -2,7 +2,7 @@
 {
   "folders": [
     {
-      "path": "service/api-data/database"
+      "path": "service/api-data-database"
     },
     {
       "path": "service/api-data-server"
