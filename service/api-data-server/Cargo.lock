@@ -2566,7 +2566,7 @@ dependencies = [
 
 [[package]]
 name = "shared_protobuf_keto"
-version = "0.4.31"
+version = "0.4.32"
 dependencies = [
  "prost",
  "prost-types",
@@ -2577,7 +2577,7 @@ dependencies = [
 
 [[package]]
 name = "shared_protobuf_webhook"
-version = "0.4.31"
+version = "0.4.32"
 dependencies = [
  "prost",
  "prost-types",
