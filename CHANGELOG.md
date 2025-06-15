@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.33](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.32...donation-app@v0.4.33) (2025-06-15)
+
+
+### Bug Fixes
+
+* update cargo lock files ([b503ab5](https://github.com/szn-app/donation-app/commit/b503ab5aadb481ae73ed582eea6d418f02a55d0e))
+
 ## [0.4.32](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.31...donation-app@v0.4.32) (2025-06-15)
 
 
