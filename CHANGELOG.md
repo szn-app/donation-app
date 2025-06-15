@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.35](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.34...donation-app@v0.4.35) (2025-06-15)
+
+
+### Bug Fixes
+
+* deployment configs domain overwrites ([9c10d7d](https://github.com/szn-app/donation-app/commit/9c10d7d2c851c049cbd9c175472d19e412ac1d78))
+* ory-kratos kustomize deployment for each overlay ([c39ac05](https://github.com/szn-app/donation-app/commit/c39ac05a58bfa4f40893aab32a2a8460bd7f5976))
+
 ## [0.4.34](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.33...donation-app@v0.4.34) (2025-06-15)
 
 
