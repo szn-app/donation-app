@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.0...api-data-server@v0.1.1) (2025-06-15)
+
+
+### Bug Fixes
+
+* update cargo lock files ([b503ab5](https://github.com/szn-app/donation-app/commit/b503ab5aadb481ae73ed582eea6d418f02a55d0e))
+
 ## 0.1.0 (2025-06-15)
 
 
