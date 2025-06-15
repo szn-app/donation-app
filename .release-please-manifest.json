@@ -1,7 +1,7 @@
 {
-  ".": "0.4.34",
+  ".": "0.4.35",
   "service/web-server": "0.0.85",
-  "service/auth-ui": "1.5.0",
+  "service/auth-ui": "1.5.1",
   "service/auth-token-exchange": "0.0.17",
   "service/webhook-handler": "0.0.7",
   "service/api-data-server": "0.1.2",
