@@ -39,17 +39,18 @@ requires:
   - path: ../ory-kratos-db
     configs: [ory-kratos-db]
 
-manifests:
-  kustomize:
-    paths:
-      - k8s/base
-
 deploy:
   kubectl: {}
   statusCheck: true
 
 profiles:
   - name: dev-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/dev
+
     deploy:
       kubectl:
         hooks:
@@ -73,6 +74,12 @@ profiles:
                 dir: .
 
   - name: staging-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/staging
+
     deploy:
       kubectl:
         hooks:
@@ -96,6 +103,12 @@ profiles:
                 dir: .
 
   - name: prod-env
+
+    manifests:
+      kustomize:
+        paths:
+          - k8s/prod
+
     deploy:
       kubectl:
         hooks:
