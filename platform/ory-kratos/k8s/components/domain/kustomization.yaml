@@ -10,7 +10,7 @@ replacements:
     targets:
       - select:
           kind: HTTPRoute
-          name: https-hydra-public
+          name: https-kratos-public
         fieldPaths:
           - spec.hostnames.[=auth.donation-app.local]
         options:

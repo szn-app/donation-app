@@ -7,11 +7,16 @@ resources:
 components:
   - ../../components/namespace
   - ../../components/secret
+  - ../../components/domain
 
 configMapGenerator:
   - name: properties-map-auth-ui
     namespace: auth
     env: .properties
+
+  - name: auth-ory-stack-domain
+    literals:
+      - auth=auth.wosoom.com
 
 images:
   - name: auth-ui
