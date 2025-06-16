@@ -32,7 +32,6 @@ impl ItemMutation {
         category: Option<i64>,
         condition: Option<ItemCondition>,
         location: Option<i64>,
-        created_by: Option<Uuid>,
         status: Option<ItemStatus>,
     ) -> Result<Item> {
         let c = ctx.data::<DataContext>()?;

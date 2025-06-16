@@ -275,7 +275,6 @@ mutation CreateItem(
   $category: Int
   $condition: ItemCondition!
   $location: Int
-  $createdBy: UUID
   $status: ItemStatus
 ) {
   createItem(
@@ -286,7 +285,6 @@ mutation CreateItem(
     category: $category
     condition: $condition
     location: $location
-    createdBy: $createdBy
     status: $status
   ) {
     id

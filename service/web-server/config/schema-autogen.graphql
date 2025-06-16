@@ -194,7 +194,7 @@ type Mutation {
   createCollection(idCommunity: Int!, position: Int!, title: String!, variant: CollectionType!, visibility: CollectionVisibility!): Collection! @auth(permission: "required_authorization")
   createCommittee(idCommunity: Int!, idProfile: Int!, memberRole: CommitteeRole!): Committee! @auth(permission: "required_authorization")
   createCommunity(createdBy: UUID!, description: String, name: String!, variant: CommunityType!): Community! @auth(permission: "required_authorization")
-  createItem(category: Int, condition: ItemCondition, createdBy: UUID, description: String, intentAction: ItemIntentAction, location: Int, status: ItemStatus, title: String, variant: ItemType): Item! @auth(permission: "required_authorization")
+  createItem(category: Int, condition: ItemCondition, description: String, intentAction: ItemIntentAction, location: Int, status: ItemStatus, title: String, variant: ItemType): Item! @auth(permission: "required_authorization")
   createLocation(addressLine1: String!, addressLine2: String, city: String!, coordinates: CoordinatesInput, country: String!, district: String, entranceNote: String, state: String): Location! @auth(permission: "required_authorization")
   createMedia(idItem: Int!, mediaType: MediaType!, position: Int!, url: String!): Media! @auth(permission: "required_authorization")
   createProfile(description: String, idAccount: UUID!, name: String!): Profile! @auth(permission: "required_authorization")

@@ -303,7 +303,6 @@ export type MutationCreateCommunityArgs = {
 export type MutationCreateItemArgs = {
   category?: InputMaybe<Scalars['Int']['input']>;
   condition?: InputMaybe<ItemCondition>;
-  createdBy?: InputMaybe<Scalars['UUID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   intentAction?: InputMaybe<ItemIntentAction>;
   location?: InputMaybe<Scalars['Int']['input']>;
@@ -945,7 +944,6 @@ export type CreateItemMutationVariables = Exact<{
   category?: InputMaybe<Scalars['Int']['input']>;
   condition: ItemCondition;
   location?: InputMaybe<Scalars['Int']['input']>;
-  createdBy?: InputMaybe<Scalars['UUID']['input']>;
   status?: InputMaybe<ItemStatus>;
 }>;
 
@@ -1481,7 +1479,7 @@ export const DeleteLocationDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<DeleteLocationMutation, DeleteLocationMutationVariables>;
 export const CreateItemDocument = new TypedDocumentString(`
-    mutation CreateItem($variant: ItemType!, $intentAction: ItemIntentAction!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int, $createdBy: UUID, $status: ItemStatus) {
+    mutation CreateItem($variant: ItemType!, $intentAction: ItemIntentAction!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int, $status: ItemStatus) {
   createItem(
     variant: $variant
     intentAction: $intentAction
@@ -1490,7 +1488,6 @@ export const CreateItemDocument = new TypedDocumentString(`
     category: $category
     condition: $condition
     location: $location
-    createdBy: $createdBy
     status: $status
   ) {
     id

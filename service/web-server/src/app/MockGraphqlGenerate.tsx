@@ -164,7 +164,6 @@ export function MockGraphqlGenerate() {
       category?: number;
       condition: ItemCondition;
       location?: number;
-      createdBy?: string;
       status?: ItemStatus;
     }) =>
       await request<CreateItemMutation>(
@@ -179,12 +178,12 @@ export function MockGraphqlGenerate() {
     mutationKey: ["updateItem"],
     mutationFn: async (variables: {
       id: number;
+      status?: ItemStatus;
       title?: string;
       description?: string;
       category?: number;
       condition?: ItemCondition;
       location?: number;
-      status?: ItemStatus;
     }) =>
       await request<UpdateItemMutation>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
@@ -358,7 +357,6 @@ export function MockGraphqlGenerate() {
             title: faker.commerce.productName(),
             description: faker.lorem.paragraph(),
             category: category.createCategory.id,
-            createdBy: accountId,
             location: location.createLocation.id,
             variant: ItemType.Inkind,
             intentAction: ItemIntentAction.Offer,
@@ -396,7 +394,6 @@ export function MockGraphqlGenerate() {
             title: faker.commerce.productName(),
             description: faker.lorem.paragraph(),
             category: category.createCategory.id,
-            createdBy: accountId,
             location: location.createLocation.id,
             variant: ItemType.Inkind,
             intentAction: ItemIntentAction.Offer,
@@ -479,7 +476,6 @@ export function MockGraphqlGenerate() {
             title: faker.commerce.productName(),
             description: faker.lorem.paragraph(),
             category: category.createCategory.id,
-            createdBy: accountId,
             location: location.createLocation.id,
             variant: ItemType.Inkind,
             intentAction: ItemIntentAction.Offer,
@@ -547,7 +543,6 @@ export function MockGraphqlGenerate() {
             title: faker.commerce.productName(),
             description: faker.lorem.paragraph(),
             category: category.createCategory.id,
-            createdBy: accountId,
             location: location.createLocation.id,
             variant: ItemType.Inkind,
             intentAction: ItemIntentAction.Offer,
@@ -656,7 +651,6 @@ export function MockGraphqlGenerate() {
         title: "CLEAR",
         description: "CLEAR",
         category: category.createCategory.id,
-        createdBy: accountId,
         location: location.createLocation.id,
         variant: ItemType.Inkind,
         intentAction: ItemIntentAction.Offer,

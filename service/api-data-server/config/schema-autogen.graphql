@@ -193,7 +193,7 @@ type Mutation {
 	createLocation(addressLine1: String!, addressLine2: String, city: String!, state: String, district: String, country: String!, coordinates: CoordinatesInput, entranceNote: String): Location! @auth(permission: "required_authorization")
 	updateLocation(id: Int!, addressLine1: String, addressLine2: String, city: String, state: String, district: String, country: String, coordinates: CoordinatesInput, entranceNote: String): Location! @auth(permission: "required_authorization")
 	deleteLocation(id: Int!): Boolean! @auth(permission: "required_authorization")
-	createItem(variant: ItemType, intentAction: ItemIntentAction, title: String, description: String, category: Int, condition: ItemCondition, location: Int, createdBy: UUID, status: ItemStatus): Item! @auth(permission: "required_authorization")
+	createItem(variant: ItemType, intentAction: ItemIntentAction, title: String, description: String, category: Int, condition: ItemCondition, location: Int, status: ItemStatus): Item! @auth(permission: "required_authorization")
 	updateItem(id: Int!, status: ItemStatus, title: String, description: String, category: Int, condition: ItemCondition, location: Int): Item! @auth(permission: "required_authorization")
 	deleteItem(id: Int!): Boolean! @auth(permission: "required_authorization")
 	reportItem(id: Int!): Item @auth(permission: "required_authorization")
