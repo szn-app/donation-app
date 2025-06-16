@@ -4,6 +4,12 @@ terraform {
   required_version = ">= 1.5.0"
   
   required_providers {
+  ## TODO: add coudflare as code using cf-terraforming export tool
+  #     cloudflare = {
+  #       source  = "cloudflare/cloudflare"
+  #       version = "~> 4.0" # Use a compatible version
+  #     }
+
     # https://registry.terraform.io/providers/hetznercloud/hcloud/latest
     hcloud = { 
       source = "hetznercloud/hcloud"
