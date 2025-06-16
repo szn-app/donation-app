@@ -449,3 +449,6 @@ verify#example@hydra() {
     }
 }
 
+delete.helm#ory-stack#manual-uninstall@ory-hydra() {
+    helm uninstall hydra -n auth || echo "Failed to uninstall Hydra, may not exist"
+}

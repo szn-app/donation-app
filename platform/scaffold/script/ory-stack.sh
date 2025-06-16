@@ -44,10 +44,7 @@ delete.skaffold#task#manual-delete@auth-ory-stack() {
     set e+
 
     # Uninstall Ory components
-    helm uninstall kratos -n auth || echo "Failed to uninstall Kratos, may not exist"
-    helm uninstall hydra -n auth || echo "Failed to uninstall Hydra, may not exist"
-    helm uninstall keto -n auth || echo "Failed to uninstall Keto, may not exist" 
-    helm uninstall oathkeeper -n auth || echo "Failed to uninstall Oathkeeper, may not exist"
+    execute.util '#ory-stack' '#manual-uninstall'
 
     # Delete Hydra OAuth client secrets - continue even if they don't exist
     kubectl delete secret ory-hydra-client--frontend-client-oauth -n auth 2>/dev/null || echo "Secret ory-hydra-client--frontend-client-oauth not found or couldn't be deleted"

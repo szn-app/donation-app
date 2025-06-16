@@ -294,3 +294,6 @@ verify#example@kratos()  {
 
 }
 
+delete.helm#ory-stack#manual-uninstall@ory-Kratos() {
+    helm uninstall kratos -n auth || echo "Failed to uninstall Kratos, may not exist"
+}

@@ -199,3 +199,7 @@ verify#example@keto() {
     # check ongoing installs 
     helm history keto -n auth
 }
+
+delete.helm#ory-stack#manual-uninstall@ory-keto() {
+    helm uninstall keto -n auth || echo "Failed to uninstall Keto, may not exist" 
+}
