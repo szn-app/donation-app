@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.35](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.34...donation-app@v0.4.35) (2025-06-16)
+
+
+### Bug Fixes
+
+* deployment configs domain overwrites ([9c10d7d](https://github.com/szn-app/donation-app/commit/9c10d7d2c851c049cbd9c175472d19e412ac1d78))
+* ory-kratos kustomize deployment for each overlay ([c39ac05](https://github.com/szn-app/donation-app/commit/c39ac05a58bfa4f40893aab32a2a8460bd7f5976))
+
+
+### Continuous Integration/Deployment
+
+* **oathkeeper:** fix domain substitution in production mode for access control configs ([6410053](https://github.com/szn-app/donation-app/commit/6410053474bf7a762f1b979e64d9976e1850aacf))
+* **ory-stack:** move uninstall scripts to corresponding service ([1c7ebde](https://github.com/szn-app/donation-app/commit/1c7ebde0f3fdf51d2726169ebaf3987872528199))
+
 ## [0.4.34](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.33...donation-app@v0.4.34) (2025-06-15)
 
 
