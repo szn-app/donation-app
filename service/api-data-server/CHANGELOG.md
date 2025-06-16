@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.5...api-data-server@v0.1.6) (2025-06-16)
+
+
+### Bug Fixes
+
+* **dummy:** trigger release ([85bfd03](https://github.com/szn-app/donation-app/commit/85bfd03bcb1ec3018b99071ce6ba90ef3b5be564))
+
 ## [0.1.5](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.4...api-data-server@v0.1.5) (2025-06-16)
 
 
