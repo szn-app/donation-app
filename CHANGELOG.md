@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.36](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.35...donation-app@v0.4.36) (2025-06-16)
+
+
+### Bug Fixes
+
+* k8s path ([9f3e201](https://github.com/szn-app/donation-app/commit/9f3e201a17f73c3579f02f305dcf68b2f2f6ddc4))
+
+
+### Documentation
+
+* todo terraform cloudflare integration ([9005238](https://github.com/szn-app/donation-app/commit/9005238121f32016d8b4466c2546e9edfb1cffd2))
+
 ## [0.4.35](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.34...donation-app@v0.4.35) (2025-06-16)
 
 
