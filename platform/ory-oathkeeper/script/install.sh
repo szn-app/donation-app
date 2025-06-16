@@ -44,6 +44,14 @@ install@oathkeeper() {
     # used also to update access rules
     helm.install@oathkeeper() {
         local environment="$1"
+        PROPERTIES_FILE="./config/.properties"
+        HOSTNAME=$(grep -E '^HOSTNAME=' "$PROPERTIES_FILE" | awk -F'=' '{print $2}' | tr -d '\r')
+
+        # Check if HOSTNAME was found
+        if [ -z "$HOSTNAME" ]; then
+            echo "Error: HOSTNAME not found or is empty in $PROPERTIES_FILE"
+            return 1
+        fi
 
         # t="$(mktemp).pem" && openssl genrsa -out "$t" 2048 # create private key
         # # Generate a JWKs file (if needed) - basic example using OpenSSL:
@@ -51,7 +59,20 @@ install@oathkeeper() {
         # echo "jwt file created file://$y"
 
         t="$(mktemp).yaml" && ./script/render-template.script.rs --environment $environment < ./oathkeeper-config.yaml.tera > $t && printf "generated manifest with replaced env variables: file://$t\n" 
-        j="$(mktemp)-combined-access-rules.json" && jq -s '.[0] + .[1]' ./config/access-rules.json ./config/test-access-rules.json > $j && printf "combined json access-rules: file://$j\n" 
+
+        j="$(mktemp)-combined-access-rules.json"
+        if [ "$environment" = "prod" ]; then
+            jq -s '.[0]' ./config/access-rules.json > $j
+            sed -i "s/donation-app\.local/$HOSTNAME/g" "$j"
+            printf "combined json access-rules: file://$j\n" 
+        elif [ "$environment" = "staging" ]; then 
+            jq -s '.[0] + .[1]' ./config/access-rules.json ./config/test-access-rules.json > $j
+            printf "combined json access-rules: file://$j\n" 
+        else
+            jq -s '.[0] + .[1]' ./config/access-rules.json ./config/test-access-rules.json > $j
+            printf "combined json access-rules: file://$j\n" 
+        fi
+        
         l="$(mktemp).log" && helm upgrade --debug --install oathkeeper ory/oathkeeper -n auth --create-namespace -f ./helm-values.yaml -f $t \
                 --set-file oathkeeper.accessRules=$j > $l 2>&1 && printf "Oathkeeper database logs: file://$l\n"
                 # --set-file "oathkeeper.mutatorIdTokenJWKs=$y" 

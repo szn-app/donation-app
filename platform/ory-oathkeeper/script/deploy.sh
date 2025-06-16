@@ -7,9 +7,10 @@ func#predeploy_hook@ory-oathkeeper() {
     # Check if Oathkeeper service exists in the auth namespace
     if kubectl get service oathkeeper-api -n auth &>/dev/null; then
         echo "Oathkeeper service already exists, skipping installation"
-    else
-        source script/install.sh && install@oathkeeper $environment
+        return 0; 
     fi
+
+    source script/install.sh && install@oathkeeper $environment
 }
 
 func#postdeploy_hook@ory-oathkeeper() {
