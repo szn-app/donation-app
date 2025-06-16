@@ -61,3 +61,13 @@ spec:
                 name: properties-map-api-data-server
             - secretRef:
                 name: secrets-api-data-server
+
+      #     volumeMounts:
+      #       - name: default-admin-user-volume
+      #         mountPath: "/etc/secrets/default-admin-user" # The directory where secrets will be mounted
+      #         readOnly: true # Good practice to make it read-only
+
+      # volumes:
+      #   - name: default-admin-user-volume
+      #     secret:
+      #       secretName: default-admin-user-credentials
