@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.3...api-data-server@v0.1.4) (2025-06-16)
+
+
+### Bug Fixes
+
+* graphql operations alignment with server api for create_item ([b7d415b](https://github.com/szn-app/donation-app/commit/b7d415bff292f0499dab3320a88ff51ab70068b9))
+
 ## [0.1.3](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.2...api-data-server@v0.1.3) (2025-06-16)
 
 
