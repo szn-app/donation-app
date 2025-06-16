@@ -49,7 +49,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - k8s/dev
+          - k8s/overlays/dev
 
     deploy:
       kubectl:
@@ -78,7 +78,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - k8s/staging
+          - k8s/overlays/staging
 
     deploy:
       kubectl:
@@ -107,7 +107,7 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - k8s/prod
+          - k8s/overlays/prod
 
     deploy:
       kubectl:

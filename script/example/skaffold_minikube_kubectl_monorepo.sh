@@ -1,6 +1,6 @@
 verify#example@monorepo() {
     ### generate combined configuration
-    kubectl kustomize ./service/cilium-gateway/k8s/development > ./tmp/combined_manifest.yaml
+    kubectl kustomize ./service/cilium-gateway/k8s/overlays/dev > ./tmp/combined_manifest.yaml
     cat ./tmp/combined_manifest.yaml | kubectl apply -f -
 
     # replace variables and deploy with kustomize
@@ -58,7 +58,7 @@ skaffold_scripts#example@monorepo() {
 minikube_scripts#example@monorepo() {
     kubectl config view && kubectl get namespace && kubectl config get-contexts
 
-    (cd k8s/development && kubectl apply -k .)
+    (cd k8s/overlays/dev && kubectl apply -k .)
     kubectl get all
 
     minikube ip 
@@ -78,7 +78,7 @@ minikube_scripts#example@monorepo() {
     # using gateway 
     {
         export GW=$(minikube ip) # or direct gateway ip exposed using minikube tunnel.
-        kubectl apply -k ./service/cilium-gateway/k8s/development
+        kubectl apply -k ./service/cilium-gateway/k8s/overlays/dev
         minikube tunnel # otherwise, with ingress-dns and ingress.yaml re-route to gateway will make accessing gateway through domain resolution directly with minikube ip
         minikube dashboard
         kubectl describe gateway -n donation-app
