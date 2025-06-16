@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/szn-app/donation-app/compare/auth-ui@v1.5.0...auth-ui@v1.5.1) (2025-06-16)
+
+
+### Bug Fixes
+
+* deployment configs domain overwrites ([9c10d7d](https://github.com/szn-app/donation-app/commit/9c10d7d2c851c049cbd9c175472d19e412ac1d78))
+
 ## [1.5.0](https://github.com/szn-app/donation-app/compare/auth-ui@v1.4.0...auth-ui@v1.5.0) (2025-06-15)
 
 
