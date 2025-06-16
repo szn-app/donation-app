@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.86](https://github.com/szn-app/donation-app/compare/web-server@v0.0.85...web-server@v0.0.86) (2025-06-16)
+
+
+### Bug Fixes
+
+* **api:** update_item operation update of schema and repository ([dbe1ac3](https://github.com/szn-app/donation-app/commit/dbe1ac3a4064e6438e28ede6da5fd4428b20ff59))
+
 ## [0.0.85](https://github.com/szn-app/donation-app/compare/web-server@v0.0.84...web-server@v0.0.85) (2025-06-15)
 
 
