@@ -308,21 +308,21 @@ mutation CreateItem(
 
 mutation UpdateItem(
   $id: Int!
+  $status: ItemStatus!
   $title: String
   $description: String
   $category: Int
   $condition: ItemCondition!
   $location: Int
-  $status: ItemStatus!
 ) {
   updateItem(
     id: $id
+    status: $status
     title: $title
     description: $description
     category: $category
     condition: $condition
     location: $location
-    status: $status
   ) {
     id
     variant

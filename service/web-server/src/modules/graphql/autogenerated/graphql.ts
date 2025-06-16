@@ -127,13 +127,13 @@ export type Item = {
   createdBy?: Maybe<Scalars['UUID']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
-  intentAction: ItemIntentAction;
+  intentAction?: Maybe<ItemIntentAction>;
   isReported: Scalars['Boolean']['output'];
   location?: Maybe<Scalars['Int']['output']>;
   status?: Maybe<ItemStatus>;
   title?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  variant: ItemType;
+  variant?: Maybe<ItemType>;
   viewsCount: Scalars['Int']['output'];
 };
 
@@ -302,14 +302,14 @@ export type MutationCreateCommunityArgs = {
 /** GraphQL Mutation Root */
 export type MutationCreateItemArgs = {
   category?: InputMaybe<Scalars['Int']['input']>;
-  condition: ItemCondition;
+  condition?: InputMaybe<ItemCondition>;
   createdBy?: InputMaybe<Scalars['UUID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  intentAction: ItemIntentAction;
+  intentAction?: InputMaybe<ItemIntentAction>;
   location?: InputMaybe<Scalars['Int']['input']>;
   status?: InputMaybe<ItemStatus>;
   title?: InputMaybe<Scalars['String']['input']>;
-  variant: ItemType;
+  variant?: InputMaybe<ItemType>;
 };
 
 
@@ -950,20 +950,20 @@ export type CreateItemMutationVariables = Exact<{
 }>;
 
 
-export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
+export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'Item', id: number, variant?: ItemType | null, intentAction?: ItemIntentAction | null, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
 
 export type UpdateItemMutationVariables = Exact<{
   id: Scalars['Int']['input'];
+  status: ItemStatus;
   title?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   category?: InputMaybe<Scalars['Int']['input']>;
   condition: ItemCondition;
   location?: InputMaybe<Scalars['Int']['input']>;
-  status: ItemStatus;
 }>;
 
 
-export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
+export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'Item', id: number, variant?: ItemType | null, intentAction?: ItemIntentAction | null, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } };
 
 export type DeleteItemMutationVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -977,7 +977,7 @@ export type ReportItemMutationVariables = Exact<{
 }>;
 
 
-export type ReportItemMutation = { __typename?: 'Mutation', reportItem?: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
+export type ReportItemMutation = { __typename?: 'Mutation', reportItem?: { __typename?: 'Item', id: number, variant?: ItemType | null, intentAction?: ItemIntentAction | null, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
 
 export type CreateCollectionMutationVariables = Exact<{
   idCommunity: Scalars['Int']['input'];
@@ -1145,14 +1145,14 @@ export type FindCategoryQuery = { __typename?: 'Query', findCategory?: { __typen
 export type ListItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListItemsQuery = { __typename?: 'Query', listItems: Array<{ __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null }> };
+export type ListItemsQuery = { __typename?: 'Query', listItems: Array<{ __typename?: 'Item', id: number, variant?: ItemType | null, intentAction?: ItemIntentAction | null, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null }> };
 
 export type FindItemQueryVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type FindItemQuery = { __typename?: 'Query', findItem?: { __typename?: 'Item', id: number, variant: ItemType, intentAction: ItemIntentAction, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
+export type FindItemQuery = { __typename?: 'Query', findItem?: { __typename?: 'Item', id: number, variant?: ItemType | null, intentAction?: ItemIntentAction | null, status?: ItemStatus | null, title?: string | null, description?: string | null, category?: number | null, condition?: ItemCondition | null, location?: number | null, viewsCount: number, isReported: boolean, createdAt: Date, updatedAt?: Date | null, createdBy?: string | null } | null };
 
 export type ListLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1511,15 +1511,15 @@ export const CreateItemDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<CreateItemMutation, CreateItemMutationVariables>;
 export const UpdateItemDocument = new TypedDocumentString(`
-    mutation UpdateItem($id: Int!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int, $status: ItemStatus!) {
+    mutation UpdateItem($id: Int!, $status: ItemStatus!, $title: String, $description: String, $category: Int, $condition: ItemCondition!, $location: Int) {
   updateItem(
     id: $id
+    status: $status
     title: $title
     description: $description
     category: $category
     condition: $condition
     location: $location
-    status: $status
   ) {
     id
     variant

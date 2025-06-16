@@ -87,7 +87,7 @@ develop_tauri_desktop_with_workaround_black_screen@web-server() {
     WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
 }
 
-develop_tauri_android@web-server() { 
+develop_tauri_android@web-server() {
     ./script.sh setup_android_sdk_variables
 
     cargo tauri android init

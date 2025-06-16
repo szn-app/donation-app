@@ -120,13 +120,13 @@ export function ItemSchema(): z.ZodObject<Properties<Item>> {
     createdBy: z.string().nullish(),
     description: z.string().nullish(),
     id: z.number(),
-    intentAction: ItemIntentActionSchema,
+    intentAction: ItemIntentActionSchema.nullish(),
     isReported: z.boolean(),
     location: z.number().nullish(),
     status: ItemStatusSchema.nullish(),
     title: z.string().nullish(),
     updatedAt: z.coerce.date().nullish(),
-    variant: ItemTypeSchema,
+    variant: ItemTypeSchema.nullish(),
     viewsCount: z.number()
   })
 }

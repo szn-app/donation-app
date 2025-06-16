@@ -77,28 +77,28 @@ impl ItemRepository {
     pub async fn update(
         &self,
         id: i64,
+        status: Option<ItemStatus>,
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
         condition: Option<ItemCondition>,
         location: Option<i64>,
-        status: Option<ItemStatus>,
     ) -> Result<Item, Box<dyn Error + Send + Sync>> {
         debug!("Updating item {} with title: {:?}", id, title);
         let client = self.pool.rw.get().await?;
-        let now = OffsetDateTime::now_utc();
+        // let now = OffsetDateTime::now_utc();
         let row = client
             .query_opt(
                 UPDATE_ITEM,
                 &[
                     &id,
+                    &status,
                     &title,
                     &description,
                     &category,
                     &condition,
                     &location,
-                    &status,
-                    &now,
+                    // &now,
                 ],
             )
             .await?;

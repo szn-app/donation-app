@@ -1,7 +1,7 @@
 #!/usr/bin/env rust-script
 //! ```cargo
 //! [dependencies]
-//! api-data = { path = "../"}
+//! api-data-server = { path = "../"}
 //! async-graphql = {version = "7.0.16", features = ["graphiql", "uuid", "time", "dataloader", "decimal", "url"]}
 //! ```
 

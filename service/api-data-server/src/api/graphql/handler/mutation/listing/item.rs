@@ -75,24 +75,24 @@ impl ItemMutation {
         &self,
         _ctx: &Context<'_>,
         id: i64,
+        status: Option<ItemStatus>,
         title: Option<String>,
         description: Option<String>,
         category: Option<i64>,
         condition: Option<ItemCondition>,
         location: Option<i64>,
-        status: Option<ItemStatus>,
     ) -> FieldResult<Item> {
         debug!("Updating item: id={}", id);
         let repository = ItemRepository::new(self.postgres_pool_group.clone());
         let item = repository
             .update(
                 id,
+                status,
                 title,
                 description,
                 category,
                 condition,
                 location,
-                status,
             )
             .await
             .map_err(|e| Error::new(e.to_string()))?;
