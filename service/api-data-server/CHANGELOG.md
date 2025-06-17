@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.6...api-data-server@v0.1.7) (2025-06-17)
+
+
+### Bug Fixes
+
+* database docker image build; Trigger build for web-server. ([19b3abb](https://github.com/szn-app/donation-app/commit/19b3abb1e06d163dc6f4d5565bd4528ff5ec6932))
+
 ## [0.1.6](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.5...api-data-server@v0.1.6) (2025-06-16)
 
 
