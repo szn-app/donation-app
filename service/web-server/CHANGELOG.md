@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.88](https://github.com/szn-app/donation-app/compare/web-server@v0.0.87...web-server@v0.0.88) (2025-06-17)
+
+
+### Bug Fixes
+
+* database docker image build; Trigger build for web-server. ([19b3abb](https://github.com/szn-app/donation-app/commit/19b3abb1e06d163dc6f4d5565bd4528ff5ec6932))
+
 ## [0.0.87](https://github.com/szn-app/donation-app/compare/web-server@v0.0.86...web-server@v0.0.87) (2025-06-16)
 
 

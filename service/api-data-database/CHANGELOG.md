@@ -1,5 +1,24 @@
 # Changelog
 
+## [17.8.0](https://github.com/szn-app/donation-app/compare/api-data-database@v17.7.0...api-data-database@v17.8.0) (2025-06-17)
+
+
+### Features
+
+* Merge commit '49d668f9fc212636529a9540beef109ce96e2472' ([807407b](https://github.com/szn-app/donation-app/commit/807407bb3197f9c2cd0e66c851b455610b3765ca))
+
+
+### Bug Fixes
+
+* database docker image build; Trigger build for web-server. ([19b3abb](https://github.com/szn-app/donation-app/commit/19b3abb1e06d163dc6f4d5565bd4528ff5ec6932))
+
+
+### Code Refactoring
+
+* major reorganization of services and renaming; flatten api-data service ([49d668f](https://github.com/szn-app/donation-app/commit/49d668f9fc212636529a9540beef109ce96e2472))
+* services version upgrade and fix issues caused by refactoring ([ca8ea99](https://github.com/szn-app/donation-app/commit/ca8ea99531083ae8d48c05c6ab9f802f653f3d18))
+* staging-rebuild mode fixing deployment ([226ec56](https://github.com/szn-app/donation-app/commit/226ec56f8266bb6af6702a8e3e2ad4e57e1c3a10))
+
 ## 1.0.0 (2025-06-15)
 
 
