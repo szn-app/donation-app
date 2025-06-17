@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+images:
+  - name: web-server
+    ### automatically updated - TODO: fix and use ArgoCD or other deployment tool
+    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
+    newTag: v0.0.88 # x-release-please-version

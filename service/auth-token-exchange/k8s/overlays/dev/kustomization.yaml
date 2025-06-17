@@ -4,6 +4,9 @@ kind: Kustomization
 resources:
   - ../../base
 
+components:
+  - ../../components/namespace
+
 patches:
   - patch: |-
       apiVersion: apps/v1

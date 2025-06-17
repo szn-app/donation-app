@@ -5,14 +5,9 @@ resources:
   - ../../base
 
 components:
+  - ../../components/tag-version
   - ../../components/secret
   - ../../components/namespace
-
-images:
-  - name: api-data-server
-    ### automatically updated
-    # FIX: release-please updater NOT WOKRING. update release-please after PR accepted https://github.com/googleapis/release-please/pull/2422
-    newTag: v0.0.8 # x-release-please-version
 
 configMapGenerator:
   - name: properties-map-api-data-server

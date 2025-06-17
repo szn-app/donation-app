@@ -5,6 +5,7 @@ resources:
   - ../../base
 
 components:
+  - ../../components/tag-version
   - ../../components/namespace
   - ../../components/secret
 

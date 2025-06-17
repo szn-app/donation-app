@@ -17,15 +17,15 @@ dev-rebuild.run.skaffold#task@monorepo() {
     skaffold run --profile dev-rebuild --module monorepo
 }
 
+delete.dev-rebuild.run.skaffold#task@monorepo() {
+    skaffold delete --profile dev-rebuild --module monorepo
+}
+
 prod.run.skaffold#task@monorepo() {
     setup_minikube
     skaffold run --profile prod --module monorepo
 }
 
-delete.dev-rebuild.run.skaffold#task@monorepo() {
-    skaffold delete --profile dev-rebuild --module monorepo
-    setup_minikube
-}
 
 dev-watch.skaffold#task@monorepo() {    
     setup_minikube
@@ -38,7 +38,7 @@ staging-rebuild.skaffold#task@monorepo() {
 }
 
 delete.staging-rebuild.skaffold#task@monorepo() {
-    skaffold delete --profile staging-rebuild
+    skaffold delete --profile staging-rebuild --module monorepo
 }
 
 service-only.staging.skaffold#task@monorepo() {
@@ -51,6 +51,23 @@ platform-only.staging.skaffold#task@monorepo() {
     skaffold run --profile staging-rebuild --module monorepo-platform-only --port-forward --cleanup=false
 }
 
+staging-prebuilt.skaffold#task@monorepo() {
+    setup_minikube
+    skaffold run --profile staging-prebuilt  --module monorepo # --port-forward --tail
+}
+
+delete.staging-prebuilt.skaffold#task@monorepo() {
+    skaffold delete --profile staging-prebuilt --module monorepo
+}
+
+production.skaffold#hetzner#task@monorepo() {
+    kubectl ctx k3s
+
+    setup_repo_files@monorepo
+    wait_for_terminating_resources.kubernetes#utility
+    skaffold run --profile prod --module monorepo
+}
+
 force_delete_all.skaffold#task@monorepo() {
     skaffold delete --profile dev-watch
     skaffold delete --profile dev-rebuild
@@ -60,14 +77,6 @@ force_delete_all.skaffold#task@monorepo() {
 
     execute.util '#task' '#manual-delete'
     execute.util '#task' '#pvc-manual-delete'
-}
-
-production.skaffold#hetzner#task@monorepo() {
-    kubectl ctx k3s
-
-    setup_repo_files@monorepo
-    wait_for_terminating_resources.kubernetes#utility
-    skaffold run --profile prod --module monorepo
 }
 
 force_delete.production.skaffold#task@monorepo() {

@@ -9,9 +9,6 @@ resources:
 # namePrefix: prod-
 # nameSuffix: -v1
 
-components:
-  - ../components/namespace
-
 # adds labels to all resources (including selector and template fields)
 labels:
   - pairs:
