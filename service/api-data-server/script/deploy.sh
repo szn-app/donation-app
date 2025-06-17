@@ -64,3 +64,7 @@ func#predeploy-skaffold-hook@api-data-server() {(
 func#postdeploy-skaffold-hook@api-data-server() {(
     local environment=$1
 )}
+
+production.skaffold#task@api-data-server() {
+  skaffold run --profile prod --module api-data-server
+}

@@ -22,7 +22,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 # Install pg-trunk
 RUN cargo install pg-trunk
-RUN trunk --version && which trunk && sleep 100
+RUN trunk --version && which trunk
 
 # === Stage 2: Final image ===
 # FROM ghcr.io/cloudnative-pg/postgresql:${postgresql_release}-standard-${debian_version} AS final

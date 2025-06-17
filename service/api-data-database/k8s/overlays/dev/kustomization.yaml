@@ -47,4 +47,4 @@ patches:
         path: /spec/imageCatalogRef
       - op: add
         path: /spec/imageName
-        value: api-data-database:17.0.0-dev
+        value: ghcr.io/szn-app/donation-app/api-data-database:17.0.0-dev

@@ -25,6 +25,10 @@ diagnose.skaffold@web-server() {
     kubectl kustomize ./k8s/overlays/staging
 }
 
+production.skaffold#task@web-server() {
+  skaffold run --profile prod --module web-server
+}
+
 delete.skaffold#task@web-server() {
     skaffold delete --module web-server --profile dev-watch
 }

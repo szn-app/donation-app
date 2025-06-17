@@ -5,5 +5,5 @@
   "service/auth-token-exchange": "0.0.17",
   "service/webhook-handler": "0.0.7",
   "service/api-data-server": "0.1.6",
-  "service/api-data-database": "1.0.0"
+  "service/api-data-database": "17.7.0"
 }

@@ -157,6 +157,7 @@ export function MockGraphqlGenerate() {
   const addItemMutation = useMutation({
     mutationKey: ["createItem"],
     mutationFn: async (variables: {
+      status?: ItemStatus;
       variant: ItemType;
       intentAction: ItemIntentAction;
       title?: string;
@@ -164,7 +165,6 @@ export function MockGraphqlGenerate() {
       category?: number;
       condition: ItemCondition;
       location?: number;
-      status?: ItemStatus;
     }) =>
       await request<CreateItemMutation>(
         import.meta.env.VITE_GRAPHQL_ENDPOINT,
@@ -354,6 +354,7 @@ export function MockGraphqlGenerate() {
             entranceNote: faker.lorem.sentence(),
           });
           const item = await addItemMutation.mutateAsync({
+            status: ItemStatus.Active,
             title: faker.commerce.productName(),
             description: faker.lorem.paragraph(),
             category: category.createCategory.id,
@@ -361,7 +362,6 @@ export function MockGraphqlGenerate() {
             variant: ItemType.Inkind,
             intentAction: ItemIntentAction.Offer,
             condition: ItemCondition.BrandNew,
-            status: ItemStatus.Active,
           });
           await updateItemMutation.mutateAsync({
             id: item.createItem.id,
@@ -595,84 +595,9 @@ export function MockGraphqlGenerate() {
     setSuccess(null);
 
     try {
-      // Clear all data by generating a new account and using it to clear related data
-      const accountId = faker.string.uuid();
-      await addAccountMutation.mutateAsync({ id: accountId });
-
-      // Clear profiles
-      await addProfileMutation.mutateAsync({
-        idAccount: accountId,
-        name: "CLEAR",
-        description: "CLEAR",
-      });
-
-      // Clear communities
-      await addCommunityMutation.mutateAsync({
-        name: "CLEAR",
-        description: "CLEAR",
-        variant: CommunityType.Organized,
-        createdBy: accountId,
-      });
-
-      // Clear categories
-      await addCategoryMutation.mutateAsync({
-        description: "CLEAR",
-        name: "CLEAR",
-      });
-
-      // Clear locations
-      await addLocationMutation.mutateAsync({
-        addressLine1: "CLEAR",
-        city: "CLEAR",
-        state: "CLEAR",
-        country: "CLEAR",
-        coordinates: {
-          latitude: 0,
-          longitude: 0,
-        },
-      });
-
-      // Clear items
-      const category = await addCategoryMutation.mutateAsync({
-        description: "CLEAR",
-        name: "CLEAR",
-      });
-      const location = await addLocationMutation.mutateAsync({
-        addressLine1: "CLEAR",
-        city: "CLEAR",
-        state: "CLEAR",
-        country: "CLEAR",
-        coordinates: {
-          latitude: 0,
-          longitude: 0,
-        },
-      });
-      const item = await addItemMutation.mutateAsync({
-        title: "CLEAR",
-        description: "CLEAR",
-        category: category.createCategory.id,
-        location: location.createLocation.id,
-        variant: ItemType.Inkind,
-        intentAction: ItemIntentAction.Offer,
-        condition: ItemCondition.BrandNew,
-        status: ItemStatus.Active,
-      });
-      await updateItemMutation.mutateAsync({
-        id: item.createItem.id,
-        condition: ItemCondition.BrandNew,
-        status: ItemStatus.Active,
-      });
-
-      // Clear collections
-      await addCollectionMutation.mutateAsync({
-        idCommunity: 0,
-        title: "CLEAR",
-        visibility: CollectionVisibility.Restricted,
-        variant: CollectionType.Regular,
-        position: 0,
-      });
-
-      setSuccess("Successfully cleared all data");
+      // TODO: umimplemented
+      setSuccess("Unimplemented clear handler.");
+      // setSuccess("Successfully cleared all data");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
