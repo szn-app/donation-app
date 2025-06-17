@@ -1,0 +1,6 @@
+# NOTE: deleting namespace causes issues with deallocation of resources, thus it must be included for production with actual longhorn-system controller (when using skaffold delete)
+apiVersion: v1
+kind: Namespace
+
+metadata:
+  name: longhorn-system

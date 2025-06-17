@@ -1,11 +1,5 @@
 # NOTE: security policy defined on gateway level
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: longhorn-system
-
----
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 
