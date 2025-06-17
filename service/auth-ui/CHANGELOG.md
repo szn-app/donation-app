@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/szn-app/donation-app/compare/auth-ui@v1.5.1...auth-ui@v1.5.2) (2025-06-17)
+
+
+### Continuous Integration/Deployment
+
+* apply tag version to staging skaffold using components ([745300e](https://github.com/szn-app/donation-app/commit/745300e4cd533e887c4ea09ebecf62d4fb9b19b3))
+
 ## [1.5.1](https://github.com/szn-app/donation-app/compare/auth-ui@v1.5.0...auth-ui@v1.5.1) (2025-06-16)
 
 
