@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.38](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.37...donation-app@v0.4.38) (2025-06-17)
+
+
+### Continuous Integration/Deployment
+
+* apply tag version to staging skaffold using components ([745300e](https://github.com/szn-app/donation-app/commit/745300e4cd533e887c4ea09ebecf62d4fb9b19b3))
+* **scaffold:** define longhorn-system namespace only for dev/staging ([009918f](https://github.com/szn-app/donation-app/commit/009918f434878c500d0ae5f8b1d4bea5f07b73ca))
+
 ## [0.4.37](https://github.com/szn-app/donation-app/compare/donation-app@v0.4.36...donation-app@v0.4.37) (2025-06-17)
 
 

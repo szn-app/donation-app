@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.18](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.17...auth-token-exchange@v0.0.18) (2025-06-17)
+
+
+### Continuous Integration/Deployment
+
+* apply tag version to staging skaffold using components ([745300e](https://github.com/szn-app/donation-app/commit/745300e4cd533e887c4ea09ebecf62d4fb9b19b3))
+
 ## [0.0.17](https://github.com/szn-app/donation-app/compare/auth-token-exchange@v0.0.16...auth-token-exchange@v0.0.17) (2025-06-15)
 
 
