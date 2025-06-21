@@ -1,9 +1,9 @@
 {
-  ".": "0.4.37",
-  "service/web-server": "0.0.88",
-  "service/auth-ui": "1.5.1",
-  "service/auth-token-exchange": "0.0.17",
+  ".": "0.4.38",
+  "service/web-server": "0.0.89",
+  "service/auth-ui": "1.5.2",
+  "service/auth-token-exchange": "0.0.18",
   "service/webhook-handler": "0.0.7",
-  "service/api-data-server": "0.1.7",
+  "service/api-data-server": "0.1.8",
   "service/api-data-database": "17.8.0"
 }

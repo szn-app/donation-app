@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.89](https://github.com/szn-app/donation-app/compare/web-server@v0.0.88...web-server@v0.0.89) (2025-06-17)
+
+
+### Continuous Integration/Deployment
+
+* apply tag version to staging skaffold using components ([745300e](https://github.com/szn-app/donation-app/commit/745300e4cd533e887c4ea09ebecf62d4fb9b19b3))
+
 ## [0.0.88](https://github.com/szn-app/donation-app/compare/web-server@v0.0.87...web-server@v0.0.88) (2025-06-17)
 
 
