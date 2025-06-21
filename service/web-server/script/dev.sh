@@ -86,9 +86,12 @@ build_react_spa@web-server() {
     popd
 }
 
+# NOTE: disabling issues with some NVIDIA driver setups.
 develop_tauri_desktop_with_workaround_black_screen@web-server() { 
     cd ./service/web-server
     WEBKIT_DISABLE_COMPOSITING_MODE=1 cargo tauri dev
+    # or 
+    WEBKIT_DISABLE_DMABUF_RENDERER=1 cargo tauri dev
 }
 
 develop_tauri_android@web-server() {

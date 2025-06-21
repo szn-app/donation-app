@@ -164,10 +164,5 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "rust-analyzer.checkOnSave": true,
-  "workbench.colorCustomizations": {
-    "activityBar.background": "#1F3220",
-    "titleBar.activeBackground": "#2B462C",
-    "titleBar.activeForeground": "#F9FBF9",
-  }
+  "rust-analyzer.checkOnSave": true
 }

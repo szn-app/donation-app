@@ -26,13 +26,13 @@ Minikube version: v1.36.0
 Kubernetes version: 
 	Client Version::	v1.32.5
 	Kustomize Version::	v5.5.0
-	Server Version::	v1.33.1
+	Server Version::	v1.32.5+k3s1
 Kustomize version: v5.5.0
 kOps version: 1.30.3
 ---
 Cilium version: cilium-cli: v0.16.23 compiled with go1.23.4 on linux/amd64
 cilium image (default): v1.16.5
-cilium image (stable): v1.17.4
+cilium image (stable): v1.17.5
 
 Skaffold version: v2.15.0
 Conntrack version: v1.4.7
