@@ -38,3 +38,8 @@ record_version#setup#task@monorepo() {
 
     cat "$t"
 }
+
+rustc_versions() {
+    rustc -Vv
+    rustc -Vv | grep host | cut -f2 -d' '
+}

@@ -158,6 +158,11 @@ install_mc() {
 }
 
 install_binary_tools#rust@monorepo() {
+    cargo install cargo-edit
+    {
+        cargo upgrade
+    }
+
     cargo install rust-script
     cargo install cargo-binstall
     # cargo binstall cargo-watch
