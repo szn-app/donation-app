@@ -167,6 +167,7 @@ install_binary_tools#rust@monorepo() {
     cargo install cargo-binstall
     # cargo binstall cargo-watch
     cargo install cargo-watch --locked
+    cargo install cargo-update
 }
 
 install_darling#obsolete() { # runs .dmg MacOS applicaitons on Linux
