@@ -31,7 +31,7 @@ kOps version: 1.30.3
 ---
 Cilium version: cilium-cli: v0.16.23 compiled with go1.23.4 on linux/amd64
 cilium image (default): v1.16.5
-cilium image (stable): v1.18.0
+cilium image (stable): v1.18.1
 
 Skaffold version: v2.15.0
 Conntrack version: v1.4.7
@@ -56,13 +56,13 @@ Tauri version:
     - npm: 11.3.0
 
 [-] Packages
-    - tauri 🦀: 2.2.5, (outdated, latest: 2.7.0)
-    - tauri-build 🦀: 2.0.5, (outdated, latest: 2.3.1)
-    - wry 🦀: 0.48.1, (outdated, latest: 0.52.1)
-    - tao 🦀: 0.31.1, (outdated, latest: 0.34.0)
-    - tauri-cli 🦀: 2.6.2 (outdated, latest: 2.7.1)
-    - @tauri-apps/api : 2.5.0 (outdated, latest: 2.7.0)
-    - @tauri-apps/cli : 2.6.2 (outdated, latest: 2.7.1)
+    - tauri 🦀: 2.2.5, (outdated, latest: 2.8.1)
+    - tauri-build 🦀: 2.0.5, (outdated, latest: 2.4.0)
+    - wry 🦀: 0.48.1, (outdated, latest: 0.53.1)
+    - tao 🦀: 0.31.1, (outdated, latest: 0.34.2)
+    - tauri-cli 🦀: 2.6.2 (outdated, latest: 2.8.0)
+    - @tauri-apps/api : 2.5.0 (outdated, latest: 2.8.0)
+    - @tauri-apps/cli : 2.6.2 (outdated, latest: 2.8.0)
 
 [-] Plugins
     - tauri-plugin-shell 🦀: 2.2.0, (outdated, latest: 2.3.0)
