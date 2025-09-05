@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.8](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.7...webhook-handler@v0.0.8) (2025-09-05)
+
+
+### Documentation
+
+* notes and minor changes ([69081e0](https://github.com/szn-app/donation-app/commit/69081e0cdfd6901ce862138272d3c5e7637935c9))
+
 ## [0.0.7](https://github.com/szn-app/donation-app/compare/webhook-handler@v0.0.6...webhook-handler@v0.0.7) (2025-06-15)
 
 
