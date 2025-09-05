@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.8...api-data-server@v0.1.9) (2025-09-05)
+
+
+### Documentation
+
+* notes and minor changes ([69081e0](https://github.com/szn-app/donation-app/commit/69081e0cdfd6901ce862138272d3c5e7637935c9))
+
 ## [0.1.8](https://github.com/szn-app/donation-app/compare/api-data-server@v0.1.7...api-data-server@v0.1.8) (2025-06-17)
 
 

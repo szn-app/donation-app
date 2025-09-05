@@ -1,6 +1,6 @@
 [package]
 name = "webhook-handler"
-version = "0.0.7"
+version = "0.0.8"
 edition = "2021"
 
 # for musl target - statically compile Rust binary with musl instead of relying on image glibc 

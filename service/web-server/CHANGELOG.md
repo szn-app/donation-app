@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.0.90](https://github.com/szn-app/donation-app/compare/web-server@v0.0.89...web-server@v0.0.90) (2025-09-05)
+
+
+### Continuous Integration/Deployment
+
+* **script:** minor tauri dev command ([baf0e2b](https://github.com/szn-app/donation-app/commit/baf0e2b29e25a5f857e97d6da7d7fa1163e704b8))
+
+
+### Documentation
+
+* minor notes ([210c7bc](https://github.com/szn-app/donation-app/commit/210c7bc824a47ac89ee378b798abe2ea139e9779))
+* notes and minor changes ([69081e0](https://github.com/szn-app/donation-app/commit/69081e0cdfd6901ce862138272d3c5e7637935c9))
+
 ## [0.0.89](https://github.com/szn-app/donation-app/compare/web-server@v0.0.88...web-server@v0.0.89) (2025-06-17)
 
 
